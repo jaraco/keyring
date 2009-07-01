@@ -1,6 +1,7 @@
-#include "Python.h"
-
 #include <Security/Security.h>
+
+#include "Python.h"
+#include "keyring_util.h"
 
 /*
  * Comments from Subversion's macos_keychain.c
@@ -21,18 +22,6 @@
  * SecKeychainSetUserInteractionAllowed() when multiple instances of
  * the same Subversion auth provider-based app run concurrently.
  */
-char *
-string_dump(const char *s, int n)
-{
-	char *res;
-	if (s == NULL) {
-		return NULL;
-	}
-	res = malloc(n + 1);
-	memcpy(res, s, n);
-	res[n] = '\0';
-	return res;
-}
 
 
 static PyObject *

@@ -1,10 +1,10 @@
 /*
- * pykeyring_util.h
+ * keyring_util.h
  *
- * Some useful function for pykeyring lib
+ * Some useful functions for keyring lib
  */
-#ifndef PYKEYRING_UTIL_H
-#define PYKEYRING_UTIL_H
+#ifndef KEYRING_UTIL_H
+#define KEYRING_UTIL_H
 char *
 string_dump(const char *s,int n)
 {
@@ -16,5 +16,4 @@ string_dump(const char *s,int n)
     res[n] = '\0';
     return res;
 }
-
-#endif //PYKEYRING_UTIL_H
+#endif //KEYRING_UTIL_H

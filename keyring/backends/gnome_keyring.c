@@ -6,7 +6,7 @@
 #include <gnome-keyring.h>
 
 #include "Python.h"
-#include "../pykeyring_util.h"
+#include "keyring_util.h"
 
 static PyObject*
 gnome_keyring_password_get(PyObject *self, PyObject *args)
@@ -22,7 +22,7 @@ gnome_keyring_password_get(PyObject *self, PyObject *args)
         return NULL;
     }
     if (non_interactive || (! dbus_bus_get(DBUS_BUS_SESSION,NULL)) || (!gnome_keyring_is_available())){
-      	PyErr_Clear();
+        PyErr_Clear();
         PyErr_SetString(PyExc_OSError,"Can's access the keyring now, or non_interactive has been set to false");
         return NULL;
     }
@@ -45,7 +45,7 @@ gnome_keyring_password_get(PyObject *self, PyObject *args)
                 status = 1;
             }
             gnome_keyring_network_password_list_free(items);
-	}
+    }
     }  
 
     if (!status){
@@ -69,7 +69,7 @@ gnome_keyring_password_set(PyObject *self, PyObject *args)
         return NULL;
     }
     if (non_interactive || (! dbus_bus_get(DBUS_BUS_SESSION,NULL)) || (!gnome_keyring_is_available())){
-      	PyErr_Clear();
+        PyErr_Clear();
         PyErr_SetString(PyExc_OSError,"Can's access the keyring now, or non_interactive has been set to false");
         return NULL;
     }
@@ -81,7 +81,7 @@ gnome_keyring_password_set(PyObject *self, PyObject *args)
     result = gnome_keyring_set_network_password_sync(NULL,username,realmstring,NULL,NULL,NULL,NULL,0,password,&item_id);
 
     /*if (result != GNOME_KEYRING_RESULT_OK){
-	 PyErr_Clear();
+     PyErr_Clear();
          PyErr_SetString(PyExc_OSError,"Can't access the keyring.");
          return NULL;
     }*/
