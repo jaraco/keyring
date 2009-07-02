@@ -11,7 +11,7 @@ string_dump(const char *s,int n)
     char *res;
     if (s == NULL)
         return NULL;
-    res = malloc(n+1);
+    res = (char*) malloc(n+1);
     memcpy(res,s,n);
     res[n] = '\0';
     return res;
