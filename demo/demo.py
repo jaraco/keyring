@@ -8,19 +8,19 @@ Created by Kang Zhang on 2009-06-13.
 
 import sys
 import os
-import osx_keychain
+import keyring
 
 
 def main():
 	"""
-	This script demos the pykeyring on osx. To see the changes that
-	pykeyring has made on your machine, open your Keychain Access and
+	This script demos the python keyring lib usage. To see the changes that
+	keyring lib has made on your machine, open your Keychain Access and
 	search for demo-service in your login keychain.
 	"""
-	if osx_keychain.password_set("demo-service","tarek","passexample") == 0:
+	if keyring.setpass("demo-service","tarek","passexample") == 0:
 		print "password stored sucessful"
 		
-	print osx_keychain.password_get("demo-service","tarek")
+	print keyring.getpass("demo-service","tarek")
 	pass
 
 

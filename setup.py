@@ -93,7 +93,7 @@ def main():
           maintainer = "Kang Zhang",
           maintainer_email = "jobo.zh@gmail.com",
           platforms = ["Many"],
-
+          packages = ['keyring'],
           #Buildinfo
           cmdclass = { 'build_ext':KeyringBuildExt },
           #Dummy item, to trigger the build_ext
