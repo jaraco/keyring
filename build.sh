@@ -2,4 +2,4 @@
 rm -r build
 python setup.py -v build
 sudo python setup.py -v install
-python demo/demo.py
+python demo/keyring_demo.py
