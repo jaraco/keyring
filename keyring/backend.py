@@ -49,8 +49,15 @@ class KDEKWallet(_ExtensionKeyring):
 
 
 class SimpleKeyring(KeyringBackend):
+    """
+    SimpleKeyring is a pure python implementation of keyring. It store the
+    password directly in the file, so it's not safe.
+    """
+    def __init__(self):
+        pass
     def getpass(self,servicename,username):
         return self.password
     
     def setpass(self,servicename,username,password):
         self.password = password
+        return 0

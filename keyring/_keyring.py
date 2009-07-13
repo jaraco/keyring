@@ -4,9 +4,9 @@ _keyring.py
 Created by Kang Zhang on 2009-07-09
 """
 def set_keyring( keyring ):
-    from backend import KeyringBackend
-    if isinstance(keyring, KeyringBackend):
-        global _keyring_backend
+    import backend
+    global _keyring_backend
+    if isinstance(keyring, backend.KeyringBackend):
         _keyring_backend = keyring
     else: raise TypeError("The keyring must be a subclass of KeyringBackend")
 
@@ -25,9 +25,9 @@ def _init_backend():
 
     # if the user dose not specify a keyring, we apply a default one
     if keyring_impl is None:
+        import backend
         # TODO set keyring to pure python implementation
-        from backend import SimpleKeyring
-        keyring_impl = SimpleKeyring()
+        keyring_impl = backend.SimpleKeyring()
 
         # select a default backend for the platform
         import sys
@@ -35,19 +35,16 @@ def _init_backend():
 
         if platform in ['darwin','mac']:
             # for Mac OSX 
-            from backend import OSXKeychain
-            keyring_impl = OSXKeychain()
+            keyring_impl = backend.OSXKeychain()
         else:
             # detect KDE or Gnome
             import os
             if os.getenv("KDE_FULL_SESSION") == "true":
                 # KDE enviroment
-                from backend import KDEKWallet 
-                keyring_impl = KDEKWallet()
+                keyring_impl = backend.KDEKWallet()
             elif os.getenv("GNOME_DESKTOP_SESSION_ID"):
                 # Gnome enviroment
-                from backend import GnomeKeyring
-                keyring_impl = GnomeKeyring()
+                keyring_impl = backend.GnomeKeyring()
 
     return keyring_impl 
 
@@ -59,6 +56,7 @@ def _load_config():
     # search from current working directory and the home folder
     keyring_cfg_list = [os.path.join(os.getcwd(),".keyringrc"),
                         os.path.join(os.getenv("HOME"),".keyringrc")]
+    # initial the keyring_cfg with the fist detected config file
     keyring_cfg = None
     for path in keyring_cfg_list:
         keyring_cfg = path
@@ -97,8 +95,8 @@ def _load_config():
             keyring_class = keyring_name.split('.')[-1].strip()
             exec  "keyring_temp = module." + keyring_class + "() " in locals(),globals()
 
-            from backend import KeyringBackend
-            if isinstance(keyring_temp,KeyringBackend):
+            import backend 
+            if isinstance(keyring_temp,backend.KeyringBackend):
                 keyring_impl = keyring_temp
             else:
                 # throw a error if the class is not a keyring
