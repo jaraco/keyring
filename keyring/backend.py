@@ -6,8 +6,7 @@ Created by Kang Zhang on 2009-07-09
 from abc import ABCMeta,abstractmethod
 
 class KeyringBackend():
-    """
-    The abstract base class of the keyring, every backend must
+    """The abstract base class of the keyring, every backend must
     implement this interface.
     """
     __metaclass__ = ABCMeta
@@ -49,9 +48,8 @@ class KDEKWallet(_ExtensionKeyring):
 
 
 class SimpleKeyring(KeyringBackend):
-    """
-    SimpleKeyring is a pure python implementation of keyring. It store the
-    password directly in the file, so it's not safe.
+    """SimpleKeyring is a pure python implementation of keyring. It 
+    store the password directly in the file, so it's not safe.
     """
     def __init__(self):
         pass

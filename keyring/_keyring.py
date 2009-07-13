@@ -3,7 +3,10 @@ _keyring.py
 
 Created by Kang Zhang on 2009-07-09
 """
+
 def set_keyring( keyring ):
+    """Set current keyring backend. 
+    """
     import backend
     global _keyring_backend
     if isinstance(keyring, backend.KeyringBackend):
@@ -11,16 +14,22 @@ def set_keyring( keyring ):
     else: raise TypeError("The keyring must be a subclass of KeyringBackend")
 
 def get_keyring():
+    """Get current keyring backend.
+    """
     return _keyring_backend
 
 def getpass(service_name, username):
+    """Get password from """
     return _keyring_backend.getpass(service_name,username)
 
 def setpass(service_name,username,password):
     return _keyring_backend.setpass(service_name,username,password)
 
 def _init_backend():
-    # select a backend according to the config file
+    """first try to load the keyring in the config file, if it has not 
+    been decleared, assign a defult keyring according to the platform.
+    """
+    #select a backend according to the config file
     keyring_impl = _load_config()
 
     # if the user dose not specify a keyring, we apply a default one
@@ -49,8 +58,10 @@ def _init_backend():
     return keyring_impl 
 
 def _load_config():
+    """load a keyring using the config file, the config file can be 
+    in the current working directory, or in the user's home directory.
+    """
     import os,ConfigParser
-
     keyring_impl = None
 
     # search from current working directory and the home folder
@@ -100,12 +111,13 @@ def _load_config():
                 keyring_impl = keyring_temp
             else:
                 # throw a error if the class is not a keyring
-                raise TypeError("Keyring type error of %s" % keyring_name)
+                raise TypeError("Keyring Type Error for %s" % keyring_name)
         except ConfigParser.NoOptionError,ImportError:
             print "Keyring Config file does not write correctly.\n" + \
                   "Config file: %s" % keyring_cfg
     
     return keyring_impl
 
+# init the _keyring_backend
 _keyring_backend = _init_backend()
 

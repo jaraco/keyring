@@ -12,8 +12,7 @@ import os
 KEYRINGRC = ".keyringrc"
 
 def load_keyring_by_config():
-    """
-    This function shows how to enable a keyring using config file
+    """This function shows how to enable a keyring using config file
     """
 
     # create the config file
@@ -25,7 +24,7 @@ def load_keyring_by_config():
                   "default-keyring=simplekeyring.SimpleKeyring\n" ])
     f.close()
 
-    # import the keyring lib, the lib will automaticlly load the 
+    # import the keyring lib, the lib will automaticlly load the
     # config file and load the user defined module
     import keyring
 
@@ -37,15 +36,16 @@ def load_keyring_by_config():
     os.remove(KEYRINGRC)
 
 def set_keyring_in_runtime():
-    """
-    This function shows how to create a keyring manully and use it in runtime
+    """This function shows how to create a keyring manully and use it 
+    in runtime
     """
 
     # define a new keyring class which extends the KeyringBackend
     import keyring.backend
     class TestKeyring(keyring.backend.KeyringBackend):
         def setpass(self,servicename,username,password): return 0 
-        def getpass(self,servicename,username): return "password from TestKeyring"
+        def getpass(self,servicename,username): 
+            return "password from TestKeyring"
     
     # set the keyring for keyring lib
     import keyring
@@ -57,9 +57,8 @@ def set_keyring_in_runtime():
     print "password", keyring.getpass("demo-service","tarek")
 
 def main():
-    """
-    This script shows how to enable the keyring using the config file and
-    in runtime. 
+    """This script shows how to enable the keyring using the config 
+    file and in runtime. 
     """
 
     load_keyring_by_config()
