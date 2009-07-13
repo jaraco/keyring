@@ -47,15 +47,40 @@ class KDEKWallet(_ExtensionKeyring):
         return kde_kwallet
 
 
-class SimpleKeyring(KeyringBackend):
-    """SimpleKeyring is a pure python implementation of keyring. It 
+class FileKeyring(KeyringBackend):
+    """FileKeyring is a pure python implementation of keyring. It 
     store the password directly in the file, so it's not safe.
     """
     def __init__(self):
-        pass
+        import os
+        self.fp = os.path.join(os.getenv("HOME"),".keyring_password")
+
     def getpass(self,servicename,username):
-        return self.password
-    
+        import os,ConfigParser
+        # load the passwords from the file
+        config = ConfigParser.RawConfigParser()
+        if os.path.exists(self.fp): config.read(self.fp)
+
+        # fetch the password
+        password = None
+        try:
+            password = config.get(servicename,username)
+        except Config.NoOptionError: pass
+        return password
+
     def setpass(self,servicename,username,password):
-        self.password = password
+        import os,ConfigParser
+        # load the password from the disk
+        config = ConfigParser.RawConfigParser()
+        if os.path.exists(self.fp): config.read(self.fp)
+
+        # write the modification
+        if not config.has_section(servicename):
+            config.add_section(servicename)
+        config.set(servicename,username,password)
+        f = open(self.fp,'w')
+        config.write(f)
+        if f: f.close()
+
         return 0
+    

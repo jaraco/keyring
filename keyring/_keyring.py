@@ -36,7 +36,7 @@ def _init_backend():
     if keyring_impl is None:
         import backend
         # TODO set keyring to pure python implementation
-        keyring_impl = backend.SimpleKeyring()
+        keyring_impl = backend.FileKeyring()
 
         # select a default backend for the platform
         import sys
@@ -84,7 +84,7 @@ def _load_config():
         try:
             keyring_name = config.get("backend","default-keyring").strip()
 
-            import imp
+            import imp,sys,backend
             def find_module(name, path):
                 pl = name.split('.')
                 fp, pathname, description = imp.find_module(pl[0],path)
@@ -96,22 +96,25 @@ def _load_config():
                     sub_name = '.'.join(pl[1:])
                     sub_path = path
 
-                    try: sub_path = [module.__path__]
+                    try: sub_path = path + module.__path__
                     except AttributeError: return module
-
+                    
                     return find_module(sub_name,sub_path)
                 return module
+            
+            try:
+                module = sys.modules[keyring_name[:keyring_name.rfind('.')]]
+            except KeyError: 
+                module = find_module( keyring_name, sys.path+[keyring_path])
 
-            module = find_module( keyring_name, [keyring_path])
             keyring_class = keyring_name.split('.')[-1].strip()
-            exec  "keyring_temp = module." + keyring_class + "() " in locals(),globals()
+            exec  "keyring_temp = module." + keyring_class + "() " in locals()
 
-            import backend 
             if isinstance(keyring_temp,backend.KeyringBackend):
                 keyring_impl = keyring_temp
             else:
                 # throw a error if the class is not a keyring
-                raise TypeError("Keyring Type Error for %s" % keyring_name)
+                raise TypeError("%s must be a instance of KeyringBackend" % keyring_name)
         except ConfigParser.NoOptionError,ImportError:
             print "Keyring Config file does not write correctly.\n" + \
                   "Config file: %s" % keyring_cfg
