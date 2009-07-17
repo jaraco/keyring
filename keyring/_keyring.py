@@ -35,25 +35,12 @@ def _init_backend():
     # if the user dose not specify a keyring, we apply a default one
     if keyring_impl is None:
         import backend
-        # TODO set keyring to pure python implementation
-        keyring_impl = backend.FileKeyring()
 
-        # select a default backend for the platform
-        import sys
-        platform = sys.platform
-
-        if platform in ['darwin','mac']:
-            # for Mac OSX 
-            keyring_impl = backend.OSXKeychain()
-        else:
-            # detect KDE or Gnome
-            import os
-            if os.getenv("KDE_FULL_SESSION") == "true":
-                # KDE enviroment
-                keyring_impl = backend.KDEKWallet()
-            elif os.getenv("GNOME_DESKTOP_SESSION_ID"):
-                # Gnome enviroment
-                keyring_impl = backend.GnomeKeyring()
+        keyrings = backend.get_all_keyring()
+        # rank according the supported
+        keyrings.sort(lambda x,y: y.supported() - x.supported())
+        # get the most recommend one
+        keyring_impl = keyrings[0]
 
     return keyring_impl 
 
@@ -103,6 +90,7 @@ def _load_config():
                 return module
             
             try:
+                # avoid import the imported modules
                 module = sys.modules[keyring_name[:keyring_name.rfind('.')]]
             except KeyError: 
                 module = find_module( keyring_name, sys.path+[keyring_path])

@@ -43,6 +43,7 @@ def set_keyring_in_runtime():
     # define a new keyring class which extends the KeyringBackend
     import keyring.backend
     class TestKeyring(keyring.backend.KeyringBackend):
+        def supported(self): return 0
         def setpass(self,servicename,username,password): return 0 
         def getpass(self,servicename,username): 
             return "password from TestKeyring"

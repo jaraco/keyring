@@ -13,8 +13,12 @@ class SimpleKeyring(KeyringBackend):
     """
     def __init__(self):
         self.password = ''
+
+    def supported(self): return 0
+
     def getpass(self,servicename,username):
         return self.password
+
     def setpass(self,servicename,username,password):
         print "calling SimpleKeyring.setpass()"
         self.password = password
