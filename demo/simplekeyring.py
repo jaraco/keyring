@@ -16,11 +16,11 @@ class SimpleKeyring(KeyringBackend):
 
     def supported(self): return 0
 
-    def getpass(self,servicename,username):
+    def get_password(self, service, username):
         return self.password
 
-    def setpass(self,servicename,username,password):
-        print "calling SimpleKeyring.setpass()"
+    def set_password(self, service, username, password):
+        print "calling SimpleKeyring.set_password()"
         self.password = password
         return 0 
 

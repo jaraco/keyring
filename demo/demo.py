@@ -6,8 +6,6 @@ demo.py
 Created by Kang Zhang on 2009-06-13.
 """
 
-import sys
-import os
 import keyring
 
 
@@ -17,11 +15,10 @@ def main():
     Keychain Access and search for demo-service in your login 
     keychain.
     """
-    if keyring.setpass("demo-service","tarek","passexample") == 0:
+    if keyring.set_password("demo-service", "tarek", "passexample") == 0:
         print "password stored sucessful"
         
-    print keyring.getpass("demo-service","tarek")
-    pass
+    print keyring.get_password("demo-service", "tarek")
 
 
 if __name__ == '__main__':
