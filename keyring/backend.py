@@ -121,8 +121,9 @@ class KDEKWallet(_ExtensionKeyring):
         return os.getenv("KDE_FULL_SESSION") == "true"
 
 class BasicFileKeyring(KeyringBackend):
-    """FileKeyring is a pure python implementation of keyring. It 
-    store the password directly in the file, so it's not safe.
+    """BasicFileKeyring is a filebased implementation of keyring. It store the 
+    password directly in the file, and supports the encryption and decryption.
+    The encrypted password is stroed in base64 format.
     """
 
     def __init__(self):
@@ -131,19 +132,20 @@ class BasicFileKeyring(KeyringBackend):
     
     @abstractmethod
     def filename():
-        pass
-    @abstractmethod
-    def supported(self):
-        """Applicable for all platform, but do not recommend.
+        """Return the filename used to store the passwords.
         """
         pass
 
     @abstractmethod
     def encrypt(self,password):
+        """Encrypt the password.
+        """
         pass
 
     @abstractmethod
     def decrpyt(self,password_encrypted):
+        """Decrypt the password.
+        """
         pass
 
     def get_password(self, service, username):
@@ -167,7 +169,7 @@ class BasicFileKeyring(KeyringBackend):
         return password
 
     def set_password(self, service, username, password):
-        """Write the password in the file
+        """Write the password in the file.
         """
         import os, ConfigParser, base64
         # load the password from the disk
@@ -191,15 +193,29 @@ class BasicFileKeyring(KeyringBackend):
         return 0
 
 class UncrpytedFileKeyring(BasicFileKeyring):
+    """A simple filekeyring which dose not encrypt the password.
+    """
     def filename(self):
+        """Return the filename of the password file. It should be
+        "keyring_password.cfg" for Windows, ".keyring_password" for other
+        platforms.
+        """
+        import sys
+        if sys.platform in ['win32']:
+            return "keyring_password.cfg"
         return ".keyring_password"
+
     def encrypt(self,password):
+        """Directly return the password itself.
+        """
         return password
     def decrypt(self,password_encrypted):
+        """Directly return encrypted password.
+        """
         return password_encrypted
 
     def supported(self):
-        """Applicable for all platform, but do not recommend.
+        """Applicable for all platforms, but do not recommend.
         """
         return 0
 
@@ -207,31 +223,46 @@ class CryptedFileKeyring(BasicFileKeyring):
     pass
 
 class Win32CryptoKeyring(BasicFileKeyring):
+    """Win32CryptoKeyring is a keyring which use Windows CryptAPI to encrypt
+    the user's passwords and store them in a file.
+    """
     def __init__(self):
+        super(Win32CryptoKeyring,self).__init__()
+
         try:
             import win32_cypto
             self.crypt_handler = win32_cypto
         except ImportError: self.crypt_handler = None
 
     def filename(self):
-        return "keyring_password.cfg"
+        """Return the filename for the password storages file.
+        """
+        return "wincrypto_keyring_password.cfg"
 
     def supported(self):
+        """Recommand for all Windows is higher than Windows 2000.
         """
-        """
-        if self.crypt_handler is None:
-            return -1
-        return 1
+        import sys
+        if self.crypt_handler is not None and sys.platform in ['win32']:
+            major, minor, build, platform = sys.getwindowsversion()
+            if platform == sys.VER_PLATFORM_WIN32_NT:
+                # recommend for windows 2k+ 
+                return 1
+        return -1
 
     def encrypt(self,password):
+        """Encrypt the password using the CryptAPI.
+        """
         return self.crypt_handler.encrypt(password)
 
     def decrypt(self,password_encrypted)
+        """Decrypt the password using the CryptAPI.
+        """
         return self.crypt_handler.decrpyt(password_encrypted)
 
 
 def get_all_keyring():
     """Return the list of all keyrings in the lib
     """
-    return [ OSXKeychain(), GnomeKeyring(), KDEKWallet(), UncryptedFileKeyring() ]
+    return [ OSXKeychain(), GnomeKeyring(), KDEKWallet(), UncryptedFileKeyring(), Win32CryptoKeyring()]
 
