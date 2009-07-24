@@ -43,13 +43,11 @@ class _ExtensionKeyring(KeyringBackend):
             # keyring is not installed properly
             self.keyring_impl = None
 
-    @abstractmethod
     def _init_backend(self):
         """Return the keyring implementation handler
         """
         return None
     
-    @abstractmethod
     def _recommend(self):
         """If this keyring is recommanded on current enviroment.
         """
@@ -122,23 +120,36 @@ class KDEKWallet(_ExtensionKeyring):
         # KDE is running 
         return os.getenv("KDE_FULL_SESSION") == "true"
 
-class FileKeyring(KeyringBackend):
+class BasicFileKeyring(KeyringBackend):
     """FileKeyring is a pure python implementation of keyring. It 
     store the password directly in the file, so it's not safe.
     """
+
     def __init__(self):
         import os
-        self.file_path = os.path.join(os.getenv("HOME"),".keyring_password")
-
+        self.file_path = os.path.join(os.getenv("HOME"),self.filename())
+    
+    @abstractmethod
+    def filename():
+        pass
+    @abstractmethod
     def supported(self):
         """Applicable for all platform, but do not recommend.
         """
-        return 0 
+        pass
+
+    @abstractmethod
+    def encrypt(self,password):
+        pass
+
+    @abstractmethod
+    def decrpyt(self,password_encrypted):
+        pass
 
     def get_password(self, service, username):
         """Read the password from the file.
         """
-        import os, ConfigParser
+        import os, ConfigParser, base64
         # load the passwords from the file
         config = ConfigParser.RawConfigParser()
         if os.path.exists(self.file_path): 
@@ -146,7 +157,11 @@ class FileKeyring(KeyringBackend):
 
         # fetch the password
         try:
-            password = config.get(service, username)
+            password_base64 = config.get(service, username)
+            # decode with base64
+            password_encrypted = base64.decode(password_base64)
+            # decrypted the password
+            password = self.decrpyt(password_encrypted)
         except ConfigParser.NoOptionError: 
             password = None
         return password
@@ -154,16 +169,20 @@ class FileKeyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Write the password in the file
         """
-        import os, ConfigParser
+        import os, ConfigParser, base64
         # load the password from the disk
         config = ConfigParser.RawConfigParser()
         if os.path.exists(self.file_path): 
             config.read(self.file_path)
 
+        # encrypt the password 
+        password_encrypted = self.encrypt(password)
+        # encode with base64
+        password_base64 = base64.encode(password_encrypted)
         # write the modification
         if not config.has_section(service):
             config.add_section(service)
-        config.set(service, username, password)
+        config.set(service, username, password_base64)
         config_file = open(self.file_path,'w')
         config.write(config_file)
         if config_file: 
@@ -171,8 +190,48 @@ class FileKeyring(KeyringBackend):
 
         return 0
 
+class UncrpytedFileKeyring(BasicFileKeyring):
+    def filename(self):
+        return ".keyring_password"
+    def encrypt(self,password):
+        return password
+    def decrypt(self,password_encrypted):
+        return password_encrypted
+
+    def supported(self):
+        """Applicable for all platform, but do not recommend.
+        """
+        return 0
+
+class CryptedFileKeyring(BasicFileKeyring):
+    pass
+
+class Win32CryptoKeyring(BasicFileKeyring):
+    def __init__(self):
+        try:
+            import win32_cypto
+            self.crypt_handler = win32_cypto
+        except ImportError: self.crypt_handler = None
+
+    def filename(self):
+        return "keyring_password.cfg"
+
+    def supported(self):
+        """
+        """
+        if self.crypt_handler is None:
+            return -1
+        return 1
+
+    def encrypt(self,password):
+        return self.crypt_handler.encrypt(password)
+
+    def decrypt(self,password_encrypted)
+        return self.crypt_handler.decrpyt(password_encrypted)
+
+
 def get_all_keyring():
     """Return the list of all keyrings in the lib
     """
-    return [ OSXKeychain(), GnomeKeyring(), KDEKWallet(), FileKeyring() ]
+    return [ OSXKeychain(), GnomeKeyring(), KDEKWallet(), UncryptedFileKeyring() ]
 

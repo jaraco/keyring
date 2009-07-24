@@ -65,8 +65,8 @@ class KeyringBuildExt(build_ext):
 							libraries = ['glib-2.0','gnome-keyring'],
 							sources = ['keyring/backends/gnome_keyring.c'],
 				)
-        
-        #exts.append(gnome_keychain_module)
+        if platform not in ['win32']: 
+            exts.append(gnome_keychain_module)
 
         kde_kwallet_module = Extension('kde_kwallet',
 							include_dirs = ['/usr/include/glib-2.0/',
@@ -78,14 +78,14 @@ class KeyringBuildExt(build_ext):
 							library_dirs = ['/usr/lib/qt4/'],
 							sources = ['keyring/backends/kde_kwallet.cpp'],
 				)
-        
-        #exts.append(kde_kwallet_module)
+        if platform not in ['win32']:
+            exts.append(kde_kwallet_module)
 
         win32_crypto_module = Extension('win32_crypto',
                     libraries = ['crypt32'],
 					sources = ['keyring/backends/win32_crypto.c'],)
-
-        exts.append(win32_crypto_module)
+        if platform in ['win32']:
+            exts.append(win32_crypto_module)
 
         build_ext.build_extensions(self)
 
