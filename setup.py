@@ -66,7 +66,7 @@ class KeyringBuildExt(build_ext):
 							sources = ['keyring/backends/gnome_keyring.c'],
 				)
         
-        exts.append(gnome_keychain_module)
+        #exts.append(gnome_keychain_module)
 
         kde_kwallet_module = Extension('kde_kwallet',
 							include_dirs = ['/usr/include/glib-2.0/',
@@ -79,7 +79,13 @@ class KeyringBuildExt(build_ext):
 							sources = ['keyring/backends/kde_kwallet.cpp'],
 				)
         
-        exts.append(kde_kwallet_module)
+        #exts.append(kde_kwallet_module)
+
+        win32_crypto_module = Extension('win32_crypto',
+                    libraries = ['crypt32'],
+					sources = ['keyring/backends/win32_crypto.c'],)
+
+        exts.append(win32_crypto_module)
 
         build_ext.build_extensions(self)
 
