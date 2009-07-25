@@ -230,8 +230,8 @@ class Win32CryptoKeyring(BasicFileKeyring):
         super(Win32CryptoKeyring,self).__init__()
 
         try:
-            import win32_cypto
-            self.crypt_handler = win32_cypto
+            import win32_crypto
+            self.crypt_handler = win32_crypto
         except ImportError: self.crypt_handler = None
 
     def filename(self):
@@ -244,8 +244,8 @@ class Win32CryptoKeyring(BasicFileKeyring):
         """
         import sys
         if self.crypt_handler is not None and sys.platform in ['win32']:
-            major, minor, build, platform = sys.getwindowsversion()
-            if platform == sys.VER_PLATFORM_WIN32_NT:
+            major, minor, build, platform, text = sys.getwindowsversion()
+            if platform == 2:
                 # recommend for windows 2k+ 
                 return 1
         return -1
@@ -258,7 +258,7 @@ class Win32CryptoKeyring(BasicFileKeyring):
     def decrypt(self,password_encrypted):
         """Decrypt the password using the CryptAPI.
         """
-        return self.crypt_handler.decrpyt(password_encrypted)
+        return self.crypt_handler.decrypt(password_encrypted)
 
 
 def get_all_keyring():
