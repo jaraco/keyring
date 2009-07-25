@@ -143,7 +143,7 @@ class BasicFileKeyring(KeyringBackend):
         pass
 
     @abstractmethod
-    def decrpyt(self,password_encrypted):
+    def decrypt(self,password_encrypted):
         """Decrypt the password.
         """
         pass
@@ -161,9 +161,9 @@ class BasicFileKeyring(KeyringBackend):
         try:
             password_base64 = config.get(service, username)
             # decode with base64
-            password_encrypted = base64.decode(password_base64)
+            password_encrypted = base64.b64decode(password_base64)
             # decrypted the password
-            password = self.decrpyt(password_encrypted)
+            password = self.decrypt(password_encrypted)
         except ConfigParser.NoOptionError: 
             password = None
         return password
@@ -180,7 +180,7 @@ class BasicFileKeyring(KeyringBackend):
         # encrypt the password 
         password_encrypted = self.encrypt(password)
         # encode with base64
-        password_base64 = base64.encode(password_encrypted)
+        password_base64 = base64.b64encode(password_encrypted)
         # write the modification
         if not config.has_section(service):
             config.add_section(service)
@@ -255,7 +255,7 @@ class Win32CryptoKeyring(BasicFileKeyring):
         """
         return self.crypt_handler.encrypt(password)
 
-    def decrypt(self,password_encrypted)
+    def decrypt(self,password_encrypted):
         """Decrypt the password using the CryptAPI.
         """
         return self.crypt_handler.decrpyt(password_encrypted)
@@ -264,5 +264,5 @@ class Win32CryptoKeyring(BasicFileKeyring):
 def get_all_keyring():
     """Return the list of all keyrings in the lib
     """
-    return [ OSXKeychain(), GnomeKeyring(), KDEKWallet(), UncryptedFileKeyring(), Win32CryptoKeyring()]
+    return [ OSXKeychain(), GnomeKeyring(), KDEKWallet(), UncrpytedFileKeyring(), Win32CryptoKeyring()]
 
