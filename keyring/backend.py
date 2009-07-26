@@ -128,22 +128,22 @@ class BasicFileKeyring(KeyringBackend):
 
     def __init__(self):
         import os
-        self.file_path = os.path.join(os.getenv("HOME"),self.filename())
+        self.file_path = os.path.join(os.getenv("HOME"), self.filename())
     
     @abstractmethod
-    def filename():
+    def filename(self):
         """Return the filename used to store the passwords.
         """
         pass
 
     @abstractmethod
-    def encrypt(self,password):
+    def encrypt(self, password):
         """Encrypt the password.
         """
         pass
 
     @abstractmethod
-    def decrypt(self,password_encrypted):
+    def decrypt(self, password_encrypted):
         """Decrypt the password.
         """
         pass
@@ -205,11 +205,11 @@ class UncrpytedFileKeyring(BasicFileKeyring):
             return "keyring_password.cfg"
         return ".keyring_password"
 
-    def encrypt(self,password):
+    def encrypt(self, password):
         """Directly return the password itself.
         """
         return password
-    def decrypt(self,password_encrypted):
+    def decrypt(self, password_encrypted):
         """Directly return encrypted password.
         """
         return password_encrypted
@@ -220,14 +220,142 @@ class UncrpytedFileKeyring(BasicFileKeyring):
         return 0
 
 class CryptedFileKeyring(BasicFileKeyring):
-    pass
+    """CryptedFileKeyring is a keyring using lib pycryto to encrypt the password
+    """
+    KEYRING_SETTING = 'keyring-setting'
+    CRYPTED_PASSWORD = 'crypted-password'
+    BLOCK_SIZE = 32
+    PADDING = '0'
+
+    def __init__(self):
+        super(CryptedFileKeyring, self).__init__()
+
+        self.crypted_password = None
+        
+    def filename(self):
+        """Return the filename for the password file.
+        """
+        import sys
+        if sys.platform in ['win32']:
+            return "crypted_keyring_password.cfg"
+        return ".crypted_keyring_password"
+
+    def supported(self):
+        """Applicable for all platforms, but not recommend"
+        """
+        try:
+            from Crypto.Cipher import AES
+            status = 0
+        except ImportError:
+            status = -1
+        return status
+
+    def _init_file(self):
+        """Init the password file, set the password for it.
+        """
+        import sys, crypt, getpass, ConfigParser
+
+        print "Please set a password for you new keyring"
+        password = None
+        while 1:
+            if not password:
+                password = getpass.getpass()
+                password2 = getpass.getpass('Password (again): ')
+                if password != password2:
+                    sys.stderr.write("Error: Your passwords didn't math\n")
+                    password = None
+                    continue
+            if '' == password.strip():
+                # forbid the blank password
+                sys.stderr.write("Error: blank passwords aren't allowed.\n")
+                password = None
+                continue
+            if len(password) > CryptedFileKeyring.BLOCK_SIZE:
+                # block size of AES is less than 32
+                sys.stderr.write("Error: password can't be longer than 32.\n")
+                password = None
+                continue
+            break
+        
+        # hash the password
+        self.crypted_password = crypt.crypt(password, password)
+
+        # write down the initialization
+        config = ConfigParser.RawConfigParser()
+        config.add_section(CryptedFileKeyring.KEYRING_SETTING)
+        config.set(CryptedFileKeyring.KEYRING_SETTING,
+                    CryptedFileKeyring.CRYPTED_PASSWORD, self.crypted_password)
+        
+        config_file = open(self.file_path,'w')
+        config.write(config_file)
+
+        if config_file:
+            config_file.close()
+
+    def _check_file(self):
+        """Check if the password file has been init properly.
+        """
+        import os, ConfigParser
+        if os.path.exists(self.file_path):
+            config = ConfigParser.RawConfigParser()
+            config.read(self.file_path)
+            try:
+                self.crypted_password = config.get(
+                                CryptedFileKeyring.KEYRING_SETTING,
+                                CryptedFileKeyring.CRYPTED_PASSWORD)
+                return self.crypted_password.strip() != ''
+            except NoOptionError:
+                pass
+        return False
+
+    def _auth(self, password):
+        """Return if the password can open the keyring.
+        """
+        import crypt
+        return crypt.crypt(password, password) == self.crypted_password
+
+    def _init_crypter(self):
+        """Init the crypter(using the password of the keyring).
+        """
+        # check the password file
+        if not self._check_file():
+            self._init_file()
+
+        import getpass
+        print "Please input your password for the keyring"
+        password = getpass.getpass()
+
+        if not self._auth(password):
+            sys.stderr.write("Wrong password for the keyring.\n")
+            raise ValueError("Wrong password")
+        
+        # init the cipher with the password
+        from Crypto.Cipher import AES
+        # pad to 32 bytes
+        block_size = CryptedFileKeyring.BLOCK_SIZE
+        password = password + (block_size - len(password) % block_size) * \
+                                                    CryptedFileKeyring.PADDING
+        return AES.new(password, AES.MODE_CFB)
+        
+    def encrypt(self, password):
+        """Encrypt the given password using the pycryto.
+        """
+        crypter = self._init_crypter()
+        return crypter.encrypt(password)
+
+    def decrypt(self, password_encrypted):
+        """Decrypt the given password using the pycryto.
+        """
+        crypter = self._init_crypter()
+        return crypter.decrypt(password_encrypted)
+
 
 class Win32CryptoKeyring(BasicFileKeyring):
     """Win32CryptoKeyring is a keyring which use Windows CryptAPI to encrypt
     the user's passwords and store them in a file.
     """
     def __init__(self):
-        super(Win32CryptoKeyring,self).__init__()
+        super(Win32CryptoKeyring, self).__init__()
 
         try:
             import win32_crypto
@@ -240,7 +368,7 @@ class Win32CryptoKeyring(BasicFileKeyring):
         return "wincrypto_keyring_password.cfg"
 
     def supported(self):
-        """Recommand for all Windows is higher than Windows 2000.
+        """Recommend for all Windows is higher than Windows 2000.
         """
         import sys
         if self.crypt_handler is not None and sys.platform in ['win32']:
@@ -250,19 +378,26 @@ class Win32CryptoKeyring(BasicFileKeyring):
                 return 1
         return -1
 
-    def encrypt(self,password):
+    def encrypt(self, password):
         """Encrypt the password using the CryptAPI.
         """
         return self.crypt_handler.encrypt(password)
 
-    def decrypt(self,password_encrypted):
+    def decrypt(self, password_encrypted):
         """Decrypt the password using the CryptAPI.
         """
         return self.crypt_handler.decrypt(password_encrypted)
 
 
+_all_keyring = None
+
 def get_all_keyring():
     """Return the list of all keyrings in the lib
     """
-    return [ OSXKeychain(), GnomeKeyring(), KDEKWallet(), UncrpytedFileKeyring(), Win32CryptoKeyring()]
+    global _all_keyring
+    if _all_keyring is None:
+        _all_keyring = [ OSXKeychain(), GnomeKeyring(), KDEKWallet(), 
+                            CryptedFileKeyring(), UncrpytedFileKeyring(), 
+                            Win32CryptoKeyring()]
+    return _all_keyring
 
