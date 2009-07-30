@@ -64,25 +64,25 @@ class KeyringBuildExt(build_ext):
         if pkg_check(gnome_keyring_libs):
             # gnome-keyring installed
             gnome_keychain_module = Extension('gnome_keyring',
-							sources = ['keyring/backends/gnome_keyring.c'],
+                            sources = ['keyring/backends/gnome_keyring.c'],
                             **pkg_config(gnome_keyring_libs)
-				)
+                )
             exts.append(gnome_keychain_module)
 
         kde_kwallet_libs = ['dbus-1', 'glib-2.0', 'QtGui']
         if pkg_check(kde_kwallet_libs):
             # KDE Kwallet is installed.
             kde_kwallet_module = Extension('kde_kwallet',
-							sources = ['keyring/backends/kde_kwallet.cpp'],
+                            sources = ['keyring/backends/kde_kwallet.cpp'],
                             **pkg_config(kde_kwallet_libs)
-				)
+                )
             exts.append(kde_kwallet_module)
 
         if platform in ['win32'] and sys.getwindowsversion()[-2] == 2:
             # windows 2k+
             win32_crypto_module = Extension('win32_crypto',
                     libraries = ['crypt32'],
-					sources = ['keyring/backends/win32_crypto.c'],)
+                    sources = ['keyring/backends/win32_crypto.c'],)
             exts.append(win32_crypto_module)
 
         build_ext.build_extensions(self)
