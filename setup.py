@@ -5,94 +5,91 @@ setup.py
 
 """
 
-import sys,os
+import sys
+import os
+import commands
+import re
 
 from distutils.core import setup, Extension
 from distutils.command.build_ext import build_ext
 
-def find_library_file(compiler, libname, std_dirs, paths):
-    result = compiler.find_library_file(std_dirs + paths, libname)
-    if result is None:
-        return None
+def pkg_check(packages):
+    """Return false if not all packages has been installed properly.
+    """
+    status, output = commands.getstatusoutput("pkg-config --exists %s" % 
+                                                    ' '.join(packages))
+    return len(output) == 0 and status == 0 
 
-    # Check whether the found file is in one of the standard directories
-    dirname = os.path.dirname(result)
-    for p in std_dirs:
-        # Ensure path doesn't end with path separator
-        p = p.rstrip(os.sep)
-        if p == dirname:
-            return [ ]
+def pkg_config(packages):
+    """Return the config parameters for all packages
+    """
+    keywords = {}
+    flag_map = {'-I':'include_dirs', '-L':'library_dirs', '-l':'libraries'}
 
-    # Otherwise, it must have been in one of the additional directories,
-    # so we have to figure out which one.
-    for p in paths:
-        # Ensure path doesn't end with path separator
-        p = p.rstrip(os.sep)
-        if p == dirname:
-            return [p]
-    else:
-        assert False, "Internal error: Path not found in std_dirs or paths"
+    for token in commands.getoutput("pkg-config --libs --cflags %s" % 
+                                                ' '.join(packages)).split():
+        try:
+            key = flag_map[token[:2]]
+            keywords.setdefault(key, []).append(token[2:])
+        except KeyError:
+            keywords.setdefault('extra_link_args', []).append(token)
+
+    return keywords
 
 class KeyringBuildExt(build_ext):
+    """Helper class to detect the enviroment and install the keyrings.
+    """
     
-    def __init__(self,dist):
-        build_ext.__init__(self,dist)
+    def __init__(self, dist):
+        build_ext.__init__(self, dist)
 
     def build_extensions(self):
+        """Collect the extensions that can be installed.
+        """
         exts = []
         self.extensions = exts
-        platform = self.get_platform()
-
-        osx_keychain_module = Extension('osx_keychain',
+        platform = sys.platform
+        
+        if platform in ['darwin', 'mac']:
+            # Mac OS X, keychain enabled
+            osx_keychain_module = Extension('osx_keychain',
                             library_dirs = ['/System/Library/Frameworks/'],
                             sources = ['keyring/backends/osx_keychain.c'],
-                            extra_link_args = ['-framework','Security','-framework',
-                                    'CoreFoundation','-framework','CoreServices'])
-
-        if platform in ['darwin','mac']:
+                            extra_link_args = ['-framework', 'Security',
+                                '-framework', 'CoreFoundation', '-framework',
+                                'CoreServices'])
             exts.append(osx_keychain_module)
 
-        lib_dirs = self.compiler.library_dirs + [
-            '/lib64','/usr/lib64',
-            '/lib','/usr/lib',
-            ]
-        inc_dirs = self.compiler.include_dirs + ['/usr/include']
-
-        gnome_keychain_module = Extension('gnome_keyring',
-							include_dirs = ['/usr/include/glib-2.0/',
-                            '/usr/lib/glib-2.0/include','/usr/include/dbus-1.0/',
-                            '/usr/lib/dbus-1.0/include/','/usr/include/gnome-keyring-1/'],
-							libraries = ['glib-2.0','gnome-keyring'],
+        gnome_keyring_libs = ['dbus-1', 'glib-2.0', 'gnome-keyring-1']
+        if pkg_check(gnome_keyring_libs):
+            # gnome-keyring installed
+            gnome_keychain_module = Extension('gnome_keyring',
 							sources = ['keyring/backends/gnome_keyring.c'],
+                            **pkg_config(gnome_keyring_libs)
 				)
-        if platform not in ['win32']: 
             exts.append(gnome_keychain_module)
 
-        kde_kwallet_module = Extension('kde_kwallet',
-							include_dirs = ['/usr/include/glib-2.0/',
-                            '/usr/lib/glib-2.0/include','/usr/include/dbus-1.0/',
-                            '/usr/lib/dbus-1.0/include/','/usr/include/qt4/','/usr/include/kde/',
-                            '/usr/include/qt4/Qt/'],
-							libraries = ['glib-2.0','QtCore','QtGui','dbus-1',
-                            'kdeinit4_kwalletd'],
-							library_dirs = ['/usr/lib/qt4/'],
+        kde_kwallet_libs = ['dbus-1', 'glib-2.0', 'QtGui']
+        if pkg_check(kde_kwallet_libs):
+            # KDE Kwallet is installed.
+            kde_kwallet_module = Extension('kde_kwallet',
 							sources = ['keyring/backends/kde_kwallet.cpp'],
+                            **pkg_config(kde_kwallet_libs)
 				)
-        if platform not in ['win32']:
             exts.append(kde_kwallet_module)
 
-        win32_crypto_module = Extension('win32_crypto',
+        if platform in ['win32'] and sys.getwindowsversion()[-2] == 2:
+            # windows 2k+
+            win32_crypto_module = Extension('win32_crypto',
                     libraries = ['crypt32'],
 					sources = ['keyring/backends/win32_crypto.c'],)
-        if platform in ['win32']:
             exts.append(win32_crypto_module)
 
         build_ext.build_extensions(self)
 
-    def get_platform(self):
-        return sys.platform
-
 def main():
+    """Setup the Keyring Lib for Python.
+    """
     setup(name='keyring',
           version = "0.01",
           url = "http://bitbucket.org/kang/python-kering-lib",
