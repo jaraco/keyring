@@ -326,6 +326,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         password = getpass.getpass()
 
         if not self._auth(password):
+            import sys
             sys.stderr.write("Wrong password for the keyring.\n")
             raise ValueError("Wrong password")
         

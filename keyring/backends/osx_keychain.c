@@ -38,13 +38,15 @@ keychain_password_set(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "sss|i", &realmstring, &username, &password,
     &non_interactive)){
         PyErr_Clear();
-        PyErr_SetString(PyExc_TypeError,"password_set() must be called as (servicename,username,passwrd)");                                               
+        PyErr_SetString(PyExc_TypeError,
+            "password_set() must be called as (servicename,username,passwrd)");                                               
         return NULL;                                                        
     }
     
     if (SecKeychainOpen("login.keychain",&keychain) != 0 ){
         PyErr_Clear();
-        PyErr_SetString(PyExc_OSError,"can't access the login.keychain, Authorization failed");                                             
+        PyErr_SetString(PyExc_OSError,
+                    "can't access the login.keychain, Authorization failed");                                             
         return NULL;                                                        
     }
     
@@ -95,16 +97,18 @@ keychain_password_get(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "ss|i", &realmstring, &username,
     &non_interactive)){
         PyErr_Clear();
-        PyErr_SetString(PyExc_TypeError,"password_get() must be called as (servicename,username)");                                                
+        PyErr_SetString(PyExc_TypeError,
+            "password_get() must be called as (servicename,username)");                                                
         return NULL;                                                        
     }
     
     if (non_interactive)
       SecKeychainSetUserInteractionAllowed(FALSE);
     
-    if (SecKeychainOpen("login.keychain",&keychain) != 0 ){
+    if (SecKeychainOpen("login.keychain", &keychain) != 0 ){
         PyErr_Clear();
-        PyErr_SetString(PyExc_OSError,"can't access the login.keychain, Authorization failed");                                             
+        PyErr_SetString(PyExc_OSError,
+                "can't access the login.keychain, Authorization failed");                                             
         return NULL;                                                        
     }
     
@@ -118,7 +122,7 @@ keychain_password_get(PyObject *self, PyObject *args)
       SecKeychainSetUserInteractionAllowed(TRUE);
     
     if (status != 0)
-      return Py_BuildValue("s","");
+      return Py_BuildValue("s", "");
     
     password = string_dump(data, length);
     SecKeychainItemFreeContent(NULL, data);
@@ -126,8 +130,8 @@ keychain_password_get(PyObject *self, PyObject *args)
 }
 
 static struct PyMethodDef keychain_methods[] ={
-    {"password_set",keychain_password_set,METH_VARARGS},
-    {"password_get",keychain_password_get,METH_VARARGS},
+    {"password_set", keychain_password_set, METH_VARARGS},
+    {"password_get", keychain_password_get, METH_VARARGS},
     {NULL,NULL} /* Sentinel */
 };
 

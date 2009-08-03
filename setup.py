@@ -72,6 +72,7 @@ class KeyringBuildExt(build_ext):
         kde_kwallet_libs = ['dbus-1', 'glib-2.0', 'QtGui']
         if pkg_check(kde_kwallet_libs):
             # KDE Kwallet is installed.
+            # TODO Need a path for kwallet link staff, found by unit test
             kde_kwallet_module = Extension('kde_kwallet',
                             sources = ['keyring/backends/kde_kwallet.cpp'],
                             **pkg_config(kde_kwallet_libs)
