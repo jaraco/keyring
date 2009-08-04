@@ -36,6 +36,16 @@ def pkg_config(packages):
 
     return keywords
 
+def kde_config(keywords):
+    """Add the compile parameter for kdelibs
+    """
+    keywords.setdefault('libraries',[]).append('kdeui')
+    libs = commands.getoutput("kde4-config --path lib").split(':')
+    if len(libs) == 0:
+        libs = commands.getoutput("kde-config --path lib").split(':')
+    keywords.setdefault('library_dirs',[]).extend(libs)
+    return keywords
+
 class KeyringBuildExt(build_ext):
     """Helper class to detect the enviroment and install the keyrings.
     """
@@ -75,7 +85,7 @@ class KeyringBuildExt(build_ext):
             # TODO Need a path for kwallet link staff, found by unit test
             kde_kwallet_module = Extension('kde_kwallet',
                             sources = ['keyring/backends/kde_kwallet.cpp'],
-                            **pkg_config(kde_kwallet_libs)
+                            **kde_config(pkg_config(kde_kwallet_libs))
                 )
             exts.append(kde_kwallet_module)
 

@@ -102,7 +102,7 @@ kde_kwallet_password_set(PyObject *self, PyObject *args)
             }
         }
     }
-    return Py_BuildValue("i", write_success != false);
+    return Py_BuildValue("i", write_success != true);
 }
 
 

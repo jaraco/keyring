@@ -36,7 +36,6 @@ class KeyringBasicFunction(unittest.TestCase):
         """Initialize the keyring lib.
         """
         from keyring import backend
-        print backend.get_all_keyring()
         self.keyrings = [ k for k in backend.get_all_keyring() \
                                             if k.supported() >= 0 ]
 
