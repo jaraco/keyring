@@ -39,6 +39,11 @@ def pkg_config(packages):
 def kde_config(keywords):
     """Add the compile parameter for kdelibs
     """
+
+    # KDE guys hate pkg-config, so we need due with it seperately. :-(
+    # See following link for more details
+    #       http://lists.kde.org/?t=109647896600005&r=1&w=2
+
     keywords.setdefault('libraries',[]).append('kdeui')
     libs = commands.getoutput("kde4-config --path lib").split(':')
     if len(libs) == 0:
@@ -82,7 +87,6 @@ class KeyringBuildExt(build_ext):
         kde_kwallet_libs = ['dbus-1', 'glib-2.0', 'QtGui']
         if pkg_check(kde_kwallet_libs):
             # KDE Kwallet is installed.
-            # TODO Need a path for kwallet link staff, found by unit test
             kde_kwallet_module = Extension('kde_kwallet',
                             sources = ['keyring/backends/kde_kwallet.cpp'],
                             **kde_config(pkg_config(kde_kwallet_libs))
