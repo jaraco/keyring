@@ -56,8 +56,8 @@ def _load_config():
     keyring_impl = None
 
     # search from current working directory and the home folder
-    keyring_cfg_list = [os.path.join(os.getcwd(),".keyringrc"),
-                        os.path.join(os.getenv("HOME"),".keyringrc")]
+    keyring_cfg_list = [os.path.join(os.getcwd(), "keyringrc.cfg"),
+                        os.path.join(os.path.expanduser("~"), "keyringrc.cfg")]
     # initial the keyring_cfg with the fist detected config file
     keyring_cfg = None
     for path in keyring_cfg_list:
@@ -70,11 +70,12 @@ def _load_config():
         config.read(keyring_cfg)
         # load the keyring-path option 
         try: 
-            keyring_path = config.get("backend","keyring-path").strip()
-        except ConfigParser.NoOptionError: keyring_path = None
+            keyring_path = config.get("backend", "keyring-path").strip()
+        except ConfigParser.NoOptionError: 
+            keyring_path = None
         # load the keyring class name, and load it
         try:
-            keyring_name = config.get("backend","default-keyring").strip()
+            keyring_name = config.get("backend", "default-keyring").strip()
 
             import imp, sys, backend
             def load_module(name, path):
@@ -82,7 +83,7 @@ def _load_config():
                 """
                 path_list = name.split('.')
                 module_file, pathname, description = imp.find_module(\
-                                                              path_list[0],path)
+                                                             path_list[0], path)
                 module = imp.load_module(path_list[0], module_file, \
                                                           pathname, description)
                 if module_file: 
@@ -95,7 +96,8 @@ def _load_config():
 
                     try: 
                         sub_path = path + module.__path__
-                    except AttributeError: return module
+                    except AttributeError: 
+                        return module
                     
                     return load_module(sub_name, sub_path)
                 return module

@@ -44,11 +44,11 @@ def kde_config(keywords):
     # See following link for more details
     #       http://lists.kde.org/?t=109647896600005&r=1&w=2
 
-    keywords.setdefault('libraries',[]).append('kdeui')
+    keywords.setdefault('libraries', []).append('kdeui')
     libs = commands.getoutput("kde4-config --path lib").split(':')
     if len(libs) == 0:
         libs = commands.getoutput("kde-config --path lib").split(':')
-    keywords.setdefault('library_dirs',[]).extend(libs)
+    keywords.setdefault('library_dirs', []).extend(libs)
     return keywords
 
 class KeyringBuildExt(build_ext):

@@ -8,7 +8,7 @@ Created by Kang Zhang on 2009-07-12
 
 import os
 
-KEYRINGRC = ".keyringrc"
+KEYRINGRC = "keyringrc.cfg"
 
 def load_keyring_by_config():
     """This function shows how to enable a keyring using config file
