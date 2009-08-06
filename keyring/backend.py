@@ -178,13 +178,13 @@ class BasicFileKeyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Write the password in the file.
         """
+        # encrypt the password 
+        password_encrypted = self.encrypt(password)
         # load the password from the disk
         config = ConfigParser.RawConfigParser()
         if os.path.exists(self.file_path): 
             config.read(self.file_path)
 
-        # encrypt the password 
-        password_encrypted = self.encrypt(password)
         # encode with base64
         password_base64 = password_encrypted.encode("base64")
         # write the modification
@@ -248,7 +248,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         """Init the password file, set the password for it.
         """
 
-        print "Please set a password for you new keyring"
+        print "Please set a password for your new keyring"
         password = None
         while 1:
             if not password:
@@ -294,7 +294,7 @@ class CryptedFileKeyring(BasicFileKeyring):
                 self.crypted_password = config.get(_KEYRING_SETTING,
                                                     _CRYPTED_PASSWORD)
                 return self.crypted_password.strip() != ''
-            except NoOptionError:
+            except ConfigParser.NoSectionError, ConfigParser.NoOptionError:
                 pass
         return False
 
@@ -319,8 +319,8 @@ class CryptedFileKeyring(BasicFileKeyring):
         
         # init the cipher with the password
         from Crypto.Cipher import AES
-        # pad to 32 bytes
-        password = password + (_BLOCK_SIZE- len(password) % _BLOCK_SIZE) * \
+        # pad to _BLOCK_SIZE bytes
+        password = password + (_BLOCK_SIZE - len(password) % _BLOCK_SIZE) * \
                                                                     _PADDING
         return AES.new(password, AES.MODE_CFB)
         
