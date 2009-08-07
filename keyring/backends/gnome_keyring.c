@@ -55,7 +55,7 @@ gnome_keyring_password_get(PyObject *self, PyObject *args)
     if (!status){
         PyErr_Clear();
         PyErr_SetString(PyExc_OSError, "Can't fech password from system");
-    return NULL;
+        return NULL;
     }
     
     return Py_BuildValue("s",password); 

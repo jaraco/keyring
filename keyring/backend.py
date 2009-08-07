@@ -203,7 +203,7 @@ class UncryptedFileKeyring(BasicFileKeyring):
     """
     def filename(self):
         """Return the filename of the password file. It should be
-        "keyring_password.cfg" .
+        "keyring_pass.cfg" .
         """
         return "keyring_pass.cfg"
 
