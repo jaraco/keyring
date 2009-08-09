@@ -30,16 +30,14 @@ keychain_password_set(PyObject *self, PyObject *args)
     const char *realmstring;
     const char *username;
     const char *password;
-    bool non_interactive = false;
     OSStatus status;
     SecKeychainRef keychain;
     SecKeychainItemRef item;
 
-    if (!PyArg_ParseTuple(args, "sss|i", &realmstring, &username, &password,
-    &non_interactive)){
+    if (!PyArg_ParseTuple(args, "sss", &realmstring, &username, &password)){
         PyErr_Clear();
         PyErr_SetString(PyExc_TypeError,
-            "password_set() must be called as (servicename,username,passwrd)");                                               
+            "password_set() must be called as (servicename,username,password)");                                               
         return NULL;                                                        
     }
     
@@ -49,9 +47,6 @@ keychain_password_set(PyObject *self, PyObject *args)
                     "can't access the login.keychain, Authorization failed");                                             
         return NULL;                                                        
     }
-    
-    if (non_interactive)
-        SecKeychainSetUserInteractionAllowed(FALSE);
     
     status = SecKeychainFindGenericPassword(keychain, strlen(realmstring),
                                             realmstring, username == NULL
@@ -75,9 +70,6 @@ keychain_password_set(PyObject *self, PyObject *args)
         CFRelease(item);
     }
     
-    if (non_interactive)
-      SecKeychainSetUserInteractionAllowed(TRUE);
-    
     return Py_BuildValue("i",(status==0));
 }
 
@@ -92,18 +84,13 @@ keychain_password_get(PyObject *self, PyObject *args)
     UInt32 length;
     SecKeychainRef keychain;
     void *data;
-    bool non_interactive = false;
     
-    if (!PyArg_ParseTuple(args, "ss|i", &realmstring, &username,
-    &non_interactive)){
+    if (!PyArg_ParseTuple(args, "ss", &realmstring, &username)){
         PyErr_Clear();
         PyErr_SetString(PyExc_TypeError,
             "password_get() must be called as (servicename,username)");                                                
         return NULL;                                                        
     }
-    
-    if (non_interactive)
-      SecKeychainSetUserInteractionAllowed(FALSE);
     
     if (SecKeychainOpen("login.keychain", &keychain) != 0 ){
         PyErr_Clear();
@@ -117,9 +104,6 @@ keychain_password_get(PyObject *self, PyObject *args)
                                               ? 0
                                               : strlen(username),
                                             username, &length, &data, NULL);
-    
-    if (non_interactive)
-      SecKeychainSetUserInteractionAllowed(TRUE);
     
     if (status != 0)
       return Py_BuildValue("s", "");

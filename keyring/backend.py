@@ -294,7 +294,7 @@ class CryptedFileKeyring(BasicFileKeyring):
                 self.crypted_password = config.get(_KEYRING_SETTING,
                                                     _CRYPTED_PASSWORD)
                 return self.crypted_password.strip() != ''
-            except ConfigParser.NoSectionError, ConfigParser.NoOptionError:
+            except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
                 pass
         return False
 
