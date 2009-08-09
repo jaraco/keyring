@@ -28,12 +28,12 @@ def set_password(service_name, username, password):
     """
     return _keyring_backend.set_password(service_name, username, password)
 
-def _init_backend():
+def init_backend():
     """first try to load the keyring in the config file, if it has not 
     been decleared, assign a defult keyring according to the platform.
     """
     #select a backend according to the config file
-    keyring_impl = _load_config()
+    keyring_impl = load_config()
 
     # if the user dose not specify a keyring, we apply a default one
     if keyring_impl is None:
@@ -45,9 +45,10 @@ def _init_backend():
         # get the most recommend one
         keyring_impl = keyrings[0]
 
-    return keyring_impl 
+    global _keyring_backend
+    _keyring_backend = keyring_impl 
 
-def _load_config():
+def load_config():
     """load a keyring using the config file, the config file can be 
     in the current working directory, or in the user's home directory.
     """
@@ -124,5 +125,5 @@ def _load_config():
     return keyring_impl
 
 # init the _keyring_backend
-_keyring_backend = _init_backend()
+init_backend()
 
