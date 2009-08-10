@@ -14,16 +14,14 @@ gnome_keyring_password_get(PyObject *self, PyObject *args)
     const char *realmstring;
     const char *username;
     const char *password;
-    int non_interactive = 0;
 
-    if (!PyArg_ParseTuple(args, "ss|i", &realmstring, &username, 
-            &non_interactive)){
+    if (!PyArg_ParseTuple(args, "ss", &realmstring, &username)){
         PyErr_Clear();
         PyErr_SetString(PyExc_TypeError, 
                 "password_get() must be called as (servicename,username)");
         return NULL;
     }
-    if (non_interactive || (! dbus_bus_get(DBUS_BUS_SESSION,NULL)) || 
+    if ((! dbus_bus_get(DBUS_BUS_SESSION,NULL)) || 
             (!gnome_keyring_is_available())){
         PyErr_Clear();
         PyErr_SetString(PyExc_OSError, "Can's access the keyring now");
@@ -66,16 +64,14 @@ gnome_keyring_password_set(PyObject *self, PyObject *args)
     const char *realmstring;
     const char *username;
     const char *password;
-    int  non_interactive = 0;
 
-    if (!PyArg_ParseTuple(args, "sss|i", &realmstring, &username, &password, 
-            &non_interactive)){
+    if (!PyArg_ParseTuple(args, "sss", &realmstring, &username, &password)){
         PyErr_Clear();
         PyErr_SetString(PyExc_TypeError,
             "password_set() must be called as (servicename,username,password)");
         return NULL;
     }
-    if (non_interactive || (! dbus_bus_get(DBUS_BUS_SESSION,NULL)) || 
+    if ((! dbus_bus_get(DBUS_BUS_SESSION,NULL)) || 
             (!gnome_keyring_is_available())){
         PyErr_Clear();
         PyErr_SetString(PyExc_OSError,
