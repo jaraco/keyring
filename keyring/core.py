@@ -45,8 +45,7 @@ def init_backend():
         # get the most recommend one
         keyring_impl = keyrings[0]
 
-    global _keyring_backend
-    _keyring_backend = keyring_impl 
+    set_keyring(keyring_impl)
 
 def load_config():
     """load a keyring using the config file, the config file can be 
@@ -111,13 +110,8 @@ def load_config():
 
             keyring_class = keyring_name.split('.')[-1].strip()
             exec  "keyring_temp = module." + keyring_class + "() " in locals()
-
-            if isinstance(keyring_temp, backend.KeyringBackend):
-                keyring_impl = keyring_temp
-            else:
-                # throw a error if the class is not a keyring
-                raise TypeError("%s is not instance of KeyringBackend" % \
-                                                                keyring_name)
+            
+            set_keyring(keyring_temp)
         except (ConfigParser.NoOptionError, ImportError):
             print "Keyring Config file does not write correctly.\n" + \
                   "Config file: %s" % keyring_cfg
