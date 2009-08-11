@@ -3,27 +3,6 @@
 #include "Python.h"
 #include "keyring_util.h"
 
-/*
- * Comments from Subversion's macos_keychain.c
- * XXX (2005-12-07): If no GUI is available (e.g. over a SSH session),
- * you won't be prompted for credentials with which to unlock your
- * keychain.  Apple recognizes lack of TTY prompting as a known
- * problem.
- *
- *
- * XXX (2005-12-07): SecKeychainSetUserInteractionAllowed(FALSE) does
- * not appear to actually prevent all user interaction.  Specifically,
- * if the executable changes (for example, if it is rebuilt), the
- * system prompts the user to okay the use of the new executable.
- *
- * Worse than that, the interactivity setting is global per app (not
- * process/thread), meaning that there is a race condition in the
- * implementation below between calls to
- * SecKeychainSetUserInteractionAllowed() when multiple instances of
- * the same Subversion auth provider-based app run concurrently.
- */
-
-
 static PyObject *
 keychain_password_set(PyObject *self, PyObject *args)
 {
@@ -53,10 +32,9 @@ keychain_password_set(PyObject *self, PyObject *args)
                                               ? 0
                                               : strlen(username),
                                             username, 0, NULL, &item);
-
     if (status){
         if (status == errSecItemNotFound)
-          status = SecKeychainAddGenericPassword(keychain, strlen(realmstring),
+            status = SecKeychainAddGenericPassword(keychain, strlen(realmstring),
                                                  realmstring, username == NULL
                                                    ? 0
                                                    : strlen(username),
@@ -69,8 +47,14 @@ keychain_password_set(PyObject *self, PyObject *args)
                                                         password);
         CFRelease(item);
     }
+
+    if (status != 0){ // error occurs 
+        PyErr_Clear();
+        PyErr_SetString(PyExc_OSError, "Can't store password in Keychain");
+        return NULL;
+    }
     
-    return Py_BuildValue("i",(status==0));
+    return Py_BuildValue("i",(status != 0));
 }
 
 
@@ -104,9 +88,12 @@ keychain_password_get(PyObject *self, PyObject *args)
                                               ? 0
                                               : strlen(username),
                                             username, &length, &data, NULL);
-    
-    if (status != 0)
-      return Py_BuildValue("s", "");
+
+    if (status != 0){
+        PyErr_Clear();
+        PyErr_SetString(PyExc_OSError, "Can't fetch password from system");
+        return NULL;
+    }
     
     password = string_dump(data, length);
     SecKeychainItemFreeContent(NULL, data);
