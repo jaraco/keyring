@@ -53,9 +53,16 @@ class BackendBasicTestCase(unittest.TestCase):
         if self.supported() == -1: # skip the unsupported keyring
             return
 
+        # for the non-exsit password
+        self.assertEqual(keyring.get_password(service, username), None) 
+        
+        # common usage
         self.assertEqual(keyring.set_password(service, username, password), 0)
-
         self.assertEqual(keyring.get_password(service, username), password)
+
+        # for the empty password
+        self.assertEqual(keyring.set_password(service, username, ""), 0)
+        self.assertEqual(keyring.get_password(service, username), "")
     
     def supported(self):
         """Return the correct value for supported.

@@ -43,6 +43,8 @@ gnome_keyring_password_get(PyObject *self, PyObject *args)
                 size_t len = strlen(item->password);
                 if (len > 0){
                     password = string_dump(item->password, len);
+                }else{
+                    password = NULL;
                 }
                 status = 1;
             }

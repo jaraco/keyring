@@ -171,7 +171,7 @@ class BasicFileKeyring(KeyringBackend):
             password_encrypted = password_base64.decode("base64")
             # decrypted the password
             password = self.decrypt(password_encrypted)
-        except ConfigParser.NoOptionError: 
+        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError): 
             password = None
         return password
 

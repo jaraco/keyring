@@ -89,14 +89,18 @@ keychain_password_get(PyObject *self, PyObject *args)
                                               : strlen(username),
                                             username, &length, &data, NULL);
 
-    if (status != 0){
+    if (status == 0){
+        password = string_dump(data, length);
+        SecKeychainItemFreeContent(NULL, data);
+    }else if (status == errSecItemNotFound){
+        password = NULL;
+    }
+    else{ // error occurs
         PyErr_Clear();
         PyErr_SetString(PyExc_OSError, "Can't fetch password from system");
         return NULL;
     }
     
-    password = string_dump(data, length);
-    SecKeychainItemFreeContent(NULL, data);
     return Py_BuildValue("s",password);
 }
 

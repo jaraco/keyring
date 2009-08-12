@@ -14,13 +14,13 @@ class SimpleKeyring(KeyringBackend):
     def __init__(self):
         self.password = ''
 
-    def supported(self): return 0
+    def supported(self): 
+        return 0
 
     def get_password(self, service, username):
         return self.password
 
     def set_password(self, service, username, password):
-        print "calling SimpleKeyring.set_password()"
         self.password = password
         return 0 
 
