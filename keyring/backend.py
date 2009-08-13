@@ -96,7 +96,7 @@ class OSXKeychain(_ExtensionKeyring):
     def _recommend(self):
         """Recommend for all OSX enviroment.
         """
-        return sys.platform in ['darwin', 'mac'] 
+        return sys.platform == 'darwin' 
 
 class GnomeKeyring(_ExtensionKeyring):
     """The keyring backend using Gnome Keyring.
@@ -193,8 +193,6 @@ class BasicFileKeyring(KeyringBackend):
         config.set(service, username, password_base64)
         config_file = open(self.file_path,'w')
         config.write(config_file)
-        if config_file: 
-            config_file.close()
 
         return 0
 
@@ -211,6 +209,7 @@ class UncryptedFileKeyring(BasicFileKeyring):
         """Directly return the password itself.
         """
         return password
+
     def decrypt(self, password_encrypted):
         """Directly return encrypted password.
         """
@@ -226,7 +225,6 @@ class CryptedFileKeyring(BasicFileKeyring):
     """
     def __init__(self):
         super(CryptedFileKeyring, self).__init__()
-
         self.crypted_password = None
         
     def filename(self):
@@ -358,7 +356,7 @@ class Win32CryptoKeyring(BasicFileKeyring):
     def supported(self):
         """Recommend for all Windows is higher than Windows 2000.
         """
-        if self.crypt_handler is not None and sys.platform in ['win32']:
+        if self.crypt_handler is not None and sys.platform == 'win32':
             major, minor, build, platform, text = sys.getwindowsversion()
             if platform == 2:
                 # recommend for windows 2k+ 

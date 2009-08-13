@@ -3,11 +3,15 @@ core.py
 
 Created by Kang Zhang on 2009-07-09
 """
+import os
+import ConfigParser
+import imp 
+import sys
+import backend
 
-def set_keyring( keyring ):
+def set_keyring(keyring):
     """Set current keyring backend. 
     """
-    import backend
     global _keyring_backend
     if isinstance(keyring, backend.KeyringBackend):
         _keyring_backend = keyring
@@ -37,7 +41,6 @@ def init_backend():
 
     # if the user dose not specify a keyring, we apply a default one
     if keyring_impl is None:
-        import backend
 
         keyrings = backend.get_all_keyring()
         # rank according the supported
@@ -51,8 +54,6 @@ def load_config():
     """load a keyring using the config file, the config file can be 
     in the current working directory, or in the user's home directory.
     """
-    import os
-    import ConfigParser
     keyring_impl = None
 
     # search from current working directory and the home folder
@@ -77,13 +78,12 @@ def load_config():
         try:
             keyring_name = config.get("backend", "default-keyring").strip()
 
-            import imp, sys, backend
             def load_module(name, path):
                 """Load the specified module from the disk.
                 """
                 path_list = name.split('.')
-                module_file, pathname, description = imp.find_module(\
-                                                             path_list[0], path)
+                module_info = imp.find_module(path_list[0], path)
+                module_file, pathname, description = module_info
                 module = imp.load_module(path_list[0], module_file, \
                                                           pathname, description)
                 if module_file: 
@@ -111,7 +111,7 @@ def load_config():
             keyring_class = keyring_name.split('.')[-1].strip()
             exec  "keyring_temp = module." + keyring_class + "() " in locals()
             
-            set_keyring(keyring_temp)
+            keyring_impl = keyring_temp
         except (ConfigParser.NoOptionError, ImportError):
             print "Keyring Config file does not write correctly.\n" + \
                   "Config file: %s" % keyring_cfg
