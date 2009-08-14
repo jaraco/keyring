@@ -5,7 +5,7 @@ setup.py
 
 """
 
-from distutils.core import setup
+from distutils.core import setup, Extension
 from build_ext import KeyringBuildExt
 
 """Setup the Keyring Lib for Python.
@@ -20,9 +20,10 @@ setup(name = 'keyring',
       long_description = open('README.txt').read(),
       platforms = ["Many"],
       packages = ['keyring'],
-      #Buildinfo
+      # Buildinfo
       cmdclass = { 'build_ext':KeyringBuildExt },
-      #Dummy item, to trigger the build_ext
-      ext_modules = [None]
+      # Dummy item, to trigger the build_ext
+      ext_modules = [Extension('osx_keychain',
+                                ['keyring/backends/osx_keychain.c'])]
     )
 
