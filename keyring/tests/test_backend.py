@@ -38,6 +38,9 @@ def restore(file):
 class BackendBasicTestCase(unittest.TestCase):
     """Test for the keyring's basic funtions. password_set and password_get
     """
+
+    __test__ = False
+
     def init_keyring(self):
         return None
 
@@ -75,6 +78,8 @@ class BackendBasicTestCase(unittest.TestCase):
         self.assertEqual(self.keyring.supported(), self.supported())
 
 class OSXKeychainTestCase(BackendBasicTestCase):
+    __test__ = True
+
     def init_keyring(self):
         return keyring.backend.OSXKeychain()
 
@@ -84,6 +89,8 @@ class OSXKeychainTestCase(BackendBasicTestCase):
         return -1
 
 class GnomeKeyringTestCase(BackendBasicTestCase):
+    __test__ = True
+
     def init_keyring(self):
         return keyring.backend.GnomeKeyring()
 
@@ -97,6 +104,8 @@ class GnomeKeyringTestCase(BackendBasicTestCase):
         return 0
 
 class KDEKWalletTestCase(BackendBasicTestCase):
+    __test__ = True
+
     def init_keyring(self):
         return keyring.backend.KDEKWallet()
 
@@ -110,6 +119,8 @@ class KDEKWalletTestCase(BackendBasicTestCase):
         return 0
 
 class FileKeyringTestCase(BackendBasicTestCase):
+    __test__ = False
+
     def setUp(self):
         """Backup the file before the test
         """
@@ -134,6 +145,8 @@ class FileKeyringTestCase(BackendBasicTestCase):
         self.assertEqual(password, self.keyring.decrypt(encyrpted))
 
 class UncryptedFileKeyringTestCase(FileKeyringTestCase):
+    __test__ = True
+    
     def init_keyring(self):
         return keyring.backend.UncryptedFileKeyring()
 
@@ -141,6 +154,8 @@ class UncryptedFileKeyringTestCase(FileKeyringTestCase):
         return 0
 
 class CryptedFileKeyringTestCase(FileKeyringTestCase):
+    __test__ = True
+
     def init_keyring(self):
         return keyring.backend.CryptedFileKeyring()
 
@@ -153,6 +168,8 @@ class CryptedFileKeyringTestCase(FileKeyringTestCase):
         return -1
 
 class Win32CryptoKeyringTestCase(FileKeyringTestCase):
+    __test__ = True
+
     def init_keyring(self):
         return keyring.backend.Win32CryptoKeyring()
 
