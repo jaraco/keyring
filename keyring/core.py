@@ -5,12 +5,12 @@ Created by Kang Zhang on 2009-07-09
 """
 import os
 import ConfigParser
-import imp 
+import imp
 import sys
 import backend
 
 def set_keyring(keyring):
-    """Set current keyring backend. 
+    """Set current keyring backend.
     """
     global _keyring_backend
     if isinstance(keyring, backend.KeyringBackend):
@@ -33,7 +33,7 @@ def set_password(service_name, username, password):
     return _keyring_backend.set_password(service_name, username, password)
 
 def init_backend():
-    """first try to load the keyring in the config file, if it has not 
+    """first try to load the keyring in the config file, if it has not
     been decleared, assign a defult keyring according to the platform.
     """
     #select a backend according to the config file
@@ -51,7 +51,7 @@ def init_backend():
     set_keyring(keyring_impl)
 
 def load_config():
-    """load a keyring using the config file, the config file can be 
+    """load a keyring using the config file, the config file can be
     in the current working directory, or in the user's home directory.
     """
     keyring_impl = None
@@ -69,10 +69,10 @@ def load_config():
     if os.path.exists(keyring_cfg):
         config = ConfigParser.RawConfigParser()
         config.read(keyring_cfg)
-        # load the keyring-path option 
-        try: 
+        # load the keyring-path option
+        try:
             keyring_path = config.get("backend", "keyring-path").strip()
-        except ConfigParser.NoOptionError: 
+        except ConfigParser.NoOptionError:
             keyring_path = None
         # load the keyring class name, and load it
         try:
@@ -86,36 +86,36 @@ def load_config():
                 module_file, pathname, description = module_info
                 module = imp.load_module(path_list[0], module_file, \
                                                           pathname, description)
-                if module_file: 
+                if module_file:
                     module_file.close()
-                #print module.__path__
+
                 if len(path_list) > 1:
                     # for the class name containing dots
                     sub_name = '.'.join(path_list[1:])
                     sub_path = path
 
-                    try: 
+                    try:
                         sub_path = path + module.__path__
-                    except AttributeError: 
+                    except AttributeError:
                         return module
-                    
+
                     return load_module(sub_name, sub_path)
                 return module
-            
+
             try:
                 # avoid import the imported modules
                 module = sys.modules[keyring_name[:keyring_name.rfind('.')]]
-            except KeyError: 
+            except KeyError:
                 module = load_module( keyring_name, sys.path+[keyring_path])
 
             keyring_class = keyring_name.split('.')[-1].strip()
             exec  "keyring_temp = module." + keyring_class + "() " in locals()
-            
+
             keyring_impl = keyring_temp
         except (ConfigParser.NoOptionError, ImportError):
-            print "Keyring Config file does not write correctly.\n" + \
-                  "Config file: %s" % keyring_cfg
-    
+            logger.warning("Keyring Config file does not write correctly.\n" + \
+                           "Config file: %s" % keyring_cfg)
+
     return keyring_impl
 
 # init the _keyring_backend

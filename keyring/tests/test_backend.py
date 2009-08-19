@@ -149,7 +149,8 @@ class CryptedFileKeyringTestCase(FileKeyringTestCase):
             from Crypto.Cipher import AES
             return 0
         except ImportError:
-            return -1
+            pass
+        return -1
 
 class Win32CryptoKeyringTestCase(FileKeyringTestCase):
     def init_keyring(self):

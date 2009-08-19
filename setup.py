@@ -3,13 +3,12 @@
 """
 setup.py
 
+Setup the Keyring Lib for Python.
 """
 
 from distutils.core import setup, Extension
-from build_ext import KeyringBuildExt
+from extensions import get_extensions
 
-"""Setup the Keyring Lib for Python.
-"""
 setup(name = 'keyring',
       version = "0.1",
       description = "Store and access your passwords safely.",
@@ -20,10 +19,6 @@ setup(name = 'keyring',
       long_description = open('README.txt').read(),
       platforms = ["Many"],
       packages = ['keyring'],
-      # Buildinfo
-      cmdclass = { 'build_ext':KeyringBuildExt },
-      # Dummy item, to trigger the build_ext
-      ext_modules = [Extension('osx_keychain',
-                                ['keyring/backends/osx_keychain.c'])]
+      ext_modules = get_extensions()
     )
 

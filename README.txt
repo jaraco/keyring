@@ -7,6 +7,7 @@ Installing and Using Python Keyring Lib
 ---------------------------
 What is Python keyring lib?
 ---------------------------
+
 The Python keyring lib provides a easy way to access the system keyring service 
 from python. It can be used in any application that needs safe password storage.
 
@@ -26,6 +27,7 @@ Python keyring lib also provides following build-in keyrings.
 -------------------------
 Installation Instructions
 -------------------------
+
 easy_install or pip
 ===================
 
@@ -179,6 +181,7 @@ Integrate the keyring lib with your application
 
 API interface 
 =============
+
 The keyring lib has two functions: 
 
 * ``get_password(service, username)`` : Returns the password stored in keyring. 
@@ -188,6 +191,7 @@ The keyring lib has two functions:
 
 Example
 =======
+
 Here's an example of using keyring for application authorization. It can be 
 found in the demo folder of the repository. Note that the faked auth function 
 only returns true when the password equals to the username.

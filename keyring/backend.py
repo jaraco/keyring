@@ -17,7 +17,7 @@ _CRYPTED_PASSWORD = 'crypted-password'
 _BLOCK_SIZE = 32
 _PADDING = '0'
 
-class KeyringBackend():
+class KeyringBackend(object):
     """The abstract base class of the keyring, every backend must implement
     this interface.
     """
@@ -33,19 +33,19 @@ class KeyringBackend():
         return -1
 
     @abstractmethod
-    def get_password(self, service, username): 
+    def get_password(self, service, username):
         """Get password of the username for the service
         """
         pass
 
     @abstractmethod
-    def set_password(self, service, username, password): 
+    def set_password(self, service, username, password):
         """Set password for the username of the service
         """
         return -1
 
 class _ExtensionKeyring(KeyringBackend):
-    """_ExtensionKeyring is a adaptor class for the platform related keyring 
+    """_ExtensionKeyring is a adaptor class for the platform related keyring
     backends.
     """
     def __init__(self):
@@ -59,7 +59,7 @@ class _ExtensionKeyring(KeyringBackend):
         """Return the keyring implementation handler
         """
         return None
-    
+
     def _recommend(self):
         """If this keyring is recommanded on current enviroment.
         """
@@ -72,7 +72,7 @@ class _ExtensionKeyring(KeyringBackend):
             return -1
         elif self._recommend():
             return 1
-        return 0 
+        return 0
 
     def get_password(self, service, username):
         """Override the get_password() in KeyringBackend.
@@ -83,7 +83,7 @@ class _ExtensionKeyring(KeyringBackend):
         """Overide the set_password() in KeyringBackend.
         """
         return self.keyring_impl.password_set(service, username, password)
- 
+
 class OSXKeychain(_ExtensionKeyring):
     """The keyring backend based on Keychain Service of the Mac OSX
     """
@@ -96,7 +96,7 @@ class OSXKeychain(_ExtensionKeyring):
     def _recommend(self):
         """Recommend for all OSX enviroment.
         """
-        return sys.platform == 'darwin' 
+        return sys.platform == 'darwin'
 
 class GnomeKeyring(_ExtensionKeyring):
     """The keyring backend using Gnome Keyring.
@@ -110,10 +110,10 @@ class GnomeKeyring(_ExtensionKeyring):
     def _recommend(self):
         """Recommend this keyring when Gnome is running.
         """
-        # Gnome is running 
+        # Gnome is running
         return os.getenv("GNOME_DESKTOP_SESSION_ID") is not None
 
-      
+
 class KDEKWallet(_ExtensionKeyring):
     """The keyring backend based on KDE KWallet
     """
@@ -122,22 +122,24 @@ class KDEKWallet(_ExtensionKeyring):
         """
         import kde_kwallet
         return kde_kwallet
- 
+
     def _recommend(self):
         """Recommend this keyring backend when KDE is running.
         """
-        # KDE is running 
+        # KDE is running
         return os.getenv("KDE_FULL_SESSION") == "true"
 
 class BasicFileKeyring(KeyringBackend):
-    """BasicFileKeyring is a filebased implementation of keyring. It store the 
-    password directly in the file, and supports the encryption and decryption.
-    The encrypted password is stroed in base64 format.
+    """BasicFileKeyring is a filebased implementation of keyring.
+
+    It stores the password directly in the file, and supports the
+    encryption and decryption. The encrypted password is stroed in base64
+    format.
     """
 
     def __init__(self):
         self.file_path = os.path.join(os.path.expanduser("~"), self.filename())
-    
+
     @abstractmethod
     def filename(self):
         """Return the filename used to store the passwords.
@@ -161,7 +163,7 @@ class BasicFileKeyring(KeyringBackend):
         """
         # load the passwords from the file
         config = ConfigParser.RawConfigParser()
-        if os.path.exists(self.file_path): 
+        if os.path.exists(self.file_path):
             config.read(self.file_path)
 
         # fetch the password
@@ -171,18 +173,18 @@ class BasicFileKeyring(KeyringBackend):
             password_encrypted = password_base64.decode("base64")
             # decrypted the password
             password = self.decrypt(password_encrypted)
-        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError): 
+        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
             password = None
         return password
 
     def set_password(self, service, username, password):
         """Write the password in the file.
         """
-        # encrypt the password 
+        # encrypt the password
         password_encrypted = self.encrypt(password)
         # load the password from the disk
         config = ConfigParser.RawConfigParser()
-        if os.path.exists(self.file_path): 
+        if os.path.exists(self.file_path):
             config.read(self.file_path)
 
         # encode with base64
@@ -226,7 +228,7 @@ class CryptedFileKeyring(BasicFileKeyring):
     def __init__(self):
         super(CryptedFileKeyring, self).__init__()
         self.crypted_password = None
-        
+
     def filename(self):
         """Return the filename for the password file.
         """
@@ -246,7 +248,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         """Init the password file, set the password for it.
         """
 
-        print "Please set a password for your new keyring"
+        print("Please set a password for your new keyring")
         password = None
         while 1:
             if not password:
@@ -267,7 +269,7 @@ class CryptedFileKeyring(BasicFileKeyring):
                 password = None
                 continue
             break
-        
+
         # hash the password
         self.crypted_password = crypt.crypt(password, password)
 
@@ -275,7 +277,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         config = ConfigParser.RawConfigParser()
         config.add_section(_KEYRING_SETTING)
         config.set(_KEYRING_SETTING, _CRYPTED_PASSWORD, self.crypted_password)
-        
+
         config_file = open(self.file_path,'w')
         config.write(config_file)
 
@@ -314,14 +316,14 @@ class CryptedFileKeyring(BasicFileKeyring):
         if not self._auth(password):
             sys.stderr.write("Wrong password for the keyring.\n")
             raise ValueError("Wrong password")
-        
+
         # init the cipher with the password
         from Crypto.Cipher import AES
         # pad to _BLOCK_SIZE bytes
         password = password + (_BLOCK_SIZE - len(password) % _BLOCK_SIZE) * \
                                                                     _PADDING
         return AES.new(password, AES.MODE_CFB)
-        
+
     def encrypt(self, password):
         """Encrypt the given password using the pycryto.
         """
@@ -345,7 +347,7 @@ class Win32CryptoKeyring(BasicFileKeyring):
         try:
             import win32_crypto
             self.crypt_handler = win32_crypto
-        except ImportError: 
+        except ImportError:
             self.crypt_handler = None
 
     def filename(self):
@@ -359,7 +361,7 @@ class Win32CryptoKeyring(BasicFileKeyring):
         if self.crypt_handler is not None and sys.platform == 'win32':
             major, minor, build, platform, text = sys.getwindowsversion()
             if platform == 2:
-                # recommend for windows 2k+ 
+                # recommend for windows 2k+
                 return 1
         return -1
 
@@ -381,8 +383,8 @@ def get_all_keyring():
     """
     global _all_keyring
     if _all_keyring is None:
-        _all_keyring = [ OSXKeychain(), GnomeKeyring(), KDEKWallet(), 
-                            CryptedFileKeyring(), UncryptedFileKeyring(), 
+        _all_keyring = [ OSXKeychain(), GnomeKeyring(), KDEKWallet(),
+                            CryptedFileKeyring(), UncryptedFileKeyring(),
                             Win32CryptoKeyring()]
     return _all_keyring
 
