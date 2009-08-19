@@ -23,7 +23,7 @@ def random_string(k):
     result = ''
     for i in range(0, k):
         result += random.choice(ALPHABET)
-    return result 
+    return result
 
 def backup(file):
     """Backup the file as file.bak
@@ -49,13 +49,13 @@ class BackendBasicTestCase(unittest.TestCase):
         username = random_string(20)
         service = random_string(20)
         keyring = self.keyring
-            
+
         if self.supported() == -1: # skip the unsupported keyring
             return
 
         # for the non-exsit password
-        self.assertEqual(keyring.get_password(service, username), None) 
-        
+        self.assertEqual(keyring.get_password(service, username), None)
+
         # common usage
         self.assertEqual(keyring.set_password(service, username, password), 0)
         self.assertEqual(keyring.get_password(service, username), password)
@@ -63,7 +63,7 @@ class BackendBasicTestCase(unittest.TestCase):
         # for the empty password
         self.assertEqual(keyring.set_password(service, username, ""), 0)
         self.assertEqual(keyring.get_password(service, username), "")
-    
+
     def supported(self):
         """Return the correct value for supported.
         """
@@ -77,7 +77,7 @@ class BackendBasicTestCase(unittest.TestCase):
 class OSXKeychainTestCase(BackendBasicTestCase):
     def init_keyring(self):
         return keyring.backend.OSXKeychain()
-    
+
     def supported(self):
         if sys.platform in ('mac','darwin'):
             return 1
@@ -115,7 +115,7 @@ class FileKeyringTestCase(BackendBasicTestCase):
         """
         self.keyring = self.init_keyring()
 
-        self.file_path = os.path.join(os.path.expanduser("~"), 
+        self.file_path = os.path.join(os.path.expanduser("~"),
                                                        self.keyring.filename())
         backup(self.file_path)
 
@@ -132,7 +132,7 @@ class FileKeyringTestCase(BackendBasicTestCase):
         encyrpted = self.keyring.encrypt(password)
 
         self.assertEqual(password, self.keyring.decrypt(encyrpted))
-        
+
 class UncryptedFileKeyringTestCase(FileKeyringTestCase):
     def init_keyring(self):
         return keyring.backend.UncryptedFileKeyring()

@@ -12,9 +12,9 @@ from distutils.core import Extension
 def pkg_check(packages):
     """Return false if not all packages has been installed properly.
     """
-    status, output = commands.getstatusoutput("pkg-config --exists %s" % 
+    status, output = commands.getstatusoutput("pkg-config --exists %s" %
                                                     ' '.join(packages))
-    return len(output) == 0 and status == 0 
+    return len(output) == 0 and status == 0
 
 def pkg_config(packages):
     """Return the config parameters for all packages
@@ -22,7 +22,7 @@ def pkg_config(packages):
     keywords = {}
     flag_map = {'-I':'include_dirs', '-L':'library_dirs', '-l':'libraries'}
 
-    for token in commands.getoutput("pkg-config --libs --cflags %s" % 
+    for token in commands.getoutput("pkg-config --libs --cflags %s" %
                                                 ' '.join(packages)).split():
         try:
             key = flag_map[token[:2]]
@@ -52,7 +52,7 @@ def get_extensions():
     """
     exts = []
     platform = sys.platform
-    
+
     if platform in ['darwin', 'mac']:
         # Mac OS X, keychain enabled
         osx_keychain_module = Extension('osx_keychain',
