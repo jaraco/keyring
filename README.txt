@@ -4,6 +4,25 @@ Installing and Using Python Keyring Lib
 
 .. contents:: **Table of Contents**
 
+---------------------------
+What is Python keyring lib?
+---------------------------
+The Python keyring lib provides a easy way to access the system keyring service 
+from python. It can be used in any application that needs safe password storage.
+
+The keyring services supported by the Pythong keyring lib:
+
+* **OSXKeychain**: supports the Keychain service in Mac OS X.
+* **KDEKWallet**: supports the KDE's Kwallet service.
+* **GnomeKeyring**: for Gnome enviroment.
+
+Besides these native password storing services provided by operating systems.
+Python keyring lib also provides following build-in keyrings.
+
+* **Win32CryptoKeyring**: for Windows 2k+.
+* **CryptedFileKeyring**: a command line interface keyring base on PyCrpyto.
+* **UncryptedFileKeyring**: a keyring which leaves passwords directly in file. 
+
 -------------------------
 Installation Instructions
 -------------------------
