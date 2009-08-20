@@ -269,9 +269,9 @@ contributors.
 Credits
 -------
 
-The project was based on Tarek's idea in `this post`_. Kang initially carried it
-out as a `Google Summer of Code`_ project, and Tarek mentored Kang on this
-project.
+The project was based on Tarek Ziadé's idea in `this post`_. Kang Zhang 
+initially carried it out as a `Google Summer of Code`_ project, and Tarek 
+mentored Kang on this project.
 
 .. _this post: http://tarekziade.wordpress.com/2009/03/27/pycon-hallway-session-1-a-keyring-library-for-python/
 .. _Google Summer of Code: http://socghop.appspot.com/
