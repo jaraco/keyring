@@ -269,7 +269,7 @@ contributors.
 Credits
 -------
 
-The project was based on Tarek Ziadé's idea in `this post`_. Kang Zhang 
+The project was based on Tarek Ziade's idea in `this post`_. Kang Zhang 
 initially carried it out as a `Google Summer of Code`_ project, and Tarek 
 mentored Kang on this project.
 
