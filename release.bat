@@ -1,0 +1,1 @@
+c:\Python26\Python.exe setup.py register bdist_wininst upload
