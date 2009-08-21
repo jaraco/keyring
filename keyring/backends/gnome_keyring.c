@@ -41,11 +41,7 @@ gnome_keyring_password_get(PyObject *self, PyObject *args)
             item = (GnomeKeyringNetworkPasswordData *)items->data;
             if (item->password){
                 size_t len = strlen(item->password);
-                if (len > 0){
-                    password = string_dump(item->password, len);
-                }else{
-                    password = NULL;
-                }
+                password = string_dump(item->password, len);
                 status = 1;
             }
             gnome_keyring_network_password_list_free(items);

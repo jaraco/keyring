@@ -13,17 +13,15 @@ kde_kwallet_password_get(PyObject *self, PyObject *args)
     const char *realmstring;
     const char *username;
     const char *password;
-    bool non_interactive = false;
 
-    if (!PyArg_ParseTuple(args, "ss|i", &realmstring, &username, 
-            &non_interactive)){
+    if (!PyArg_ParseTuple(args, "ss", &realmstring, &username)){
         PyErr_Clear();
         PyErr_SetString(PyExc_TypeError,
                         "password_get() must be called as (service,username)");
         return NULL;
     }
 
-    if (non_interactive || (!dbus_bus_get(DBUS_BUS_SESSION,NULL))){
+    if (!dbus_bus_get(DBUS_BUS_SESSION,NULL)){
         PyErr_Clear();
         PyErr_SetString(PyExc_OSError,"can't get access to dbus");
         return NULL;
@@ -65,16 +63,14 @@ kde_kwallet_password_set(PyObject *self, PyObject *args)
     const char *realmstring;
     const char *username;
     const char *password;
-    bool non_interactive = false;
 
-    if (!PyArg_ParseTuple(args,"sss|i", &realmstring, &username, &password, 
-            &non_interactive)){
+    if (!PyArg_ParseTuple(args,"sss", &realmstring, &username, &password)){
         PyErr_Clear();
         PyErr_SetString(PyExc_TypeError,
             "password_set() must be called as (service,username,password)");
         return NULL;
     }
-    if (non_interactive || (!dbus_bus_get(DBUS_BUS_SESSION,NULL))){
+    if (!dbus_bus_get(DBUS_BUS_SESSION,NULL)){
         PyErr_Clear();
         PyErr_SetString(PyExc_OSError, "can't get access to dbus");
         return NULL;
@@ -101,6 +97,12 @@ kde_kwallet_password_set(PyObject *self, PyObject *args)
                 write_success = true;
             }
         }
+    }
+
+   if (!write_success){
+        PyErr_Clear();
+        PyErr_SetString(PyExc_OSError, "Can't write the password in the system");
+        return NULL;
     }
     return Py_BuildValue("i", write_success != true);
 }

@@ -77,7 +77,11 @@ class _ExtensionKeyring(KeyringBackend):
     def get_password(self, service, username):
         """Override the get_password() in KeyringBackend.
         """
-        return self.keyring_impl.password_get(service, username)
+        try:
+            password = self.keyring_impl.password_get(service, username)
+        except OSError:
+            password = None 
+        return password
 
     def set_password(self, service, username, password):
         """Overide the set_password() in KeyringBackend.
