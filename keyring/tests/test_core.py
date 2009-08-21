@@ -33,6 +33,13 @@ class TestKeyring2(TestKeyring):
         return PASSWORD_TEXT_2
 
 class CoreTestCase(unittest.TestCase):
+    def test_set_get_password(self):
+        """Test the basic function of the keyring.
+        """
+        self.assertEqual(keyring.core.set_password("test", "user", "passtest"),
+                                                                            0)
+        self.assertEqual(keyring.core.get_password("test", "user"), "passtest")
+        
     def test_set_keyring_in_runtime(self):
         """Test the function of set keyring in runtime.
         """
@@ -42,6 +49,7 @@ class CoreTestCase(unittest.TestCase):
                                                                              0)
         self.assertEqual(keyring.core.get_password("test", "user"),
                                                                  PASSWORD_TEXT)
+
     def test_set_keyring_in_config(self):
         """Test setting the keyring by config file.
         """
