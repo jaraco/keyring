@@ -277,4 +277,4 @@ mentored Kang on this project.
 .. _Google Summer of Code: http://socghop.appspot.com/
 
 * Kang Zhang
-* Tarek Ziadé
+* Tarek Ziade
