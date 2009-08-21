@@ -241,7 +241,6 @@ class CryptedFileKeyring(BasicFileKeyring):
         """Applicable for all platforms, but not recommend"
         """
         try:
-            import crypt
             from Crypto.Cipher import AES
             status = 0
         except ImportError:
@@ -275,6 +274,7 @@ class CryptedFileKeyring(BasicFileKeyring):
             break
 
         # hash the password
+        import crypt
         self.crypted_password = crypt.crypt(password, password)
 
         # write down the initialization
@@ -305,6 +305,7 @@ class CryptedFileKeyring(BasicFileKeyring):
     def _auth(self, password):
         """Return if the password can open the keyring.
         """
+        import crypt
         return crypt.crypt(password, password) == self.crypted_password
 
     def _init_crypter(self):
