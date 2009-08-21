@@ -6,7 +6,6 @@ Created by Kang Zhang on 2009-07-09
 
 import os
 import sys
-import crypt
 import getpass
 import ConfigParser
 
@@ -242,6 +241,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         """Applicable for all platforms, but not recommend"
         """
         try:
+            import crypt
             from Crypto.Cipher import AES
             status = 0
         except ImportError:
