@@ -6,8 +6,14 @@ setup.py
 Setup the Keyring Lib for Python.
 """
 
+import sys
 from distutils.core import setup, Extension
+
 from extensions import get_extensions
+
+if sys.version_info[:2] < (2, 6):
+    sys.exit("Python 2.6 or higher is required, %d.%d.%d found." %
+             sys.version_info[:3])
 
 setup(name = 'keyring',
       version = "0.1",
