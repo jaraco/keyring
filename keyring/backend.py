@@ -9,7 +9,16 @@ import sys
 import getpass
 import ConfigParser
 
-from abc import ABCMeta, abstractmethod
+try:
+    from abc import ABCMeta, abstractmethod
+except ImportError:
+    # to keep compatible with older Python versions.
+    class ABCMeta(type):
+        pass
+
+    def abstractmethod(funcobj):
+        return funcobj
+
 
 _KEYRING_SETTING = 'keyring-setting'
 _CRYPTED_PASSWORD = 'crypted-password'
@@ -79,7 +88,7 @@ class _ExtensionKeyring(KeyringBackend):
         try:
             password = self.keyring_impl.password_get(service, username)
         except OSError:
-            password = None 
+            password = None
         return password
 
     def set_password(self, service, username, password):

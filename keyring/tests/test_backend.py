@@ -146,7 +146,7 @@ class FileKeyringTestCase(BackendBasicTestCase):
 
 class UncryptedFileKeyringTestCase(FileKeyringTestCase):
     __test__ = True
-    
+
     def init_keyring(self):
         return keyring.backend.UncryptedFileKeyring()
 
