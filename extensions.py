@@ -4,6 +4,7 @@ build_ext.py
 Created by Kang Zhang on 2009-08-07
 """
 
+import os
 import sys
 import commands
 
@@ -32,6 +33,23 @@ def pkg_config(packages):
 
     return keywords
 
+def kde_exec(option):
+    dirs = commands.getoutput("kde4-config %s" % option).split(':')
+    if len(dirs) == 0:
+        dirs = commands.getoutput("kde-config %s" % option).split(':')
+    return dirs
+
+def kde_check(headfiles):
+    includes = kde_exec('--install include')
+    for filename in headfiles:
+        # generate all possible paths for the headfile
+        paths = [dir + filename for dir in includes]
+        # check if any file exists
+        exists = any([ os.path.exists(path) for path in paths])
+        if not exists:
+            return False
+    return True
+
 def kde_config(keywords):
     """Add the compile parameter for kdelibs
     """
@@ -41,10 +59,12 @@ def kde_config(keywords):
     #       http://lists.kde.org/?t=109647896600005&r=1&w=2
 
     keywords.setdefault('libraries', []).append('kdeui')
-    libs = commands.getoutput("kde4-config --path lib").split(':')
-    if len(libs) == 0:
-        libs = commands.getoutput("kde-config --path lib").split(':')
+
+    libs = kde_exec('--path lib')
+    includes = kde_exec('--install include')
+
     keywords.setdefault('library_dirs', []).extend(libs)
+    keywords.setdefault('include_dirs', []).extend(includes)
     return keywords
 
 def get_extensions():
@@ -73,7 +93,8 @@ def get_extensions():
         exts.append(gnome_keychain_module)
 
     kde_kwallet_libs = ['dbus-1', 'glib-2.0', 'QtGui']
-    if pkg_check(kde_kwallet_libs):
+    kde_kwallet_headfiles = ['kwallet.h']
+    if pkg_check(kde_kwallet_libs) and kde_check(kde_kwallet_headfiles):
         # KDE Kwallet is installed.
         kde_kwallet_module = Extension('kde_kwallet',
                         sources = ['keyring/backends/kde_kwallet.cpp'],
