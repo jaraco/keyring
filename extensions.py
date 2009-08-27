@@ -33,25 +33,24 @@ def pkg_config(packages):
 
     return keywords
 
-def kde_exec(option):
-    dirs = commands.getoutput("kde4-config %s" % option).split(':')
-    if len(dirs) == 0:
-        dirs = commands.getoutput("kde-config %s" % option).split(':')
-    return dirs
+def kde_exec(cmd, option):
+    """Execute the kde-config command and get the output dirs
+    """
+    return commands.getoutput("%s %s" % (cmd, option)).split(':')
 
-def kde_check(headfiles):
-    includes = kde_exec('--install include')
+def kde_check(cmd, headfiles):
+    includes = kde_exec(cmd, '--install include --expandvars')
     for filename in headfiles:
         # generate all possible paths for the headfile
         paths = [dir + filename for dir in includes]
-        # check if any file exists
+        # check if file exists on any path
         exists = any([ os.path.exists(path) for path in paths])
         if not exists:
             return False
     return True
 
-def kde_config(keywords):
-    """Add the compile parameter for kdelibs
+def kde_config(cmd, keywords):
+    """Add the compile parameters for kdelibs
     """
 
     # KDE guys hate pkg-config, so we need due with it seperately. :-(
@@ -60,8 +59,8 @@ def kde_config(keywords):
 
     keywords.setdefault('libraries', []).append('kdeui')
 
-    libs = kde_exec('--path lib')
-    includes = kde_exec('--install include')
+    libs = kde_exec(cmd, '--path lib')
+    includes = kde_exec(cmd, '--install include')
 
     keywords.setdefault('library_dirs', []).extend(libs)
     keywords.setdefault('include_dirs', []).extend(includes)
@@ -92,13 +91,20 @@ def get_extensions():
             )
         exts.append(gnome_keychain_module)
 
-    kde_kwallet_libs = ['dbus-1', 'glib-2.0', 'QtGui']
+    # check for KWallet heardfiles
     kde_kwallet_headfiles = ['kwallet.h']
-    if pkg_check(kde_kwallet_libs) and kde_check(kde_kwallet_headfiles):
+    kde_cmd = None
+    for cmd in ('kde-config','kde4-config'):
+        if kde_check(cmd, kde_kwallet_headfiles):
+            kde_cmd = cmd
+
+    # check for Kwallet related libs
+    kde_kwallet_libs = ['dbus-1', 'glib-2.0', 'QtGui']
+    if pkg_check(kde_kwallet_libs) and kde_cmd is not None:
         # KDE Kwallet is installed.
         kde_kwallet_module = Extension('kde_kwallet',
                         sources = ['keyring/backends/kde_kwallet.cpp'],
-                        **kde_config(pkg_config(kde_kwallet_libs))
+                        **kde_config(kde_cmd, pkg_config(kde_kwallet_libs))
             )
         exts.append(kde_kwallet_module)
 
