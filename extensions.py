@@ -36,13 +36,13 @@ def pkg_config(packages):
 def kde_exec(cmd, option):
     """Execute the kde-config command and get the output dirs
     """
-    return commands.getoutput("%s %s" % (cmd, option)).split(':')
+    return commands.getoutput("%s %s --expandvars" % (cmd, option)).split(':')
 
 def kde_check(cmd, headfiles):
-    includes = kde_exec(cmd, '--install include --expandvars')
+    includes = kde_exec(cmd, '--install include')
     for filename in headfiles:
         # generate all possible paths for the headfile
-        paths = [dir + filename for dir in includes]
+        paths = [os.path.join(dir, filename) for dir in includes]
         # check if file exists on any path
         exists = any([ os.path.exists(path) for path in paths])
         if not exists:
