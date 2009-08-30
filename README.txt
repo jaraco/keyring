@@ -185,7 +185,7 @@ API interface
 The keyring lib has two functions:
 
 * ``get_password(service, username)`` : Returns the password stored in keyring.
-  If the password dose not exist, it will return None.
+  If the password does not exist, it will return None.
 * ``set_password(service, username, password)`` : Store the password in the
   keyring.
 
