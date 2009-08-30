@@ -21,7 +21,7 @@ Besides these native password storing services provided by operating systems.
 Python keyring lib also provides following build-in keyrings.
 
 * **Win32CryptoKeyring**: for Windows 2k+.
-* **CryptedFileKeyring**: a command line interface keyring base on PyCrpyto.
+* **CryptedFileKeyring**: a command line interface keyring base on PyCrypto.
 * **UncryptedFileKeyring**: a keyring which leaves passwords directly in file.
 
 -------------------------
@@ -98,7 +98,7 @@ Write your own keyring backend
 
 The interface for the backend is defined by ``keyring.backend.KeyringBackend``.
 By extending this base class and implementing the three functions
-``supported()``,``get_password()`` and ``set_password()``, you can easily create
+``supported()``, ``get_password()`` and ``set_password()``, you can easily create
 your own backend for keyring lib.
 
 The usage of the three functions:
