@@ -11,11 +11,11 @@ What is Python keyring lib?
 The Python keyring lib provides a easy way to access the system keyring service
 from python. It can be used in any application that needs safe password storage.
 
-The keyring services supported by the Pythong keyring lib:
+The keyring services supported by the Python keyring lib:
 
 * **OSXKeychain**: supports the Keychain service in Mac OS X.
 * **KDEKWallet**: supports the KDE's Kwallet service.
-* **GnomeKeyring**: for Gnome enviroment.
+* **GnomeKeyring**: for Gnome environment.
 
 Besides these native password storing services provided by operating systems.
 Python keyring lib also provides following build-in keyrings.
