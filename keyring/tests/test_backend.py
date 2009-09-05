@@ -15,6 +15,8 @@ import sys
 import commands
 import keyring.backend
 
+from keyring.backend import PasswordSetError
+
 ALPHABET = string.ascii_letters + string.digits
 
 def random_string(k):
@@ -60,11 +62,11 @@ class BackendBasicTestCase(unittest.TestCase):
         self.assertEqual(keyring.get_password(service, username), None)
 
         # common usage
-        self.assertEqual(keyring.set_password(service, username, password), 0)
+        keyring.set_password(service, username, password)
         self.assertEqual(keyring.get_password(service, username), password)
 
         # for the empty password
-        self.assertEqual(keyring.set_password(service, username, ""), 0)
+        keyring.set_password(service, username, "")
         self.assertEqual(keyring.get_password(service, username), "")
 
     def supported(self):

@@ -25,6 +25,10 @@ _CRYPTED_PASSWORD = 'crypted-password'
 _BLOCK_SIZE = 32
 _PADDING = '0'
 
+class PasswordSetError(Exception):
+    """Raised when the password can't be set.
+    """
+
 class KeyringBackend(object):
     """The abstract base class of the keyring, every backend must implement
     this interface.
@@ -44,13 +48,13 @@ class KeyringBackend(object):
     def get_password(self, service, username):
         """Get password of the username for the service
         """
-        pass
+        return None
 
     @abstractmethod
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        return -1
+        raise PasswordSetError()
 
 class _ExtensionKeyring(KeyringBackend):
     """_ExtensionKeyring is a adaptor class for the platform related keyring
@@ -94,7 +98,10 @@ class _ExtensionKeyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Overide the set_password() in KeyringBackend.
         """
-        return self.keyring_impl.password_set(service, username, password)
+        try:
+            self.keyring_impl.password_set(service, username, password)
+        except OSError:
+            raise PasswordSetError()
 
 class OSXKeychain(_ExtensionKeyring):
     """The keyring backend based on Keychain Service of the Mac OSX
@@ -207,8 +214,6 @@ class BasicFileKeyring(KeyringBackend):
         config.set(service, username, password_base64)
         config_file = open(self.file_path,'w')
         config.write(config_file)
-
-        return 0
 
 class UncryptedFileKeyring(BasicFileKeyring):
     """A simple filekeyring which dose not encrypt the password.

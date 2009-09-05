@@ -19,7 +19,7 @@ def load_keyring_by_config():
     config_file.writelines(["[backend]\n",
                   # the path for the user created keyring
                   "keyring-path= %s\n" % str(os.path.abspath(__file__))[:-16],
-                  # the name of the keyring class 
+                  # the name of the keyring class
                   "default-keyring=simplekeyring.SimpleKeyring\n" ])
     config_file.close()
 
@@ -28,14 +28,17 @@ def load_keyring_by_config():
     import keyring
 
     # invoke the keyring to store and fetch the password
-    if keyring.set_password("demo-service", "tarek", "passexample") == 0:
-        print "password stored sucessful"
+    try:
+        keyring.set_password("demo-service", "tarek", "passexample")
+        print "password stored sucessfully"
+    except keyring.backend.PasswordSetError:
+        print "failed to store password"
     print "password", keyring.get_password("demo-service", "tarek")
 
     os.remove(KEYRINGRC)
 
 def set_keyring_in_runtime():
-    """This function shows how to create a keyring manully and use it 
+    """This function shows how to create a keyring manully and use it
     in runtime
     """
 
@@ -45,22 +48,25 @@ def set_keyring_in_runtime():
         """A test keyring which always outputs same password
         """
         def supported(self): return 0
-        def set_password(self, servicename, username, password): return 0 
-        def get_password(self, servicename, username): 
+        def set_password(self, servicename, username, password): return 0
+        def get_password(self, servicename, username):
             return "password from TestKeyring"
-    
+
     # set the keyring for keyring lib
     import keyring
     keyring.set_keyring(TestKeyring())
 
     # invoke the keyring lib
-    if keyring.set_password("demo-service", "tarek", "passexample") == 0:
-        print "password stored successful"
+    try:
+        keyring.set_password("demo-service", "tarek", "passexample")
+        print "password stored sucessfully"
+    except keyring.backend.PasswordSetError:
+        print "failed to store password"
     print "password", keyring.get_password("demo-service", "tarek")
 
 def main():
-    """This script shows how to enable the keyring using the config 
-    file and in runtime. 
+    """This script shows how to enable the keyring using the config
+    file and in runtime.
     """
 
     load_keyring_by_config()
