@@ -36,17 +36,15 @@ class CoreTestCase(unittest.TestCase):
     def test_set_get_password(self):
         """Test the basic function of the keyring.
         """
-        self.assertEqual(keyring.core.set_password("test", "user", "passtest"),
-                                                                            0)
+        keyring.core.set_password("test", "user", "passtest")
         self.assertEqual(keyring.core.get_password("test", "user"), "passtest")
-        
+
     def test_set_keyring_in_runtime(self):
         """Test the function of set keyring in runtime.
         """
         keyring.core.set_keyring(TestKeyring())
 
-        self.assertEqual(keyring.core.set_password("test", "user", "password"),
-                                                                             0)
+        keyring.core.set_password("test", "user", "password")
         self.assertEqual(keyring.core.get_password("test", "user"),
                                                                  PASSWORD_TEXT)
 
@@ -66,8 +64,7 @@ class CoreTestCase(unittest.TestCase):
         # config file and load the user defined module
         keyring.core.init_backend()
 
-        self.assertEqual(keyring.core.set_password("test", "user", "password"),
-                                                                             0)
+        keyring.core.set_password("test", "user", "password")
         self.assertEqual(keyring.core.get_password("test", "user"),
                                                                PASSWORD_TEXT_2)
 

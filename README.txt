@@ -170,8 +170,11 @@ Here's a code snippet from the ``keyringdemo.py``. It shows the usage of
     keyring.set_keyring(TestKeyring())
 
     # invoke the keyring lib
-    if keyring.set_password("demo-service", "tarek", "passexample") == 0:
-        print "password stored successful"
+    try:
+        keyring.set_password("demo-service", "tarek", "passexample")
+        print "password stored sucessfully"
+    except keyring.backend.PasswordError:
+        print "failed to store password"
     print "password", keyring.get_password("demo-service", "tarek")
 
 
@@ -269,8 +272,8 @@ contributors.
 Credits
 -------
 
-The project was based on Tarek Ziade's idea in `this post`_. Kang Zhang 
-initially carried it out as a `Google Summer of Code`_ project, and Tarek 
+The project was based on Tarek Ziade's idea in `this post`_. Kang Zhang
+initially carried it out as a `Google Summer of Code`_ project, and Tarek
 mentored Kang on this project.
 
 .. _this post: http://tarekziade.wordpress.com/2009/03/27/pycon-hallway-session-1-a-keyring-library-for-python/
