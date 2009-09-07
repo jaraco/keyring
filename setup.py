@@ -12,7 +12,7 @@ from distutils.core import setup, Extension
 from extensions import get_extensions
 
 setup(name = 'keyring',
-      version = "0.2",
+      version = "0.3",
       description = "Store and access your passwords safely.",
       url = "http://home.python-keyring.org/",
       keywords = "keyring Keychain GnomeKeyring Kwallet password storage",

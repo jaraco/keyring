@@ -41,9 +41,9 @@ Source installation
 
 Download the source tarball, and uncompress it, then run the install command::
 
-    $ wget http://pypi.python.org/packages/source/k/keyring/keyring-0.2.tar.gz
-    $ tar -xzvf keyring-0.2.tar.gz
-    $ cd keyring-0.2
+    $ wget http://pypi.python.org/packages/source/k/keyring/keyring-0.3.tar.gz
+    $ tar -xzvf keyring-0.3.tar.gz
+    $ cd keyring-0.3
     $ python setup.py install
 
 
