@@ -1,0 +1,13 @@
+-------
+CHANGES
+-------
+
+---
+0.2
+---
+
+* Add support for Python 2.4+
+  http://bitbucket.org/kang/python-keyring-lib/issue/2
+
+* Fix the bug in KDE Kwallet extension compiling
+  http://bitbucket.org/kang/python-keyring-lib/issue/3
