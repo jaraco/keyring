@@ -83,8 +83,8 @@ gnome_keyring_password_set(PyObject *self, PyObject *args)
 
     result = gnome_keyring_set_network_password_sync(NULL, username, realmstring,
                                      NULL, NULL, NULL, NULL, 0, password, &item_id);
-
-    return Py_BuildValue("i", (result!=GNOME_KEYRING_RESULT_OK));
+    
+    Py_RETURN_NONE;
 }
 
 

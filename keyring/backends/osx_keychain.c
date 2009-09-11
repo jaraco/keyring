@@ -53,8 +53,8 @@ keychain_password_set(PyObject *self, PyObject *args)
         PyErr_SetString(PyExc_OSError, "Can't store password in Keychain");
         return NULL;
     }
-    
-    return Py_BuildValue("i",(status != 0));
+
+    Py_RETURN_NONE;
 }
 
 

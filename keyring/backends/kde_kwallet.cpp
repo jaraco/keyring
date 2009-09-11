@@ -104,7 +104,7 @@ kde_kwallet_password_set(PyObject *self, PyObject *args)
         PyErr_SetString(PyExc_OSError, "Can't write the password in the system");
         return NULL;
     }
-    return Py_BuildValue("i", write_success != true);
+    Py_RETURN_NONE;
 }
 
 
