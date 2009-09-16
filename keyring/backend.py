@@ -104,8 +104,7 @@ class _ExtensionKeyring(KeyringBackend):
             raise PasswordSetError()
 
 class OSXKeychain(_ExtensionKeyring):
-    """The keyring backend based on Keychain Service of the Mac OSX
-    """
+    """Mac OSX Keychain"""
     def _init_backend(self):
         """Return the handler: osx_keychain
         """
@@ -118,8 +117,7 @@ class OSXKeychain(_ExtensionKeyring):
         return sys.platform == 'darwin'
 
 class GnomeKeyring(_ExtensionKeyring):
-    """The keyring backend using Gnome Keyring.
-    """
+    """Gnome Keyring"""
     def _init_backend(self):
         """Return the gnome_keyring handler.
         """
@@ -134,8 +132,7 @@ class GnomeKeyring(_ExtensionKeyring):
 
 
 class KDEKWallet(_ExtensionKeyring):
-    """The keyring backend based on KDE KWallet
-    """
+    """KDE KWallet"""
     def _init_backend(self):
         """Return the kde_kwallet handler.
         """
@@ -216,8 +213,7 @@ class BasicFileKeyring(KeyringBackend):
         config.write(config_file)
 
 class UncryptedFileKeyring(BasicFileKeyring):
-    """A simple filekeyring which dose not encrypt the password.
-    """
+    """Uncrypted File Keyring"""
     def filename(self):
         """Return the filename of the password file. It should be
         "keyring_pass.cfg" .
@@ -240,8 +236,7 @@ class UncryptedFileKeyring(BasicFileKeyring):
         return 0
 
 class CryptedFileKeyring(BasicFileKeyring):
-    """CryptedFileKeyring is a keyring using lib pycryto to encrypt the password
-    """
+    """PyCrypto File Keyring"""
     def __init__(self):
         super(CryptedFileKeyring, self).__init__()
         self.crypted_password = None
@@ -357,9 +352,7 @@ class CryptedFileKeyring(BasicFileKeyring):
 
 
 class Win32CryptoKeyring(BasicFileKeyring):
-    """Win32CryptoKeyring is a keyring which use Windows CryptAPI to encrypt
-    the user's passwords and store them in a file.
-    """
+    """Win32 Cryptography Keyring"""
     def __init__(self):
         super(Win32CryptoKeyring, self).__init__()
 
