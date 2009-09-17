@@ -30,31 +30,31 @@ def get_password(service_name, username):
 def set_password(service_name, username, password):
     """Set password for the user in the spcified service
     """
-    return _keyring_backend.set_password(service_name, username, password)
+    _keyring_backend.set_password(service_name, username, password)
 
 def init_backend():
     """first try to load the keyring in the config file, if it has not
     been decleared, assign a defult keyring according to the platform.
     """
     #select a backend according to the config file
-    keyring_impl = load_config()
+    keyring = load_config()
 
     # if the user dose not specify a keyring, we apply a default one
-    if keyring_impl is None:
+    if keyring is None:
 
         keyrings = backend.get_all_keyring()
         # rank according the supported
         keyrings.sort(lambda x, y: y.supported() - x.supported())
         # get the most recommend one
-        keyring_impl = keyrings[0]
+        keyring = keyrings[0]
 
-    set_keyring(keyring_impl)
+    set_keyring(keyring)
 
 def load_config():
     """load a keyring using the config file, the config file can be
     in the current working directory, or in the user's home directory.
     """
-    keyring_impl = None
+    keyring = None
 
     # search from current working directory and the home folder
     keyring_cfg_list = [os.path.join(os.getcwd(), "keyringrc.cfg"),
@@ -111,12 +111,12 @@ def load_config():
             keyring_class = keyring_name.split('.')[-1].strip()
             exec  "keyring_temp = module." + keyring_class + "() " in locals()
 
-            keyring_impl = keyring_temp
+            keyring = keyring_temp
         except (ConfigParser.NoOptionError, ImportError):
             logger.warning("Keyring Config file does not write correctly.\n" + \
                            "Config file: %s" % keyring_cfg)
 
-    return keyring_impl
+    return keyring
 
 # init the _keyring_backend
 init_backend()
