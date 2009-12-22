@@ -368,11 +368,17 @@ class Win32CryptoKeyring(BasicFileKeyring):
         return "wincrypto_pass.cfg"
 
     def supported(self):
-        """Recommend on Windows 2000
+        """Recommend on Windows 2000 and when win32cred module is not available
         """
         if self.crypt_handler is not None and sys.platform == 'win32':
+            # always recommend on Windows 2000
             major, minor, build, platform, text = sys.getwindowsversion()
             if (major, minor) == (5, 0):
+                return 1
+            # recommend if win32 is not available
+            try:
+                import win32cred
+            except ImportError:
                 return 1
             return 0
         return -1
