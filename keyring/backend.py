@@ -368,13 +368,13 @@ class Win32CryptoKeyring(BasicFileKeyring):
         return "wincrypto_pass.cfg"
 
     def supported(self):
-        """Recommend for all Windows is higher than Windows 2000.
+        """Do not recommend.
         """
         if self.crypt_handler is not None and sys.platform == 'win32':
             major, minor, build, platform, text = sys.getwindowsversion()
             if platform == 2:
-                # recommend for windows 2k+
-                return 1
+                # do not recommend
+                return 0
         return -1
 
     def encrypt(self, password):
@@ -386,6 +386,43 @@ class Win32CryptoKeyring(BasicFileKeyring):
         """Decrypt the password using the CryptAPI.
         """
         return self.crypt_handler.decrypt(password_encrypted)
+
+
+class WinVaultKeyring(KeyringBackend):
+    def __init__(self):
+        super(WinVaultKeyring, self).__init__()
+        try:
+            import pywintypes, win32cred
+            self.win32cred = win32cred
+            self.pywintypes = pywintypes
+        except ImportError:
+            self.win32cred = None
+    
+    def supported(self):
+        if self.win32cred is not None and sys.platform == 'win32':
+            if sys.getwindowsversion()[0:2] >= (5, 1):
+                # recommend for windows xp+
+                return 1
+        return -1
+    
+    def get_password(self, service, username):
+        try:
+            blob = self.win32cred.CredRead(Type=self.win32cred.CRED_TYPE_GENERIC, 
+                                           TargetName=service)['CredentialBlob']
+        except self.pywintypes.error, e:
+            if e[:2] == (1168, 'CredRead'):
+                return None
+            raise
+        return blob.decode("utf16")
+    
+    def set_password(self, service, username, password):
+        credential = dict(Type=self.win32cred.CRED_TYPE_GENERIC, 
+                          TargetName=service,
+                          UserName=username,
+                          CredentialBlob=unicode(password),
+                          Comment="Stored using python-keyring",
+                          Persist=self.win32cred.CRED_PERSIST_ENTERPRISE)
+        self.win32cred.CredWrite(credential, 0)
 
 
 _all_keyring = None
