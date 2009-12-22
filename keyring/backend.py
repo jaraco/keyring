@@ -368,13 +368,13 @@ class Win32CryptoKeyring(BasicFileKeyring):
         return "wincrypto_pass.cfg"
 
     def supported(self):
-        """Do not recommend.
+        """Recommend on Windows 2000
         """
         if self.crypt_handler is not None and sys.platform == 'win32':
             major, minor, build, platform, text = sys.getwindowsversion()
-            if platform == 2:
-                # do not recommend
-                return 0
+            if (major, minor) == (5, 0):
+                return 1
+            return 0
         return -1
 
     def encrypt(self, password):
@@ -400,7 +400,8 @@ class WinVaultKeyring(KeyringBackend):
     
     def supported(self):
         if self.win32cred is not None and sys.platform == 'win32':
-            if sys.getwindowsversion()[0:2] >= (5, 1):
+            major, minor, build, platform, text = sys.getwindowsversion()
+            if (major, minor) >= (5, 1):
                 # recommend for windows xp+
                 return 1
         return -1
