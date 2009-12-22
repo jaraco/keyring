@@ -3,10 +3,12 @@ test_core.py
 
 Created by Kang Zhang on 2009-08-09
 """
-
 import unittest
 import os
 import sys
+import tempfile
+import shutil
+
 import keyring.backend
 import keyring.core
 
@@ -70,6 +72,38 @@ class CoreTestCase(unittest.TestCase):
 
         os.remove(KEYRINGRC)
 
+    def test_load_config(self):
+        tempdir = tempfile.mkdtemp()
+        old_location = os.getcwd()
+        os.chdir(tempdir)
+        personal_cfg = os.path.join(os.path.expanduser("~"), "keyringrc.cfg")
+        if os.path.exists(personal_cfg):
+            os.rename(personal_cfg, personal_cfg+'.old')
+            personal_renamed = True
+        else:
+            personal_renamed = False
+
+        # loading with an empty environment
+        keyring.core.load_config()
+
+        # loading with a file that doesn't have a backend section
+        cfg = os.path.join(tempdir, "keyringrc.cfg")
+        f = open(cfg, 'w')
+        f.write('[keyring]')
+        f.close()
+        keyring.core.load_config()
+
+        # loading with a file that doesn't have a default-keyring value
+        cfg = os.path.join(tempdir, "keyringrc.cfg")
+        f = open(cfg, 'w')
+        f.write('[backend]')
+        f.close()
+        keyring.core.load_config()
+
+        os.chdir(old_location)
+        shutil.rmtree(tempdir)
+        if personal_renamed:
+            os.rename(personal_cfg+'.old', personal_cfg)
 
 def test_suite():
     suite = unittest.TestSuite()
