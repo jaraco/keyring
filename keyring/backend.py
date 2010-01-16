@@ -525,6 +525,7 @@ def get_all_keyring():
     if _all_keyring is None:
         _all_keyring = [ OSXKeychain(), GnomeKeyring(), KDEKWallet(),
                          CryptedFileKeyring(), UncryptedFileKeyring(),
-                         Win32CryptoKeyring(), Win32CryptoRegistry()]
+                         Win32CryptoKeyring(), Win32CryptoRegistry(),
+                         WinVaultKeyring()]
     return _all_keyring
 
