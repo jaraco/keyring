@@ -488,7 +488,6 @@ class Win32CryptoRegistry(KeyringBackend):
         from _winreg import HKEY_CURRENT_USER, CreateKey, SetValueEx, REG_SZ
         hkey = CreateKey(HKEY_CURRENT_USER, r'Software\%s\Keyring' % service)
         SetValueEx(hkey, username, 0, REG_SZ, password_base64)
-        return 0
 
 def select_windows_backend():
     if os.name != 'nt':
