@@ -432,6 +432,76 @@ class WinVaultKeyring(KeyringBackend):
         self.win32cred.CredWrite(credential, 0)
 
 
+class Win32CryptoRegistry(KeyringBackend):
+    """Win32CryptoRegistry is a keyring which use Windows CryptAPI to encrypt
+    the user's passwords and store them under registry keys
+    """
+    def __init__(self):
+        super(Win32CryptoRegistry, self).__init__()
+
+        try:
+            import win32_crypto
+            import _winreg
+            self.crypt_handler = win32_crypto
+        except ImportError:
+            self.crypt_handler = None
+
+    def supported(self):
+        """Return if this keyring supports current enviroment.
+        -1: not applicable
+         0: suitable
+         1: recommended
+        """
+        if self.crypt_handler is not None and os.name == 'nt':
+            major, minor, build, platform, text = sys.getwindowsversion()
+            if platform == 2:
+                # recommend for windows 2k+
+                return 2
+        return -1
+
+    def get_password(self, service, username):
+        """Get password of the username for the service
+        """
+        from _winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx
+        try:
+            # fetch the password
+            key = r'Software\%s\Keyring' % service
+            hkey = OpenKey(HKEY_CURRENT_USER, key)
+            password_base64 = QueryValueEx(hkey, username)[0]
+            # decode with base64
+            password_encrypted = password_base64.decode("base64")
+            # decrypted the password
+            password = self.decrypt(password_encrypted)
+        except EnvironmentError:
+            password = None
+        return password
+
+
+    def set_password(self, service, username, password):
+        """Write the password to the registry
+        """
+        # encrypt the password
+        password_encrypted = self.encrypt(password)
+        # encode with base64
+        password_base64 = password_encrypted.encode("base64")
+
+        # store the password
+        from _winreg import HKEY_CURRENT_USER, CreateKey, SetValueEx, REG_SZ
+        hkey = CreateKey(HKEY_CURRENT_USER, r'Software\%s\Keyring' % service)
+        SetValueEx(hkey, username, 0, REG_SZ, password_base64)
+        return 0
+
+    def encrypt(self, password):
+        """Encrypt the password using the CryptAPI.
+        """
+        return self.crypt_handler.encrypt(password)
+
+    def decrypt(self, password_encrypted):
+        """Decrypt the password using the CryptAPI.
+        """
+        return self.crypt_handler.decrypt(password_encrypted)
+
+
 _all_keyring = None
 
 def get_all_keyring():
@@ -441,6 +511,6 @@ def get_all_keyring():
     if _all_keyring is None:
         _all_keyring = [ OSXKeychain(), GnomeKeyring(), KDEKWallet(),
                          CryptedFileKeyring(), UncryptedFileKeyring(),
-                         Win32CryptoKeyring()]
+                         Win32CryptoKeyring(), Win32CryptoRegistry()]
     return _all_keyring
 

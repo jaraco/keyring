@@ -7,7 +7,9 @@ import os
 import ConfigParser
 import imp
 import sys
-import backend
+
+from keyring import logger
+from keyring import backend
 
 def set_keyring(keyring):
     """Set current keyring backend.
@@ -71,12 +73,19 @@ def load_config():
         config.read(keyring_cfg)
         # load the keyring-path option
         try:
-            keyring_path = config.get("backend", "keyring-path").strip()
+            if config.has_section("backend"):
+                keyring_path = config.get("backend", "keyring-path").strip()
+            else:
+                keyring_path = None
         except ConfigParser.NoOptionError:
             keyring_path = None
+
         # load the keyring class name, and load it
         try:
-            keyring_name = config.get("backend", "default-keyring").strip()
+            if config.has_section("backend"):
+                keyring_name = config.get("backend", "default-keyring").strip()
+            else:
+                raise ConfigParser.NoOptionError('backend', 'default-keyring')
 
             def load_module(name, path):
                 """Load the specified module from the disk.

@@ -3,6 +3,13 @@ CHANGES
 -------
 
 ---
+0.3
+---
+
+* Fixed keyring.core when the user doesn't have a cfg, or is not
+  properly configured.
+
+---
 0.2
 ---
 
