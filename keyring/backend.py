@@ -368,20 +368,15 @@ class Win32CryptoKeyring(BasicFileKeyring):
         return "wincrypto_pass.cfg"
 
     def supported(self):
-        """Recommend on Windows 2000 and when win32cred module is not available
+        """Recommend when other Windows backends are unavailable
         """
-        if self.crypt_handler is not None and sys.platform == 'win32':
-            # always recommend on Windows 2000
-            major, minor, build, platform, text = sys.getwindowsversion()
-            if (major, minor) == (5, 0):
-                return 1
-            # recommend if win32 is not available
-            try:
-                import win32cred
-            except ImportError:
-                return 1
+        recommended = select_windows_backend()
+        if recommended == None:
+            return -1
+        elif recommended == 'file':
+            return 1
+        else:
             return 0
-        return -1
 
     def encrypt(self, password):
         """Encrypt the password using the CryptAPI.
@@ -405,12 +400,15 @@ class WinVaultKeyring(KeyringBackend):
             self.win32cred = None
     
     def supported(self):
-        if self.win32cred is not None and sys.platform == 'win32':
-            major, minor, build, platform, text = sys.getwindowsversion()
-            if (major, minor) >= (5, 1):
-                # recommend for windows xp+
-                return 1
-        return -1
+        '''Default Windows backend, when it is available
+        '''
+        recommended = select_windows_backend()
+        if recommended == None:
+            return -1
+        elif recommended == 'cred':
+            return 1
+        else:
+            return 0
     
     def get_password(self, service, username):
         try:
@@ -452,12 +450,13 @@ class Win32CryptoRegistry(KeyringBackend):
          0: suitable
          1: recommended
         """
-        if self.crypt_handler is not None and os.name == 'nt':
-            major, minor, build, platform, text = sys.getwindowsversion()
-            if platform == 2:
-                # recommend for windows 2k+
-                return 2
-        return -1
+        recommended = select_windows_backend()
+        if recommended == None:
+            return -1
+        elif recommended == 'reg':
+            return 1
+        else:
+            return 0
 
     def get_password(self, service, username):
         """Get password of the username for the service
@@ -471,7 +470,7 @@ class Win32CryptoRegistry(KeyringBackend):
             # decode with base64
             password_encrypted = password_base64.decode("base64")
             # decrypted the password
-            password = self.decrypt(password_encrypted)
+            password = self.crypt_handler.decrypt(password_encrypted)
         except EnvironmentError:
             password = None
         return password
@@ -481,7 +480,7 @@ class Win32CryptoRegistry(KeyringBackend):
         """Write the password to the registry
         """
         # encrypt the password
-        password_encrypted = self.encrypt(password)
+        password_encrypted = self.crypt_handler.encrypt(password)
         # encode with base64
         password_base64 = password_encrypted.encode("base64")
 
@@ -491,15 +490,30 @@ class Win32CryptoRegistry(KeyringBackend):
         SetValueEx(hkey, username, 0, REG_SZ, password_base64)
         return 0
 
-    def encrypt(self, password):
-        """Encrypt the password using the CryptAPI.
-        """
-        return self.crypt_handler.encrypt(password)
-
-    def decrypt(self, password_encrypted):
-        """Decrypt the password using the CryptAPI.
-        """
-        return self.crypt_handler.decrypt(password_encrypted)
+def select_windows_backend():
+    if os.name != 'nt':
+        return None
+    major, minor, build, platform, text = sys.getwindowsversion()
+    try:
+        import pywintypes, win32cred
+        if (major, minor) >= (5, 1):
+            # recommend for windows xp+
+            return 'cred'
+    except ImportError:
+        pass
+    try:
+        import win32_crypto, _winreg
+        if (major, minor) >= (5, 0):
+            # recommend for windows 2k+
+            return 'reg'
+    except ImportError:
+        pass
+    try:
+        import win32_crypto
+        return 'file'
+    except ImportError:
+        pass
+    return None
 
 
 _all_keyring = None
