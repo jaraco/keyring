@@ -6,7 +6,6 @@ Created by Kang Zhang on 2009-07-09
 
 import os
 import sys
-import getpass
 import ConfigParser
 
 try:
@@ -264,6 +263,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         password = None
         while 1:
             if not password:
+                import getpass
                 password = getpass.getpass()
                 password2 = getpass.getpass('Password (again): ')
                 if password != password2:
@@ -325,6 +325,7 @@ class CryptedFileKeyring(BasicFileKeyring):
             self._init_file()
 
         print "Please input your password for the keyring"
+        import getpass
         password = getpass.getpass()
 
         if not self._auth(password):
