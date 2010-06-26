@@ -8,6 +8,8 @@ import os
 import sys
 import ConfigParser
 
+from keyring.util.escape import escape as escape_for_ini
+
 try:
     from abc import ABCMeta, abstractmethod
 except ImportError:
@@ -176,6 +178,9 @@ class BasicFileKeyring(KeyringBackend):
     def get_password(self, service, username):
         """Read the password from the file.
         """
+        service = escape_for_ini(service)
+        username = escape_for_ini(username)
+
         # load the passwords from the file
         config = ConfigParser.RawConfigParser()
         if os.path.exists(self.file_path):
@@ -195,6 +200,9 @@ class BasicFileKeyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Write the password in the file.
         """
+        service = escape_for_ini(service)
+        username = escape_for_ini(username)
+
         # encrypt the password
         password_encrypted = self.encrypt(password)
         # load the password from the disk
