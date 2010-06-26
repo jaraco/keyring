@@ -1,0 +1,3 @@
+syntax: regexp
+
+\.py[co]$
