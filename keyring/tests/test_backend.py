@@ -18,13 +18,14 @@ import keyring.backend
 from keyring.backend import PasswordSetError
 
 ALPHABET = string.ascii_letters + string.digits
+DIFFICULT_CHARS = string.whitespace + string.punctuation
 
-def random_string(k):
+def random_string(k, source = ALPHABET):
     """Generate a random string with length <i>k</i>
     """
     result = ''
     for i in range(0, k):
-        result += random.choice(ALPHABET)
+        result += random.choice(source)
     return result
 
 def backup(file):
@@ -49,10 +50,7 @@ class BackendBasicTestCase(unittest.TestCase):
     def setUp(self):
         self.keyring = self.init_keyring()
 
-    def test_password_set_get(self):
-        password = random_string(20)
-        username = random_string(20)
-        service = random_string(20)
+    def check_set_get(self, service, username, password):
         keyring = self.keyring
 
         if self.supported() == -1: # skip the unsupported keyring
@@ -69,6 +67,18 @@ class BackendBasicTestCase(unittest.TestCase):
         keyring.set_password(service, username, "")
         self.assertEqual(keyring.get_password(service, username), "")
 
+    def test_password_set_get(self):
+        password = random_string(20)
+        username = random_string(20)
+        service = random_string(20)
+        self.check_set_get(service, username, password)
+
+    def test_difficult_chars(self):
+        password = random_string(20, DIFFICULT_CHARS)
+        username = random_string(20, DIFFICULT_CHARS)
+        service = random_string(20, DIFFICULT_CHARS)
+        self.check_set_get(service, username, password)
+
     def supported(self):
         """Return the correct value for supported.
         """
@@ -83,6 +93,7 @@ class OSXKeychainTestCase(BackendBasicTestCase):
     __test__ = True
 
     def init_keyring(self):
+        print >> sys.stderr, "Testing OSXKeychain, following password prompts are for this keyring"
         return keyring.backend.OSXKeychain()
 
     def supported(self):
@@ -94,6 +105,7 @@ class GnomeKeyringTestCase(BackendBasicTestCase):
     __test__ = True
 
     def init_keyring(self):
+        print >> sys.stderr, "Testing GnomeKeyring, following password prompts are for this keyring"
         return keyring.backend.GnomeKeyring()
 
     def supported(self):
@@ -109,6 +121,7 @@ class KDEKWalletTestCase(BackendBasicTestCase):
     __test__ = True
 
     def init_keyring(self):
+        print >> sys.stderr, "Testing KDEKWallet, following password prompts are for this keyring"
         return keyring.backend.KDEKWallet()
 
     def supported(self):
@@ -150,6 +163,7 @@ class UncryptedFileKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
     def init_keyring(self):
+        print >> sys.stderr, "Testing UnecryptedFile, following password prompts are for this keyring"
         return keyring.backend.UncryptedFileKeyring()
 
     def supported(self):
@@ -159,6 +173,7 @@ class CryptedFileKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
     def init_keyring(self):
+        print >> sys.stderr, "Testing CryptedFile, following password prompts are for this keyring"
         return keyring.backend.CryptedFileKeyring()
 
     def supported(self):
@@ -173,6 +188,7 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
     def init_keyring(self):
+        print >> sys.stderr, "Testing Win32, following password prompts are for this keyring"
         return keyring.backend.Win32CryptoKeyring()
 
     def supported(self):

@@ -1,3 +1,5 @@
 syntax: regexp
 
 \.py[co]$
+^build/
+~$
