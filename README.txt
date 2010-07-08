@@ -279,5 +279,5 @@ mentored Kang on this project.
 .. _this post: http://tarekziade.wordpress.com/2009/03/27/pycon-hallway-session-1-a-keyring-library-for-python/
 .. _Google Summer of Code: http://socghop.appspot.com/
 
-* Kang Zhang
-* Tarek Ziade
+See CONTRIBUTORS.txt for a complete list of contributors.
+

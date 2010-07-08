@@ -9,6 +9,8 @@ CHANGES
 * Fixed keyring.core when the user doesn't have a cfg, or is not
   properly configured.
 
+* Fixed escaping issues for usernames with non-ascii characters
+
 ---
 0.2
 ---
