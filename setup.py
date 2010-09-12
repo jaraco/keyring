@@ -21,7 +21,8 @@ setup(name = 'keyring',
       license="PSF",
       long_description = open('README.txt').read() + open('CHANGES.txt').read(),
       platforms = ["Many"],
-      packages = ['keyring'],
+      packages = ['keyring', 'keyring.tests', 'keyring.util',
+                  'keyring.backends'],
       ext_modules = get_extensions()
     )
 

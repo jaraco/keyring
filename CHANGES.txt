@@ -3,6 +3,12 @@ CHANGES
 -------
 
 ---
+0.4
+---
+
+* Fixed the setup script (some subdirs were not included in the release.)
+
+---
 0.3
 ---
 
