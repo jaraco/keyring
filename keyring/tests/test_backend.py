@@ -109,13 +109,7 @@ class GnomeKeyringTestCase(BackendBasicTestCase):
         return keyring.backend.GnomeKeyring()
 
     def supported(self):
-        try:
-            import gnome_keyring
-        except ImportError:
-            return -1
-        if os.getenv("GNOME_DESKTOP_SESSION_ID") is not None:
-            return 1
-        return 0
+        return self.keyring.supported()
 
 class KDEKWalletTestCase(BackendBasicTestCase):
     __test__ = True
@@ -125,13 +119,7 @@ class KDEKWalletTestCase(BackendBasicTestCase):
         return keyring.backend.KDEKWallet()
 
     def supported(self):
-        try:
-            import kde_kwallet
-        except ImportError:
-            return -1
-        if os.getenv("KDE_FULL_SESSION") == "true":
-            return 1
-        return 0
+        return self.keyring.supported()
 
 class FileKeyringTestCase(BackendBasicTestCase):
     __test__ = False

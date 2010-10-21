@@ -20,6 +20,10 @@ except ImportError:
     def abstractmethod(funcobj):
         return funcobj
 
+try:
+    import gnomekeyring
+except ImportError:
+    pass
 
 _KEYRING_SETTING = 'keyring-setting'
 _CRYPTED_PASSWORD = 'crypted-password'
@@ -117,34 +121,84 @@ class OSXKeychain(_ExtensionKeyring):
         """
         return sys.platform == 'darwin'
 
-class GnomeKeyring(_ExtensionKeyring):
+class GnomeKeyring(KeyringBackend):
     """Gnome Keyring"""
-    def _init_backend(self):
-        """Return the gnome_keyring handler.
+
+    def supported(self):
+        try:
+            import gnomekeyring
+        except ImportError:
+            return -1
+        else:
+            return 1
+
+    def get_password(self, service, username):
+        """Get password of the username for the service
         """
-        import gnome_keyring
-        return gnome_keyring
+        try:
+            items = gnomekeyring.find_network_password_sync(username, service)
+        except gnomekeyring.NoMatchError:
+            return None
+        except gnomekeyring.CancelledError:
+            # The user pressed "Cancel" when prompted to unlock their keyring.
+            return None
 
-    def _recommend(self):
-        """Recommend this keyring when Gnome is running.
+        assert len(items) == 1, 'no more than one entry should ever match'
+        return items[0]['password']
+
+    def set_password(self, service, username, password):
+        """Set password for the username of the service
         """
-        # Gnome is running
-        return os.getenv("GNOME_DESKTOP_SESSION_ID") is not None
+        try:
+            gnomekeyring.set_network_password_sync(None, username, service,
+                None, None, None, None, 0, password)
+        except gnomekeyring.CancelledError:
+            # The user pressed "Cancel" when prompted to unlock their keyring.
+            raise PasswordSetError()
 
 
-class KDEKWallet(_ExtensionKeyring):
+kwallet = None
+try:
+    from PyKDE4.kdeui import KWallet
+    from PyQt4 import QtCore, QtGui
+except ImportError:
+    kwallet = None
+else:
+    # KDE wants us to instantiate an application object.
+    app = QtGui.QApplication([])
+    kwallet = KWallet.Wallet.openWallet(
+        KWallet.Wallet.NetworkWallet(), KWallet.Wallet.Synchronous)
+    if not kwallet.hasFolder('Python'):
+        kwallet.createFolder('Python')
+    kwallet.setFolder('Python')
+    app.exit()
+
+class KDEKWallet(KeyringBackend):
     """KDE KWallet"""
-    def _init_backend(self):
-        """Return the kde_kwallet handler.
-        """
-        import kde_kwallet
-        return kde_kwallet
 
-    def _recommend(self):
-        """Recommend this keyring backend when KDE is running.
+    def supported(self):
+        if kwallet is None:
+            return -1
+        else:
+            return 1
+
+    def get_password(self, service, username):
+        """Get password of the username for the service
         """
-        # KDE is running
-        return os.getenv("KDE_FULL_SESSION") == "true"
+        key = username + '@' + service
+        network = KWallet.Wallet.NetworkWallet()
+        if kwallet.keyDoesNotExist(network, 'Python', key):
+            return None
+
+        result = kwallet.readPassword(key)[1]
+        # The string will be a PyQt4.QtCore.QString, so turn it into a unicode
+        # object.
+        return unicode(result)
+
+    def set_password(self, service, username, password):
+        """Set password for the username of the service
+        """
+        kwallet.writePassword(username+'@'+service, password)
 
 class BasicFileKeyring(KeyringBackend):
     """BasicFileKeyring is a filebased implementation of keyring.
