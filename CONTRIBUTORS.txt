@@ -7,3 +7,5 @@ Contributors
 * Marcin Kasperski
 * Steve Borho
 * Michael Gruenewald
+* Jason R. Coombs
+* Benji York

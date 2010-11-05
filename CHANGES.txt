@@ -3,6 +3,15 @@ CHANGES
 -------
 
 ---
+0.5
+---
+
+* Now using the existing Gnome and KDE python libs instead of custom C++
+  code.
+
+* Using the getpass module instead of custom code
+
+---
 0.4
 ---
 
