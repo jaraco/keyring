@@ -121,6 +121,43 @@ class KDEKWalletTestCase(BackendBasicTestCase):
     def supported(self):
         return self.keyring.supported()
 
+
+class UnOpenableKWallet(object):
+    """A module-like object used to test KDE wallet fall-back."""
+
+    Synchronous = None
+
+    def openWallet(self, *args):
+        return None
+
+    def NetworkWallet(self):
+        return None
+
+
+class FauxQtGui(object):
+    """A fake module-like object used in testing the open_kwallet function."""
+
+    class QApplication(object):
+        def __init__(self, *args):
+            pass
+
+        def exit(self):
+            pass
+
+
+class KDEWalletCanceledTestCase(unittest.TestCase):
+
+    def test_user_canceled(self):
+        # If the user cancels either the "enter your password to unlock the
+        # keyring" dialog or clicks "deny" on the "can this application access
+        # the wallet" dialog then openWallet() will return None.  The
+        # open_wallet() function should handle that eventuality by returning
+        # None to signify that the KWallet backend is not available.
+        self.assertEqual(
+            keyring.backend.open_kwallet(UnOpenableKWallet(), FauxQtGui()),
+            None)
+
+
 class FileKeyringTestCase(BackendBasicTestCase):
     __test__ = False
 

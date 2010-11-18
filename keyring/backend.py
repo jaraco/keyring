@@ -156,6 +156,25 @@ class GnomeKeyring(KeyringBackend):
             # The user pressed "Cancel" when prompted to unlock their keyring.
             raise PasswordSetError()
 
+def open_kwallet(kwallet_module=None, qt_module=None):
+    # Allow for the injection of module-like objects for testing purposes.
+    if kwallet_module is None:
+        kwallet_module = KWallet.Wallet
+    if qt_module is None:
+        qt_module = QtGui
+
+    # KDE wants us to instantiate an application object.
+    app = qt_module.QApplication([])
+    try:
+        kwallet = kwallet_module.openWallet(
+            kwallet_module.NetworkWallet(), kwallet_module.Synchronous)
+        if kwallet is not None:
+            if not kwallet.hasFolder('Python'):
+                kwallet.createFolder('Python')
+            kwallet.setFolder('Python')
+    finally:
+        app.exit()
+
 
 kwallet = None
 try:
@@ -164,14 +183,8 @@ try:
 except ImportError:
     kwallet = None
 else:
-    # KDE wants us to instantiate an application object.
-    app = QtGui.QApplication([])
-    kwallet = KWallet.Wallet.openWallet(
-        KWallet.Wallet.NetworkWallet(), KWallet.Wallet.Synchronous)
-    if not kwallet.hasFolder('Python'):
-        kwallet.createFolder('Python')
-    kwallet.setFolder('Python')
-    app.exit()
+    kewllet = open_kwallet()
+
 
 class KDEKWallet(KeyringBackend):
     """KDE KWallet"""
