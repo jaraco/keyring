@@ -44,9 +44,6 @@ class BackendBasicTestCase(unittest.TestCase):
 
     __test__ = False
 
-    def init_keyring(self):
-        return None
-
     def setUp(self):
         self.keyring = self.init_keyring()
 

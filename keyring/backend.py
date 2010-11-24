@@ -183,7 +183,7 @@ try:
 except ImportError:
     kwallet = None
 else:
-    kewllet = open_kwallet()
+    kwallet = open_kwallet()
 
 
 class KDEKWallet(KeyringBackend):

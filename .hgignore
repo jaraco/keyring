@@ -3,4 +3,9 @@ syntax: regexp
 \.py[co]$
 ^build/
 ~$
-
+^bin/
+^parts/
+^tags
+^keyring.egg-info
+^develop-eggs
+^.installed.cfg

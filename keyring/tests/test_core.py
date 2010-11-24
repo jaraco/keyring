@@ -56,10 +56,10 @@ class CoreTestCase(unittest.TestCase):
         # create the config file
         config_file = open(KEYRINGRC,'w')
         config_file.writelines(["[backend]\n",
-                  # the path for the user created keyring
-                  "keyring-path= %s\n" % str(os.path.abspath(__file__))[:-16],
-                  # the name of the keyring class
-                  "default-keyring=test_core.TestKeyring2\n" ])
+            # the path for the user created keyring
+            "keyring-path= %s\n" % os.path.dirname(os.path.abspath(__file__)),
+            # the name of the keyring class
+            "default-keyring=test_core.TestKeyring2\n" ])
         config_file.close()
 
         # init the keyring lib, the lib will automaticlly load the
@@ -68,7 +68,7 @@ class CoreTestCase(unittest.TestCase):
 
         keyring.core.set_password("test", "user", "password")
         self.assertEqual(keyring.core.get_password("test", "user"),
-                                                               PASSWORD_TEXT_2)
+            PASSWORD_TEXT_2)
 
         os.remove(KEYRINGRC)
 
