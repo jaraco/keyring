@@ -166,8 +166,11 @@ def open_kwallet(kwallet_module=None, qt_module=None):
     # KDE wants us to instantiate an application object.
     app = qt_module.QApplication([])
     try:
+        window = QtGui.QWidget()
         kwallet = kwallet_module.openWallet(
-            kwallet_module.NetworkWallet(), kwallet_module.Synchronous)
+            kwallet_module.NetworkWallet(),
+            window.winId(),
+            kwallet_module.Synchronous)
         if kwallet is not None:
             if not kwallet.hasFolder('Python'):
                 kwallet.createFolder('Python')
