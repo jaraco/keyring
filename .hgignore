@@ -9,3 +9,4 @@ syntax: regexp
 ^keyring.egg-info
 ^develop-eggs
 ^.installed.cfg
+^eggs/
