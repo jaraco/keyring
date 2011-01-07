@@ -9,6 +9,7 @@ CHANGES
 * Remove a spurious KDE debug message when using KWallet
 
 * Fix a bug that caused an exception if the user canceled the KWallet dialog
+  (https://bitbucket.org/kang/python-keyring-lib/issue/37/user-canceling-of-kde-wallet-dialogs).
 
 ---
 0.5
