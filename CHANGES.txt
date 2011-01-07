@@ -2,6 +2,14 @@
 CHANGES
 -------
 
+-----
+0.5.1
+-----
+
+* Remove a spurious KDE debug message when using KWallet
+
+* Fix a bug that caused an exception if the user canceled the KWallet dialog
+
 ---
 0.5
 ---
