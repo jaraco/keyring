@@ -111,6 +111,8 @@ The usage of the three functions:
   ``username`` of the ``service``.
 * ``set_password(self, service, username, password)`` : Store the ``password``
   for ``username`` of the ``service`` in the backend.
+* ``delete_password(self, service, username)`` : Delete the stored password for
+  the ``username`` of the ``service``.
 
 For an instance, there's the source code of the demo mentioned above. It's a
 simple keyring which stores the password directly in memory.
@@ -143,6 +145,9 @@ simple keyring which stores the password directly in memory.
             self.password = password
             return 0
 
+        def delete_password(self, service, username):
+            self.password = None
+
 
 Set the keyring in runtime
 ==========================
@@ -164,7 +169,8 @@ Here's a code snippet from the ``keyringdemo.py``. It shows the usage of
         def set_password(self, servicename, username, password): return 0
         def get_password(self, servicename, username):
             return "password from TestKeyring"
-
+        def delete_password(self, servicename, username, password): return 0
+        
     # set the keyring for keyring lib
     import keyring
     keyring.set_keyring(TestKeyring())
@@ -191,6 +197,8 @@ The keyring lib has two functions:
   If the password does not exist, it will return None.
 * ``set_password(service, username, password)`` : Store the password in the
   keyring.
+* ``delete_password(service, username)`` : Delete the password stored in
+  keyring. If the password does not exist, it will raise an exception.
 
 Example
 =======
