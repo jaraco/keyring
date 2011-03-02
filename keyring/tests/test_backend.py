@@ -15,7 +15,7 @@ import sys
 import commands
 import keyring.backend
 
-from keyring.backend import PasswordSetError
+from keyring.backend import PasswordSetError, PasswordDeleteError
 
 ALPHABET = string.ascii_letters + string.digits
 DIFFICULT_CHARS = string.whitespace + string.punctuation
@@ -76,6 +76,20 @@ class BackendBasicTestCase(unittest.TestCase):
         service = random_string(20, DIFFICULT_CHARS)
         self.check_set_get(service, username, password)
 
+    def test_delete_present(self):
+        password = random_string(20, DIFFICULT_CHARS)
+        username = random_string(20, DIFFICULT_CHARS)
+        service = random_string(20, DIFFICULT_CHARS)
+        keyring.set_password(service, username, password)
+        keyring.delete_password(service, username)
+        self.assertTrue(keyring.get_password(service, username) is None)
+    
+    def test_delete_not_present(self):
+        username = random_string(20, DIFFICULT_CHARS)
+        service = random_string(20, DIFFICULT_CHARS)
+        self.assertRaises(PasswordDeleteError, keyring.delete_password,
+                          service, username)
+        
     def supported(self):
         """Return the correct value for supported.
         """
@@ -216,8 +230,11 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
     def supported(self):
         try:
             import win32_crypto
-            if sys.platform in ['win32'] and sys.getwindowsversion()[-2] == 2:
+            major, minor, build, platform, text = sys.getwindowsversion()
+            if sys.platform in ['win32'] and not (major, minor) >= (5, 1):
                 return 1
+            else:
+                return 0
         except ImportError:
             pass
         return -1
