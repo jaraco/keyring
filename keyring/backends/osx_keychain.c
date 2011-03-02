@@ -110,12 +110,10 @@ keychain_password_delete(PyObject *self, PyObject *args)
 {
     const char *realmstring;
     const char *username;
-    char *password;
     OSStatus status;
     UInt32 length;
     SecKeychainRef keychain;
     SecKeychainItemRef item;
-    void *data;
     
     if (!PyArg_ParseTuple(args, "ss", &realmstring, &username)){
         PyErr_Clear();
@@ -140,7 +138,7 @@ keychain_password_delete(PyObject *self, PyObject *args)
     
     if (status == 0){
         // found the item, therefore we can delete
-        status = SecKeychainItemDelete(item)
+        status = SecKeychainItemDelete(item);
         if(status == 0){
             // decrease ref count
             CFRelease(item);
