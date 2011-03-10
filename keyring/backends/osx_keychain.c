@@ -112,8 +112,9 @@ keychain_password_delete(PyObject *self, PyObject *args)
     const char *username;
     OSStatus status;
     UInt32 length;
+    void *data;
     SecKeychainRef keychain;
-    SecKeychainItemRef item;
+    SecKeychainItemRef *item;
     
     if (!PyArg_ParseTuple(args, "ss", &realmstring, &username)){
         PyErr_Clear();
@@ -134,7 +135,7 @@ keychain_password_delete(PyObject *self, PyObject *args)
                                             realmstring, username == NULL
                                               ? 0
                                               : strlen(username),
-                                            username, &length, NULL, item);
+                                            username, &length, &data, &item);
     
     if (status == 0){
         // found the item, therefore we can delete
