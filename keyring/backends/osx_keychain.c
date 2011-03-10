@@ -134,7 +134,7 @@ keychain_password_delete(PyObject *self, PyObject *args)
                                             realmstring, username == NULL
                                               ? 0
                                               : strlen(username),
-                                            username, &length, &data, item);
+                                            username, &length, NULL, item);
     
     if (status == 0){
         // found the item, therefore we can delete
