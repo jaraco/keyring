@@ -8,6 +8,8 @@ get_default_user = getpass.getuser
 
 def get_password(prompt='Password: ', stream=None,
                  service_name='Python',
-                 username=get_default_user()):
+                 username=None):
+    if username is None:
+        username = get_default_user()
     return original_get_password(service_name, username)
 
