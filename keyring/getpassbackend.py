@@ -4,12 +4,10 @@ import getpass
 
 from keyring.core import get_password as original_get_password
 
-get_default_user = getpass.getuser
-
 def get_password(prompt='Password: ', stream=None,
                  service_name='Python',
                  username=None):
     if username is None:
-        username = get_default_user()
+        username = getpass.getuser()
     return original_get_password(service_name, username)
 
