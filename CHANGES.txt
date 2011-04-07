@@ -2,6 +2,12 @@
 CHANGES
 -------
 
+---
+0.6
+---
+
+* Added `keyring.http` for facilitating HTTP Auth using keyring.
+
 -----
 0.5.1
 -----
