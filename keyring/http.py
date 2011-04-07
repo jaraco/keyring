@@ -19,6 +19,9 @@ class PasswordMgr(object):
     def get_username(self, realm, authuri):
         return getpass.getuser()
 
+    def add_password(self, realm, authuri, password):
+        keyring.set_password(realm, user, passwd)
+
     def find_user_password(self, realm, authuri):
         user = self.get_username(realm, authuri)
         passwd = keyring.get_password(realm, user)
