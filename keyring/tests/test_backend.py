@@ -133,6 +133,11 @@ class UnOpenableKWallet(object):
 
 class FauxQtGui(object):
     """A fake module-like object used in testing the open_kwallet function."""
+    
+    class qApp:
+        @staticmethod
+        def instance():
+            pass
 
     class QApplication(object):
         def __init__(self, *args):
@@ -159,6 +164,23 @@ class KDEWalletCanceledTestCase(unittest.TestCase):
         self.assertEqual(
             keyring.backend.open_kwallet(UnOpenableKWallet(), FauxQtGui()),
             None)
+
+
+class KDEKWalletInQApplication(unittest.TestCase):
+
+
+    def test_QApplication(self):
+        try:
+            from PyKDE4.kdeui import KWallet
+            from PyQt4.QtGui import QApplication
+        except:
+            return
+                    
+        app = QApplication([])
+        wallet=keyring.backend.open_kwallet()
+        self.assertTrue(isinstance(wallet,KWallet.Wallet),msg="The object wallet should be type<KWallet.Wallet> but it is: %s"%repr(wallet))
+        app.exit()
+
 
 
 class FileKeyringTestCase(BackendBasicTestCase):
@@ -233,6 +255,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(OSXKeychainTestCase))
     suite.addTest(unittest.makeSuite(GnomeKeyringTestCase))
     suite.addTest(unittest.makeSuite(KDEKWalletTestCase))
+    suite.addTest(unittest.makeSuite(KDEKWalletInQApplication))
     suite.addTest(unittest.makeSuite(KDEWalletCanceledTestCase))
     suite.addTest(unittest.makeSuite(UncryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(CryptedFileKeyringTestCase))
