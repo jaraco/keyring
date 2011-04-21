@@ -141,6 +141,12 @@ class FauxQtGui(object):
         def exit(self):
             pass
 
+    class QWidget(object):
+        def __init__(self, *args):
+            pass
+
+        def winId(self):
+            pass
 
 class KDEWalletCanceledTestCase(unittest.TestCase):
 
@@ -227,6 +233,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(OSXKeychainTestCase))
     suite.addTest(unittest.makeSuite(GnomeKeyringTestCase))
     suite.addTest(unittest.makeSuite(KDEKWalletTestCase))
+    suite.addTest(unittest.makeSuite(KDEWalletCanceledTestCase))
     suite.addTest(unittest.makeSuite(UncryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(CryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(Win32CryptoKeyringTestCase))

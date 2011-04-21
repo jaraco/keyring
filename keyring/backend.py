@@ -166,7 +166,7 @@ def open_kwallet(kwallet_module=None, qt_module=None):
     # KDE wants us to instantiate an application object.
     app = qt_module.QApplication([])
     try:
-        window = QtGui.QWidget()
+        window = qt_module.QWidget()
         kwallet = kwallet_module.openWallet(
             kwallet_module.NetworkWallet(),
             window.winId(),
@@ -175,6 +175,7 @@ def open_kwallet(kwallet_module=None, qt_module=None):
             if not kwallet.hasFolder('Python'):
                 kwallet.createFolder('Python')
             kwallet.setFolder('Python')
+            return kwallet
     finally:
         app.exit()
 
@@ -182,7 +183,7 @@ def open_kwallet(kwallet_module=None, qt_module=None):
 kwallet = None
 try:
     from PyKDE4.kdeui import KWallet
-    from PyQt4 import QtCore, QtGui
+    from PyQt4 import QtGui
 except ImportError:
     kwallet = None
 else:
