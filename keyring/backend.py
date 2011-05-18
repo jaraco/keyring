@@ -127,10 +127,12 @@ class GnomeKeyring(KeyringBackend):
     def supported(self):
         try:
             import gnomekeyring
+            if os.environ.has_key("GNOME_KEYRING_CONTROL"):
+                return 1
         except ImportError:
             return -1
         else:
-            return 1
+            return 0
 
     def get_password(self, service, username):
         """Get password of the username for the service
@@ -188,29 +190,40 @@ try:
     from PyKDE4.kdeui import KWallet
     from PyQt4 import QtGui
 except ImportError:
-    kwallet = None
+    kwallet = False
 else:
-    kwallet = open_kwallet()
+    kwallet = True
 
 
 class KDEKWallet(KeyringBackend):
     """KDE KWallet"""
 
-    def supported(self):
-        if kwallet is None:
-            return -1
+    wallet = None
+    def get_wallet(self):
+        if self.wallet != None:
+            return self.wallet
         else:
+            self.wallet = open_kwallet();
+            return self.wallet
+
+    def supported(self):
+        if kwallet and os.environ.has_key('KDE_SESSION_UID'):
             return 1
+        elif kwallet:
+            return 0
+        else:
+            return -1
 
     def get_password(self, service, username):
         """Get password of the username for the service
         """
         key = username + '@' + service
         network = KWallet.Wallet.NetworkWallet()
-        if kwallet.keyDoesNotExist(network, 'Python', key):
+        wallet = self.get_wallet()
+        if wallet.keyDoesNotExist(network, 'Python', key):
             return None
 
-        result = kwallet.readPassword(key)[1]
+        result = wallet.readPassword(key)[1]
         # The string will be a PyQt4.QtCore.QString, so turn it into a unicode
         # object.
         return unicode(result)
@@ -218,7 +231,8 @@ class KDEKWallet(KeyringBackend):
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        kwallet.writePassword(username+'@'+service, password)
+        wallet=self.get_wallet()
+        wallet.writePassword(username+'@'+service, password)
 
 class BasicFileKeyring(KeyringBackend):
     """BasicFileKeyring is a filebased implementation of keyring.
