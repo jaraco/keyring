@@ -127,12 +127,13 @@ class GnomeKeyring(KeyringBackend):
     def supported(self):
         try:
             import gnomekeyring
-            if os.environ.has_key("GNOME_KEYRING_CONTROL"):
-                return 1
         except ImportError:
             return -1
         else:
-            return 0
+            if os.environ.has_key("GNOME_KEYRING_CONTROL"):
+                return 1
+            else:
+                return 0
 
     def get_password(self, service, username):
         """Get password of the username for the service
@@ -199,6 +200,7 @@ class KDEKWallet(KeyringBackend):
     """KDE KWallet"""
 
     wallet = None
+
     def get_wallet(self):
         if self.wallet != None:
             return self.wallet
