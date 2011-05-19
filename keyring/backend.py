@@ -159,7 +159,14 @@ class GnomeKeyring(KeyringBackend):
             # The user pressed "Cancel" when prompted to unlock their keyring.
             raise PasswordSetError()
 
+kwallet = None
+
 def open_kwallet(kwallet_module=None, qt_module=None):
+
+    global kwallet
+    if not kwallet is None:
+        return kwallet
+
     # Allow for the injection of module-like objects for testing purposes.
     if kwallet_module is None:
         kwallet_module = KWallet.Wallet
@@ -186,32 +193,22 @@ def open_kwallet(kwallet_module=None, qt_module=None):
             app.exit()
 
 
-kwallet = None
 try:
     from PyKDE4.kdeui import KWallet
     from PyQt4 import QtGui
 except ImportError:
-    kwallet = False
+    kwallet_support = False
 else:
-    kwallet = True
+    kwallet_support = True
 
 
 class KDEKWallet(KeyringBackend):
     """KDE KWallet"""
 
-    wallet = None
-
-    def get_wallet(self):
-        if self.wallet != None:
-            return self.wallet
-        else:
-            self.wallet = open_kwallet();
-            return self.wallet
-
     def supported(self):
-        if kwallet and os.environ.has_key('KDE_SESSION_UID'):
+        if kwallet_support and os.environ.has_key('KDE_SESSION_UID'):
             return 1
-        elif kwallet:
+        elif kwallet_support:
             return 0
         else:
             return -1
@@ -221,7 +218,7 @@ class KDEKWallet(KeyringBackend):
         """
         key = username + '@' + service
         network = KWallet.Wallet.NetworkWallet()
-        wallet = self.get_wallet()
+        wallet = open_kwallet()
         if wallet.keyDoesNotExist(network, 'Python', key):
             return None
 
@@ -233,7 +230,7 @@ class KDEKWallet(KeyringBackend):
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        wallet=self.get_wallet()
+        wallet=open_kwallet()
         wallet.writePassword(username+'@'+service, password)
 
 class BasicFileKeyring(KeyringBackend):
