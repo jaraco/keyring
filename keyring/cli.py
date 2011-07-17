@@ -6,6 +6,7 @@ import optparse
 import sys
 
 import keyring
+import keyring.core
 
 
 def input_password(prompt):
@@ -30,6 +31,10 @@ def main(argv=None):
     """Main command line interface."""
 
     parser = optparse.OptionParser(usage="%prog [get|set] SERVICE USERNAME")
+    parser.add_option("-p", "--keyring-path", dest="keyring_path", default=None,
+                      help="Path to the keyring backend")
+    parser.add_option("-b", "--keyring-backend", dest="keyring_backend", default=None,
+                      help="Name of the keyring backend")
 
     if argv is None:
         argv = sys.argv[1:]
@@ -40,6 +45,10 @@ def main(argv=None):
         kind, service, username = args
     except ValueError:
         parser.error("Wrong number of arguments")
+
+    if opts.keyring_backend is not None:
+        backend = keyring.core.load_keyring(opts.keyring_path, opts.keyring_backend)
+        keyring.set_keyring(backend)
 
     if kind == 'get':
         password = keyring.get_password(service, username)
