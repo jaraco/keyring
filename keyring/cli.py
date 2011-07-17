@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Simple command line interface to get/set password from a keyring"""
 
 import getpass
 import optparse
@@ -7,9 +8,33 @@ import sys
 import keyring
 
 
-def main():
+def input_password(prompt):
+    """Ask for a password to the user.
+
+    This mostly exists to ease the testing process.
+    """
+
+    return getpass.getpass(prompt)
+
+
+def output_password(password):
+    """Output the password to the user.
+
+    This mostly exists to ease the testing process.
+    """
+
+    print password
+
+
+def main(argv=None):
+    """Main command line interface."""
+
     parser = optparse.OptionParser(usage="%prog [get|set] SERVICE USERNAME")
-    opts, args = parser.parse_args()
+
+    if argv is None:
+        argv = sys.argv[1:]
+
+    opts, args = parser.parse_args(argv)
 
     try:
         kind, service, username = args
@@ -21,12 +46,12 @@ def main():
         if password is None:
             return 1
 
-        print password
+        output_password(password)
         return 0
 
     elif kind == 'set':
-        password = getpass.getpass("Password for '%s' in '%s': " %
-                                   (username, service))
+        password = input_password("Password for '%s' in '%s': " %
+                                  (username, service))
         keyring.set_password(service, username, password)
         return 0
 
