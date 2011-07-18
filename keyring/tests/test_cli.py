@@ -27,18 +27,18 @@ class CommandLineTestCase(unittest.TestCase):
                 except KeyError:
                     return None
 
-        self.old_keyring = cli.keyring
+        self.old_keyring = keyring.get_keyring()
         self.old_input_password = cli.input_password
         self.old_output_password = cli.output_password
 
-        cli.keyring = FakeKeyring()
+        keyring.set_keyring(FakeKeyring())
         self.password = ""
         self.password_returned = None
         cli.input_password = self.return_password
         cli.output_password = self.save_password
 
     def tearDown(self):
-        cli.keyring = self.old_keyring
+        keyring.set_keyring(self.old_keyring)
         cli.input_password = self.old_input_password
         cli.output_password = self.old_output_password
 
