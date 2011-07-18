@@ -8,6 +8,8 @@ CHANGES
 
 * Added `keyring.http` for facilitating HTTP Auth using keyring.
 
+* Add a utility to access the keyring from the command line.
+
 -----
 0.5.1
 -----
