@@ -9,3 +9,4 @@ Contributors
 * Michael Gruenewald
 * Jason R. Coombs
 * Benji York
+* Jonathan Ballet
