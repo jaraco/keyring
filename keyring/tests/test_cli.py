@@ -65,7 +65,7 @@ class CommandLineTestCase(unittest.TestCase):
 
 
     def test_wrong_arguments(self):
-        self.assertRaises(SystemExit, cli.main, [])
+        self.assertEqual(1, cli.main([]))
 
         self.assertRaises(SystemExit, cli.main, ["get"])
         self.assertRaises(SystemExit, cli.main, ["get", "foo"])

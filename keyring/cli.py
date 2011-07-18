@@ -44,7 +44,12 @@ def main(argv=None):
     try:
         kind, service, username = args
     except ValueError:
-        parser.error("Wrong number of arguments")
+        if len(args) == 0:
+            # Be nice with the user if he just tries to launch the tool
+            parser.print_help()
+            return 1
+        else:
+            parser.error("Wrong number of arguments")
 
     if opts.keyring_backend is not None:
         try:
