@@ -1,3 +1,5 @@
+.. -*- restructuredtext -*-
+
 =======================================
 Installing and Using Python Keyring Lib
 =======================================
