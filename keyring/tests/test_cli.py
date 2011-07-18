@@ -2,36 +2,51 @@
 Test case to access the keyring from the command line
 """
 
-import getpass
+import os.path
 import unittest
 
 from keyring import cli
 import keyring.backend
 
 
+class FakeKeyring(keyring.backend.KeyringBackend):
+    PASSWORD = "GABUZOMEUH"
+    def supported(self):
+        return 1
+
+    def set_password(self, service, username, password):
+        pass
+
+    def get_password(self, service, username):
+        return self.PASSWORD
+
+
+class SimpleKeyring(keyring.backend.KeyringBackend):
+    """A very simple keyring"""
+
+    def __init__(self):
+        self.pwd = {}
+
+    def supported(self):
+        return 1
+
+    def set_password(self, service, username, password):
+        self.pwd[(service, username)] = password
+
+    def get_password(self, service, username):
+        try:
+            return self.pwd[(service, username)]
+        except KeyError:
+            return None
+
+
 class CommandLineTestCase(unittest.TestCase):
     def setUp(self):
-        class FakeKeyring(keyring.backend.KeyringBackend):
-            def __init__(self):
-                self.pwd = {}
-
-            def supported(self):
-                return 1
-
-            def set_password(self, service, username, password):
-                self.pwd[(service, username)] = password
-
-            def get_password(self, service, username):
-                try:
-                    return self.pwd[(service, username)]
-                except KeyError:
-                    return None
-
         self.old_keyring = keyring.get_keyring()
         self.old_input_password = cli.input_password
         self.old_output_password = cli.output_password
 
-        keyring.set_keyring(FakeKeyring())
+        keyring.set_keyring(SimpleKeyring())
         self.password = ""
         self.password_returned = None
         cli.input_password = self.return_password
@@ -71,6 +86,42 @@ class CommandLineTestCase(unittest.TestCase):
         self.assertEqual(0, cli.main(["set", "foo", "bar"]))
         self.assertEqual(0, cli.main(["get", "foo", "bar"]))
         self.assertEqual("plop", self.password_returned)
+
+    def test_load_builtin_backend(self):
+        self.assertEqual(1, cli.main(["get",
+                                      "-b", "keyring.backend.UncryptedFileKeyring",
+                                      "foo", "bar"]))
+        backend = keyring.get_keyring()
+        self.assertTrue(isinstance(backend,
+                                   keyring.backend.UncryptedFileKeyring))
+
+    def test_load_specific_backend_with_path(self):
+        keyring_path = os.path.join(os.path.dirname(keyring.__file__), 'tests')
+        self.assertEqual(0, cli.main(["get",
+                                      "-b", "test_cli.FakeKeyring",
+                                      "-p", keyring_path,
+                                      "foo", "bar"]))
+
+        backend = keyring.get_keyring()
+        # Somehow, this doesn't work, because the full dotted name of the class
+        # is not the same as the one expected :(
+        #self.assertTrue(isinstance(backend, FakeKeyring))
+        self.assertEqual(FakeKeyring.PASSWORD, self.password_returned)
+
+    def test_load_wrong_keyrings(self):
+        self.assertRaises(SystemExit, cli.main,
+                         ["get", "foo", "bar",
+                          "-b", "blablabla" # ImportError
+                         ])
+        self.assertRaises(SystemExit, cli.main,
+                         ["get", "foo", "bar",
+                          "-b", "os.path.blabla" # AttributeError
+                         ])
+        self.assertRaises(SystemExit, cli.main,
+                         ["get", "foo", "bar",
+                          "-b", "__builtin__.str" # TypeError
+                         ])
+
 
 
 def test_suite():

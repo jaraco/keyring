@@ -47,8 +47,17 @@ def main(argv=None):
         parser.error("Wrong number of arguments")
 
     if opts.keyring_backend is not None:
-        backend = keyring.core.load_keyring(opts.keyring_path, opts.keyring_backend)
-        keyring.set_keyring(backend)
+        try:
+            backend = keyring.core.load_keyring(opts.keyring_path, opts.keyring_backend)
+            keyring.set_keyring(backend)
+        except Exception, e:
+            # Tons of things can go wrong here:
+            #   ImportError when using "fjkljfljkl"
+            #   AttributeError when using "os.path.bar"
+            #   TypeError when using "__builtins__.str"
+            # So, we play on the safe side, and catch everything.
+            parser.error("Unable to load specified keyring: %s" % e)
+
 
     if kind == 'get':
         password = keyring.get_password(service, username)
