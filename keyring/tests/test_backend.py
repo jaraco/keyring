@@ -7,18 +7,77 @@ created by Kang Zhang 2009-07-14
 """
 
 
-import random
-import unittest
-import string
-import os
-import sys
 import commands
-import keyring.backend
+import contextlib
+import os
+import random
+import string
+import sys
+import types
+import unittest
 
+import keyring.backend
 from keyring.backend import PasswordSetError
 
 ALPHABET = string.ascii_letters + string.digits
 DIFFICULT_CHARS = string.whitespace + string.punctuation
+
+class ImportKiller(object):
+    "Context manager to make an import of a given name or names fail."
+    def __init__(self, *names):
+        self.names = names
+    def find_module(self, fullname, path=None):
+        if fullname in self.names:
+            return self
+    def load_module(self, fullname):
+        assert fullname in self.names
+        raise ImportError(fullname)
+    def __enter__(self):
+        self.original = {}
+        for name in self.names:
+            self.original[name] = sys.modules.pop(name, None)
+        sys.meta_path.append(self)
+    def __exit__(self, *args):
+        sys.meta_path.remove(self)
+        for key, value in self.original.items():
+            if value is not None:
+                sys.modules[key] = value
+
+
+@contextlib.contextmanager
+def NoNoneDictMutator(destination, **changes):
+    """Helper context manager to make and unmake changes to a dict.
+    
+    A None is not a valid value for the destination, and so means that the
+    associated name should be removed."""
+    original = {}
+    for key, value in changes.items():
+        original[key] = destination.get(key)
+        if value is None:
+            if key in destination:
+                del destination[key]
+        else:
+            destination[key] = value
+    yield
+    for key, value in original.items():
+        if value is None:
+            if key in destination:
+                del destination[key]
+        else:
+            destination[key] = value
+
+
+def Environ(**changes):
+    """A context manager to temporarily change the os.environ"""
+    return NoNoneDictMutator(os.environ, **changes)
+
+
+def ImportBlesser(*names, **changes):
+    """A context manager to temporarily make it possible to import a module"""
+    for name in names:
+        changes[name] = types.ModuleType(name)
+    return NoNoneDictMutator(sys.modules, **changes)
+
 
 def random_string(k, source = ALPHABET):
     """Generate a random string with length <i>k</i>
@@ -101,12 +160,46 @@ class OSXKeychainTestCase(BackendBasicTestCase):
 class GnomeKeyringTestCase(BackendBasicTestCase):
     __test__ = True
 
+    def environ(self):
+        return dict(GNOME_KEYRING_CONTROL='1',
+                    DISPLAY='1',
+                    DBUS_SESSION_BUS_ADDRESS='1')
+
     def init_keyring(self):
         print >> sys.stderr, "Testing GnomeKeyring, following password prompts are for this keyring"
         return keyring.backend.GnomeKeyring()
 
-    def supported(self):
-        return self.keyring.supported()
+    def test_supported(self):
+        with ImportBlesser('gnomekeyring'):
+            with Environ(**self.environ()):
+                self.assertEqual(1, self.keyring.supported())
+
+    def test_supported_no_module(self):
+        with ImportKiller('gnomekeyring'):
+            with Environ(**self.environ()):
+                self.assertEqual(-1, self.keyring.supported())
+
+    def test_supported_no_keyring(self):
+        with ImportBlesser('gnomekeyring'):
+            environ = self.environ()
+            environ['GNOME_KEYRING_CONTROL'] = None
+            with Environ(**environ):
+                self.assertEqual(0, self.keyring.supported())
+
+    def test_supported_no_display(self):
+        with ImportBlesser('gnomekeyring'):
+            environ = self.environ()
+            environ['DISPLAY'] = None
+            with Environ(**environ):
+                self.assertEqual(0, self.keyring.supported())
+
+    def test_supported_no_session(self):
+        with ImportBlesser('gnomekeyring'):
+            environ = self.environ()
+            environ['DBUS_SESSION_BUS_ADDRESS'] = None
+            with Environ(**environ):
+                self.assertEqual(0, self.keyring.supported())
+
 
 class KDEKWalletTestCase(BackendBasicTestCase):
     __test__ = True
@@ -180,7 +273,6 @@ class KDEKWalletInQApplication(unittest.TestCase):
         wallet=keyring.backend.open_kwallet()
         self.assertTrue(isinstance(wallet,KWallet.Wallet),msg="The object wallet should be type<KWallet.Wallet> but it is: %s"%repr(wallet))
         app.exit()
-
 
 
 class FileKeyringTestCase(BackendBasicTestCase):

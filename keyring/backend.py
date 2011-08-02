@@ -130,7 +130,9 @@ class GnomeKeyring(KeyringBackend):
         except ImportError:
             return -1
         else:
-            if os.environ.has_key("GNOME_KEYRING_CONTROL"):
+            if ("GNOME_KEYRING_CONTROL" in os.environ and
+                "DISPLAY" in os.environ and
+                "DBUS_SESSION_BUS_ADDRESS" in os.environ):
                 return 1
             else:
                 return 0
