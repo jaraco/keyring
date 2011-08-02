@@ -10,3 +10,4 @@ Contributors
 * Jason R. Coombs
 * Benji York
 * Jonathan Ballet
+* Gary Poster

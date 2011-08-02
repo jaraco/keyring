@@ -2,6 +2,13 @@
 CHANGES
 -------
 
+-----
+0.6.1
+-----
+
+* Gnome keyring should not be used if there is no DISPLAY or if the dbus is
+  not around (https://bugs.launchpad.net/launchpadlib/+bug/752282).
+
 ---
 0.6
 ---
