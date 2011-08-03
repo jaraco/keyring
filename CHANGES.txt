@@ -3,6 +3,12 @@ CHANGES
 -------
 
 -----
+0.6.2
+-----
+
+* fix compiling on OSX with XCode 4.0
+
+-----
 0.6.1
 -----
 

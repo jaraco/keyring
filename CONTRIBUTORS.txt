@@ -11,3 +11,4 @@ Contributors
 * Benji York
 * Jonathan Ballet
 * Gary Poster
+* Patrick Mezard

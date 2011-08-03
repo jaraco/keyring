@@ -28,7 +28,7 @@ if sys.platform == 'darwin' and os.path.exists('/usr/bin/xcodebuild'):
         os.environ['ARCHFLAGS'] = ''
 
 setup(name = 'keyring',
-      version = "0.6.1",
+      version = "0.6.2",
       description = "Store and access your passwords safely.",
       url = "http://home.python-keyring.org/",
       keywords = "keyring Keychain GnomeKeyring Kwallet password storage",
