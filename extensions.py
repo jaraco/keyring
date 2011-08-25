@@ -25,11 +25,4 @@ def get_extensions():
                             'CoreServices'])
         exts.append(osx_keychain_module)
 
-    if platform in ['win32'] and sys.getwindowsversion()[-2] == 2:
-        # windows 2k+
-        win32_crypto_module = Extension('win32_crypto',
-                libraries = ['crypt32'],
-                sources = ['keyring/backends/win32_crypto.c'],)
-        exts.append(win32_crypto_module)
-
     return exts

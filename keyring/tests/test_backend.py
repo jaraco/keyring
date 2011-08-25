@@ -335,7 +335,7 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
 
     def supported(self):
         try:
-            import win32_crypto
+            from keyring.backends import win32_crypto
             if sys.platform in ['win32'] and sys.getwindowsversion()[-2] == 2:
                 return 1
         except ImportError:

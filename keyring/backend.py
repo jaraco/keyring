@@ -455,9 +455,9 @@ class Win32CryptoKeyring(BasicFileKeyring):
         super(Win32CryptoKeyring, self).__init__()
 
         try:
-            import win32_crypto
+            from backends import win32_crypto
             self.crypt_handler = win32_crypto
-        except ImportError:
+        except ImportError, e:
             self.crypt_handler = None
 
     def filename(self):
@@ -536,7 +536,7 @@ class Win32CryptoRegistry(KeyringBackend):
         super(Win32CryptoRegistry, self).__init__()
 
         try:
-            import win32_crypto
+            from backends import win32_crypto
             import _winreg
             self.crypt_handler = win32_crypto
         except ImportError:
@@ -599,14 +599,15 @@ def select_windows_backend():
     except ImportError:
         pass
     try:
-        import win32_crypto, _winreg
+        from backends import win32_crypto
+        import _winreg
         if (major, minor) >= (5, 0):
             # recommend for windows 2k+
             return 'reg'
     except ImportError:
         pass
     try:
-        import win32_crypto
+        from backends import win32_crypto
         return 'file'
     except ImportError:
         pass
