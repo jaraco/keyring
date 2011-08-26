@@ -12,3 +12,4 @@ Contributors
 * Jonathan Ballet
 * Gary Poster
 * Patrick Mezard
+* Jérôme Laheurte
