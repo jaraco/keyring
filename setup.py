@@ -10,8 +10,6 @@ import sys, os, subprocess
 from distutils.core import setup, Extension
 from distutils.version import StrictVersion
 
-from extensions import get_extensions
-
 def runcmd(cmd, env):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE, env=env)
@@ -39,6 +37,5 @@ setup(name = 'keyring',
       platforms = ["Many"],
       packages = ['keyring', 'keyring.tests', 'keyring.util',
                   'keyring.backends'],
-      ext_modules = get_extensions()
     )
 

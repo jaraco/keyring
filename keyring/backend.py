@@ -113,7 +113,7 @@ class OSXKeychain(_ExtensionKeyring):
     def _init_backend(self):
         """Return the handler: osx_keychain
         """
-        import osx_keychain
+        from backends import osx_keychain
         return osx_keychain
 
     def _recommend(self):
