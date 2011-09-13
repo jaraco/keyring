@@ -284,6 +284,15 @@ For more information about the options that the script provides do execute
 
 > python bin/test --help
 
+If this is the first time you are using a buildbot you can get the bootstrap script
+the following way:
+
+> svn cat svn://svn.zope.org/repos/main/zc.buildout/trunk/bootstrap/bootstrap.py > /tmp/bootstrap
+
+And from that point you can use the following as step 1:
+
+> python /tmp/bootstrap
+
 -------
 Credits
 -------
