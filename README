@@ -270,6 +270,20 @@ contributors.
 * Bug Tracker: http://bitbucket.org/kang/python-keyring-lib/issues/
 * Mailing list: http://groups.google.com/group/python-keyring
 
+Running Tests
+=============
+
+In order to be able to run the tests of the project you first have to bootstrap it. In order
+to do this you can do the following:
+
+    1. python bootstrap # generate the buildbot
+    2. bin/buildbot # run the builbot it self.
+    3. bin/test # execute the test runner.
+
+For more information about the options that the script provides do execute
+
+> python bin/test --help
+
 -------
 Credits
 -------
