@@ -635,10 +635,12 @@ class Win32CryptoRegistry(KeyringBackend):
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
         """
-        from _winreg import HKEY_CURRENT_USER, DeleteValue, OpenKey
+        from _winreg import (KEY_ALL_ACCESS, HKEY_CURRENT_USER, DeleteValue,
+                             OpenKey)
         try:
             key = r'Software\%s\Keyring' % service
-            hkey = OpenKey(HKEY_CURRENT_USER, key)
+            hkey = OpenKey(HKEY_CURRENT_USER, key, 0, KEY_ALL_ACCESS)
+            print 'Key is %r' % key
             DeleteValue(hkey, username)
         except WindowsError, e:
             raise PasswordDeleteError(e)
