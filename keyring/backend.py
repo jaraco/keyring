@@ -122,8 +122,8 @@ class _ExtensionKeyring(KeyringBackend):
         """
         try:
             self.keyring_impl.password_delete(service, username)
-        except OSError:
-            raise PasswordDeleteError()
+        except OSError, e:
+            raise PasswordDeleteError(e)
 
 
 class OSXKeychain(_ExtensionKeyring):
@@ -569,7 +569,7 @@ class WinVaultKeyring(KeyringBackend):
             self.win32cred.CredDelete(service,
                                       self.win32cred.CRED_TYPE_GENERIC)
         except self.pywintypes.error, e:
-            raise PasswordDeleteError()
+            raise PasswordDeleteError(e)
 
 
 class Win32CryptoRegistry(KeyringBackend):
@@ -640,8 +640,8 @@ class Win32CryptoRegistry(KeyringBackend):
             key = r'Software\%s\Keyring' % service
             hkey = OpenKey(HKEY_CURRENT_USER, key)
             DeleteValue(hkey, username)
-        except WindowsError:
-            raise PasswordDeleteError()
+        except WindowsError, e:
+            raise PasswordDeleteError(e)
 
 
 def select_windows_backend():
