@@ -47,7 +47,7 @@ class ImportKiller(object):
 @contextlib.contextmanager
 def NoNoneDictMutator(destination, **changes):
     """Helper context manager to make and unmake changes to a dict.
-    
+
     A None is not a valid value for the destination, and so means that the
     associated name should be removed."""
     original = {}
@@ -226,7 +226,7 @@ class UnOpenableKWallet(object):
 
 class FauxQtGui(object):
     """A fake module-like object used in testing the open_kwallet function."""
-    
+
     class qApp:
         @staticmethod
         def instance():
@@ -268,7 +268,7 @@ class KDEKWalletInQApplication(unittest.TestCase):
             from PyQt4.QtGui import QApplication
         except:
             return
-                    
+
         app = QApplication([])
         wallet=keyring.backend.open_kwallet()
         self.assertTrue(isinstance(wallet,KWallet.Wallet),msg="The object wallet should be type<KWallet.Wallet> but it is: %s"%repr(wallet))
@@ -284,7 +284,7 @@ class FileKeyringTestCase(BackendBasicTestCase):
         self.keyring = self.init_keyring()
 
         self.file_path = os.path.join(os.path.expanduser("~"),
-                                                       self.keyring.filename())
+            self.keyring.filename())
         backup(self.file_path)
 
     def tearDown(self):
@@ -342,6 +342,22 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
             pass
         return -1
 
+class WinVaultKeyringTestCase(BackendBasicTestCase):
+
+    def init_keyring(self):
+        print >> sys.stderr, "Testing WinVault, following password prompts are for this keyring"
+        return keyring.backend.WinVaultKeyring()
+
+    def supported(self):
+        try:
+            from keyring.backend import WinVaultKeyring
+            if sys.platform in ['win32'] and sys.getwindowsversion().major >= 6:
+                return 1
+        except ImportError:
+            pass
+        return -1
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(OSXKeychainTestCase))
@@ -352,6 +368,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(UncryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(CryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(Win32CryptoKeyringTestCase))
+    suite.addTest(unittest.makeSuite(WinVaultKeyringTestCase))
     return suite
 
 if __name__ == '__main__':
