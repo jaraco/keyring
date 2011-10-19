@@ -321,6 +321,7 @@ class CryptedFileKeyringTestCase(FileKeyringTestCase):
     def supported(self):
         try:
             from Crypto.Cipher import AES
+            import crypt
             return 0
         except ImportError:
             pass
@@ -357,6 +358,17 @@ class WinVaultKeyringTestCase(BackendBasicTestCase):
             pass
         return -1
 
+    def test_different_user(self):
+        """
+        Issue #47 reports that WinVault isn't storing passwords for
+        multiple users.
+        """
+        self.keyring.set_password('service1', 'user1', 'password1')
+        keyring.set_password('service1', 'user2', 'password2')
+        self.assertEqual(keyring.get_password('service1', 'user1'),
+            'password1')
+        self.assertEqual(keyring.get_password('service1', 'user2'),
+            'password2')
 
 def test_suite():
     suite = unittest.TestSuite()
