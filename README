@@ -1,5 +1,3 @@
-.. -*- restructuredtext -*-
-
 =======================================
 Installing and Using Python Keyring Lib
 =======================================
@@ -273,16 +271,25 @@ contributors.
 Running Tests
 =============
 
-In order to run the tests, you need a buildout environment. Here are the
-steps:
+In order to be able to run the tests of the project you first have to bootstrap it. In order
+to do this you can do the following:
 
-1. ``python buildout/bootstrap.py`` # bootstrap buildout (do this once)
-2. ``bin/buildout``                 # initialize the buildout
-3. ``bin/test``                     # execute the test runner.
+    1. python bootstrap # generate the buildbot
+    2. bin/buildbot # run the builbot it self.
+    3. bin/test # execute the test runner.
 
-For more information about the options that the script provides, execute::
+For more information about the options that the script provides do execute
 
-    python bin/test --help
+> python bin/test --help
+
+If this is the first time you are using a buildbot you can get the bootstrap script
+the following way:
+
+> svn cat svn://svn.zope.org/repos/main/zc.buildout/trunk/bootstrap/bootstrap.py > /tmp/bootstrap
+
+And from that point you can use the following as step 1:
+
+> python /tmp/bootstrap
 
 -------
 Credits
