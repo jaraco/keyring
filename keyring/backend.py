@@ -63,7 +63,7 @@ class KeyringBackend(object):
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        raise PasswordSetError()
+        raise PasswordSetError("reason")
 
     @abstractmethod
     def delete_password(self, service, username):
