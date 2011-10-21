@@ -64,11 +64,13 @@ class KeyringBackend(object):
         """Set password for the username of the service
         """
         raise PasswordSetError()
-    
+
     @abstractmethod
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
         """
+        raise PasswordDeleteError("reason")
+
 
 class _ExtensionKeyring(KeyringBackend):
     """_ExtensionKeyring is a adaptor class for the platform related keyring
@@ -116,7 +118,7 @@ class _ExtensionKeyring(KeyringBackend):
             self.keyring_impl.password_set(service, username, password)
         except OSError:
             raise PasswordSetError()
-            
+
     def delete_password(self, service, username):
         """Override the delete_password in KeyringBackend.
         """
@@ -131,7 +133,7 @@ class OSXKeychain(_ExtensionKeyring):
     def _init_backend(self):
         """Return the handler: osx_keychain
         """
-        import osx_keychain
+        from backends import osx_keychain
         return osx_keychain
 
     def _recommend(self):
@@ -148,7 +150,12 @@ class GnomeKeyring(KeyringBackend):
         except ImportError:
             return -1
         else:
-            return 1
+            if ("GNOME_KEYRING_CONTROL" in os.environ and
+                "DISPLAY" in os.environ and
+                "DBUS_SESSION_BUS_ADDRESS" in os.environ):
+                return 1
+            else:
+                return 0
 
     def get_password(self, service, username):
         """Get password of the username for the service
@@ -172,7 +179,7 @@ class GnomeKeyring(KeyringBackend):
                 None, None, None, None, 0, password)
         except gnomekeyring.CancelledError:
             # The user pressed "Cancel" when prompted to unlock their keyring.
-            raise PasswordSetError()
+            raise PasswordSetError("cancelled by user")
 
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
@@ -189,6 +196,11 @@ class GnomeKeyring(KeyringBackend):
 
 
 def open_kwallet(kwallet_module=None, qt_module=None):
+
+    global kwallet
+    if not kwallet is None:
+        return kwallet
+
     # Allow for the injection of module-like objects for testing purposes.
     if kwallet_module is None:
         kwallet_module = KWallet.Wallet
@@ -196,9 +208,11 @@ def open_kwallet(kwallet_module=None, qt_module=None):
         qt_module = QtGui
 
     # KDE wants us to instantiate an application object.
-    app = qt_module.QApplication([])
+    app = None
+    if qt_module.qApp.instance() == None:
+        app = qt_module.QApplication([])
     try:
-        window = QtGui.QWidget()
+        window = qt_module.QWidget()
         kwallet = kwallet_module.openWallet(
             kwallet_module.NetworkWallet(),
             window.winId(),
@@ -207,37 +221,42 @@ def open_kwallet(kwallet_module=None, qt_module=None):
             if not kwallet.hasFolder('Python'):
                 kwallet.createFolder('Python')
             kwallet.setFolder('Python')
+            return kwallet
     finally:
-        app.exit()
+        if app:
+            app.exit()
 
 
-kwallet = None
 try:
     from PyKDE4.kdeui import KWallet
-    from PyQt4 import QtCore, QtGui
+    from PyQt4 import QtGui
 except ImportError:
-    kwallet = None
+    kwallet_support = False
 else:
-    kwallet = open_kwallet()
+    kwallet_support = True
 
 
 class KDEKWallet(KeyringBackend):
     """KDE KWallet"""
 
     def supported(self):
-        if kwallet is None:
-            return -1
-        else:
+        if kwallet_support and os.environ.has_key('KDE_SESSION_UID'):
             return 1
+        elif kwallet_support:
+            return 0
+        else:
+            return -1
 
     def get_password(self, service, username):
         """Get password of the username for the service
         """
         key = username + '@' + service
-        if kwallet.keyDoesNotExist(kwallet.walletName(), 'Python', key):
+        network = KWallet.Wallet.NetworkWallet()
+        wallet = open_kwallet()
+        if wallet.keyDoesNotExist(network, 'Python', key):
             return None
 
-        result = kwallet.readPassword(key)[1]
+        result = wallet.readPassword(key)[1]
         # The string will be a PyQt4.QtCore.QString, so turn it into a unicode
         # object.
         return unicode(result)
@@ -245,7 +264,8 @@ class KDEKWallet(KeyringBackend):
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        kwallet.writePassword(username+'@'+service, password)
+        wallet=open_kwallet()
+        wallet.writePassword(username+'@'+service, password)
 
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
@@ -490,9 +510,9 @@ class Win32CryptoKeyring(BasicFileKeyring):
         super(Win32CryptoKeyring, self).__init__()
 
         try:
-            import win32_crypto
+            from backends import win32_crypto
             self.crypt_handler = win32_crypto
-        except ImportError:
+        except ImportError, e:
             self.crypt_handler = None
 
     def filename(self):
@@ -531,7 +551,7 @@ class WinVaultKeyring(KeyringBackend):
             self.pywintypes = pywintypes
         except ImportError:
             self.win32cred = None
-    
+
     def supported(self):
         '''Default Windows backend, when it is available
         '''
@@ -542,19 +562,19 @@ class WinVaultKeyring(KeyringBackend):
             return 1
         else:
             return 0
-    
+
     def get_password(self, service, username):
         try:
-            blob = self.win32cred.CredRead(Type=self.win32cred.CRED_TYPE_GENERIC, 
+            blob = self.win32cred.CredRead(Type=self.win32cred.CRED_TYPE_GENERIC,
                                            TargetName=service)['CredentialBlob']
         except self.pywintypes.error, e:
             if e[:2] == (1168, 'CredRead'):
                 return None
             raise
         return blob.decode("utf16")
-    
+
     def set_password(self, service, username, password):
-        credential = dict(Type=self.win32cred.CRED_TYPE_GENERIC, 
+        credential = dict(Type=self.win32cred.CRED_TYPE_GENERIC,
                           TargetName=service,
                           UserName=username,
                           CredentialBlob=unicode(password),
@@ -580,7 +600,7 @@ class Win32CryptoRegistry(KeyringBackend):
         super(Win32CryptoRegistry, self).__init__()
 
         try:
-            import win32_crypto
+            from backends import win32_crypto
             import _winreg
             self.crypt_handler = win32_crypto
         except ImportError:
@@ -658,14 +678,15 @@ def select_windows_backend():
     except ImportError:
         pass
     try:
-        import win32_crypto, _winreg
+        from backends import win32_crypto
+        import _winreg
         if (major, minor) >= (5, 0):
             # recommend for windows 2k+
             return 'reg'
     except ImportError:
         pass
     try:
-        import win32_crypto
+        from backends import win32_crypto
         return 'file'
     except ImportError:
         pass

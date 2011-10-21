@@ -9,4 +9,8 @@ Contributors
 * Michael Gruenewald
 * Jason R. Coombs
 * Benji York
-* Manuel de la Pena
+* Jonathan Ballet
+* Gary Poster
+* Patrick Mezard
+* Jérôme Laheurte
+* Manuel de la Peña
