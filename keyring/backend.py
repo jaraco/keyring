@@ -194,6 +194,7 @@ class GnomeKeyring(KeyringBackend):
         except gnomekeyring.CancelledError:
             raise PasswordDeleteError()
 
+kwallet = None
 
 def open_kwallet(kwallet_module=None, qt_module=None):
 
