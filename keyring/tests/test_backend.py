@@ -17,12 +17,8 @@ import types
 import unittest
 
 import keyring.backend
-<<<<<<< local
 
 from keyring.backend import PasswordSetError, PasswordDeleteError
-=======
-from keyring.backend import PasswordSetError
->>>>>>> other
 
 ALPHABET = string.ascii_letters + string.digits
 DIFFICULT_CHARS = string.whitespace + string.punctuation
@@ -355,14 +351,8 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
 
     def supported(self):
         try:
-<<<<<<< local
-            import win32_crypto
-            major, minor, build, platform, text = sys.getwindowsversion()
-            if sys.platform in ['win32'] and not (major, minor) >= (5, 1):
-=======
             from keyring.backends import win32_crypto
             if sys.platform in ['win32'] and sys.getwindowsversion()[-2] == 2:
->>>>>>> other
                 return 1
             else:
                 return 0
