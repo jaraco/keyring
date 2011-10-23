@@ -30,6 +30,11 @@ setup_params = dict(
                 'keyring.backends'],
 )
 
+if sys.version_info >= (3,0):
+    setup_params.update(
+        use_2to3=True,
+    )
+
 if __name__ == '__main__':
     try:
         from setuptools import setup
