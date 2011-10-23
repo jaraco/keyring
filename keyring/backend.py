@@ -527,6 +527,11 @@ class WinVaultKeyring(KeyringBackend):
                           Persist=self.win32cred.CRED_PERSIST_ENTERPRISE)
         self.win32cred.CredWrite(credential, 0)
 
+    def delete_password(self, service, username):
+        self.win32cred.CredDelete(
+            Type=self.win32cred.CRED_TYPE_GENERIC,
+            TargetName=service,
+        )
 
 class Win32CryptoRegistry(KeyringBackend):
     """Win32CryptoRegistry is a keyring which use Windows CryptAPI to encrypt
