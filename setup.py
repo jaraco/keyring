@@ -15,19 +15,6 @@ def runcmd(cmd, env):
     out, err = p.communicate()
     return out, err
 
-def patch_xcode():
-    """
-    XCode 4.0 dropped support for ppc architecture, which is hardcoded in
-    distutils.sysconfig
-    """
-    if sys.platform != 'darwin' or not os.path.exists('/usr/bin/xcodebuild'):
-        return
-    version = runcmd(['/usr/bin/xcodebuild', '-version'], {})[0].splitlines()[0]
-    # Also parse only first digit, because 3.2.1 can't be parsed nicely
-    if (version.startswith('Xcode') and
-        StrictVersion(version.split()[1]) >= StrictVersion('4.0')):
-        os.environ['ARCHFLAGS'] = ''
-
 setup_params = dict(
     name = 'keyring',
     version = "0.7",
@@ -48,5 +35,4 @@ if __name__ == '__main__':
         from setuptools import setup
     except ImportError:
         from distutils.core import setup
-    patch_xcode()
     setup(**setup_params)
