@@ -135,6 +135,23 @@ class BackendBasicTestCase(unittest.TestCase):
         service = random_string(20, DIFFICULT_CHARS)
         self.check_set_get(service, username, password)
 
+    def test_different_user(self):
+        """
+        Issue #47 reports that WinVault isn't storing passwords for
+        multiple users. This test exercises that test for each of the
+        backends.
+        """
+        keyring = self.keyring
+        keyring.set_password('service1', 'user1', 'password1')
+        keyring.set_password('service1', 'user2', 'password2')
+        self.assertEqual(keyring.get_password('service1', 'user1'),
+            'password1')
+        self.assertEqual(keyring.get_password('service1', 'user2'),
+            'password2')
+        keyring.set_password('service2', 'user3', 'password3')
+        self.assertEqual(keyring.get_password('service1', 'user1'),
+            'password1')
+
     def supported(self):
         """Return the correct value for supported.
         """
@@ -357,18 +374,6 @@ class WinVaultKeyringTestCase(BackendBasicTestCase):
         except ImportError:
             pass
         return -1
-
-    def test_different_user(self):
-        """
-        Issue #47 reports that WinVault isn't storing passwords for
-        multiple users.
-        """
-        self.keyring.set_password('service1', 'user1', 'password1')
-        keyring.set_password('service1', 'user2', 'password2')
-        self.assertEqual(keyring.get_password('service1', 'user1'),
-            'password1')
-        self.assertEqual(keyring.get_password('service1', 'user2'),
-            'password2')
 
 def test_suite():
     suite = unittest.TestSuite()
