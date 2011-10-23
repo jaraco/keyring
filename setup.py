@@ -7,7 +7,7 @@ Setup the Keyring Lib for Python.
 """
 
 import sys, os, subprocess
-from distutils.core import setup, Extension
+from distutils.core import setup
 from distutils.version import StrictVersion
 
 def runcmd(cmd, env):
