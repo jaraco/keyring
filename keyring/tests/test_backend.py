@@ -105,6 +105,13 @@ class BackendBasicTestCase(unittest.TestCase):
 
     def setUp(self):
         self.keyring = self.init_keyring()
+        self.credentials_created = set()
+
+    def set_password(self, service, username, password):
+        # set the password and save the result so the test runner can clean
+        #  up after if necessary.
+        self.keyring.set_password(service, username, password)
+        self.credentials_created.add((service, username))
 
     def check_set_get(self, service, username, password):
         keyring = self.keyring
@@ -112,15 +119,15 @@ class BackendBasicTestCase(unittest.TestCase):
         if self.supported() == -1: # skip the unsupported keyring
             return
 
-        # for the non-exsit password
+        # for the non-existent password
         self.assertEqual(keyring.get_password(service, username), None)
 
         # common usage
-        keyring.set_password(service, username, password)
+        self.set_password(service, username, password)
         self.assertEqual(keyring.get_password(service, username), password)
 
         # for the empty password
-        keyring.set_password(service, username, "")
+        self.set_password(service, username, "")
         self.assertEqual(keyring.get_password(service, username), "")
 
     def test_password_set_get(self):
@@ -141,14 +148,17 @@ class BackendBasicTestCase(unittest.TestCase):
         multiple users. This test exercises that test for each of the
         backends.
         """
+        if self.supported() == -1: # skip the unsupported keyring
+            return
+
         keyring = self.keyring
-        keyring.set_password('service1', 'user1', 'password1')
-        keyring.set_password('service1', 'user2', 'password2')
+        self.set_password('service1', 'user1', 'password1')
+        self.set_password('service1', 'user2', 'password2')
         self.assertEqual(keyring.get_password('service1', 'user1'),
             'password1')
         self.assertEqual(keyring.get_password('service1', 'user2'),
             'password2')
-        keyring.set_password('service2', 'user3', 'password3')
+        self.set_password('service2', 'user3', 'password3')
         self.assertEqual(keyring.get_password('service1', 'user1'),
             'password1')
 
@@ -298,7 +308,7 @@ class FileKeyringTestCase(BackendBasicTestCase):
     def setUp(self):
         """Backup the file before the test
         """
-        self.keyring = self.init_keyring()
+        super(FileKeyringTestCase, self).setUp()
 
         self.file_path = os.path.join(os.path.expanduser("~"),
             self.keyring.filename())
@@ -348,7 +358,7 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing Win32, following password prompts are for this keyring"
+        print >> sys.stderr, "Testing Win32Crypto, following password prompts are for this keyring"
         return keyring.backend.Win32CryptoKeyring()
 
     def supported(self):
