@@ -136,7 +136,6 @@ def password_get(realmstring, username):
         _core.CFRelease(keychain)
 
 def password_delete(realmstring, username):
-    import pdb; pdb.set_trace()
     if username is None:
         username = ''
 

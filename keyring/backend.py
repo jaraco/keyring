@@ -116,8 +116,8 @@ class _ExtensionKeyring(KeyringBackend):
         """
         try:
             self.keyring_impl.password_set(service, username, password)
-        except OSError:
-            raise PasswordSetError()
+        except OSError, e:
+            raise PasswordSetError(e)
 
     def delete_password(self, service, username):
         """Override the delete_password in KeyringBackend.
@@ -190,9 +190,9 @@ class GnomeKeyring(KeyringBackend):
                 gnomekeyring.item_delete_sync(current['keyring'],
                                               current['item_id'])
         except gnomekeyring.NoMatchError:
-            raise PasswordDeleteError()
+            raise PasswordDeleteError("can't found the password")
         except gnomekeyring.CancelledError:
-            raise PasswordDeleteError()
+            raise PasswordDeleteError("cancelled by user")
 
 kwallet = None
 
@@ -273,7 +273,7 @@ class KDEKWallet(KeyringBackend):
         """
         key = username + '@' + service
         if kwallet.keyDoesNotExist(kwallet.walletName(), 'Python', key):
-            raise PasswordDeleteError()
+            raise PasswordDeleteError("can't found the password")
         kwallet.removeEntry(key)
 
 
@@ -358,7 +358,7 @@ class BasicFileKeyring(KeyringBackend):
         if os.path.exists(self.file_path):
             config.read(self.file_path)
         if not config.remove_section(service):
-            raise PasswordDeleteError()
+            raise PasswordDeleteError("can't found the password")
         # update the file
         config_file = open(self.file_path,'w')
         config.write(config_file)
@@ -661,7 +661,6 @@ class Win32CryptoRegistry(KeyringBackend):
         try:
             key = r'Software\%s\Keyring' % service
             hkey = OpenKey(HKEY_CURRENT_USER, key, 0, KEY_ALL_ACCESS)
-            print 'Key is %r' % key
             DeleteValue(hkey, username)
         except WindowsError, e:
             raise PasswordDeleteError(e)

@@ -29,7 +29,7 @@ class TestKeyring(keyring.backend.KeyringBackend):
 
     def set_password(self, service, username, password):
         return 0
-    
+
     def delete_password(self, service, username):
         return 0
 
@@ -50,11 +50,11 @@ class CoreTestCase(unittest.TestCase):
         keyring.core.set_password("test", "user", "passtest")
         keyring.core.delete_password("test", "user")
         self.assertTrue(keyring.core.get_password("test", "user") is None)
-    
-    def test_delte_password_not_present(self):
+
+    def test_delete_password_not_present(self):
         self.assertRaises(PasswordDeleteError, keyring.core.delete_password,
                           "test", "user")
-        
+
     def test_set_keyring_in_runtime(self):
         """Test the function of set keyring in runtime.
         """
