@@ -372,6 +372,14 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
 
 class WinVaultKeyringTestCase(BackendBasicTestCase):
 
+    def tearDown(self):
+        # clean up any credentials created
+        for cred in self.credentials_created:
+            try:
+                self.keyring.delete_password(*cred)
+            except Exception, e:
+                print >> sys.stderr, e
+
     def init_keyring(self):
         print >> sys.stderr, "Testing WinVault, following password prompts are for this keyring"
         return keyring.backend.WinVaultKeyring()
