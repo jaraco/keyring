@@ -44,6 +44,9 @@ setup_params = dict(
 )
 
 if __name__ == '__main__':
-    from distutils.core import setup
+    try:
+        from setuptools import setup
+    except ImportError:
+        from distutils.core import setup
     patch_xcode()
     setup(**setup_params)
