@@ -106,6 +106,13 @@ class BackendBasicTestCase(unittest.TestCase):
 
     def setUp(self):
         self.keyring = self.init_keyring()
+        self.credentials_created = set()
+
+    def set_password(self, service, username, password):
+        # set the password and save the result so the test runner can clean
+        #  up after if necessary.
+        self.keyring.set_password(service, username, password)
+        self.credentials_created.add((service, username))
 
     def check_set_get(self, service, username, password):
         keyring = self.keyring
@@ -113,15 +120,15 @@ class BackendBasicTestCase(unittest.TestCase):
         if self.supported() == -1: # skip the unsupported keyring
             return
 
-        # for the non-exsit password
+        # for the non-existent password
         self.assertEqual(keyring.get_password(service, username), None)
 
         # common usage
-        keyring.set_password(service, username, password)
+        self.set_password(service, username, password)
         self.assertEqual(keyring.get_password(service, username), password)
 
         # for the empty password
-        keyring.set_password(service, username, "")
+        self.set_password(service, username, "")
         self.assertEqual(keyring.get_password(service, username), "")
 
     def test_password_set_get(self):
@@ -143,13 +150,34 @@ class BackendBasicTestCase(unittest.TestCase):
         keyring.set_password(service, username, password)
         keyring.delete_password(service, username)
         self.assertTrue(keyring.get_password(service, username) is None)
-    
+
     def test_delete_not_present(self):
         username = random_string(20, DIFFICULT_CHARS)
         service = random_string(20, DIFFICULT_CHARS)
         self.assertRaises(PasswordDeleteError, keyring.delete_password,
                           service, username)
-        
+
+    def test_different_user(self):
+        """
+        Issue #47 reports that WinVault isn't storing passwords for
+        multiple users. This test exercises that test for each of the
+        backends.
+        """
+        if self.supported() == -1: # skip the unsupported keyring
+            return
+
+        keyring = self.keyring
+        self.set_password('service1', 'user1', 'password1')
+        self.set_password('service1', 'user2', 'password2')
+        self.assertEqual(keyring.get_password('service1', 'user1'),
+            'password1')
+        self.assertEqual(keyring.get_password('service1', 'user2'),
+            'password2')
+        self.set_password('service2', 'user3', 'password3')
+        self.assertEqual(keyring.get_password('service1', 'user1'),
+            'password1')
+
+
     def supported(self):
         """Return the correct value for supported.
         """
@@ -296,7 +324,7 @@ class FileKeyringTestCase(BackendBasicTestCase):
     def setUp(self):
         """Backup the file before the test
         """
-        self.keyring = self.init_keyring()
+        super(FileKeyringTestCase, self).setUp()
 
         self.file_path = os.path.join(os.path.expanduser("~"),
             self.keyring.filename())
@@ -346,7 +374,7 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing Win32, following password prompts are for this keyring"
+        print >> sys.stderr, "Testing Win32Crypto, following password prompts are for this keyring"
         return keyring.backend.Win32CryptoKeyring()
 
     def supported(self):
@@ -362,6 +390,14 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
 
 class WinVaultKeyringTestCase(BackendBasicTestCase):
 
+    def tearDown(self):
+        # clean up any credentials created
+        for cred in self.credentials_created:
+            try:
+                self.keyring.delete_password(*cred)
+            except Exception, e:
+                print >> sys.stderr, e
+
     def init_keyring(self):
         print >> sys.stderr, "Testing WinVault, following password prompts are for this keyring"
         return keyring.backend.WinVaultKeyring()
@@ -374,18 +410,6 @@ class WinVaultKeyringTestCase(BackendBasicTestCase):
         except ImportError:
             pass
         return -1
-
-    def test_different_user(self):
-        """
-        Issue #47 reports that WinVault isn't storing passwords for
-        multiple users.
-        """
-        self.keyring.set_password('service1', 'user1', 'password1')
-        keyring.set_password('service1', 'user2', 'password2')
-        self.assertEqual(keyring.get_password('service1', 'user1'),
-            'password1')
-        self.assertEqual(keyring.get_password('service1', 'user2'),
-            'password2')
 
 def test_suite():
     suite = unittest.TestSuite()

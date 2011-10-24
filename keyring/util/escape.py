@@ -5,12 +5,15 @@ alphanumeric usernames, services, or other values
 
 import string, re
 
-LEGAL_CHARS = string.letters + string.digits
+LEGAL_CHARS = (
+    getattr(string, 'letters', None) # Python 2
+    or getattr(string, 'ascii_letters') # Python 3
+) + string.digits
 ESCAPE_CHAR = "_"
 
 def escape(value):
-    """Escapes given value so the result consists of alphanumeric chars and underscore
-    only, and alphanumeric chars are preserved"""
+    """Escapes given value so the result consists of alphanumeric chars and
+    ESCAPE_CHAR only"""
     def escape_char(c, legal = LEGAL_CHARS):
         # Single char escape. Either normal char, or _<hexcode>
         if c in legal:
