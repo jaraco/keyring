@@ -30,7 +30,7 @@ def output_password(password):
 def main(argv=None):
     """Main command line interface."""
 
-    parser = optparse.OptionParser(usage="%prog [get|set] SERVICE USERNAME")
+    parser = optparse.OptionParser(usage="%prog [get|set|del] SERVICE USERNAME")
     parser.add_option("-p", "--keyring-path", dest="keyring_path", default=None,
                       help="Path to the keyring backend")
     parser.add_option("-b", "--keyring-backend", dest="keyring_backend", default=None,
@@ -77,7 +77,11 @@ def main(argv=None):
                                   (username, service))
         keyring.set_password(service, username, password)
         return 0
-
+    elif kid == 'del':
+        password = input_password("Deleting password for '%s' in '%s': " %
+                                  (username, service))
+        keyring.delete_password(service, username)
+        return 0
     else:
         parser.error("You can only 'get' or 'set' a password.")
 
