@@ -168,7 +168,6 @@ class OSXKeychainTestCase(BackendBasicTestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing OSXKeychain, following password prompts are for this keyring"
         return keyring.backend.OSXKeychain()
 
 
@@ -183,7 +182,6 @@ class GnomeKeyringTestCase(BackendBasicTestCase):
                     DBUS_SESSION_BUS_ADDRESS='1')
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing GnomeKeyring, following password prompts are for this keyring"
         return keyring.backend.GnomeKeyring()
 
     def test_supported(self):
@@ -224,7 +222,6 @@ class KDEKWalletTestCase(BackendBasicTestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing KDEKWallet, following password prompts are for this keyring"
         return keyring.backend.KDEKWallet()
 
 
@@ -319,7 +316,6 @@ class UncryptedFileKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing UnecryptedFile, following password prompts are for this keyring"
         return keyring.backend.UncryptedFileKeyring()
 
 
@@ -328,8 +324,11 @@ class UncryptedFileKeyringTestCase(FileKeyringTestCase):
 class CryptedFileKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
+    def setUp(self):
+        super(self.__class__, self).setUp()
+        self.keyring._getpass = lambda *args, **kwargs: "abcdef"
+
     def init_keyring(self):
-        print >> sys.stderr, "Testing CryptedFile, following password prompts are for this keyring"
         return keyring.backend.CryptedFileKeyring()
 
 
@@ -339,7 +338,6 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing Win32, following password prompts are for this keyring"
         return keyring.backend.Win32CryptoKeyring()
 
 

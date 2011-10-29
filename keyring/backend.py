@@ -4,6 +4,7 @@ backend.py
 Created by Kang Zhang on 2009-07-09
 """
 
+import getpass
 import os
 import sys
 import ConfigParser
@@ -352,17 +353,18 @@ class CryptedFileKeyring(BasicFileKeyring):
             status = -1
         return status
 
+    def _getpass(self, *args, **kwargs):
+        return getpass.getpass(*args, **kwargs)
+
     def _init_file(self):
         """Init the password file, set the password for it.
         """
 
-        print("Please set a password for your new keyring")
         password = None
         while 1:
             if not password:
-                import getpass
-                password = getpass.getpass()
-                password2 = getpass.getpass('Password (again): ')
+                password = self._getpass("Please set a password for your new keyring")
+                password2 = self._getpass('Password (again): ')
                 if password != password2:
                     sys.stderr.write("Error: Your passwords didn't math\n")
                     password = None
@@ -421,9 +423,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         if not self._check_file():
             self._init_file()
 
-        print "Please input your password for the keyring"
-        import getpass
-        password = getpass.getpass()
+        password = self._getpass("Please input your password for the keyring")
 
         if not self._auth(password):
             sys.stderr.write("Wrong password for the keyring.\n")
