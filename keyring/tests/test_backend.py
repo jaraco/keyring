@@ -6,13 +6,12 @@ Test case for keyring basic function
 created by Kang Zhang 2009-07-14
 """
 
-
-import commands
 import contextlib
 import os
 import random
 import string
 import sys
+import tempfile
 import types
 import unittest
 
@@ -86,16 +85,6 @@ def random_string(k, source = ALPHABET):
     for i in range(0, k):
         result += random.choice(source)
     return result
-
-def backup(file):
-    """Backup the file as file.bak
-    """
-    commands.getoutput( "mv %s{,.bak}" % file )
-
-def restore(file):
-    """Restore the file from file.bak
-    """
-    commands.getoutput( "mv %s{.bak,}" % file )
 
 
 def is_win32_crypto_supported():
@@ -299,24 +288,22 @@ class FileKeyringTestCase(BackendBasicTestCase):
     __test__ = False
 
     def setUp(self):
-        """Backup the file before the test
-        """
         self.keyring = self.init_keyring()
-
-        self.file_path = os.path.join(os.path.expanduser("~"),
-                                                       self.keyring.filename())
-        backup(self.file_path)
+        self.keyring.file_path = self.tmp_keyring_file = tempfile.mktemp()
 
     def tearDown(self):
-        """Restore the keyring file.
-        """
-        restore(self.file_path)
+        try:
+            os.unlink(self.tmp_keyring_file)
+        except OSError, e:
+            if e.errno != 2: # No such file or directory
+                raise
 
     def test_encrypt_decrypt(self):
         password = random_string(20)
         encyrpted = self.keyring.encrypt(password)
 
         self.assertEqual(password, self.keyring.decrypt(encyrpted))
+
 
 class UncryptedFileKeyringTestCase(FileKeyringTestCase):
     __test__ = True
