@@ -97,6 +97,39 @@ def restore(file):
     """
     commands.getoutput( "mv %s{.bak,}" % file )
 
+
+def is_win32_crypto_supported():
+    try:
+        from keyring.backends import win32_crypto
+        if sys.platform in ['win32'] and sys.getwindowsversion()[-2] == 2:
+            return True
+    except ImportError:
+        pass
+    return False
+
+def is_osx_keychain_supported():
+    return sys.platform in ('mac','darwin')
+
+def is_kwallet_supported():
+    supported = keyring.backend.KDEKWallet().supported()
+    if supported == -1:
+        return False
+    return True
+
+def is_crypto_supported():
+    try:
+        from Crypto.Cipher import AES
+    except ImportError:
+        return False
+    return True
+
+def is_gnomekeyring_supported():
+    supported = keyring.backend.GnomeKeyring().supported()
+    if supported == -1:
+        return False
+    return True
+
+
 class BackendBasicTestCase(unittest.TestCase):
     """Test for the keyring's basic funtions. password_set and password_get
     """
@@ -108,9 +141,6 @@ class BackendBasicTestCase(unittest.TestCase):
 
     def check_set_get(self, service, username, password):
         keyring = self.keyring
-
-        if self.supported() == -1: # skip the unsupported keyring
-            return
 
         # for the non-exsit password
         self.assertEqual(keyring.get_password(service, username), None)
@@ -135,16 +165,9 @@ class BackendBasicTestCase(unittest.TestCase):
         service = random_string(20, DIFFICULT_CHARS)
         self.check_set_get(service, username, password)
 
-    def supported(self):
-        """Return the correct value for supported.
-        """
-        return -1
 
-    def test_supported(self):
-        """Test the keyring's supported value.
-        """
-        self.assertEqual(self.keyring.supported(), self.supported())
-
+@unittest.skipUnless(is_osx_keychain_supported(),
+                     "Need OS X")
 class OSXKeychainTestCase(BackendBasicTestCase):
     __test__ = True
 
@@ -152,11 +175,9 @@ class OSXKeychainTestCase(BackendBasicTestCase):
         print >> sys.stderr, "Testing OSXKeychain, following password prompts are for this keyring"
         return keyring.backend.OSXKeychain()
 
-    def supported(self):
-        if sys.platform in ('mac','darwin'):
-            return 1
-        return -1
 
+@unittest.skipUnless(is_gnomekeyring_supported(),
+                     "Need GnomeKeyring")
 class GnomeKeyringTestCase(BackendBasicTestCase):
     __test__ = True
 
@@ -201,15 +222,14 @@ class GnomeKeyringTestCase(BackendBasicTestCase):
                 self.assertEqual(0, self.keyring.supported())
 
 
+@unittest.skipUnless(is_kwallet_supported(),
+                     "Need KWallet")
 class KDEKWalletTestCase(BackendBasicTestCase):
     __test__ = True
 
     def init_keyring(self):
         print >> sys.stderr, "Testing KDEKWallet, following password prompts are for this keyring"
         return keyring.backend.KDEKWallet()
-
-    def supported(self):
-        return self.keyring.supported()
 
 
 class UnOpenableKWallet(object):
@@ -293,9 +313,6 @@ class FileKeyringTestCase(BackendBasicTestCase):
         restore(self.file_path)
 
     def test_encrypt_decrypt(self):
-        if self.supported() == -1: # skip the unsupported platform
-            return
-
         password = random_string(20)
         encyrpted = self.keyring.encrypt(password)
 
@@ -308,9 +325,9 @@ class UncryptedFileKeyringTestCase(FileKeyringTestCase):
         print >> sys.stderr, "Testing UnecryptedFile, following password prompts are for this keyring"
         return keyring.backend.UncryptedFileKeyring()
 
-    def supported(self):
-        return 0
 
+@unittest.skipUnless(is_crypto_supported(),
+                     "Need Crypto module")
 class CryptedFileKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
@@ -318,14 +335,9 @@ class CryptedFileKeyringTestCase(FileKeyringTestCase):
         print >> sys.stderr, "Testing CryptedFile, following password prompts are for this keyring"
         return keyring.backend.CryptedFileKeyring()
 
-    def supported(self):
-        try:
-            from Crypto.Cipher import AES
-            return 0
-        except ImportError:
-            pass
-        return -1
 
+@unittest.skipUnless(is_win32_crypto_supported(),
+                     "Need Windows")
 class Win32CryptoKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
@@ -333,14 +345,6 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
         print >> sys.stderr, "Testing Win32, following password prompts are for this keyring"
         return keyring.backend.Win32CryptoKeyring()
 
-    def supported(self):
-        try:
-            from keyring.backends import win32_crypto
-            if sys.platform in ['win32'] and sys.getwindowsversion()[-2] == 2:
-                return 1
-        except ImportError:
-            pass
-        return -1
 
 def test_suite():
     suite = unittest.TestSuite()
