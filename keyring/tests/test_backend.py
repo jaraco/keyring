@@ -118,6 +118,13 @@ def is_gnomekeyring_supported():
         return False
     return True
 
+def is_qt4_supported():
+    try:
+        from PyQt4.QtGui import QApplication
+    except ImportError:
+        return False
+    return True
+
 
 class BackendBasicTestCase(unittest.TestCase):
     """Test for the keyring's basic funtions. password_set and password_get
@@ -268,19 +275,22 @@ class KDEWalletCanceledTestCase(unittest.TestCase):
             None)
 
 
+@unittest.skipUnless(is_kwallet_supported() and
+                     is_qt4_supported(),
+                     "Need KWallet and Qt4")
 class KDEKWalletInQApplication(unittest.TestCase):
-
-
     def test_QApplication(self):
         try:
             from PyKDE4.kdeui import KWallet
             from PyQt4.QtGui import QApplication
         except:
             return
-                    
+
         app = QApplication([])
-        wallet=keyring.backend.open_kwallet()
-        self.assertTrue(isinstance(wallet,KWallet.Wallet),msg="The object wallet should be type<KWallet.Wallet> but it is: %s"%repr(wallet))
+        wallet = keyring.backend.open_kwallet()
+        self.assertTrue(isinstance(wallet, KWallet.Wallet),
+                        msg="The object wallet should be type "
+                        "<KWallet.Wallet> but it is: %s" % repr(wallet))
         app.exit()
 
 
