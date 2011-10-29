@@ -125,6 +125,15 @@ def is_qt4_supported():
         return False
     return True
 
+def is_winvault_supported():
+        try:
+            from keyring.backend import WinVaultKeyring
+            if sys.platform in ['win32'] and sys.getwindowsversion().major >= 6:
+                return True
+        except ImportError:
+            pass
+        return False
+
 
 class BackendBasicTestCase(unittest.TestCase):
     """Test for the keyring's basic funtions. password_set and password_get
@@ -366,8 +375,9 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
         return keyring.backend.Win32CryptoKeyring()
 
 
+@unittest.skipUnless(is_winvault_supported(),
+                     "Need WinVault")
 class WinVaultKeyringTestCase(BackendBasicTestCase):
-
     def tearDown(self):
         # clean up any credentials created
         for cred in self.credentials_created:
@@ -386,6 +396,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(UncryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(CryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(Win32CryptoKeyringTestCase))
+    suite.addTest(unittest.makeSuite(WinVaultKeyringTestCase))
     return suite
 
 if __name__ == '__main__':
