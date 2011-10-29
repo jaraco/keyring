@@ -60,7 +60,7 @@ class KeyringBackend(object):
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        raise PasswordSetError()
+        raise PasswordSetError("reason")
 
 class _ExtensionKeyring(KeyringBackend):
     """_ExtensionKeyring is a adaptor class for the platform related keyring
@@ -106,8 +106,8 @@ class _ExtensionKeyring(KeyringBackend):
         """
         try:
             self.keyring_impl.password_set(service, username, password)
-        except OSError:
-            raise PasswordSetError()
+        except OSError, e:
+            raise PasswordSetError(e.message)
 
 class OSXKeychain(_ExtensionKeyring):
     """Mac OSX Keychain"""
@@ -160,7 +160,7 @@ class GnomeKeyring(KeyringBackend):
                 None, None, None, None, 0, password)
         except gnomekeyring.CancelledError:
             # The user pressed "Cancel" when prompted to unlock their keyring.
-            raise PasswordSetError()
+            raise PasswordSetError("cancelled by user")
 
 kwallet = None
 
@@ -496,7 +496,7 @@ class WinVaultKeyring(KeyringBackend):
             self.pywintypes = pywintypes
         except ImportError:
             self.win32cred = None
-    
+
     def supported(self):
         '''Default Windows backend, when it is available
         '''
@@ -507,19 +507,19 @@ class WinVaultKeyring(KeyringBackend):
             return 1
         else:
             return 0
-    
+
     def get_password(self, service, username):
         try:
-            blob = self.win32cred.CredRead(Type=self.win32cred.CRED_TYPE_GENERIC, 
+            blob = self.win32cred.CredRead(Type=self.win32cred.CRED_TYPE_GENERIC,
                                            TargetName=service)['CredentialBlob']
         except self.pywintypes.error, e:
             if e[:2] == (1168, 'CredRead'):
                 return None
             raise
         return blob.decode("utf16")
-    
+
     def set_password(self, service, username, password):
-        credential = dict(Type=self.win32cred.CRED_TYPE_GENERIC, 
+        credential = dict(Type=self.win32cred.CRED_TYPE_GENERIC,
                           TargetName=service,
                           UserName=username,
                           CredentialBlob=unicode(password),
@@ -527,6 +527,11 @@ class WinVaultKeyring(KeyringBackend):
                           Persist=self.win32cred.CRED_PERSIST_ENTERPRISE)
         self.win32cred.CredWrite(credential, 0)
 
+    def delete_password(self, service, username):
+        self.win32cred.CredDelete(
+            Type=self.win32cred.CRED_TYPE_GENERIC,
+            TargetName=service,
+        )
 
 class Win32CryptoRegistry(KeyringBackend):
     """Win32CryptoRegistry is a keyring which use Windows CryptAPI to encrypt

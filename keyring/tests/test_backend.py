@@ -46,7 +46,7 @@ class ImportKiller(object):
 @contextlib.contextmanager
 def NoNoneDictMutator(destination, **changes):
     """Helper context manager to make and unmake changes to a dict.
-    
+
     A None is not a valid value for the destination, and so means that the
     associated name should be removed."""
     original = {}
@@ -134,19 +134,26 @@ class BackendBasicTestCase(unittest.TestCase):
 
     def setUp(self):
         self.keyring = self.init_keyring()
+        self.credentials_created = set()
+
+    def set_password(self, service, username, password):
+        # set the password and save the result so the test runner can clean
+        #  up after if necessary.
+        self.keyring.set_password(service, username, password)
+        self.credentials_created.add((service, username))
 
     def check_set_get(self, service, username, password):
         keyring = self.keyring
 
-        # for the non-exsit password
+        # for the non-existent password
         self.assertEqual(keyring.get_password(service, username), None)
 
         # common usage
-        keyring.set_password(service, username, password)
+        self.set_password(service, username, password)
         self.assertEqual(keyring.get_password(service, username), password)
 
         # for the empty password
-        keyring.set_password(service, username, "")
+        self.set_password(service, username, "")
         self.assertEqual(keyring.get_password(service, username), "")
 
     def test_password_set_get(self):
@@ -161,6 +168,23 @@ class BackendBasicTestCase(unittest.TestCase):
         service = random_string(20, DIFFICULT_CHARS)
         self.check_set_get(service, username, password)
 
+    def test_different_user(self):
+        """
+        Issue #47 reports that WinVault isn't storing passwords for
+        multiple users. This test exercises that test for each of the
+        backends.
+        """
+
+        keyring = self.keyring
+        self.set_password('service1', 'user1', 'password1')
+        self.set_password('service1', 'user2', 'password2')
+        self.assertEqual(keyring.get_password('service1', 'user1'),
+            'password1')
+        self.assertEqual(keyring.get_password('service1', 'user2'),
+            'password2')
+        self.set_password('service2', 'user3', 'password3')
+        self.assertEqual(keyring.get_password('service1', 'user1'),
+            'password1')
 
 @unittest.skipUnless(is_osx_keychain_supported(),
                      "Need OS X")
@@ -239,7 +263,7 @@ class UnOpenableKWallet(object):
 
 class FauxQtGui(object):
     """A fake module-like object used in testing the open_kwallet function."""
-    
+
     class qApp:
         @staticmethod
         def instance():
@@ -295,6 +319,7 @@ class FileKeyringTestCase(BackendBasicTestCase):
     __test__ = False
 
     def setUp(self):
+        super(FileKeyringTestCase, self).setUp()
         self.keyring = self.init_keyring()
         self.keyring.file_path = self.tmp_keyring_file = tempfile.mktemp()
 
@@ -340,6 +365,16 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
     def init_keyring(self):
         return keyring.backend.Win32CryptoKeyring()
 
+
+class WinVaultKeyringTestCase(BackendBasicTestCase):
+
+    def tearDown(self):
+        # clean up any credentials created
+        for cred in self.credentials_created:
+            try:
+                self.keyring.delete_password(*cred)
+            except Exception, e:
+                print >> sys.stderr, e
 
 def test_suite():
     suite = unittest.TestSuite()
