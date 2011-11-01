@@ -354,6 +354,9 @@ class CryptedFileKeyring(BasicFileKeyring):
         return status
 
     def _getpass(self, *args, **kwargs):
+        """Wrap getpass.getpass(), so that we can override it when testing.
+        """
+
         return getpass.getpass(*args, **kwargs)
 
     def _init_file(self):

@@ -126,13 +126,13 @@ def is_qt4_supported():
     return True
 
 def is_winvault_supported():
-        try:
-            from keyring.backend import WinVaultKeyring
-            if sys.platform in ['win32'] and sys.getwindowsversion().major >= 6:
-                return True
-        except ImportError:
-            pass
-        return False
+    try:
+        from keyring.backend import WinVaultKeyring
+        if sys.platform in ['win32'] and sys.getwindowsversion().major >= 6:
+            return True
+    except ImportError:
+        pass
+    return False
 
 
 class BackendBasicTestCase(unittest.TestCase):
