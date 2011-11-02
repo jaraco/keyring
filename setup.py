@@ -6,14 +6,8 @@ setup.py
 Setup the Keyring Lib for Python.
 """
 
-import sys, os, subprocess
-from distutils.version import StrictVersion
+import sys
 
-def runcmd(cmd, env):
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE, env=env)
-    out, err = p.communicate()
-    return out, err
 
 setup_params = dict(
     name = 'keyring',
