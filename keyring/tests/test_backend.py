@@ -13,7 +13,12 @@ import string
 import sys
 import tempfile
 import types
-import unittest
+
+try:
+    # Python < 2.7 annd Python >= 3.0 < 3.1
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 import keyring.backend
 from keyring.backend import PasswordSetError
