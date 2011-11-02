@@ -17,7 +17,8 @@ def set_keyring(keyring):
     global _keyring_backend
     if isinstance(keyring, backend.KeyringBackend):
         _keyring_backend = keyring
-    else: raise TypeError("The keyring must be a subclass of KeyringBackend")
+    else:
+        raise TypeError("The keyring must be a subclass of KeyringBackend")
 
 def get_keyring():
     """Get current keyring backend.
@@ -30,24 +31,26 @@ def get_password(service_name, username):
     return _keyring_backend.get_password(service_name, username)
 
 def set_password(service_name, username, password):
-    """Set password for the user in the spcified service
+    """Set password for the user in the specified service
     """
     _keyring_backend.set_password(service_name, username, password)
 
 def init_backend():
-    """first try to load the keyring in the config file, if it has not
-    been decleared, assign a defult keyring according to the platform.
+    """Load a keyring from a config file or for the default platform.
+
+    First try to load the keyring in the config file, if it has not
+    been declared, assign a default keyring according to the platform.
     """
-    #select a backend according to the config file
+    # select a backend according to the config file
     keyring = load_config()
 
-    # if the user dose not specify a keyring, we apply a default one
+    # if the user doesn't specify a keyring, we apply a default one
     if keyring is None:
 
         keyrings = backend.get_all_keyring()
-        # rank according the supported
+        # rank according to the supported result
         keyrings.sort(lambda x, y: y.supported() - x.supported())
-        # get the most recommend one
+        # get the most recommended one
         keyring = keyrings[0]
 
     set_keyring(keyring)
@@ -56,7 +59,7 @@ def init_backend():
 def load_keyring(keyring_path, keyring_name):
     """Load the specified keyring name from the specified path
 
-    `keyring_path` can be None and it will not interfer with the loading
+    `keyring_path` can be None and it will not interfere with the loading
     process.
     """
 
@@ -98,15 +101,18 @@ def load_keyring(keyring_path, keyring_name):
 
 
 def load_config():
-    """load a keyring using the config file, the config file can be
-    in the current working directory, or in the user's home directory.
+    """Load a keyring using the config file.
+
+    The config file can be in the current working directory, or in the user's
+    home directory.
     """
     keyring = None
 
     # search from current working directory and the home folder
     keyring_cfg_list = [os.path.join(os.getcwd(), "keyringrc.cfg"),
                         os.path.join(os.path.expanduser("~"), "keyringrc.cfg")]
-    # initial the keyring_cfg with the fist detected config file
+
+    # initialize the keyring_config with the first detected config file
     keyring_cfg = None
     for path in keyring_cfg_list:
         keyring_cfg = path
@@ -125,7 +131,7 @@ def load_config():
         except ConfigParser.NoOptionError:
             keyring_path = None
 
-        # load the keyring class name, and load it
+        # load the keyring class name, and then load this keyring
         try:
             if config.has_section("backend"):
                 keyring_name = config.get("backend", "default-keyring").strip()
@@ -134,11 +140,10 @@ def load_config():
 
             keyring = load_keyring(keyring_path, keyring_name)
         except (ConfigParser.NoOptionError, ImportError):
-            logger.warning("Keyring Config file does not write correctly.\n" + \
+            logger.warning("Keyring config file contains incorrect values.\n" +
                            "Config file: %s" % keyring_cfg)
 
     return keyring
 
 # init the _keyring_backend
 init_backend()
-

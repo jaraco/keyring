@@ -42,7 +42,7 @@ class KeyringBackend(object):
 
     @abstractmethod
     def supported(self):
-        """Return if this keyring supports current enviroment.
+        """Return if this keyring supports current environment:
         -1: not applicable
          0: suitable
          1: recommended
@@ -78,7 +78,7 @@ class _ExtensionKeyring(KeyringBackend):
         return None
 
     def _recommend(self):
-        """If this keyring is recommanded on current enviroment.
+        """If this keyring is recommended on current environment.
         """
         return False
 
@@ -101,7 +101,7 @@ class _ExtensionKeyring(KeyringBackend):
         return password
 
     def set_password(self, service, username, password):
-        """Overide the set_password() in KeyringBackend.
+        """Override the set_password() in KeyringBackend.
         """
         try:
             self.keyring_impl.password_set(service, username, password)
@@ -109,7 +109,7 @@ class _ExtensionKeyring(KeyringBackend):
             raise PasswordSetError(e.message)
 
 class OSXKeychain(_ExtensionKeyring):
-    """Mac OSX Keychain"""
+    """Mac OS X Keychain"""
     def _init_backend(self):
         """Return the handler: osx_keychain
         """
@@ -117,7 +117,7 @@ class OSXKeychain(_ExtensionKeyring):
         return osx_keychain
 
     def _recommend(self):
-        """Recommend for all OSX enviroment.
+        """Recommended for all OSX environment.
         """
         return sys.platform == 'darwin'
 
@@ -232,14 +232,14 @@ class KDEKWallet(KeyringBackend):
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        wallet=open_kwallet()
+        wallet = open_kwallet()
         wallet.writePassword(username+'@'+service, password)
 
 class BasicFileKeyring(KeyringBackend):
-    """BasicFileKeyring is a filebased implementation of keyring.
+    """BasicFileKeyring is a file-based implementation of keyring.
 
     It stores the password directly in the file, and supports the
-    encryption and decryption. The encrypted password is stroed in base64
+    encryption and decryption. The encrypted password is stored in base64
     format.
     """
 
@@ -364,7 +364,7 @@ class CryptedFileKeyring(BasicFileKeyring):
                 password = getpass.getpass()
                 password2 = getpass.getpass('Password (again): ')
                 if password != password2:
-                    sys.stderr.write("Error: Your passwords didn't math\n")
+                    sys.stderr.write("Error: Your passwords didn't match\n")
                     password = None
                     continue
             if '' == password.strip():
@@ -466,7 +466,7 @@ class Win32CryptoKeyring(BasicFileKeyring):
         return "wincrypto_pass.cfg"
 
     def supported(self):
-        """Recommend when other Windows backends are unavailable
+        """Recommended when other Windows backends are unavailable
         """
         recommended = select_windows_backend()
         if recommended == None:
