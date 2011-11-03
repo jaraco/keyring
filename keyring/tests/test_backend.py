@@ -393,10 +393,28 @@ class WinVaultKeyringTestCase(BackendBasicTestCase):
             pass
         return -1
 
+class SecretServiceKeyringTestCase(BackendBasicTestCase):
+    __test__ = True
+
+    def environ(self):
+        return dict(DISPLAY='1',
+                    DBUS_SESSION_BUS_ADDRESS='1')
+
+    def init_keyring(self):
+        print >> sys.stderr, "Testing SecretServiceKeyring, following password prompts are for this keyring"
+        return keyring.backend.SecretServiceKeyring()
+
+    def test_supported_no_module(self):
+        with ImportKiller('dbus'):
+            with Environ(**self.environ()):
+                self.assertEqual(-1, self.keyring.supported())
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(OSXKeychainTestCase))
     suite.addTest(unittest.makeSuite(GnomeKeyringTestCase))
+    suite.addTest(unittest.makeSuite(SecretServiceKeyringTestCase))
     suite.addTest(unittest.makeSuite(KDEWalletCanceledTestCase))
     suite.addTest(unittest.makeSuite(KDEKWalletTestCase))
     suite.addTest(unittest.makeSuite(KDEKWalletInQApplication))
