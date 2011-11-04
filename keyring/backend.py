@@ -166,9 +166,12 @@ kwallet = None
 
 def open_kwallet(kwallet_module=None, qt_module=None):
 
-    global kwallet
-    if not kwallet is None:
-        return kwallet
+    # If we specified the kwallet_module and/or qt_module, surely we won't need
+    # the cached kwallet object...
+    if kwallet_module is None and qt_module is None:
+        global kwallet
+        if not kwallet is None:
+            return kwallet
 
     # Allow for the injection of module-like objects for testing purposes.
     if kwallet_module is None:
