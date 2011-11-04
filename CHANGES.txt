@@ -10,6 +10,7 @@ CHANGES
   implementations. Thanks to Jérôme Laheurte.
 * WinVaultKeyring now supports multiple passwords for the same service. Fixes
   #47.
+* Most of the tests don't require user interaction anymore.
 
 -----
 0.6.2
