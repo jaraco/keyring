@@ -6,15 +6,19 @@ Test case for keyring basic function
 created by Kang Zhang 2009-07-14
 """
 
-
-import commands
 import contextlib
 import os
 import random
 import string
 import sys
+import tempfile
 import types
-import unittest
+
+try:
+    # Python < 2.7 annd Python >= 3.0 < 3.1
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 import keyring.backend
 from keyring.backend import PasswordSetError
@@ -87,15 +91,55 @@ def random_string(k, source = ALPHABET):
         result += random.choice(source)
     return result
 
-def backup(file):
-    """Backup the file as file.bak
-    """
-    commands.getoutput( "mv %s{,.bak}" % file )
 
-def restore(file):
-    """Restore the file from file.bak
-    """
-    commands.getoutput( "mv %s{.bak,}" % file )
+def is_win32_crypto_supported():
+    try:
+        from keyring.backends import win32_crypto
+        if sys.platform in ['win32'] and sys.getwindowsversion()[-2] == 2:
+            return True
+    except ImportError:
+        pass
+    return False
+
+def is_osx_keychain_supported():
+    return sys.platform in ('mac','darwin')
+
+def is_kwallet_supported():
+    supported = keyring.backend.KDEKWallet().supported()
+    if supported == -1:
+        return False
+    return True
+
+def is_crypto_supported():
+    try:
+        from Crypto.Cipher import AES
+        import crypt
+    except ImportError:
+        return False
+    return True
+
+def is_gnomekeyring_supported():
+    supported = keyring.backend.GnomeKeyring().supported()
+    if supported == -1:
+        return False
+    return True
+
+def is_qt4_supported():
+    try:
+        from PyQt4.QtGui import QApplication
+    except ImportError:
+        return False
+    return True
+
+def is_winvault_supported():
+    try:
+        from keyring.backend import WinVaultKeyring
+        if sys.platform in ['win32'] and sys.getwindowsversion().major >= 6:
+            return True
+    except ImportError:
+        pass
+    return False
+
 
 class BackendBasicTestCase(unittest.TestCase):
     """Test for the keyring's basic funtions. password_set and password_get
@@ -115,9 +159,6 @@ class BackendBasicTestCase(unittest.TestCase):
 
     def check_set_get(self, service, username, password):
         keyring = self.keyring
-
-        if self.supported() == -1: # skip the unsupported keyring
-            return
 
         # for the non-existent password
         self.assertEqual(keyring.get_password(service, username), None)
@@ -148,8 +189,6 @@ class BackendBasicTestCase(unittest.TestCase):
         multiple users. This test exercises that test for each of the
         backends.
         """
-        if self.supported() == -1: # skip the unsupported keyring
-            return
 
         keyring = self.keyring
         self.set_password('service1', 'user1', 'password1')
@@ -162,28 +201,17 @@ class BackendBasicTestCase(unittest.TestCase):
         self.assertEqual(keyring.get_password('service1', 'user1'),
             'password1')
 
-    def supported(self):
-        """Return the correct value for supported.
-        """
-        return -1
-
-    def test_supported(self):
-        """Test the keyring's supported value.
-        """
-        self.assertEqual(self.keyring.supported(), self.supported())
-
+@unittest.skipUnless(is_osx_keychain_supported(),
+                     "Need OS X")
 class OSXKeychainTestCase(BackendBasicTestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing OSXKeychain, following password prompts are for this keyring"
         return keyring.backend.OSXKeychain()
 
-    def supported(self):
-        if sys.platform in ('mac','darwin'):
-            return 1
-        return -1
 
+@unittest.skipUnless(is_gnomekeyring_supported(),
+                     "Need GnomeKeyring")
 class GnomeKeyringTestCase(BackendBasicTestCase):
     __test__ = True
 
@@ -193,7 +221,6 @@ class GnomeKeyringTestCase(BackendBasicTestCase):
                     DBUS_SESSION_BUS_ADDRESS='1')
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing GnomeKeyring, following password prompts are for this keyring"
         return keyring.backend.GnomeKeyring()
 
     def test_supported(self):
@@ -228,15 +255,13 @@ class GnomeKeyringTestCase(BackendBasicTestCase):
                 self.assertEqual(0, self.keyring.supported())
 
 
+@unittest.skipUnless(is_kwallet_supported(),
+                     "Need KWallet")
 class KDEKWalletTestCase(BackendBasicTestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing KDEKWallet, following password prompts are for this keyring"
         return keyring.backend.KDEKWallet()
-
-    def supported(self):
-        return self.keyring.supported()
 
 
 class UnOpenableKWallet(object):
@@ -286,9 +311,10 @@ class KDEWalletCanceledTestCase(unittest.TestCase):
             None)
 
 
+@unittest.skipUnless(is_kwallet_supported() and
+                     is_qt4_supported(),
+                     "Need KWallet and Qt4")
 class KDEKWalletInQApplication(unittest.TestCase):
-
-
     def test_QApplication(self):
         try:
             from PyKDE4.kdeui import KWallet
@@ -297,8 +323,10 @@ class KDEKWalletInQApplication(unittest.TestCase):
             return
 
         app = QApplication([])
-        wallet=keyring.backend.open_kwallet()
-        self.assertTrue(isinstance(wallet,KWallet.Wallet),msg="The object wallet should be type<KWallet.Wallet> but it is: %s"%repr(wallet))
+        wallet = keyring.backend.open_kwallet()
+        self.assertTrue(isinstance(wallet, KWallet.Wallet),
+                        msg="The object wallet should be type "
+                        "<KWallet.Wallet> but it is: %s" % repr(wallet))
         app.exit()
 
 
@@ -306,72 +334,56 @@ class FileKeyringTestCase(BackendBasicTestCase):
     __test__ = False
 
     def setUp(self):
-        """Backup the file before the test
-        """
         super(FileKeyringTestCase, self).setUp()
-
-        self.file_path = os.path.join(os.path.expanduser("~"),
-            self.keyring.filename())
-        backup(self.file_path)
+        self.keyring = self.init_keyring()
+        self.keyring.file_path = self.tmp_keyring_file = tempfile.mktemp()
 
     def tearDown(self):
-        """Restore the keyring file.
-        """
-        restore(self.file_path)
+        try:
+            os.unlink(self.tmp_keyring_file)
+        except OSError, e:
+            if e.errno != 2: # No such file or directory
+                raise
 
     def test_encrypt_decrypt(self):
-        if self.supported() == -1: # skip the unsupported platform
-            return
-
         password = random_string(20)
         encyrpted = self.keyring.encrypt(password)
 
         self.assertEqual(password, self.keyring.decrypt(encyrpted))
 
+
 class UncryptedFileKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing UnecryptedFile, following password prompts are for this keyring"
         return keyring.backend.UncryptedFileKeyring()
 
-    def supported(self):
-        return 0
 
+@unittest.skipUnless(is_crypto_supported(),
+                     "Need Crypto module")
 class CryptedFileKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
+    def setUp(self):
+        super(self.__class__, self).setUp()
+        self.keyring._getpass = lambda *args, **kwargs: "abcdef"
+
     def init_keyring(self):
-        print >> sys.stderr, "Testing CryptedFile, following password prompts are for this keyring"
         return keyring.backend.CryptedFileKeyring()
 
-    def supported(self):
-        try:
-            from Crypto.Cipher import AES
-            import crypt
-            return 0
-        except ImportError:
-            pass
-        return -1
 
+@unittest.skipUnless(is_win32_crypto_supported(),
+                     "Need Windows")
 class Win32CryptoKeyringTestCase(FileKeyringTestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing Win32Crypto, following password prompts are for this keyring"
         return keyring.backend.Win32CryptoKeyring()
 
-    def supported(self):
-        try:
-            from keyring.backends import win32_crypto
-            if sys.platform in ['win32'] and sys.getwindowsversion()[-2] == 2:
-                return 1
-        except ImportError:
-            pass
-        return -1
 
+@unittest.skipUnless(is_winvault_supported(),
+                     "Need WinVault")
 class WinVaultKeyringTestCase(BackendBasicTestCase):
-
     def tearDown(self):
         # clean up any credentials created
         for cred in self.credentials_created:
@@ -381,17 +393,7 @@ class WinVaultKeyringTestCase(BackendBasicTestCase):
                 print >> sys.stderr, e
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing WinVault, following password prompts are for this keyring"
         return keyring.backend.WinVaultKeyring()
-
-    def supported(self):
-        try:
-            from keyring.backend import WinVaultKeyring
-            if sys.platform in ['win32'] and sys.getwindowsversion().major >= 6:
-                return 1
-        except ImportError:
-            pass
-        return -1
 
 def test_suite():
     suite = unittest.TestSuite()

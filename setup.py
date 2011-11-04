@@ -6,14 +6,8 @@ setup.py
 Setup the Keyring Lib for Python.
 """
 
-import sys, os, subprocess
-from distutils.version import StrictVersion
+import sys
 
-def runcmd(cmd, env):
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE, env=env)
-    out, err = p.communicate()
-    return out, err
 
 setup_params = dict(
     name = 'keyring',
@@ -28,12 +22,24 @@ setup_params = dict(
     platforms = ["Many"],
     packages = ['keyring', 'keyring.tests', 'keyring.util',
                 'keyring.backends'],
+    extras_require={'test': []},
 )
+
 
 if sys.version_info >= (3,0):
     setup_params.update(
         use_2to3=True,
     )
+
+elif sys.version_info < (2, 7) or (
+    sys.version >= (3, 0) and sys.version < (3, 1)):
+    # Provide unittest2 for Python which doesn't contain the new unittest module
+    # (appears in Python 2.7 and Python 3.1)
+    setup_params.update(
+        tests_require=['unittest2'],
+    )
+    setup_params['extras_require']['test'].append('unittest2')
+
 
 if __name__ == '__main__':
     try:

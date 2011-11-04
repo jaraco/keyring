@@ -43,19 +43,21 @@ class SimpleKeyring(keyring.backend.KeyringBackend):
 class CommandLineTestCase(unittest.TestCase):
     def setUp(self):
         self.old_keyring = keyring.get_keyring()
-        self.old_input_password = cli.input_password
-        self.old_output_password = cli.output_password
+
+        self.cli = cli.CommandLineTool()
+        self.cli.input_password = self.return_password
+        self.cli.output_password = self.save_password
+        self.cli.parser.error = self.mock_error
+        self.cli.parser.print_help = lambda: None
 
         keyring.set_keyring(SimpleKeyring())
+
         self.password = ""
         self.password_returned = None
-        cli.input_password = self.return_password
-        cli.output_password = self.save_password
+        self.last_error = None
 
     def tearDown(self):
         keyring.set_keyring(self.old_keyring)
-        cli.input_password = self.old_input_password
-        cli.output_password = self.old_output_password
 
     def return_password(self, *args, **kwargs):
         return self.password
@@ -63,44 +65,50 @@ class CommandLineTestCase(unittest.TestCase):
     def save_password(self, password):
         self.password_returned = password
 
+    def mock_error(self, error):
+        self.last_error = error
+        raise SystemExit()
 
     def test_wrong_arguments(self):
-        self.assertEqual(1, cli.main([]))
+        self.assertEqual(1, self.cli.run([]))
 
-        self.assertRaises(SystemExit, cli.main, ["get"])
-        self.assertRaises(SystemExit, cli.main, ["get", "foo"])
-        self.assertRaises(SystemExit, cli.main, ["get", "foo", "bar", "baz"])
+        self.assertRaises(SystemExit, self.cli.run, ["get"])
+        self.assertRaises(SystemExit, self.cli.run, ["get", "foo"])
+        self.assertRaises(SystemExit, self.cli.run,
+                          ["get", "foo", "bar", "baz"])
 
-        self.assertRaises(SystemExit, cli.main, ["set"])
-        self.assertRaises(SystemExit, cli.main, ["set", "foo"])
-        self.assertRaises(SystemExit, cli.main, ["set", "foo", "bar", "baz"])
+        self.assertRaises(SystemExit, self.cli.run, ["set"])
+        self.assertRaises(SystemExit, self.cli.run, ["set", "foo"])
+        self.assertRaises(SystemExit, self.cli.run,
+                          ["set", "foo", "bar", "baz"])
 
-        self.assertRaises(SystemExit, cli.main, ["foo", "bar", "baz"])
+        self.assertRaises(SystemExit, self.cli.run, ["foo", "bar", "baz"])
 
     def test_get_unexistent_password(self):
-        self.assertEqual(1, cli.main(["get", "foo", "bar"]))
+        self.assertEqual(1, self.cli.run(["get", "foo", "bar"]))
         self.assertEqual(None, self.password_returned)
 
     def test_set_and_get_password(self):
         self.password = "plop"
-        self.assertEqual(0, cli.main(["set", "foo", "bar"]))
-        self.assertEqual(0, cli.main(["get", "foo", "bar"]))
+        self.assertEqual(0, self.cli.run(["set", "foo", "bar"]))
+        self.assertEqual(0, self.cli.run(["get", "foo", "bar"]))
         self.assertEqual("plop", self.password_returned)
 
     def test_load_builtin_backend(self):
-        self.assertEqual(1, cli.main(["get",
-                                      "-b", "keyring.backend.UncryptedFileKeyring",
-                                      "foo", "bar"]))
+        self.assertEqual(1, self.cli.run([
+            "get",
+            "-b", "keyring.backend.UncryptedFileKeyring",
+            "foo", "bar"]))
         backend = keyring.get_keyring()
         self.assertTrue(isinstance(backend,
                                    keyring.backend.UncryptedFileKeyring))
 
     def test_load_specific_backend_with_path(self):
         keyring_path = os.path.join(os.path.dirname(keyring.__file__), 'tests')
-        self.assertEqual(0, cli.main(["get",
-                                      "-b", "test_cli.FakeKeyring",
-                                      "-p", keyring_path,
-                                      "foo", "bar"]))
+        self.assertEqual(0, self.cli.run(["get",
+                                          "-b", "test_cli.FakeKeyring",
+                                          "-p", keyring_path,
+                                          "foo", "bar"]))
 
         backend = keyring.get_keyring()
         # Somehow, this doesn't work, because the full dotted name of the class
@@ -109,18 +117,18 @@ class CommandLineTestCase(unittest.TestCase):
         self.assertEqual(FakeKeyring.PASSWORD, self.password_returned)
 
     def test_load_wrong_keyrings(self):
-        self.assertRaises(SystemExit, cli.main,
-                         ["get", "foo", "bar",
-                          "-b", "blablabla" # ImportError
-                         ])
-        self.assertRaises(SystemExit, cli.main,
-                         ["get", "foo", "bar",
-                          "-b", "os.path.blabla" # AttributeError
-                         ])
-        self.assertRaises(SystemExit, cli.main,
-                         ["get", "foo", "bar",
-                          "-b", "__builtin__.str" # TypeError
-                         ])
+        self.assertRaises(SystemExit, self.cli.run,
+                          ["get", "foo", "bar",
+                           "-b", "blablabla" # ImportError
+                          ])
+        self.assertRaises(SystemExit, self.cli.run,
+                          ["get", "foo", "bar",
+                           "-b", "os.path.blabla" # AttributeError
+                          ])
+        self.assertRaises(SystemExit, self.cli.run,
+                          ["get", "foo", "bar",
+                           "-b", "__builtin__.str" # TypeError
+                          ])
 
 
 
