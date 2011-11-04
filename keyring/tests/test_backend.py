@@ -113,6 +113,7 @@ def is_kwallet_supported():
 def is_crypto_supported():
     try:
         from Crypto.Cipher import AES
+        import crypt
     except ImportError:
         return False
     return True
@@ -390,6 +391,9 @@ class WinVaultKeyringTestCase(BackendBasicTestCase):
                 self.keyring.delete_password(*cred)
             except Exception, e:
                 print >> sys.stderr, e
+
+    def init_keyring(self):
+        return keyring.backend.WinVaultKeyring()
 
 def test_suite():
     suite = unittest.TestSuite()
