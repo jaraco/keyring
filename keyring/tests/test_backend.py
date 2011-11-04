@@ -141,11 +141,9 @@ def is_winvault_supported():
     return False
 
 
-class BackendBasicTestCase(unittest.TestCase):
+class BackendBasicTests(object):
     """Test for the keyring's basic funtions. password_set and password_get
     """
-
-    __test__ = False
 
     def setUp(self):
         self.keyring = self.init_keyring()
@@ -203,8 +201,7 @@ class BackendBasicTestCase(unittest.TestCase):
 
 @unittest.skipUnless(is_osx_keychain_supported(),
                      "Need OS X")
-class OSXKeychainTestCase(BackendBasicTestCase):
-    __test__ = True
+class OSXKeychainTestCase(BackendBasicTests, unittest.TestCase):
 
     def init_keyring(self):
         return keyring.backend.OSXKeychain()
@@ -212,8 +209,7 @@ class OSXKeychainTestCase(BackendBasicTestCase):
 
 @unittest.skipUnless(is_gnomekeyring_supported(),
                      "Need GnomeKeyring")
-class GnomeKeyringTestCase(BackendBasicTestCase):
-    __test__ = True
+class GnomeKeyringTestCase(BackendBasicTests, unittest.TestCase):
 
     def environ(self):
         return dict(GNOME_KEYRING_CONTROL='1',
@@ -257,8 +253,7 @@ class GnomeKeyringTestCase(BackendBasicTestCase):
 
 @unittest.skipUnless(is_kwallet_supported(),
                      "Need KWallet")
-class KDEKWalletTestCase(BackendBasicTestCase):
-    __test__ = True
+class KDEKWalletTestCase(BackendBasicTests, unittest.TestCase):
 
     def init_keyring(self):
         return keyring.backend.KDEKWallet()
@@ -330,11 +325,10 @@ class KDEKWalletInQApplication(unittest.TestCase):
         app.exit()
 
 
-class FileKeyringTestCase(BackendBasicTestCase):
-    __test__ = False
+class FileKeyringTests(BackendBasicTests):
 
     def setUp(self):
-        super(FileKeyringTestCase, self).setUp()
+        super(FileKeyringTests, self).setUp()
         self.keyring = self.init_keyring()
         self.keyring.file_path = self.tmp_keyring_file = tempfile.mktemp()
 
@@ -352,8 +346,8 @@ class FileKeyringTestCase(BackendBasicTestCase):
         self.assertEqual(password, self.keyring.decrypt(encyrpted))
 
 
-class UncryptedFileKeyringTestCase(FileKeyringTestCase):
-    __test__ = True
+class UncryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
+
 
     def init_keyring(self):
         return keyring.backend.UncryptedFileKeyring()
@@ -361,8 +355,7 @@ class UncryptedFileKeyringTestCase(FileKeyringTestCase):
 
 @unittest.skipUnless(is_crypto_supported(),
                      "Need Crypto module")
-class CryptedFileKeyringTestCase(FileKeyringTestCase):
-    __test__ = True
+class CryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
 
     def setUp(self):
         super(self.__class__, self).setUp()
@@ -374,8 +367,7 @@ class CryptedFileKeyringTestCase(FileKeyringTestCase):
 
 @unittest.skipUnless(is_win32_crypto_supported(),
                      "Need Windows")
-class Win32CryptoKeyringTestCase(FileKeyringTestCase):
-    __test__ = True
+class Win32CryptoKeyringTestCase(FileKeyringTests, unittest.TestCase):
 
     def init_keyring(self):
         return keyring.backend.Win32CryptoKeyring()
@@ -383,7 +375,7 @@ class Win32CryptoKeyringTestCase(FileKeyringTestCase):
 
 @unittest.skipUnless(is_winvault_supported(),
                      "Need WinVault")
-class WinVaultKeyringTestCase(BackendBasicTestCase):
+class WinVaultKeyringTestCase(BackendBasicTests, unittest.TestCase):
     def tearDown(self):
         # clean up any credentials created
         for cred in self.credentials_created:
