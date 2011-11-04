@@ -10,9 +10,10 @@ import sys
 import ConfigParser
 
 from keyring.util.escape import escape as escape_for_ini
+from keyring.util import properties
 
 try:
-    from abc import ABCMeta, abstractmethod
+    from abc import ABCMeta, abstractmethod, abstractproperty
 except ImportError:
     # to keep compatible with older Python versions.
     class ABCMeta(type):
@@ -20,6 +21,9 @@ except ImportError:
 
     def abstractmethod(funcobj):
         return funcobj
+
+    def abstractproperty(funcobj):
+        return property(funcobj)
 
 try:
     import gnomekeyring
@@ -247,12 +251,16 @@ class BasicFileKeyring(KeyringBackend):
     format.
     """
 
-    def __init__(self):
-        self.file_path = os.path.join(os.path.expanduser("~"), self.filename())
+    @properties.NonDataProperty
+    def file_path(self):
+        """
+        The path to the file where passwords are stored.
+        """
+        return os.path.join(os.path.expanduser('~'), self.filename)
 
-    @abstractmethod
+    @abstractproperty
     def filename(self):
-        """Return the filename used to store the passwords.
+        """The filename used to store the passwords.
         """
         pass
 
@@ -314,11 +322,8 @@ class BasicFileKeyring(KeyringBackend):
 
 class UncryptedFileKeyring(BasicFileKeyring):
     """Uncrypted File Keyring"""
-    def filename(self):
-        """Return the filename of the password file. It should be
-        "keyring_pass.cfg" .
-        """
-        return "keyring_pass.cfg"
+
+    filename = 'keyring_pass.cfg'
 
     def encrypt(self, password):
         """Directly return the password itself.
@@ -337,14 +342,9 @@ class UncryptedFileKeyring(BasicFileKeyring):
 
 class CryptedFileKeyring(BasicFileKeyring):
     """PyCrypto File Keyring"""
-    def __init__(self):
-        super(CryptedFileKeyring, self).__init__()
-        self.crypted_password = None
 
-    def filename(self):
-        """Return the filename for the password file.
-        """
-        return "crypted_pass.cfg"
+    filename = 'crypted_pass.cfg'
+    crypted_password = None
 
     def supported(self):
         """Applicable for all platforms, but not recommend"
@@ -457,6 +457,9 @@ class CryptedFileKeyring(BasicFileKeyring):
 
 class Win32CryptoKeyring(BasicFileKeyring):
     """Win32 Cryptography Keyring"""
+
+    filename = 'wincrypto_pass.cfg'
+
     def __init__(self):
         super(Win32CryptoKeyring, self).__init__()
 
@@ -465,11 +468,6 @@ class Win32CryptoKeyring(BasicFileKeyring):
             self.crypt_handler = win32_crypto
         except ImportError, e:
             self.crypt_handler = None
-
-    def filename(self):
-        """Return the filename for the password storages file.
-        """
-        return "wincrypto_pass.cfg"
 
     def supported(self):
         """Recommended when other Windows backends are unavailable
