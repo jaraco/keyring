@@ -11,6 +11,7 @@ import ConfigParser
 
 from keyring.util.escape import escape as escape_for_ini
 from keyring.util import properties
+import keyring.util.platform
 
 try:
     from abc import ABCMeta, abstractmethod, abstractproperty
@@ -254,9 +255,10 @@ class BasicFileKeyring(KeyringBackend):
     @properties.NonDataProperty
     def file_path(self):
         """
-        The path to the file where passwords are stored.
+        The path to the file where passwords are stored. This property
+        may be overridden by the subclass or at the instance level.
         """
-        return os.path.join(os.path.expanduser('~'), self.filename)
+        return os.path.join(keyring.util.platform.data_root(), self.filename)
 
     @abstractproperty
     def filename(self):
@@ -317,6 +319,9 @@ class BasicFileKeyring(KeyringBackend):
         if not config.has_section(service):
             config.add_section(service)
         config.set(service, username, password_base64)
+        # ensure the storage path exists
+        if not os.path.isdir(os.path.dirname(self.file_path)):
+            os.makedirs(os.path.dirname(self.file_path))
         config_file = open(self.file_path,'w')
         config.write(config_file)
 
