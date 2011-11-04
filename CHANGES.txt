@@ -8,6 +8,8 @@ CHANGES
 
 * Extension modules on Mac and Windows replaced by pure-Python ctypes
   implementations. Thanks to Jérôme Laheurte.
+* WinVaultKeyring now supports multiple passwords for the same service. Fixes
+  #47.
 
 -----
 0.6.2

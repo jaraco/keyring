@@ -488,6 +488,22 @@ class Win32CryptoKeyring(BasicFileKeyring):
 
 
 class WinVaultKeyring(KeyringBackend):
+    """
+    WinVaultKeyring stores encrypted passwords using the Windows Credential
+    Manager.
+
+    Requires pywin32
+
+    This backend does some gymnastics to simulate multi-user support,
+    which WinVault doesn't support natively. See
+    https://bitbucket.org/kang/python-keyring-lib/issue/47/winvaultkeyring-only-ever-returns-last#comment-731977
+    for details on the implementation, but here's the gist:
+
+    Passwords are stored under the service name unless there is a collision
+    (another password with the same service name but different user name),
+    in which case the previous password is moved into a compound name:
+    {username}@{service}
+    """
     def __init__(self):
         super(WinVaultKeyring, self).__init__()
         try:
@@ -508,29 +524,63 @@ class WinVaultKeyring(KeyringBackend):
         else:
             return 0
 
+    @staticmethod
+    def _compound_name(username, service):
+        return u'%(username)s@%(service)s' % vars()
+
     def get_password(self, service, username):
+        # first attempt to get the password under the service name
+        res = self._get_password(service)
+        if not res or res['UserName'] != username:
+            # It wasn't found so attempt to get it with the compound name
+            res = self._get_password(self._compound_name(username, service))
+        if not res:
+            return None
+        blob = res['CredentialBlob']
+        return blob.decode('utf-16')
+
+    def _get_password(self, target):
         try:
-            blob = self.win32cred.CredRead(Type=self.win32cred.CRED_TYPE_GENERIC,
-                                           TargetName=service)['CredentialBlob']
+            res = self.win32cred.CredRead(
+                Type=self.win32cred.CRED_TYPE_GENERIC,
+                TargetName=target,
+            )
         except self.pywintypes.error, e:
-            if e[:2] == (1168, 'CredRead'):
+            if e[:2] == (1168, 'CredRead'): # not found
                 return None
             raise
-        return blob.decode("utf16")
+        return res
 
     def set_password(self, service, username, password):
+        existing_pw = self._get_password(service)
+        if existing_pw:
+            # resave the existing password using a compound target
+            existing_username = existing_pw['UserName']
+            target = self._compound_name(existing_username, service)
+            self._set_password(target, existing_username,
+                existing_pw['CredentialBlob'].decode('utf-16'))
+        self._set_password(service, username, unicode(password))
+
+    def _set_password(self, target, username, password):
         credential = dict(Type=self.win32cred.CRED_TYPE_GENERIC,
-                          TargetName=service,
+                          TargetName=target,
                           UserName=username,
-                          CredentialBlob=unicode(password),
+                          CredentialBlob=password,
                           Comment="Stored using python-keyring",
                           Persist=self.win32cred.CRED_PERSIST_ENTERPRISE)
         self.win32cred.CredWrite(credential, 0)
 
     def delete_password(self, service, username):
+        compound = self._compound_name(username, service)
+        for target in service, compound:
+            existing_pw = self._get_password(target)
+            if existing_pw and existing_pw['UserName'] == username:
+                self._delete_password(target)
+
+    def _delete_password(self, target):
         self.win32cred.CredDelete(
             Type=self.win32cred.CRED_TYPE_GENERIC,
-            TargetName=service,
+            TargetName=target,
         )
 
 class Win32CryptoRegistry(KeyringBackend):
