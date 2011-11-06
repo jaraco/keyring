@@ -11,6 +11,8 @@ CHANGES
 * WinVaultKeyring now supports multiple passwords for the same service. Fixes
   #47.
 * Most of the tests don't require user interaction anymore.
+* Entries stored in Gnome Keyring appears now with a meaningful name if you try
+  to browser your keyring (for ex. with Seahorse)
 
 -----
 0.6.2

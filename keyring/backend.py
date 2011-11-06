@@ -160,8 +160,11 @@ class GnomeKeyring(KeyringBackend):
         """Set password for the username of the service
         """
         try:
-            gnomekeyring.set_network_password_sync(None, username, service,
-                None, None, None, None, 0, password)
+            gnomekeyring.item_create_sync(
+                None, gnomekeyring.ITEM_NETWORK_PASSWORD,
+                "Password for '%s' on '%s'" % (username, service),
+                {'user': username, 'domain': service},
+                password, True)
         except gnomekeyring.CancelledError:
             # The user pressed "Cancel" when prompted to unlock their keyring.
             raise PasswordSetError("cancelled by user")
