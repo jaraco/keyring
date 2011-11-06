@@ -129,6 +129,10 @@ class OSXKeychain(_ExtensionKeyring):
 class GnomeKeyring(KeyringBackend):
     """Gnome Keyring"""
 
+    # Name of the keyring to store the passwords in.
+    # Use None for the default keyring.
+    KEYRING_NAME = None
+
     def supported(self):
         try:
             import gnomekeyring
@@ -161,7 +165,7 @@ class GnomeKeyring(KeyringBackend):
         """
         try:
             gnomekeyring.item_create_sync(
-                None, gnomekeyring.ITEM_NETWORK_PASSWORD,
+                self.KEYRING_NAME, gnomekeyring.ITEM_NETWORK_PASSWORD,
                 "Password for '%s' on '%s'" % (username, service),
                 {'user': username, 'domain': service},
                 password, True)

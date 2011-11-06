@@ -217,7 +217,13 @@ class GnomeKeyringTestCase(BackendBasicTests, unittest.TestCase):
                     DBUS_SESSION_BUS_ADDRESS='1')
 
     def init_keyring(self):
-        return keyring.backend.GnomeKeyring()
+        k = keyring.backend.GnomeKeyring()
+
+        # Store passwords in the session (in-memory) keyring for the tests. This
+        # is going to be automatically cleared when the user logoff.
+        k.KEYRING_NAME = 'session'
+
+        return k
 
     def test_supported(self):
         with ImportBlesser('gnomekeyring'):

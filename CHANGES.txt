@@ -13,6 +13,7 @@ CHANGES
 * Most of the tests don't require user interaction anymore.
 * Entries stored in Gnome Keyring appears now with a meaningful name if you try
   to browser your keyring (for ex. with Seahorse)
+* Tests from Gnome Keyring no longer pollute the user own keyring.
 
 -----
 0.6.2
