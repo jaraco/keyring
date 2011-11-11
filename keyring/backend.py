@@ -35,13 +35,16 @@ _CRYPTED_PASSWORD = 'crypted-password'
 _BLOCK_SIZE = 32
 _PADDING = '0'
 
+
 class PasswordSetError(Exception):
     """Raised when the password can't be set.
     """
 
+
 class PasswordDeleteError(Exception):
     """Raised when the password can't be deleted.
     """
+
 
 class KeyringBackend(object):
     """The abstract base class of the keyring, every backend must implement
@@ -146,6 +149,7 @@ class OSXKeychain(_ExtensionKeyring):
         """
         return sys.platform == 'darwin'
 
+
 class GnomeKeyring(KeyringBackend):
     """Gnome Keyring"""
 
@@ -208,6 +212,7 @@ class GnomeKeyring(KeyringBackend):
 
 kwallet = None
 
+
 def open_kwallet(kwallet_module=None, qt_module=None):
 
     # If we specified the kwallet_module and/or qt_module, surely we won't need
@@ -256,7 +261,7 @@ class KDEKWallet(KeyringBackend):
     """KDE KWallet"""
 
     def supported(self):
-        if kwallet_support and os.environ.has_key('KDE_SESSION_UID'):
+        if kwallet_support and 'KDE_SESSION_UID' in os.environ:
             return 1
         elif kwallet_support:
             return 0
@@ -281,7 +286,7 @@ class KDEKWallet(KeyringBackend):
         """Set password for the username of the service
         """
         wallet = open_kwallet()
-        wallet.writePassword(username+'@'+service, password)
+        wallet.writePassword(username + '@' + service, password)
 
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
@@ -366,7 +371,7 @@ class BasicFileKeyring(KeyringBackend):
         if not config.has_section(service):
             config.add_section(service)
         config.set(service, username, password_base64)
-        config_file = open(self.file_path,'w')
+        config_file = open(self.file_path, 'w')
         config.write(config_file)
 
     def delete_password(self, service, username):
@@ -379,7 +384,7 @@ class BasicFileKeyring(KeyringBackend):
         if not config.remove_section(service):
             raise PasswordDeleteError("can't found the password")
         # update the file
-        config_file = open(self.file_path,'w')
+        config_file = open(self.file_path, 'w')
         config.write(config_file)
 
 
@@ -402,6 +407,7 @@ class UncryptedFileKeyring(BasicFileKeyring):
         """Applicable for all platforms, but do not recommend.
         """
         return 0
+
 
 class CryptedFileKeyring(BasicFileKeyring):
     """PyCrypto File Keyring"""
@@ -432,7 +438,8 @@ class CryptedFileKeyring(BasicFileKeyring):
         password = None
         while 1:
             if not password:
-                password = self._getpass("Please set a password for your new keyring")
+                password = self._getpass("Please set a password"
+                                         " for your new keyring")
                 password2 = self._getpass('Password (again): ')
                 if password != password2:
                     sys.stderr.write("Error: Your passwords didn't match\n")
@@ -459,7 +466,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         config.add_section(_KEYRING_SETTING)
         config.set(_KEYRING_SETTING, _CRYPTED_PASSWORD, self.crypted_password)
 
-        config_file = open(self.file_path,'w')
+        config_file = open(self.file_path, 'w')
         config.write(config_file)
 
         if config_file:
@@ -574,7 +581,9 @@ class WinVaultKeyring(KeyringBackend):
     def __init__(self):
         super(WinVaultKeyring, self).__init__()
         try:
-            import pywintypes, win32cred
+            import pywintypes
+            import win32cred
+
             self.win32cred = win32cred
             self.pywintypes = pywintypes
         except ImportError:
@@ -613,7 +622,7 @@ class WinVaultKeyring(KeyringBackend):
                 TargetName=target,
             )
         except self.pywintypes.error, e:
-            if e[:2] == (1168, 'CredRead'): # not found
+            if e[:2] == (1168, 'CredRead'):  # not found
                 return None
             raise
         return res
@@ -699,7 +708,6 @@ class Win32CryptoRegistry(KeyringBackend):
             password = None
         return password
 
-
     def set_password(self, service, username, password):
         """Write the password to the registry
         """
@@ -712,7 +720,6 @@ class Win32CryptoRegistry(KeyringBackend):
         from _winreg import HKEY_CURRENT_USER, CreateKey, SetValueEx, REG_SZ
         hkey = CreateKey(HKEY_CURRENT_USER, r'Software\%s\Keyring' % service)
         SetValueEx(hkey, username, 0, REG_SZ, password_base64)
-
 
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
@@ -732,7 +739,9 @@ def select_windows_backend():
         return None
     major, minor, build, platform, text = sys.getwindowsversion()
     try:
-        import pywintypes, win32cred
+        import pywintypes
+        import win32cred
+
         if (major, minor) >= (5, 1):
             # recommend for windows xp+
             return 'cred'
@@ -756,14 +765,14 @@ def select_windows_backend():
 
 _all_keyring = None
 
+
 def get_all_keyring():
     """Return the list of all keyrings in the lib
     """
     global _all_keyring
     if _all_keyring is None:
-        _all_keyring = [ OSXKeychain(), GnomeKeyring(), KDEKWallet(),
-                         CryptedFileKeyring(), UncryptedFileKeyring(),
-                         Win32CryptoKeyring(), Win32CryptoRegistry(),
-                         WinVaultKeyring()]
+        _all_keyring = [OSXKeychain(), GnomeKeyring(), KDEKWallet(),
+                        CryptedFileKeyring(), UncryptedFileKeyring(),
+                        Win32CryptoKeyring(), Win32CryptoRegistry(),
+                        WinVaultKeyring()]
     return _all_keyring
-

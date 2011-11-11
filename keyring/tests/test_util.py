@@ -13,11 +13,12 @@ import shutil
 
 from keyring.util import escape
 
+
 class EscapeTestCase(unittest.TestCase):
 
     def check_escape_unescape(self, initial):
         escaped = escape.escape(initial)
-        self.assertTrue(all( c in (escape.LEGAL_CHARS + escape.ESCAPE_CHAR)
+        self.assertTrue(all(c in (escape.LEGAL_CHARS + escape.ESCAPE_CHAR)
                              for c in escaped))
         unescaped = escape.unescape(escaped)
         self.assertEqual(initial, unescaped)
@@ -27,6 +28,7 @@ class EscapeTestCase(unittest.TestCase):
         self.check_escape_unescape("aaaa bbbb cccc")
         self.check_escape_unescape(u"Zażółć gęślą jaźń".encode("utf-8"))
         self.check_escape_unescape("(((P{{{{'''---; ;; '\"|%^")
+
 
 def test_suite():
     suite = unittest.TestSuite()

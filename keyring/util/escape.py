@@ -3,26 +3,29 @@ escape/unescape routines available for backends which need
 alphanumeric usernames, services, or other values
 """
 
-import string, re
+import re
+import string
 
 LEGAL_CHARS = (
-    getattr(string, 'letters', None) # Python 2
-    or getattr(string, 'ascii_letters') # Python 3
+    getattr(string, 'letters', None)  # Python 2
+    or getattr(string, 'ascii_letters')  # Python 3
 ) + string.digits
 ESCAPE_CHAR = "_"
+
 
 def escape(value):
     """Escapes given value so the result consists of alphanumeric chars and
     ESCAPE_CHAR only"""
-    def escape_char(c, legal = LEGAL_CHARS):
+    def escape_char(c, legal=LEGAL_CHARS):
         # Single char escape. Either normal char, or _<hexcode>
         if c in legal:
             return c
         else:
             return "%s%X" % (ESCAPE_CHAR, ord(c))
-    return "".join( escape_char(c) for c in value )
+    return "".join(escape_char(c) for c in value)
+
 
 def unescape(value):
     """Reverts escape"""
     re_esc = re.compile("_([0-9A-F]{2})")
-    return re_esc.sub(lambda i: chr(int(i.group(1),16)), value)
+    return re_esc.sub(lambda i: chr(int(i.group(1), 16)), value)

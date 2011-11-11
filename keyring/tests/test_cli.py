@@ -11,6 +11,7 @@ import keyring.backend
 
 class FakeKeyring(keyring.backend.KeyringBackend):
     PASSWORD = "GABUZOMEUH"
+
     def supported(self):
         return 1
 
@@ -119,17 +120,16 @@ class CommandLineTestCase(unittest.TestCase):
     def test_load_wrong_keyrings(self):
         self.assertRaises(SystemExit, self.cli.run,
                           ["get", "foo", "bar",
-                           "-b", "blablabla" # ImportError
+                           "-b", "blablabla"  # ImportError
                           ])
         self.assertRaises(SystemExit, self.cli.run,
                           ["get", "foo", "bar",
-                           "-b", "os.path.blabla" # AttributeError
+                           "-b", "os.path.blabla"  # AttributeError
                           ])
         self.assertRaises(SystemExit, self.cli.run,
                           ["get", "foo", "bar",
-                           "-b", "__builtin__.str" # TypeError
+                           "-b", "__builtin__.str"  # TypeError
                           ])
-
 
 
 def test_suite():

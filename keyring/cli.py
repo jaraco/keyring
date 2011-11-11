@@ -11,7 +11,8 @@ import keyring.core
 
 class CommandLineTool(object):
     def __init__(self):
-        self.parser = OptionParser(usage="%prog [get|set|del] SERVICE USERNAME")
+        self.parser = OptionParser(
+                        usage="%prog [get|set|del] SERVICE USERNAME")
         self.parser.add_option("-p", "--keyring-path",
                                dest="keyring_path", default=None,
                                help="Path to the keyring backend")
@@ -45,7 +46,6 @@ class CommandLineTool(object):
                 # So, we play on the safe side, and catch everything.
                 self.parser.error("Unable to load specified keyring: %s" % e)
 
-
         if kind == 'get':
             password = keyring.get_password(service, username)
             if password is None:
@@ -78,7 +78,6 @@ class CommandLineTool(object):
 
         return getpass.getpass(prompt)
 
-
     def output_password(self, password):
         """Output the password to the user.
 
@@ -90,7 +89,6 @@ class CommandLineTool(object):
 
 def main(argv=None):
     """Main command line interface."""
-
 
     if argv is None:
         argv = sys.argv[1:]

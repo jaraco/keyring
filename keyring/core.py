@@ -11,6 +11,7 @@ import sys
 from keyring import logger
 from keyring import backend
 
+
 def set_keyring(keyring):
     """Set current keyring backend.
     """
@@ -20,25 +21,30 @@ def set_keyring(keyring):
     else:
         raise TypeError("The keyring must be a subclass of KeyringBackend")
 
+
 def get_keyring():
     """Get current keyring backend.
     """
     return _keyring_backend
+
 
 def get_password(service_name, username):
     """Get password from the specified service.
     """
     return _keyring_backend.get_password(service_name, username)
 
+
 def set_password(service_name, username, password):
     """Set password for the user in the specified service.
     """
     _keyring_backend.set_password(service_name, username, password)
 
+
 def delete_password(service_name, username):
     """Delete the password for the user in the specified service.
     """
     _keyring_backend.delete_password(service_name, username)
+
 
 def init_backend():
     """Load a keyring from a config file or for the default platform.
@@ -97,7 +103,7 @@ def load_keyring(keyring_path, keyring_name):
         # avoid import the imported modules
         module = sys.modules[keyring_name[:keyring_name.rfind('.')]]
     except KeyError:
-        module = load_module(keyring_name, sys.path+[keyring_path])
+        module = load_module(keyring_name, sys.path + [keyring_path])
 
     keyring_class = keyring_name.split('.')[-1].strip()
     exec  "keyring_temp = module." + keyring_class + "() " in locals()

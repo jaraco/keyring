@@ -7,13 +7,14 @@ usage:
     handlers = [urllib2.HTTPBasicAuthHandler(PasswordMgr())]
     urllib2.install_opener(handlers)
     urllib2.urlopen(...)
-    
+
 This will prompt for a password if one is required and isn't already
 in the keyring. Then, it adds it to the keyring for subsequent use.
 """
 
 import keyring
 import getpass
+
 
 class PasswordMgr(object):
     def get_username(self, realm, authuri):

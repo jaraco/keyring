@@ -18,6 +18,7 @@ PASSWORD_TEXT = "This is password"
 PASSWORD_TEXT_2 = "This is password2"
 KEYRINGRC = "keyringrc.cfg"
 
+
 class TestKeyring(keyring.backend.KeyringBackend):
     """A faked keyring for test.
     """
@@ -33,11 +34,13 @@ class TestKeyring(keyring.backend.KeyringBackend):
     def delete_password(self, service, username):
         return 0
 
+
 class TestKeyring2(TestKeyring):
     """Another faked keyring for test.
     """
     def get_password(self, service, username):
         return PASSWORD_TEXT_2
+
 
 class CoreTestCase(unittest.TestCase):
     def test_set_get_password(self):
@@ -68,12 +71,12 @@ class CoreTestCase(unittest.TestCase):
         """Test setting the keyring by config file.
         """
         # create the config file
-        config_file = open(KEYRINGRC,'w')
+        config_file = open(KEYRINGRC, 'w')
         config_file.writelines(["[backend]\n",
             # the path for the user created keyring
             "keyring-path= %s\n" % os.path.dirname(os.path.abspath(__file__)),
             # the name of the keyring class
-            "default-keyring=test_core.TestKeyring2\n" ])
+            "default-keyring=test_core.TestKeyring2\n"])
         config_file.close()
 
         # init the keyring lib, the lib will automaticlly load the
@@ -92,7 +95,7 @@ class CoreTestCase(unittest.TestCase):
         os.chdir(tempdir)
         personal_cfg = os.path.join(os.path.expanduser("~"), "keyringrc.cfg")
         if os.path.exists(personal_cfg):
-            os.rename(personal_cfg, personal_cfg+'.old')
+            os.rename(personal_cfg, personal_cfg + '.old')
             personal_renamed = True
         else:
             personal_renamed = False
@@ -117,7 +120,8 @@ class CoreTestCase(unittest.TestCase):
         os.chdir(old_location)
         shutil.rmtree(tempdir)
         if personal_renamed:
-            os.rename(personal_cfg+'.old', personal_cfg)
+            os.rename(personal_cfg + '.old', personal_cfg)
+
 
 def test_suite():
     suite = unittest.TestSuite()
