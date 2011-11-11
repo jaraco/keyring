@@ -8,6 +8,12 @@ CHANGES
 
 * Extension modules on Mac and Windows replaced by pure-Python ctypes
   implementations. Thanks to Jérôme Laheurte.
+* WinVaultKeyring now supports multiple passwords for the same service. Fixes
+  #47.
+* Most of the tests don't require user interaction anymore.
+* Entries stored in Gnome Keyring appears now with a meaningful name if you try
+  to browser your keyring (for ex. with Seahorse)
+* Tests from Gnome Keyring no longer pollute the user own keyring.
 
 -----
 0.6.2
