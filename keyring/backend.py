@@ -557,7 +557,7 @@ class WinVaultKeyring(KeyringBackend):
                 TargetName=target,
             )
         except self.pywintypes.error, e:
-            if e[:2] == (1168, 'CredRead'): # not found
+            if e.winerror == 1168 and e.funcname == 'CredRead': # not found
                 return None
             raise
         return res
