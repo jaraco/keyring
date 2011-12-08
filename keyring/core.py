@@ -98,7 +98,7 @@ def load_keyring(keyring_path, keyring_name):
         module = load_module(keyring_name, sys.path+[keyring_path])
 
     keyring_class = keyring_name.split('.')[-1].strip()
-    exec("keyring_temp = module." + keyring_class + "() ", locals=locals())
+    keyring_temp = getattr(module, keyring_class)()
 
     return keyring_temp
 
