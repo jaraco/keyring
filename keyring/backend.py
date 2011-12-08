@@ -8,6 +8,7 @@ import getpass
 import os
 import sys
 import ConfigParser
+import base64
 
 from keyring.util.escape import escape as escape_for_ini
 from keyring.util import properties
@@ -312,14 +313,14 @@ class BasicFileKeyring(KeyringBackend):
         username = escape_for_ini(username)
 
         # encrypt the password
-        password_encrypted = self.encrypt(password)
+        password_encrypted = self.encrypt(password.encode('utf-8'))
         # load the password from the disk
         config = ConfigParser.RawConfigParser()
         if os.path.exists(self.file_path):
             config.read(self.file_path)
 
         # encode with base64
-        password_base64 = password_encrypted.encode("base64")
+        password_base64 = base64.encodestring(password_encrypted)
         # write the modification
         if not config.has_section(service):
             config.add_section(service)
@@ -632,7 +633,7 @@ class Win32CryptoRegistry(KeyringBackend):
             hkey = OpenKey(HKEY_CURRENT_USER, key)
             password_base64 = QueryValueEx(hkey, username)[0]
             # decode with base64
-            password_encrypted = password_base64.decode("base64")
+            password_encrypted = base64.encodestring(password_base64)
             # decrypted the password
             password = self.crypt_handler.decrypt(password_encrypted)
         except EnvironmentError:
@@ -646,7 +647,7 @@ class Win32CryptoRegistry(KeyringBackend):
         # encrypt the password
         password_encrypted = self.crypt_handler.encrypt(password)
         # encode with base64
-        password_base64 = password_encrypted.encode("base64")
+        password_base64 = base64.encodestring(password_encrypted)
 
         # store the password
         from _winreg import HKEY_CURRENT_USER, CreateKey, SetValueEx, REG_SZ
