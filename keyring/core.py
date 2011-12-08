@@ -52,7 +52,7 @@ def init_backend():
 
         keyrings = backend.get_all_keyring()
         # rank according to the supported result
-        keyrings.sort(key=lambda x, y: y.supported() - x.supported())
+        keyrings.sort(key = lambda x: -x.supported())
         # get the most recommended one
         keyring = keyrings[0]
 
