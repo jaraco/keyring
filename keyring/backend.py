@@ -297,11 +297,11 @@ class BasicFileKeyring(KeyringBackend):
 
         # fetch the password
         try:
-            password_base64 = config.get(service, username)
+            password_base64 = config.get(service, username).encode()
             # decode with base64
-            password_encrypted = password_base64.decode("base64")
+            password_encrypted = base64.decodestring(password_base64)
             # decrypted the password
-            password = self.decrypt(password_encrypted)
+            password = self.decrypt(password_encrypted).decode('utf-8')
         except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
             password = None
         return password
@@ -320,7 +320,7 @@ class BasicFileKeyring(KeyringBackend):
             config.read(self.file_path)
 
         # encode with base64
-        password_base64 = base64.encodestring(password_encrypted)
+        password_base64 = base64.encodestring(password_encrypted).decode()
         # write the modification
         if not config.has_section(service):
             config.add_section(service)
