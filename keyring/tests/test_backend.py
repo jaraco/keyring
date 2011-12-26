@@ -347,9 +347,11 @@ class FileKeyringTests(BackendBasicTests):
 
     def test_encrypt_decrypt(self):
         password = random_string(20)
-        encyrpted = self.keyring.encrypt(password)
+        # keyring.encrypt expects bytes
+        password = password.encode('utf-8')
+        encrypted = self.keyring.encrypt(password)
 
-        self.assertEqual(password, self.keyring.decrypt(encyrpted))
+        self.assertEqual(password, self.keyring.decrypt(encrypted))
 
 
 class UncryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
