@@ -1,6 +1,6 @@
--------
+=======
 CHANGES
--------
+=======
 
 ---
 1.0
@@ -20,7 +20,7 @@ CHANGES
   strings passed to it.
 
 Backward-incompatibility
-========================
+++++++++++++++++++++++++
 
 The keyring file backends now always expect strings (not bytes) for service
 and username parameters. Additionally, all parameters are encoded (for
