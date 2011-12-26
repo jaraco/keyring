@@ -17,15 +17,14 @@ class EscapeTestCase(unittest.TestCase):
 
     def check_escape_unescape(self, initial):
         escaped = escape.escape(initial)
-        self.assertTrue(all( c in (escape.LEGAL_CHARS + escape.ESCAPE_CHAR)
-                             for c in escaped))
+        self.assertTrue(all(c in (escape.LEGAL_CHARS + '_') for c in escaped))
         unescaped = escape.unescape(escaped)
         self.assertEqual(initial, unescaped)
 
     def test_escape_unescape(self):
         self.check_escape_unescape("aaaa")
         self.check_escape_unescape("aaaa bbbb cccc")
-        self.check_escape_unescape(u"Zażółć gęślą jaźń".encode("utf-8"))
+        self.check_escape_unescape(u"Zażółć gęślą jaźń")
         self.check_escape_unescape("(((P{{{{'''---; ;; '\"|%^")
 
 def test_suite():

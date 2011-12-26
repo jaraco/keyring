@@ -3,9 +3,11 @@ CHANGES
 -------
 
 ---
-0.7
+1.0
 ---
 
+* Preliminary Python 3 support. All tests now pass under Python 3.2 on
+  Windows.
 * Extension modules on Mac and Windows replaced by pure-Python ctypes
   implementations. Thanks to Jérôme Laheurte.
 * WinVaultKeyring now supports multiple passwords for the same service. Fixes
@@ -14,6 +16,23 @@ CHANGES
 * Entries stored in Gnome Keyring appears now with a meaningful name if you try
   to browser your keyring (for ex. with Seahorse)
 * Tests from Gnome Keyring no longer pollute the user own keyring.
+* `keyring.util.escape` now accepts only unicode strings. Don't try to encode
+  strings passed to it.
+
+Backward-incompatibility
+========================
+
+The keyring file backends now always expect strings (not bytes) for service
+and username parameters. Additionally, all parameters are encoded (for
+ini-file compatibility) with a new encoding scheme that accepts high byte
+characters. What this means for users is that one should not encode service
+name or username when calling
+get_password and set_password. Any keyrings storing passwords in file-backed
+stores will fail to lookup those passwords using the old encoding.
+
+To manually update a keyring file to support the new escaping, replace all
+instances of _XX (where XX is a hex byte) with __xXX__ in service names and
+user names.
 
 -----
 0.6.2
