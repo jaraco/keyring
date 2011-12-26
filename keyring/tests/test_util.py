@@ -25,20 +25,12 @@ class EscapeTestCase(unittest.TestCase):
 
     def test_low_byte(self):
         """
-        The current encoding allows low bytes (less than hex 16) to encode
-        as two bytes. For example '\n' (hex A) will encode as '_A', which
+        Ensure that encoding low bytes (ordinal less than hex F) encode as
+        as three bytes to avoid ambiguity. For example '\n' (hex A) should
+        encode as '_0A' and not '_A', the latter of which
         isn't matched by the inverse operation.
         """
         self.check_escape_unescape('\n')
-
-    def test_ambiguous_string(self):
-        """
-        The current encoding encodes each non-alphanumeric byte to _XX where
-        XX is the hex code for that byte. However, it doesn't encode dual-
-        digits, so '\x00' encodes to '_0'. Thus, if one tries to escape the
-        string '\x000' (the null byte followed by the number 0), it will be
-        encoded to '_00', which decodes to '\x00'.
-        """
         self.check_escape_unescape('\x000')
 
 def test_suite():
