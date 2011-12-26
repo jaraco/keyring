@@ -19,21 +19,6 @@ CHANGES
 * `keyring.util.escape` now accepts only unicode strings. Don't try to encode
   strings passed to it.
 
-Backward-incompatibility
-++++++++++++++++++++++++
-
-The keyring file backends now always expect strings (not bytes) for service
-and username parameters. Additionally, all parameters are encoded (for
-ini-file compatibility) with a new encoding scheme that accepts high byte
-characters. What this means for users is that one should not encode service
-name or username when calling
-get_password and set_password. Any keyrings storing passwords in file-backed
-stores will fail to lookup those passwords using the old encoding.
-
-To manually update a keyring file to support the new escaping, replace all
-instances of _XX (where XX is a hex byte) with __xXX__ in service names and
-user names.
-
 -----
 0.6.2
 -----
