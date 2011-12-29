@@ -11,7 +11,7 @@ import sys
 
 setup_params = dict(
     name = 'keyring',
-    version = "0.7",
+    version = "0.7.1",
     description = "Store and access your passwords safely.",
     url = "http://home.python-keyring.org/",
     keywords = "keyring Keychain GnomeKeyring Kwallet password storage",
