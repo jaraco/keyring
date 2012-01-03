@@ -7,7 +7,18 @@ Setup the Keyring Lib for Python.
 """
 
 import sys
+import codecs
 
+def load(filename):
+    """
+    Read a text file and decode it.
+    """
+    f = codecs.open(filename, encoding='utf-8')
+    try:
+        result = f.read()
+    finally:
+        f.close()
+    return result
 
 setup_params = dict(
     name = 'keyring',
@@ -20,7 +31,7 @@ setup_params = dict(
     maintainer = 'Jason R. Coombs',
     maintainer_email = 'jaraco@jaraco.com',
     license="PSF",
-    long_description = open('README').read() + open('CHANGES.txt').read(),
+    long_description = load('README') + load('CHANGES.txt'),
     classifiers = [
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
