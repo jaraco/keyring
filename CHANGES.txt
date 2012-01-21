@@ -15,7 +15,7 @@ CHANGES
 * Python 3 is now supported. All tests now pass under Python 3.2 on
   Windows and Linux (although Linux backend support is limited). Fixes #28.
 * Extension modules on Mac and Windows replaced by pure-Python ctypes
-  implementations. Thanks to Jérôme Laheurte.
+  implementations. Thanks to Jerome Laheurte.
 * WinVaultKeyring now supports multiple passwords for the same service. Fixes
   #47.
 * Most of the tests don't require user interaction anymore.
