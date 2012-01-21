@@ -18,7 +18,17 @@ def load(filename):
         result = f.read()
     finally:
         f.close()
+    if not encodes_as_ascii(result):
+        # see https://bitbucket.org/kang/python-keyring-lib/issue/55
+        raise ValueError("distutils requires ASCII")
     return result
+
+def encodes_as_ascii(string):
+    try:
+        string.encode('ascii')
+    except UnicodeEncodeError:
+        return False
+    return True
 
 setup_params = dict(
     name = 'keyring',
