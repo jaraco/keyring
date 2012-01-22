@@ -32,7 +32,7 @@ def encodes_as_ascii(string):
 
 setup_params = dict(
     name = 'keyring',
-    version = "0.7.1",
+    version = "0.7.2",
     description = "Store and access your passwords safely.",
     url = "http://bitbucket.org/kang/python-keyring-lib",
     keywords = "keyring Keychain GnomeKeyring Kwallet password storage",
