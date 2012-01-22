@@ -6,7 +6,8 @@ CHANGES
 0.7.1
 -----
 
-* CHANGES HERE
+* Removed non-ASCII characters from README and CHANGES docs (required by
+  distutils if we're to include them in the long_description). Fixes #55.
 
 ---
 0.7
