@@ -44,7 +44,6 @@ def password_get(realmstring, username):
             ],
             stderr=subprocess.STDOUT
         )
-        print output.split('\n')[0]
         matches = re.search('password:(?P<hex>.*?)"(?P<pw>.*)"', output)
         if matches:
             hex = matches.group('hex').strip()
