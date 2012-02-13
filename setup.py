@@ -9,6 +9,14 @@ Setup the Keyring Lib for Python.
 import sys
 import codecs
 
+try:
+    import setuptools
+    setup_mod = setuptools
+    "where to find setup()"
+except ImportError:
+    import distutils.core
+    setup_mod = distutils.core
+
 def load(filename):
     """
     Read a text file and decode it.
@@ -58,7 +66,7 @@ setup_params = dict(
 )
 
 
-if sys.version_info >= (3,0):
+if sys.version_info >= (3, 0):
     setup_params.update(
         use_2to3=True,
     )
@@ -74,8 +82,4 @@ elif sys.version_info < (2, 7) or (
 
 
 if __name__ == '__main__':
-    try:
-        from setuptools import setup
-    except ImportError:
-        from distutils.core import setup
-    setup(**setup_params)
+    setup_mod.setup(**setup_params)
