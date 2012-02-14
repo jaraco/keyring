@@ -281,7 +281,7 @@ class BasicFileKeyring(KeyringBackend):
 
     def _relocate_file(self):
         """
-        keyring 0.7 changes the default location for storage of
+        keyring 0.8 changes the default location for storage of
         file-based keyring locations. This function is invoked to move
         files stored in the old location to the new location.
 
@@ -290,9 +290,9 @@ class BasicFileKeyring(KeyringBackend):
         old_location = os.path.join(os.path.expanduser('~'), self.filename)
         new_location = self.file_path
         if os.path.exists(old_location):
-            if os.path.exists(self.file_path):
-                print >> stderr, ("Password file found in legacy location\n"
-                    "  %(old_location)s\nand new location\n"
+            if os.path.exists(new_location):
+                print >> sys.stderr, ("Password file found in legacy "
+                    "location\n  %(old_location)s\nand new location\n"
                     "  %(new_location)s\nOld location will be ignored."
                     % vars())
                 return
