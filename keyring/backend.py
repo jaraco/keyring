@@ -12,6 +12,8 @@ import base64
 
 from keyring.util.escape import escape as escape_for_ini
 from keyring.util import properties
+import keyring.util.platform
+import keyring.util.loc_compat
 
 try:
     from abc import ABCMeta, abstractmethod, abstractproperty
@@ -262,9 +264,10 @@ class BasicFileKeyring(KeyringBackend):
     @properties.NonDataProperty
     def file_path(self):
         """
-        The path to the file where passwords are stored.
+        The path to the file where passwords are stored. This property
+        may be overridden by the subclass or at the instance level.
         """
-        return os.path.join(os.path.expanduser('~'), self.filename)
+        return os.path.join(keyring.util.platform.data_root(), self.filename)
 
     @abstractproperty
     def filename(self):
@@ -284,9 +287,17 @@ class BasicFileKeyring(KeyringBackend):
         """
         pass
 
+    def _relocate_file(self):
+        old_location = os.path.join(os.path.expanduser('~'), self.filename)
+        new_location = self.file_path
+        keyring.util.loc_compat.relocate_file(old_location, new_location)
+        # disable this function - it only needs to be run once
+        self._relocate_file = lambda: None
+
     def get_password(self, service, username):
         """Read the password from the file.
         """
+        self._relocate_file()
         service = escape_for_ini(service)
         username = escape_for_ini(username)
 
@@ -309,6 +320,7 @@ class BasicFileKeyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Write the password in the file.
         """
+        self._relocate_file()
         service = escape_for_ini(service)
         username = escape_for_ini(username)
 
@@ -325,6 +337,9 @@ class BasicFileKeyring(KeyringBackend):
         if not config.has_section(service):
             config.add_section(service)
         config.set(service, username, password_base64)
+        # ensure the storage path exists
+        if not os.path.isdir(os.path.dirname(self.file_path)):
+            os.makedirs(os.path.dirname(self.file_path))
         config_file = open(self.file_path,'w')
         config.write(config_file)
 

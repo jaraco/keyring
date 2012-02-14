@@ -2,11 +2,28 @@
 CHANGES
 =======
 
------
-0.7.2
------
+---
+0.8
+---
 
-* changes go here
+* When using file-based storage, the keyring files are no longer stored
+  in the user's home directory, but are instead stored in platform-friendly
+  locations (`%localappdata%\Python Keyring` on Windows and according to
+  the freedesktop.org Base Dir Specification
+  (`$XDG_DATA_HOME/python_keyring` or `$HOME/.local/share/python_keyring`)
+  on other operating systems). This fixes #21.
+
+*Backward Compatibility Notice*
+
+Due to the new storage location for file-based keyrings, keyring 0.8
+supports backward compatibility by automatically moving the password
+files to the updated location. In general, users can upgrade to 0.8 and
+continue to operate normally. Any applications that customize the storage
+location or make assumptions about the storage location will need to take
+this change into consideration. Additionally, after upgrading to 0.8,
+it is not possible to downgrade to 0.7 without manually moving
+configuration files. In 1.0, the backward compatibilty
+will be removed.
 
 -----
 0.7.1
