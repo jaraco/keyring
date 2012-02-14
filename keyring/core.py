@@ -10,6 +10,9 @@ import sys
 
 from keyring import logger
 from keyring import backend
+from keyring.util import platform
+from keyring.util import loc_compat
+
 
 def set_keyring(keyring):
     """Set current keyring backend.
@@ -108,13 +111,19 @@ def load_config():
     """
     keyring = None
 
-    # search from current working directory and the home folder
-    keyring_cfg_list = [os.path.join(os.getcwd(), "keyringrc.cfg"),
-                        os.path.join(os.path.expanduser("~"), "keyringrc.cfg")]
+    filename = 'keyringrc.cfg'
+
+    local_path = os.path.join(os.getcwd(), filename)
+    legacy_path = os.path.join(os.path.expanduser("~"), filename)
+    config_path = os.path.join(platform.data_root(), filename)
+    loc_compat.relocate_file(legacy_path, config_path)
+
+    # search from current working directory and the data root
+    keyring_cfg_candidates = [local_path, config_path]
 
     # initialize the keyring_config with the first detected config file
     keyring_cfg = None
-    for path in keyring_cfg_list:
+    for path in keyring_cfg_candidates:
         keyring_cfg = path
         if os.path.exists(path):
             break

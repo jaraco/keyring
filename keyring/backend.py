@@ -8,11 +8,11 @@ import getpass
 import os
 import sys
 import ConfigParser
-import shutil
 
 from keyring.util.escape import escape as escape_for_ini
 from keyring.util import properties
 import keyring.util.platform
+import keyring.util.loc_compat
 
 try:
     from abc import ABCMeta, abstractmethod, abstractproperty
@@ -280,26 +280,9 @@ class BasicFileKeyring(KeyringBackend):
         pass
 
     def _relocate_file(self):
-        """
-        keyring 0.8 changes the default location for storage of
-        file-based keyring locations. This function is invoked to move
-        files stored in the old location to the new location.
-
-        TODO: remove this function for keyring 1.0.
-        """
         old_location = os.path.join(os.path.expanduser('~'), self.filename)
         new_location = self.file_path
-        if os.path.exists(old_location):
-            if os.path.exists(new_location):
-                print >> sys.stderr, ("Password file found in legacy "
-                    "location\n  %(old_location)s\nand new location\n"
-                    "  %(new_location)s\nOld location will be ignored."
-                    % vars())
-                return
-            # ensure the storage path exists
-            if not os.path.isdir(os.path.dirname(new_location)):
-                os.makedirs(os.path.dirname(new_location))
-            shutil.move(old_location, new_location)
+        keyring.util.loc_compat.relocate_file(old_location, new_location)
         # disable this function - it only needs to be run once
         self._relocate_file = lambda: None
 
