@@ -146,7 +146,8 @@ class LocationTestCase(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(CoreTestCase, LocationTestCase))
+    suite.addTest(unittest.makeSuite(CoreTestCase))
+    suite.addTest(unittest.makeSuite(LocationTestCase))
     return suite
 
 if __name__ == "__main__":
