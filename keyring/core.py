@@ -5,9 +5,9 @@ Created by Kang Zhang on 2009-07-09
 """
 import os
 try:
-	import configparser as config_parser
+    import configparser as config_parser
 except ImportError:
-	import ConfigParser as config_parser
+    import ConfigParser as config_parser
 import imp
 import sys
 
