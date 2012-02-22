@@ -6,6 +6,9 @@ CHANGES
 0.8
 ---
 
+* Mac OS X keyring backend now uses subprocess calls to the `security`
+  command instead of calling the API, which with the latest updates, no
+  longer allows Python to invoke from a virtualenv. Fixes issue #13.
 * When using file-based storage, the keyring files are no longer stored
   in the user's home directory, but are instead stored in platform-friendly
   locations (`%localappdata%\Python Keyring` on Windows and according to
