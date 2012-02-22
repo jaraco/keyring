@@ -2,3 +2,4 @@ recursive-include keyring *.py
 recursive-include demo *.py
 include *.py
 include *.txt
+exclude .hg/last-message.txt
