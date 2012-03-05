@@ -9,7 +9,12 @@ exec('__import__("platform", globals=dict())')
 platform = sys.modules['platform']
 
 def _data_root_Windows():
-	return os.path.join(os.environ['LOCALAPPDATA'], 'Python Keyring')
+	try:
+		root = os.environ['LOCALAPPDATA']
+	except KeyError:
+		# Windows XP
+		root = os.path.join(os.environ['USERPROFILE'], 'Local Settings')
+	return os.path.join(root, 'Python Keyring')
 
 def _data_root_Linux():
 	"""
