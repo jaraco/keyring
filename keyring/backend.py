@@ -489,7 +489,7 @@ class Win32CryptoKeyring(BasicFileKeyring):
         try:
             from backends import win32_crypto
             self.crypt_handler = win32_crypto
-        except ImportError, e:
+        except ImportError:
             self.crypt_handler = None
 
     def supported(self):
@@ -534,7 +534,8 @@ class WinVaultKeyring(KeyringBackend):
     def __init__(self):
         super(WinVaultKeyring, self).__init__()
         try:
-            import pywintypes, win32cred
+            import pywintypes
+            import win32cred
             self.win32cred = win32cred
             self.pywintypes = pywintypes
         except ImportError:
@@ -648,13 +649,12 @@ class Win32CryptoRegistry(KeyringBackend):
             hkey = OpenKey(HKEY_CURRENT_USER, key)
             password_base64 = QueryValueEx(hkey, username)[0]
             # decode with base64
-            password_encrypted = base64.encodestring(password_base64)
+            password_encrypted = base64.decodestring(password_base64)
             # decrypted the password
             password = self.crypt_handler.decrypt(password_encrypted)
         except EnvironmentError:
             password = None
         return password
-
 
     def set_password(self, service, username, password):
         """Write the password to the registry
@@ -674,7 +674,8 @@ def select_windows_backend():
         return None
     major, minor, build, platform, text = sys.getwindowsversion()
     try:
-        import pywintypes, win32cred
+        import pywintypes
+        import win32cred
         if (major, minor) >= (5, 1):
             # recommend for windows xp+
             return 'cred'
@@ -703,9 +704,8 @@ def get_all_keyring():
     """
     global _all_keyring
     if _all_keyring is None:
-        _all_keyring = [ OSXKeychain(), GnomeKeyring(), KDEKWallet(),
-                         CryptedFileKeyring(), UncryptedFileKeyring(),
-                         Win32CryptoKeyring(), Win32CryptoRegistry(),
-                         WinVaultKeyring()]
+        _all_keyring = [OSXKeychain(), GnomeKeyring(), KDEKWallet(),
+                        CryptedFileKeyring(), UncryptedFileKeyring(),
+                        Win32CryptoKeyring(), Win32CryptoRegistry(),
+                        WinVaultKeyring()]
     return _all_keyring
-
