@@ -4,14 +4,19 @@ backend.py
 Created by Kang Zhang on 2009-07-09
 """
 
+import getpass
 import os
 import sys
 import ConfigParser
+import base64
 
 from keyring.util.escape import escape as escape_for_ini
+from keyring.util import properties
+import keyring.util.platform
+import keyring.util.loc_compat
 
 try:
-    from abc import ABCMeta, abstractmethod
+    from abc import ABCMeta, abstractmethod, abstractproperty
 except ImportError:
     # to keep compatible with older Python versions.
     class ABCMeta(type):
@@ -19,6 +24,9 @@ except ImportError:
 
     def abstractmethod(funcobj):
         return funcobj
+
+    def abstractproperty(funcobj):
+        return property(funcobj)
 
 _KEYRING_SETTING = 'keyring-setting'
 _CRYPTED_PASSWORD = 'crypted-password'
@@ -119,6 +127,10 @@ class OSXKeychain(_ExtensionKeyring):
 class GnomeKeyring(KeyringBackend):
     """Gnome Keyring"""
 
+    # Name of the keyring to store the passwords in.
+    # Use None for the default keyring.
+    KEYRING_NAME = None
+
     def supported(self):
         try:
             import gnomekeyring
@@ -153,8 +165,11 @@ class GnomeKeyring(KeyringBackend):
         """
         import gnomekeyring
         try:
-            gnomekeyring.set_network_password_sync(None, username, service,
-                None, None, None, None, 0, password)
+            gnomekeyring.item_create_sync(
+                self.KEYRING_NAME, gnomekeyring.ITEM_NETWORK_PASSWORD,
+                "Password for '%s' on '%s'" % (username, service),
+                {'user': username, 'domain': service},
+                password, True)
         except gnomekeyring.CancelledError:
             # The user pressed "Cancel" when prompted to unlock their keyring.
             raise PasswordSetError("cancelled by user")
@@ -230,9 +245,12 @@ kwallet = None
 
 def open_kwallet(kwallet_module=None, qt_module=None):
 
-    global kwallet
-    if not kwallet is None:
-        return kwallet
+    # If we specified the kwallet_module and/or qt_module, surely we won't need
+    # the cached kwallet object...
+    if kwallet_module is None and qt_module is None:
+        global kwallet
+        if not kwallet is None:
+            return kwallet
 
     # Allow for the injection of module-like objects for testing purposes.
     if kwallet_module is None:
@@ -308,12 +326,17 @@ class BasicFileKeyring(KeyringBackend):
     format.
     """
 
-    def __init__(self):
-        self.file_path = os.path.join(os.path.expanduser("~"), self.filename())
+    @properties.NonDataProperty
+    def file_path(self):
+        """
+        The path to the file where passwords are stored. This property
+        may be overridden by the subclass or at the instance level.
+        """
+        return os.path.join(keyring.util.platform.data_root(), self.filename)
 
-    @abstractmethod
+    @abstractproperty
     def filename(self):
-        """Return the filename used to store the passwords.
+        """The filename used to store the passwords.
         """
         pass
 
@@ -329,9 +352,17 @@ class BasicFileKeyring(KeyringBackend):
         """
         pass
 
+    def _relocate_file(self):
+        old_location = os.path.join(os.path.expanduser('~'), self.filename)
+        new_location = self.file_path
+        keyring.util.loc_compat.relocate_file(old_location, new_location)
+        # disable this function - it only needs to be run once
+        self._relocate_file = lambda: None
+
     def get_password(self, service, username):
         """Read the password from the file.
         """
+        self._relocate_file()
         service = escape_for_ini(service)
         username = escape_for_ini(username)
 
@@ -342,11 +373,11 @@ class BasicFileKeyring(KeyringBackend):
 
         # fetch the password
         try:
-            password_base64 = config.get(service, username)
+            password_base64 = config.get(service, username).encode()
             # decode with base64
-            password_encrypted = password_base64.decode("base64")
+            password_encrypted = base64.decodestring(password_base64)
             # decrypted the password
-            password = self.decrypt(password_encrypted)
+            password = self.decrypt(password_encrypted).decode('utf-8')
         except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
             password = None
         return password
@@ -354,32 +385,33 @@ class BasicFileKeyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Write the password in the file.
         """
+        self._relocate_file()
         service = escape_for_ini(service)
         username = escape_for_ini(username)
 
         # encrypt the password
-        password_encrypted = self.encrypt(password)
+        password_encrypted = self.encrypt(password.encode('utf-8'))
         # load the password from the disk
         config = ConfigParser.RawConfigParser()
         if os.path.exists(self.file_path):
             config.read(self.file_path)
 
         # encode with base64
-        password_base64 = password_encrypted.encode("base64")
+        password_base64 = base64.encodestring(password_encrypted).decode()
         # write the modification
         if not config.has_section(service):
             config.add_section(service)
         config.set(service, username, password_base64)
+        # ensure the storage path exists
+        if not os.path.isdir(os.path.dirname(self.file_path)):
+            os.makedirs(os.path.dirname(self.file_path))
         config_file = open(self.file_path,'w')
         config.write(config_file)
 
 class UncryptedFileKeyring(BasicFileKeyring):
     """Uncrypted File Keyring"""
-    def filename(self):
-        """Return the filename of the password file. It should be
-        "keyring_pass.cfg" .
-        """
-        return "keyring_pass.cfg"
+
+    filename = 'keyring_pass.cfg'
 
     def encrypt(self, password):
         """Directly return the password itself.
@@ -398,14 +430,9 @@ class UncryptedFileKeyring(BasicFileKeyring):
 
 class CryptedFileKeyring(BasicFileKeyring):
     """PyCrypto File Keyring"""
-    def __init__(self):
-        super(CryptedFileKeyring, self).__init__()
-        self.crypted_password = None
 
-    def filename(self):
-        """Return the filename for the password file.
-        """
-        return "crypted_pass.cfg"
+    filename = 'crypted_pass.cfg'
+    crypted_password = None
 
     def supported(self):
         """Applicable for all platforms, but not recommend"
@@ -417,17 +444,21 @@ class CryptedFileKeyring(BasicFileKeyring):
             status = -1
         return status
 
+    def _getpass(self, *args, **kwargs):
+        """Wrap getpass.getpass(), so that we can override it when testing.
+        """
+
+        return getpass.getpass(*args, **kwargs)
+
     def _init_file(self):
         """Init the password file, set the password for it.
         """
 
-        print("Please set a password for your new keyring")
         password = None
         while 1:
             if not password:
-                import getpass
-                password = getpass.getpass()
-                password2 = getpass.getpass('Password (again): ')
+                password = self._getpass("Please set a password for your new keyring")
+                password2 = self._getpass('Password (again): ')
                 if password != password2:
                     sys.stderr.write("Error: Your passwords didn't match\n")
                     password = None
@@ -486,9 +517,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         if not self._check_file():
             self._init_file()
 
-        print "Please input your password for the keyring"
-        import getpass
-        password = getpass.getpass()
+        password = self._getpass("Please input your password for the keyring")
 
         if not self._auth(password):
             sys.stderr.write("Wrong password for the keyring.\n")
@@ -516,19 +545,17 @@ class CryptedFileKeyring(BasicFileKeyring):
 
 class Win32CryptoKeyring(BasicFileKeyring):
     """Win32 Cryptography Keyring"""
+
+    filename = 'wincrypto_pass.cfg'
+
     def __init__(self):
         super(Win32CryptoKeyring, self).__init__()
 
         try:
             from backends import win32_crypto
             self.crypt_handler = win32_crypto
-        except ImportError, e:
+        except ImportError:
             self.crypt_handler = None
-
-    def filename(self):
-        """Return the filename for the password storages file.
-        """
-        return "wincrypto_pass.cfg"
 
     def supported(self):
         """Recommended when other Windows backends are unavailable
@@ -553,10 +580,27 @@ class Win32CryptoKeyring(BasicFileKeyring):
 
 
 class WinVaultKeyring(KeyringBackend):
+    """
+    WinVaultKeyring stores encrypted passwords using the Windows Credential
+    Manager.
+
+    Requires pywin32
+
+    This backend does some gymnastics to simulate multi-user support,
+    which WinVault doesn't support natively. See
+    https://bitbucket.org/kang/python-keyring-lib/issue/47/winvaultkeyring-only-ever-returns-last#comment-731977
+    for details on the implementation, but here's the gist:
+
+    Passwords are stored under the service name unless there is a collision
+    (another password with the same service name but different user name),
+    in which case the previous password is moved into a compound name:
+    {username}@{service}
+    """
     def __init__(self):
         super(WinVaultKeyring, self).__init__()
         try:
-            import pywintypes, win32cred
+            import pywintypes
+            import win32cred
             self.win32cred = win32cred
             self.pywintypes = pywintypes
         except ImportError:
@@ -573,29 +617,63 @@ class WinVaultKeyring(KeyringBackend):
         else:
             return 0
 
+    @staticmethod
+    def _compound_name(username, service):
+        return u'%(username)s@%(service)s' % vars()
+
     def get_password(self, service, username):
+        # first attempt to get the password under the service name
+        res = self._get_password(service)
+        if not res or res['UserName'] != username:
+            # It wasn't found so attempt to get it with the compound name
+            res = self._get_password(self._compound_name(username, service))
+        if not res:
+            return None
+        blob = res['CredentialBlob']
+        return blob.decode('utf-16')
+
+    def _get_password(self, target):
         try:
-            blob = self.win32cred.CredRead(Type=self.win32cred.CRED_TYPE_GENERIC,
-                                           TargetName=service)['CredentialBlob']
+            res = self.win32cred.CredRead(
+                Type=self.win32cred.CRED_TYPE_GENERIC,
+                TargetName=target,
+            )
         except self.pywintypes.error, e:
-            if e[:2] == (1168, 'CredRead'):
+            if e.winerror == 1168 and e.funcname == 'CredRead': # not found
                 return None
             raise
-        return blob.decode("utf16")
+        return res
 
     def set_password(self, service, username, password):
+        existing_pw = self._get_password(service)
+        if existing_pw:
+            # resave the existing password using a compound target
+            existing_username = existing_pw['UserName']
+            target = self._compound_name(existing_username, service)
+            self._set_password(target, existing_username,
+                existing_pw['CredentialBlob'].decode('utf-16'))
+        self._set_password(service, username, unicode(password))
+
+    def _set_password(self, target, username, password):
         credential = dict(Type=self.win32cred.CRED_TYPE_GENERIC,
-                          TargetName=service,
+                          TargetName=target,
                           UserName=username,
-                          CredentialBlob=unicode(password),
+                          CredentialBlob=password,
                           Comment="Stored using python-keyring",
                           Persist=self.win32cred.CRED_PERSIST_ENTERPRISE)
         self.win32cred.CredWrite(credential, 0)
 
     def delete_password(self, service, username):
+        compound = self._compound_name(username, service)
+        for target in service, compound:
+            existing_pw = self._get_password(target)
+            if existing_pw and existing_pw['UserName'] == username:
+                self._delete_password(target)
+
+    def _delete_password(self, target):
         self.win32cred.CredDelete(
             Type=self.win32cred.CRED_TYPE_GENERIC,
-            TargetName=service,
+            TargetName=target,
         )
 
 class Win32CryptoRegistry(KeyringBackend):
@@ -636,13 +714,12 @@ class Win32CryptoRegistry(KeyringBackend):
             hkey = OpenKey(HKEY_CURRENT_USER, key)
             password_base64 = QueryValueEx(hkey, username)[0]
             # decode with base64
-            password_encrypted = password_base64.decode("base64")
+            password_encrypted = base64.decodestring(password_base64)
             # decrypted the password
             password = self.crypt_handler.decrypt(password_encrypted)
         except EnvironmentError:
             password = None
         return password
-
 
     def set_password(self, service, username, password):
         """Write the password to the registry
@@ -650,7 +727,7 @@ class Win32CryptoRegistry(KeyringBackend):
         # encrypt the password
         password_encrypted = self.crypt_handler.encrypt(password)
         # encode with base64
-        password_base64 = password_encrypted.encode("base64")
+        password_base64 = base64.encodestring(password_encrypted)
 
         # store the password
         from _winreg import HKEY_CURRENT_USER, CreateKey, SetValueEx, REG_SZ
@@ -662,7 +739,8 @@ def select_windows_backend():
         return None
     major, minor, build, platform, text = sys.getwindowsversion()
     try:
-        import pywintypes, win32cred
+        import pywintypes
+        import win32cred
         if (major, minor) >= (5, 1):
             # recommend for windows xp+
             return 'cred'
@@ -691,9 +769,8 @@ def get_all_keyring():
     """
     global _all_keyring
     if _all_keyring is None:
-        _all_keyring = [ OSXKeychain(), GnomeKeyring(), KDEKWallet(),
-                         CryptedFileKeyring(), UncryptedFileKeyring(),
-                         Win32CryptoKeyring(), Win32CryptoRegistry(),
-                         WinVaultKeyring(), SecretServiceKeyring() ]
+        _all_keyring = [OSXKeychain(), GnomeKeyring(), KDEKWallet(),
+                        CryptedFileKeyring(), UncryptedFileKeyring(),
+                        Win32CryptoKeyring(), Win32CryptoRegistry(),
+                        WinVaultKeyring(), SecretServiceKeyring()]
     return _all_keyring
-

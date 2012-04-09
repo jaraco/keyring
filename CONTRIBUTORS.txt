@@ -13,3 +13,4 @@ Contributors
 * Gary Poster
 * Patrick Mezard
 * Jérôme Laheurte
+* Jake Basile
