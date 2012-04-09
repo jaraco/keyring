@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+---
+0.9
+---
+
+* Add support for GTK 3 and secret service D-Bus. Fixes #52.
+
 -----
 0.8.1
 -----
