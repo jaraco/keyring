@@ -15,7 +15,8 @@ The keyring services supported by the Python keyring lib:
 
 * **OSXKeychain**: supports the Keychain service in Mac OS X.
 * **KDEKWallet**: supports the KDE's Kwallet service.
-* **GnomeKeyring**: for Gnome environment.
+* **GnomeKeyring**: for Gnome 2 environment.
+* **SecretServiceKeyring**: for newer GNOME and KDE environments.
 
 Besides these native password storing services provided by operating systems.
 Python keyring lib also provides following build-in keyrings.

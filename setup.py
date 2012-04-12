@@ -7,18 +7,58 @@ Setup the Keyring Lib for Python.
 """
 
 import sys
+import codecs
 
+try:
+    import setuptools
+    setup_mod = setuptools
+    "where to find setup()"
+except ImportError:
+    import distutils.core
+    setup_mod = distutils.core
+
+def load(filename):
+    """
+    Read a text file and decode it.
+    """
+    f = codecs.open(filename, encoding='utf-8')
+    try:
+        result = f.read()
+    finally:
+        f.close()
+    if not encodes_as_ascii(result):
+        # see https://bitbucket.org/kang/python-keyring-lib/issue/55
+        raise ValueError("distutils requires ASCII")
+    return result
+
+def encodes_as_ascii(string):
+    try:
+        string.encode('ascii')
+    except UnicodeEncodeError:
+        return False
+    return True
 
 setup_params = dict(
     name = 'keyring',
-    version = "0.7",
+    version = "0.9",
     description = "Store and access your passwords safely.",
-    url = "http://home.python-keyring.org/",
+    url = "http://bitbucket.org/kang/python-keyring-lib",
     keywords = "keyring Keychain GnomeKeyring Kwallet password storage",
-    maintainer = "Kang Zhang",
-    maintainer_email = "jobo.zh@gmail.com",
+    author = "Kang Zhang",
+    author_email = "jobo.zh@gmail.com",
+    maintainer = 'Jason R. Coombs',
+    maintainer_email = 'jaraco@jaraco.com',
     license="PSF",
-    long_description = open('README').read() + open('CHANGES.txt').read(),
+    long_description = load('README') + load('CHANGES.txt'),
+    classifiers = [
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "Programming Language :: Python :: 2.4",
+        "Programming Language :: Python :: 2.5",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+    ],
     platforms = ["Many"],
     packages = ['keyring', 'keyring.tests', 'keyring.util',
                 'keyring.backends'],
@@ -26,7 +66,7 @@ setup_params = dict(
 )
 
 
-if sys.version_info >= (3,0):
+if sys.version_info >= (3, 0):
     setup_params.update(
         use_2to3=True,
     )
@@ -42,8 +82,4 @@ elif sys.version_info < (2, 7) or (
 
 
 if __name__ == '__main__':
-    try:
-        from setuptools import setup
-    except ImportError:
-        from distutils.core import setup
-    setup(**setup_params)
+    setup_mod.setup(**setup_params)

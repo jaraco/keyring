@@ -8,9 +8,12 @@ import getpass
 import os
 import sys
 import ConfigParser
+import base64
 
 from keyring.util.escape import escape as escape_for_ini
 from keyring.util import properties
+import keyring.util.platform
+import keyring.util.loc_compat
 
 try:
     from abc import ABCMeta, abstractmethod, abstractproperty
@@ -125,7 +128,7 @@ class _ExtensionKeyring(KeyringBackend):
         try:
             self.keyring_impl.password_set(service, username, password)
         except OSError, e:
-            raise PasswordSetError(e)
+            raise PasswordSetError(e.message)
 
     def delete_password(self, service, username):
         """Override the delete_password in KeyringBackend.
@@ -133,7 +136,7 @@ class _ExtensionKeyring(KeyringBackend):
         try:
             self.keyring_impl.password_delete(service, username)
         except OSError, e:
-            raise PasswordDeleteError(e)
+            raise PasswordDeleteError(e.message)
 
 
 class OSXKeychain(_ExtensionKeyring):
@@ -173,6 +176,8 @@ class GnomeKeyring(KeyringBackend):
     def get_password(self, service, username):
         """Get password of the username for the service
         """
+        import gnomekeyring
+
         try:
             items = gnomekeyring.find_network_password_sync(username, service)
         except gnomekeyring.NoMatchError:
@@ -187,6 +192,7 @@ class GnomeKeyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
+        import gnomekeyring
         try:
             gnomekeyring.item_create_sync(
                 self.KEYRING_NAME, gnomekeyring.ITEM_NETWORK_PASSWORD,
@@ -200,6 +206,7 @@ class GnomeKeyring(KeyringBackend):
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
         """
+        import gnomekeyring
         try:
             items = gnomekeyring.find_network_password_sync(username, service)
             for current in items:
@@ -209,6 +216,72 @@ class GnomeKeyring(KeyringBackend):
             raise PasswordDeleteError("can't found the password")
         except gnomekeyring.CancelledError:
             raise PasswordDeleteError("cancelled by user")
+
+
+class SecretServiceKeyring(KeyringBackend):
+    """Secret Service Keyring"""
+
+    def supported(self):
+        try:
+            import dbus
+        except ImportError:
+            return -1
+        try:
+            bus = dbus.SessionBus()
+            bus.get_object('org.freedesktop.secrets',
+                '/org/freedesktop/secrets')
+        except dbus.exceptions.DBusException:
+            return -1
+        else:
+            return 1
+
+    def get_password(self, service, username):
+        """Get password of the username for the service
+        """
+        import dbus
+        bus = dbus.SessionBus()
+        service_obj = bus.get_object('org.freedesktop.secrets',
+            '/org/freedesktop/secrets')
+        service_iface = dbus.Interface(service_obj,
+            'org.freedesktop.Secret.Service')
+        unlocked, locked = service_iface.SearchItems(
+            {"username": username, "service": service})
+        _, session = service_iface.OpenSession("plain", "")
+        no_longer_locked, prompt = service_iface.Unlock(locked)
+        assert prompt == "/"
+        secrets = service_iface.GetSecrets(unlocked + locked, session)
+        for item_path, secret in secrets.iteritems():
+            return "".join([str(x) for x in secret[2]])
+        return None
+
+    def set_password(self, service, username, password):
+        """Set password for the username of the service
+        """
+        import dbus
+        bus = dbus.SessionBus()
+        service_obj = bus.get_object('org.freedesktop.secrets',
+            '/org/freedesktop/secrets')
+        service_iface = dbus.Interface(service_obj,
+            'org.freedesktop.Secret.Service')
+        collection_obj = bus.get_object(
+            'org.freedesktop.secrets',
+            '/org/freedesktop/secrets/aliases/default')
+        collection = dbus.Interface(collection_obj,
+            'org.freedesktop.Secret.Collection')
+        attributes = {
+            "service": service,
+            "username": username
+            }
+        _, session = service_iface.OpenSession("plain", "")
+        secret = dbus.Struct(
+            (session, "", dbus.ByteArray(password), "text/plain"))
+        properties = {
+            "org.freedesktop.Secret.Item.Label": "%s @ %s" % (
+                username, service),
+            "org.freedesktop.Secret.Item.Attributes": attributes}
+        (item, prompt) = collection.CreateItem(properties, secret,
+            True)
+        assert prompt == "/"
 
 kwallet = None
 
@@ -261,7 +334,7 @@ class KDEKWallet(KeyringBackend):
     """KDE KWallet"""
 
     def supported(self):
-        if kwallet_support and 'KDE_SESSION_UID' in os.environ:
+        if kwallet_support and os.environ.has_key('KDE_SESSION_UID'):
             return 1
         elif kwallet_support:
             return 0
@@ -308,9 +381,10 @@ class BasicFileKeyring(KeyringBackend):
     @properties.NonDataProperty
     def file_path(self):
         """
-        The path to the file where passwords are stored.
+        The path to the file where passwords are stored. This property
+        may be overridden by the subclass or at the instance level.
         """
-        return os.path.join(os.path.expanduser('~'), self.filename)
+        return os.path.join(keyring.util.platform.data_root(), self.filename)
 
     @abstractproperty
     def filename(self):
@@ -330,9 +404,17 @@ class BasicFileKeyring(KeyringBackend):
         """
         pass
 
+    def _relocate_file(self):
+        old_location = os.path.join(os.path.expanduser('~'), self.filename)
+        new_location = self.file_path
+        keyring.util.loc_compat.relocate_file(old_location, new_location)
+        # disable this function - it only needs to be run once
+        self._relocate_file = lambda: None
+
     def get_password(self, service, username):
         """Read the password from the file.
         """
+        self._relocate_file()
         service = escape_for_ini(service)
         username = escape_for_ini(username)
 
@@ -343,11 +425,11 @@ class BasicFileKeyring(KeyringBackend):
 
         # fetch the password
         try:
-            password_base64 = config.get(service, username)
+            password_base64 = config.get(service, username).encode()
             # decode with base64
-            password_encrypted = password_base64.decode("base64")
+            password_encrypted = base64.decodestring(password_base64)
             # decrypted the password
-            password = self.decrypt(password_encrypted)
+            password = self.decrypt(password_encrypted).decode('utf-8')
         except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
             password = None
         return password
@@ -355,23 +437,27 @@ class BasicFileKeyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Write the password in the file.
         """
+        self._relocate_file()
         service = escape_for_ini(service)
         username = escape_for_ini(username)
 
         # encrypt the password
-        password_encrypted = self.encrypt(password)
+        password_encrypted = self.encrypt(password.encode('utf-8'))
         # load the password from the disk
         config = ConfigParser.RawConfigParser()
         if os.path.exists(self.file_path):
             config.read(self.file_path)
 
         # encode with base64
-        password_base64 = password_encrypted.encode("base64")
+        password_base64 = base64.encodestring(password_encrypted).decode()
         # write the modification
         if not config.has_section(service):
             config.add_section(service)
         config.set(service, username, password_base64)
-        config_file = open(self.file_path, 'w')
+        # ensure the storage path exists
+        if not os.path.isdir(os.path.dirname(self.file_path)):
+            os.makedirs(os.path.dirname(self.file_path))
+        config_file = open(self.file_path,'w')
         config.write(config_file)
 
     def delete_password(self, service, username):
@@ -622,7 +708,7 @@ class WinVaultKeyring(KeyringBackend):
                 TargetName=target,
             )
         except self.pywintypes.error, e:
-            if e[:2] == (1168, 'CredRead'):  # not found
+            if e.winerror == 1168 and e.funcname == 'CredRead': # not found
                 return None
             raise
         return res
@@ -701,12 +787,13 @@ class Win32CryptoRegistry(KeyringBackend):
             hkey = OpenKey(HKEY_CURRENT_USER, key)
             password_base64 = QueryValueEx(hkey, username)[0]
             # decode with base64
-            password_encrypted = password_base64.decode("base64")
+            password_encrypted = base64.decodestring(password_base64)
             # decrypted the password
             password = self.crypt_handler.decrypt(password_encrypted)
         except EnvironmentError:
             password = None
         return password
+
 
     def set_password(self, service, username, password):
         """Write the password to the registry
@@ -714,7 +801,7 @@ class Win32CryptoRegistry(KeyringBackend):
         # encrypt the password
         password_encrypted = self.crypt_handler.encrypt(password)
         # encode with base64
-        password_base64 = password_encrypted.encode("base64")
+        password_base64 = base64.encodestring(password_encrypted)
 
         # store the password
         from _winreg import HKEY_CURRENT_USER, CreateKey, SetValueEx, REG_SZ
@@ -774,5 +861,5 @@ def get_all_keyring():
         _all_keyring = [OSXKeychain(), GnomeKeyring(), KDEKWallet(),
                         CryptedFileKeyring(), UncryptedFileKeyring(),
                         Win32CryptoKeyring(), Win32CryptoRegistry(),
-                        WinVaultKeyring()]
+                        WinVaultKeyring(), SecretServiceKeyring()]
     return _all_keyring

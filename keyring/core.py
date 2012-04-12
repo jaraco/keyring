@@ -4,12 +4,18 @@ core.py
 Created by Kang Zhang on 2009-07-09
 """
 import os
-import ConfigParser
+try:
+    import configparser as config_parser
+except ImportError:
+    import ConfigParser as config_parser
 import imp
 import sys
 
 from keyring import logger
 from keyring import backend
+from keyring.util import platform
+from keyring.util import loc_compat
+
 
 
 def set_keyring(keyring):
@@ -60,7 +66,7 @@ def init_backend():
 
         keyrings = backend.get_all_keyring()
         # rank according to the supported result
-        keyrings.sort(lambda x, y: y.supported() - x.supported())
+        keyrings.sort(key = lambda x: -x.supported())
         # get the most recommended one
         keyring = keyrings[0]
 
@@ -106,7 +112,7 @@ def load_keyring(keyring_path, keyring_name):
         module = load_module(keyring_name, sys.path + [keyring_path])
 
     keyring_class = keyring_name.split('.')[-1].strip()
-    exec  "keyring_temp = module." + keyring_class + "() " in locals()
+    keyring_temp = getattr(module, keyring_class)()
 
     return keyring_temp
 
@@ -119,19 +125,25 @@ def load_config():
     """
     keyring = None
 
-    # search from current working directory and the home folder
-    keyring_cfg_list = [os.path.join(os.getcwd(), "keyringrc.cfg"),
-                        os.path.join(os.path.expanduser("~"), "keyringrc.cfg")]
+    filename = 'keyringrc.cfg'
+
+    local_path = os.path.join(os.getcwd(), filename)
+    legacy_path = os.path.join(os.path.expanduser("~"), filename)
+    config_path = os.path.join(platform.data_root(), filename)
+    loc_compat.relocate_file(legacy_path, config_path)
+
+    # search from current working directory and the data root
+    keyring_cfg_candidates = [local_path, config_path]
 
     # initialize the keyring_config with the first detected config file
     keyring_cfg = None
-    for path in keyring_cfg_list:
+    for path in keyring_cfg_candidates:
         keyring_cfg = path
         if os.path.exists(path):
             break
 
     if os.path.exists(keyring_cfg):
-        config = ConfigParser.RawConfigParser()
+        config = config_parser.RawConfigParser()
         config.read(keyring_cfg)
         # load the keyring-path option
         try:
@@ -139,7 +151,7 @@ def load_config():
                 keyring_path = config.get("backend", "keyring-path").strip()
             else:
                 keyring_path = None
-        except ConfigParser.NoOptionError:
+        except config_parser.NoOptionError:
             keyring_path = None
 
         # load the keyring class name, and then load this keyring
@@ -147,10 +159,10 @@ def load_config():
             if config.has_section("backend"):
                 keyring_name = config.get("backend", "default-keyring").strip()
             else:
-                raise ConfigParser.NoOptionError('backend', 'default-keyring')
+                raise config_parser.NoOptionError('backend', 'default-keyring')
 
             keyring = load_keyring(keyring_path, keyring_name)
-        except (ConfigParser.NoOptionError, ImportError):
+        except (config_parser.NoOptionError, ImportError):
             logger.warning("Keyring config file contains incorrect values.\n" +
                            "Config file: %s" % keyring_cfg)
 

@@ -1,19 +1,69 @@
--------
+=======
 CHANGES
--------
+=======
+
+---
+0.9
+---
+
+* Add support for GTK 3 and secret service D-Bus. Fixes #52.
+
+-----
+0.8.1
+-----
+
+* Fix regression in keyring lib on Windows XP where the LOCALAPPDATA
+  environment variable is not present.
+
+---
+0.8
+---
+
+* Mac OS X keyring backend now uses subprocess calls to the `security`
+  command instead of calling the API, which with the latest updates, no
+  longer allows Python to invoke from a virtualenv. Fixes issue #13.
+* When using file-based storage, the keyring files are no longer stored
+  in the user's home directory, but are instead stored in platform-friendly
+  locations (`%localappdata%\Python Keyring` on Windows and according to
+  the freedesktop.org Base Dir Specification
+  (`$XDG_DATA_HOME/python_keyring` or `$HOME/.local/share/python_keyring`)
+  on other operating systems). This fixes #21.
+
+*Backward Compatibility Notice*
+
+Due to the new storage location for file-based keyrings, keyring 0.8
+supports backward compatibility by automatically moving the password
+files to the updated location. In general, users can upgrade to 0.8 and
+continue to operate normally. Any applications that customize the storage
+location or make assumptions about the storage location will need to take
+this change into consideration. Additionally, after upgrading to 0.8,
+it is not possible to downgrade to 0.7 without manually moving
+configuration files. In 1.0, the backward compatibilty
+will be removed.
+
+-----
+0.7.1
+-----
+
+* Removed non-ASCII characters from README and CHANGES docs (required by
+  distutils if we're to include them in the long_description). Fixes #55.
 
 ---
 0.7
 ---
 
+* Python 3 is now supported. All tests now pass under Python 3.2 on
+  Windows and Linux (although Linux backend support is limited). Fixes #28.
 * Extension modules on Mac and Windows replaced by pure-Python ctypes
-  implementations. Thanks to Jérôme Laheurte.
+  implementations. Thanks to Jerome Laheurte.
 * WinVaultKeyring now supports multiple passwords for the same service. Fixes
   #47.
 * Most of the tests don't require user interaction anymore.
 * Entries stored in Gnome Keyring appears now with a meaningful name if you try
   to browser your keyring (for ex. with Seahorse)
 * Tests from Gnome Keyring no longer pollute the user own keyring.
+* `keyring.util.escape` now accepts only unicode strings. Don't try to encode
+  strings passed to it.
 
 -----
 0.6.2
