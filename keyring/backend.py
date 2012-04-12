@@ -28,11 +28,6 @@ except ImportError:
     def abstractproperty(funcobj):
         return property(funcobj)
 
-try:
-    import gnomekeyring
-except ImportError:
-    pass
-
 _KEYRING_SETTING = 'keyring-setting'
 _CRYPTED_PASSWORD = 'crypted-password'
 _BLOCK_SIZE = 32
