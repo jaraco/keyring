@@ -7,6 +7,7 @@ CHANGES
 ---
 
 * Add support for GTK 3 and secret service D-Bus. Fixes #52.
+* Issue #60 - Use correct method for decoding.
 
 -----
 0.8.1
