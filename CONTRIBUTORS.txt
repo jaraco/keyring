@@ -15,3 +15,4 @@ Contributors
 * Jérôme Laheurte
 * Jake Basile
 * Jelmer Vernooij
+* André Sintzoff
