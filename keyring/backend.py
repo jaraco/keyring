@@ -230,6 +230,9 @@ class SecretServiceKeyring(KeyringBackend):
             "username": username
             }
         _, session = service_iface.OpenSession("plain", "")
+        
+        if isinstance(password, unicode):
+            password = password.encode('utf-8')
         secret = dbus.Struct(
             (session, "", dbus.ByteArray(password), "text/plain"))
         properties = {
