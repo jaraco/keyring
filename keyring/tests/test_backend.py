@@ -140,6 +140,12 @@ def is_winvault_supported():
         pass
     return False
 
+def is_dbus_supported():
+    try:
+        __import__('dbus')
+    except ImportError:
+        return False
+    return True
 
 class BackendBasicTests(object):
     """Test for the keyring's basic funtions. password_set and password_get
@@ -395,7 +401,9 @@ class WinVaultKeyringTestCase(BackendBasicTests, unittest.TestCase):
     def init_keyring(self):
         return keyring.backend.WinVaultKeyring()
 
-class SecretServiceKeyringTestCase(BackendBasicTestCase):
+@unittest.skipUnless(is_dbus_supported(),
+    "DBus needed for SecretServiceKeyring")
+class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
     __test__ = True
 
     def environ(self):
