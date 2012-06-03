@@ -16,3 +16,5 @@ Contributors
 * Jake Basile
 * Jelmer Vernooij
 * André Sintzoff
+* Thomas Kluyver
+* Sebastian Ramacher

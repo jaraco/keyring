@@ -2,6 +2,20 @@
 CHANGES
 =======
 
+-----
+0.9.1
+-----
+
+* Fix for issue where SecretServiceBackend.set_password would raise a
+  UnicodeError on Python 3 or when a unicode password was provided on Python
+  2.
+* CryptedFileKeyring now uses PBKDF2 to derive the key from the user's
+  password and a random hash. The IV is chosen randomly as well. All the
+  stored passwords are encrypted at once. Any keyrings using the old format
+  will be automatically converted to the new format (but will no longer be
+  compatible with 0.9 and earlier). The user's password is no longer limited
+  to 32 characters. PyCrypto 2.5 or greater is now required for this keyring.
+
 ---
 0.9
 ---
