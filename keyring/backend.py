@@ -28,6 +28,11 @@ except ImportError:
     def abstractproperty(funcobj):
         return property(funcobj)
 
+try:
+  from cStringIO import StringIO
+except ImportError:
+  from StringIO import StringIO
+
 _KEYRING_SETTING = 'keyring-setting'
 _CRYPTED_PASSWORD = 'crypted-password'
 _BLOCK_SIZE = 32
@@ -435,13 +440,14 @@ class CryptedFileKeyring(BasicFileKeyring):
     """PyCrypto File Keyring"""
 
     filename = 'crypted_pass.cfg'
-    crypted_password = None
 
     def supported(self):
         """Applicable for all platforms, but not recommend"
         """
         try:
             from Crypto.Cipher import AES
+            from Crypto.Protocol.KDF import PBKDF2
+            from Crypto.Random import get_random_bytes
             status = 0
         except ImportError:
             status = -1
@@ -458,92 +464,164 @@ class CryptedFileKeyring(BasicFileKeyring):
         """
 
         password = None
-        while 1:
-            if not password:
-                password = self._getpass("Please set a password for your new keyring")
-                password2 = self._getpass('Password (again): ')
-                if password != password2:
-                    sys.stderr.write("Error: Your passwords didn't match\n")
-                    password = None
-                    continue
+        while password is None:
+            password = self._getpass("Please set a password for your new keyring")
+            password2 = self._getpass('Password (again): ')
+            if password != password2:
+                sys.stderr.write("Error: Your passwords didn't match\n")
+                password = None
+                continue
             if '' == password.strip():
                 # forbid the blank password
                 sys.stderr.write("Error: blank passwords aren't allowed.\n")
                 password = None
-                continue
-            if len(password) > _BLOCK_SIZE:
-                # block size of AES is less than 32
-                sys.stderr.write("Error: password can't be longer than 32.\n")
-                password = None
-                continue
-            break
-
-        # hash the password
-        import crypt
-        self.crypted_password = crypt.crypt(password, password)
 
         # write down the initialization
         config = ConfigParser.RawConfigParser()
-        config.add_section(_KEYRING_SETTING)
-        config.set(_KEYRING_SETTING, _CRYPTED_PASSWORD, self.crypted_password)
+        self._write_config(config, password)
 
-        config_file = open(self.file_path,'w')
+    def _create_cipher(self, password, salt, IV):
+        """Create the cipher object to encrypt or decrypt the keyring.
+        """
+
+        from Crypto.Protocol.KDF import PBKDF2
+        from Crypto.Cipher import AES
+        pw = PBKDF2(password, salt, dkLen=_BLOCK_SIZE)
+        return AES.new(pw[:_BLOCK_SIZE], AES.MODE_CFB, IV)
+
+    def _write_config(self, config, keyring_password):
+        """Write the keyring with the given password.
+        """
+
+        config_file = StringIO()
         config.write(config_file)
+        config_file.seek(0)
 
-        if config_file:
-            config_file.close()
+        from Crypto.Random import get_random_bytes
+        salt = get_random_bytes(_BLOCK_SIZE)
+        from Crypto.Cipher import AES
+        IV = get_random_bytes(AES.block_size)
+        cipher = self._create_cipher(keyring_password, salt, IV)
 
-    def _check_file(self):
-        """Check if the password file has been init properly.
+        if not os.path.isdir(os.path.dirname(self.file_path)):
+            os.makeidrs(os.path.dirname(self.file_path))
+
+        encrypted_config_file = open(self.file_path, 'w')
+        encrypted_config_file.write((salt + IV).encode('base64'))
+        encrypted_config_file.write(cipher.encrypt(config_file.read()).encode('base64'))
+        encrypted_config_file.close()
+
+    def _convert_old_keyring(self, keyring_password=None):
+        """Convert keyring to new format.
         """
-        if os.path.exists(self.file_path):
-            config = ConfigParser.RawConfigParser()
-            config.read(self.file_path)
-            try:
-                self.crypted_password = config.get(_KEYRING_SETTING,
-                                                    _CRYPTED_PASSWORD)
-                return self.crypted_password.strip() != ''
-            except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
-                pass
-        return False
 
-    def _auth(self, password):
-        """Return if the password can open the keyring.
-        """
+        config_file = open(self.file_path, 'r')
+        config = ConfigParser.RawConfigParser()
+        config.readfp(config_file)
+        config_file.close()
+
+        if keyring_password is None:
+            keyring_password = self._getpass("Please input your password for the keyring: ")
+
         import crypt
-        return crypt.crypt(password, password) == self.crypted_password
-
-    def _init_crypter(self):
-        """Init the crypter(using the password of the keyring).
-        """
-        # check the password file
-        if not self._check_file():
-            self._init_file()
-
-        password = self._getpass("Please input your password for the keyring")
-
-        if not self._auth(password):
+        hashed = crypt.crypt(keyring_password, keyring_password)
+        if config.get(_KEYRING_SETTING, _CRYPTED_PASSWORD) != hashed:
             sys.stderr.write("Wrong password for the keyring.\n")
             raise ValueError("Wrong password")
 
-        # init the cipher with the password
         from Crypto.Cipher import AES
-        # pad to _BLOCK_SIZE bytes
-        password = password + (_BLOCK_SIZE - len(password) % _BLOCK_SIZE) * \
-                                                                    _PADDING
-        return AES.new(password, AES.MODE_CFB)
+        password = keyring_password + (_BLOCK_SIZE - len(keyring_password) % _BLOCK_SIZE) * _PADDING
+
+        config.remove_option(_KEYRING_SETTING, _CRYPTED_PASSWORD)
+        for section in config.sections():
+            for opt in config.options(section):
+                cipher = AES.new(password, AES.MODE_CFB, '\0' * AES.block_size)
+                p = config.get(section, opt).decode()
+                p = cipher.decrypt(p.decode('base64'))
+                config.set(section, opt, p)
+
+        self._write_config(config, keyring_password)
+        return (config, keyring_password)
+
+
+    def _read_config(self, keyring_password=None):
+        """Read the keyring.
+        """
+
+        # load the passwords from the file
+        if not os.path.exists(self.file_path):
+            self._init_file()
+
+        encrypted_config_file = open(self.file_path, 'r')
+        salt = encrypted_config_file.readline()
+        if salt[0] == '[':
+          encrypted_config_file.close()
+          return self._convert_old_keyring(keyring_password)
+
+        data = salt.decode('base64')
+        salt = data[:_BLOCK_SIZE]
+        IV = data[_BLOCK_SIZE:]
+        data = encrypted_config_file.read().decode('base64')
+        encrypted_config_file.close()
+
+        if keyring_password is None:
+            keyring_password = self._getpass("Please input your password for the keyring: ")
+        cipher = self._create_cipher(keyring_password, salt, IV)
+
+        config_file = StringIO(cipher.decrypt(data))
+        config = ConfigParser.RawConfigParser()
+        try:
+            config.readfp(config_file)
+        except ConfigParser.Error:
+            sys.stderr.write("Wrong password for the keyring.\n")
+            raise ValueError("Wrong password")
+        return (config, keyring_password)
+
+    def get_password(self, service, username):
+        """Read the password from the file.
+        """
+
+        self._relocate_file()
+        service = escape_for_ini(service)
+        username = escape_for_ini(username)
+
+        # load the passwords from the file
+        if not os.path.exists(self.file_path):
+            self._init_file()
+
+        config, keyring_password = self._read_config()
+
+        # fetch the password
+        try:
+            password = config.get(service, username)
+            password = password.decode('utf-8')
+        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+            password = None
+        return password
+
+    def set_password(self, service, username, password):
+        """Save the password in the file.
+        """
+
+        self._relocate_file()
+        service = escape_for_ini(service)
+        username = escape_for_ini(username)
+
+        config, keyring_password = self._read_config()
+
+        password = password.encode('utf-8')
+        # write the modification
+        if not config.has_section(service):
+            config.add_section(service)
+        config.set(service, username, password)
+
+        self._write_config(config, keyring_password)
 
     def encrypt(self, password):
-        """Encrypt the given password using the pycryto.
-        """
-        crypter = self._init_crypter()
-        return crypter.encrypt(password)
+        raise NotImplementedError()
 
     def decrypt(self, password_encrypted):
-        """Decrypt the given password using the pycryto.
-        """
-        crypter = self._init_crypter()
-        return crypter.decrypt(password_encrypted)
+        raise NotImplementedError()
 
 
 class Win32CryptoKeyring(BasicFileKeyring):
