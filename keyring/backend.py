@@ -29,9 +29,9 @@ except ImportError:
         return property(funcobj)
 
 try:
-  from cStringIO import StringIO
+    from cStringIO import StringIO
 except ImportError:
-  from StringIO import StringIO
+    from StringIO import StringIO
 
 _KEYRING_SETTING = 'keyring-setting'
 _CRYPTED_PASSWORD = 'crypted-password'
@@ -138,7 +138,7 @@ class GnomeKeyring(KeyringBackend):
 
     def supported(self):
         try:
-            import gnomekeyring
+            __import__('gnomekeyring')
         except ImportError:
             return -1
         else:
@@ -235,7 +235,7 @@ class SecretServiceKeyring(KeyringBackend):
             "username": username
             }
         _, session = service_iface.OpenSession("plain", "")
-        
+
         if isinstance(password, unicode):
             password = password.encode('utf-8')
         secret = dbus.Struct(
@@ -299,7 +299,7 @@ class KDEKWallet(KeyringBackend):
     """KDE KWallet"""
 
     def supported(self):
-        if kwallet_support and os.environ.has_key('KDE_SESSION_UID'):
+        if kwallet_support and 'KDE_SESSION_UID' in os.environ:
             return 1
         elif kwallet_support:
             return 0
@@ -445,9 +445,9 @@ class CryptedFileKeyring(BasicFileKeyring):
         """Applicable for all platforms, but not recommend"
         """
         try:
-            from Crypto.Cipher import AES
-            from Crypto.Protocol.KDF import PBKDF2
-            from Crypto.Random import get_random_bytes
+            __import__('Crypto.Cipher.AES')
+            __import__('Crypto.Protocol.KDF')
+            __import__('Crypto.Random')
             status = 0
         except ImportError:
             status = -1
@@ -543,7 +543,6 @@ class CryptedFileKeyring(BasicFileKeyring):
         self._write_config(config, keyring_password)
         return (config, keyring_password)
 
-
     def _read_config(self, keyring_password=None):
         """Read the keyring.
         """
@@ -555,8 +554,8 @@ class CryptedFileKeyring(BasicFileKeyring):
         encrypted_config_file = open(self.file_path, 'r')
         salt = encrypted_config_file.readline()
         if salt[0] == '[':
-          encrypted_config_file.close()
-          return self._convert_old_keyring(keyring_password)
+            encrypted_config_file.close()
+            return self._convert_old_keyring(keyring_password)
 
         data = salt.decode('base64')
         salt = data[:_BLOCK_SIZE]
@@ -766,7 +765,7 @@ class Win32CryptoRegistry(KeyringBackend):
 
         try:
             from backends import win32_crypto
-            import _winreg
+            __import__('_winreg')
             self.crypt_handler = win32_crypto
         except ImportError:
             self.crypt_handler = None
@@ -820,23 +819,23 @@ def select_windows_backend():
         return None
     major, minor, build, platform, text = sys.getwindowsversion()
     try:
-        import pywintypes
-        import win32cred
+        __import__('pywintypes')
+        __import__('win32cred')
         if (major, minor) >= (5, 1):
             # recommend for windows xp+
             return 'cred'
     except ImportError:
         pass
     try:
-        from backends import win32_crypto
-        import _winreg
+        __import__('keyring.backends.win32_crypto')
+        __import__('_winreg')
         if (major, minor) >= (5, 0):
             # recommend for windows 2k+
             return 'reg'
     except ImportError:
         pass
     try:
-        from backends import win32_crypto
+        __import__('keyring.backends.win32_crypto')
         return 'file'
     except ImportError:
         pass
