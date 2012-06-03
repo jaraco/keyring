@@ -35,7 +35,7 @@ def get_repo_name():
 	"""
 	Get the repo name from the hgrc default path.
 	"""
-	default = subprocess.check_output('hg paths default')
+	default = subprocess.check_output('hg paths default').strip()
 	parts = default.split('/')
 	if parts[-1] == '':
 		parts.pop()
@@ -73,7 +73,7 @@ def add_milestone_and_version(version=NEXT_VERSION):
 			data='name='+version)
 		try:
 			urllib2.urlopen(req)
-		except Exception as e:
+		except urllib2.HTTPError as e:
 			print(e.fp.read())
 
 def bump_versions():
