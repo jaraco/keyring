@@ -94,12 +94,10 @@ def random_string(k, source = ALPHABET):
 
 def is_win32_crypto_supported():
     try:
-        from keyring.backends import win32_crypto
-        if sys.platform in ['win32'] and sys.getwindowsversion()[-2] == 2:
-            return True
+        __import__('keyring.backends.win32_crypto')
     except ImportError:
-        pass
-    return False
+        return False
+    return sys.platform in ['win32'] and sys.getwindowsversion()[-2] == 2
 
 def is_osx_keychain_supported():
     return sys.platform in ('mac','darwin')
@@ -112,8 +110,8 @@ def is_kwallet_supported():
 
 def is_crypto_supported():
     try:
-        from Crypto.Cipher import AES
-        import crypt
+        __import__('Crypto.Cipher.AES')
+        __import__('crypt')
     except ImportError:
         return False
     return True
@@ -126,19 +124,13 @@ def is_gnomekeyring_supported():
 
 def is_qt4_supported():
     try:
-        from PyQt4.QtGui import QApplication
+        __import__('PyQt4.QtGui')
     except ImportError:
         return False
     return True
 
 def is_winvault_supported():
-    try:
-        from keyring.backend import WinVaultKeyring
-        if sys.platform in ['win32'] and sys.getwindowsversion().major >= 6:
-            return True
-    except ImportError:
-        pass
-    return False
+    return sys.platform in ['win32'] and sys.getwindowsversion().major >= 6
 
 def is_dbus_supported():
     try:
