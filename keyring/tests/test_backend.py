@@ -111,7 +111,8 @@ def is_kwallet_supported():
 def is_crypto_supported():
     try:
         __import__('Crypto.Cipher.AES')
-        __import__('crypt')
+        __import__('Crypto.Protocol.KDF')
+        __import__('Crypto.Random')
     except ImportError:
         return False
     return True
@@ -369,6 +370,9 @@ class CryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
 
     def init_keyring(self):
         return keyring.backend.CryptedFileKeyring()
+
+    def test_encrypt_decrypt(self):
+        pass
 
 
 @unittest.skipUnless(is_win32_crypto_supported(),

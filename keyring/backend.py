@@ -436,10 +436,25 @@ class UncryptedFileKeyring(BasicFileKeyring):
         """
         return 0
 
-class CryptedFileKeyring(BasicFileKeyring):
+class CryptedFileKeyring(KeyringBackend):
     """PyCrypto File Keyring"""
 
+    @properties.NonDataProperty
+    def file_path(self):
+        """
+        The path to the file where passwords are stored. This property
+        may be overridden by the subclass or at the instance level.
+        """
+        return os.path.join(keyring.util.platform.data_root(), self.filename)
+
     filename = 'crypted_pass.cfg'
+
+    def _relocate_file(self):
+        old_location = os.path.join(os.path.expanduser('~'), self.filename)
+        new_location = self.file_path
+        keyring.util.loc_compat.relocate_file(old_location, new_location)
+        # disable this function - it only needs to be run once
+        self._relocate_file = lambda: None
 
     def supported(self):
         """Applicable for all platforms, but not recommend"
@@ -537,7 +552,7 @@ class CryptedFileKeyring(BasicFileKeyring):
             for opt in config.options(section):
                 cipher = AES.new(password, AES.MODE_CFB, '\0' * AES.block_size)
                 p = config.get(section, opt).decode()
-                p = cipher.decrypt(p.decode('base64'))
+                p = cipher.decrypt(p.decode('base64')).encode('base64').replace('\n','')
                 config.set(section, opt, p)
 
         self._write_config(config, keyring_password)
@@ -593,7 +608,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         # fetch the password
         try:
             password = config.get(service, username)
-            password = password.decode('utf-8')
+            password = password.decode('base64').decode('utf-8')
         except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
             password = None
         return password
@@ -608,7 +623,7 @@ class CryptedFileKeyring(BasicFileKeyring):
 
         config, keyring_password = self._read_config()
 
-        password = password.encode('utf-8')
+        password = password.encode('utf-8').encode('base64').replace('\n','')
         # write the modification
         if not config.has_section(service):
             config.add_section(service)
