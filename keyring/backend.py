@@ -467,25 +467,25 @@ class CryptedFileKeyring(BasicFileKeyring):
         self._check_file() and self._unlock() or self._init_file()
         return self.keyring_key
 
-    def _init_file(self):
-        """
-        Initialize a new password file and set the reference password.
-        """
-
-        password = None
-        while password is None:
-            password = self._getpass("Please set a password for your new keyring: ")
-            password2 = self._getpass('Please confirm the password: ')
-            if password != password2:
+    def _get_new_password(self):
+        while True:
+            password = self._getpass(
+                "Please set a password for your new keyring: ")
+            confirm = self._getpass('Please confirm the password: ')
+            if password != confirm:
                 sys.stderr.write("Error: Your passwords didn't match\n")
-                password = None
                 continue
             if '' == password.strip():
                 # forbid the blank password
                 sys.stderr.write("Error: blank passwords aren't allowed.\n")
-                password = None
+                continue
+            return password
 
-        self.keyring_key = password
+    def _init_file(self):
+        """
+        Initialize a new password file and set the reference password.
+        """
+        self.keyring_key = self._get_new_password()
         # set a reference password, used to check that the password provided
         #  matches for subsequent checks.
         self.set_password('keyring-setting', 'password reference',
