@@ -322,10 +322,12 @@ class KDEKWallet(KeyringBackend):
         wallet.writePassword(username+'@'+service, password)
 
 class BasicFileKeyring(KeyringBackend):
-    """BasicFileKeyring is a file-based implementation of keyring.
+    """
+    BasicFileKeyring is a file-based implementation of keyring.
 
-    It stores the password directly in the file, and supports the
-    encryption and decryption. The encrypted password is stored in base64
+    This keyring stores the password directly in the file and provides methods
+    which may be overridden by subclasses to support
+    encryption and decryption. The encrypted payload is stored in base64
     format.
     """
 
