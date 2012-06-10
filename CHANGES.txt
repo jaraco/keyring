@@ -12,6 +12,7 @@ CHANGES
   format for storage, only encrypting the passwords and leaving the service
   and usernames in plaintext. Subsequent releases may incorporate a new
   keyring to implement a whole-file encrypted version. Fixes #64.
+* The CryptedFileKeyring now requires simplejson for Python 2.5 clients.
 
 -----
 0.9.1

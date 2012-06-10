@@ -1,7 +1,7 @@
 """
 backend.py
 
-Created by Kang Zhang on 2009-07-09
+Keyring Backend implementations
 """
 
 import getpass
@@ -9,7 +9,6 @@ import os
 import sys
 import ConfigParser
 import base64
-import json
 import StringIO
 
 from keyring.util.escape import escape as escape_for_ini
@@ -17,6 +16,7 @@ import keyring.util.escape
 from keyring.util import properties
 import keyring.util.platform
 import keyring.util.loc_compat
+import keyring.py25compat as compat
 
 try:
     from abc import ABCMeta, abstractmethod, abstractproperty
@@ -447,8 +447,11 @@ class CryptedFileKeyring(BasicFileKeyring):
             __import__('Crypto.Cipher.AES')
             __import__('Crypto.Protocol.KDF')
             __import__('Crypto.Random')
+            if not 'json' in vars(compat):
+                raise AssertionError("JSON implementation needed (install "
+                    "simplejson)")
             status = 0
-        except ImportError:
+        except (ImportError, AssertionError):
             status = -1
         return status
 
@@ -542,11 +545,11 @@ class CryptedFileKeyring(BasicFileKeyring):
         )
         for key in data:
             data[key] = data[key].encode('base64')
-        return json.dumps(data)
+        return compat.json.dumps(data)
 
     def decrypt(self, password_encrypted):
         # unpack the encrypted payload
-        data = json.loads(password_encrypted)
+        data = compat.json.loads(password_encrypted)
         for key in data:
             data[key] = data[key].decode('base64')
         cipher = self._create_cipher(self.keyring_key, data['salt'],
