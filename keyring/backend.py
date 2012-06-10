@@ -463,14 +463,13 @@ class CryptedFileKeyring(BasicFileKeyring):
 
     @properties.NonDataProperty
     def keyring_key(self):
-        self.keyring_key = (
-            self._check_file() and self._auth() or self._init_file()
-        )
+        # _unlock or _init_file will set the key or raise an exception
+        self._check_file() and self._unlock() or self._init_file()
         return self.keyring_key
 
     def _init_file(self):
         """
-        Init the password file, set the reference password.
+        Initialize a new password file and set the reference password.
         """
 
         password = None
@@ -491,7 +490,6 @@ class CryptedFileKeyring(BasicFileKeyring):
         #  matches for subsequent checks.
         self.set_password('keyring-setting', 'password reference',
             'password reference value')
-        return password
 
     def _check_file(self):
         """
@@ -507,17 +505,23 @@ class CryptedFileKeyring(BasicFileKeyring):
             return False
         return True
 
-    def _auth(self):
+    def _unlock(self):
         """
-        Authorize against the reference password.
+        Unlock this keyring by getting the password for the keyring from the
+        user.
         """
-        p = self._getpass('Please enter password for encrypted keyring: ')
-        self.keyring_key = p
+        self.keyring_key = self._getpass(
+            'Please enter password for encrypted keyring: ')
         ref_pw = self.get_password('keyring-setting', 'password reference')
-        if not ref_pw == 'password reference value':
-            del self.keyring_key
+        if ref_pw != 'password reference value':
+            self._lock()
             raise ValueError("Incorrect password")
-        return p
+
+    def _lock(self):
+        """
+        Remove the keyring key from this instance.
+        """
+        del self.keyring_key
 
     def _create_cipher(self, password, salt, IV):
         """
