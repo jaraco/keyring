@@ -624,6 +624,8 @@ class CryptedFileKeyring(BasicFileKeyring):
                 password_p = cipher.decrypt(password_c)
                 self.set_password(service, user, password_p)
 
+        print("File upgraded successfully")
+
 
 class Win32CryptoKeyring(BasicFileKeyring):
     """Win32 Cryptography Keyring"""
