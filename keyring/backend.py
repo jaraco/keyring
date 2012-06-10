@@ -10,6 +10,7 @@ import sys
 import ConfigParser
 import base64
 import json
+import StringIO
 
 from keyring.util.escape import escape as escape_for_ini
 import keyring.util.escape
@@ -29,11 +30,6 @@ except ImportError:
 
     def abstractproperty(funcobj):
         return property(funcobj)
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
 
 class PasswordSetError(Exception):
     """Raised when the password can't be set.
@@ -589,7 +585,7 @@ class CryptedFileKeyring(BasicFileKeyring):
 
         cipher = self._create_cipher(keyring_password, salt, IV)
 
-        config_file = StringIO(cipher.decrypt(data))
+        config_file = StringIO.StringIO(cipher.decrypt(data))
         config = ConfigParser.RawConfigParser()
         try:
             config.readfp(config_file)
