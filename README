@@ -73,8 +73,14 @@ can be stored in either of following two paths.
 2. The home directory for current user
 
 The lib will first look for the config file in the working directory. If no
-config file exists **or** the config file is not write properly, the lib will
-look up in the home folder.
+config file exists **or** the config file cannot be written properly, keyring
+will reference the config in the home directory.
+
+Beginning with keyring 0.8, the config root is platform specific. To determine
+where in the home directory the config file (and other data files) are stored,
+run the following::
+
+    python -c "import keyring.util.platform; print(keyring.util.platform.data_root())"
 
 Config file content
 -------------------
@@ -272,25 +278,47 @@ contributors.
 Running Tests
 =============
 
-In order to be able to run the tests of the project you first have to bootstrap it. In order
-to do this you can do the following:
+To run the tests, you'll want keyring installed to some environment in which
+it can be tested. Two recommended techniques are described below.
 
-    1. python bootstrap # generate the buildbot
-    2. bin/buildbot # run the builbot it self.
-    3. bin/test # execute the test runner.
+Using virtualenv and pytest/nose/unittest2
+------------------------------------------
 
-For more information about the options that the script provides do execute
+Pytest and Nose are two popular test runners that will discover tests and run
+them. Unittest2 (also known as simply unittest in Python 3) also has a mode
+to discover tests.
 
-> python bin/test --help
+First, however, these test runners typically need a test environment in which
+to run. It is recommended that you install keyring to a virtual environment
+to avoid interfering with your system environment. For more information, see
+the `virtualenv homepage <http://www.virtualenv.org>`_.
 
-If this is the first time you are using a buildbot you can get the bootstrap script
-the following way:
+After you've created (or designated) your environment, install keyring into
+the environment by running::
 
-> svn cat svn://svn.zope.org/repos/main/zc.buildout/trunk/bootstrap/bootstrap.py > /tmp/bootstrap
+    python setup.py develop
 
-And from that point you can use the following as step 1:
+Then, invoke your favorite test runner, e.g.::
 
-> python /tmp/bootstrap
+    py.test
+
+or::
+
+    nosetests
+
+Using buildout
+--------------
+
+The keyring repo bundles buildout's bootstrap script as a subrepo, so using
+buildout is three easy steps::
+
+    1. python buildout/bootstrap  # bootstrap the buildout.
+    2. bin/buildout  # prepare the buildout.
+    3. bin/test  # execute the test runner.
+
+For more information about the options that the script provides do execute::
+
+    python bin/test --help
 
 -------
 Credits
