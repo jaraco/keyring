@@ -3,6 +3,17 @@ CHANGES
 =======
 
 -----
+0.9.2
+-----
+
+* Keyring 0.9.1 introduced a whole different storage format for the
+  CryptedFileKeyring, but this introduced some potential compatibility issues.
+  This release incorporates the security updates but reverts to the INI file
+  format for storage, only encrypting the passwords and leaving the service
+  and usernames in plaintext. Subsequent releases may incorporate a new
+  keyring to implement a whole-file encrypted version. Fixes #64.
+
+-----
 0.9.1
 -----
 
