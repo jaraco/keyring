@@ -433,7 +433,7 @@ class UncryptedFileKeyring(BasicFileKeyring):
         """
         return 0
 
-class CryptedFileKeyring(KeyringBackend):
+class CryptedFileKeyring(BasicFileKeyring):
     """PyCrypto File Keyring"""
 
     # a couple constants
@@ -441,21 +441,6 @@ class CryptedFileKeyring(KeyringBackend):
     pad_char = '0'
 
     filename = 'crypted_pass.cfg'
-
-    @properties.NonDataProperty
-    def file_path(self):
-        """
-        The path to the file where passwords are stored. This property
-        may be overridden by the subclass or at the instance level.
-        """
-        return os.path.join(keyring.util.platform.data_root(), self.filename)
-
-    def _relocate_file(self):
-        old_location = os.path.join(os.path.expanduser('~'), self.filename)
-        new_location = self.file_path
-        keyring.util.loc_compat.relocate_file(old_location, new_location)
-        # disable this function - it only needs to be run once
-        self._relocate_file = lambda: None
 
     def supported(self):
         """Applicable for all platforms, but not recommend"
