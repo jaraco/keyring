@@ -573,11 +573,57 @@ class CryptedFileKeyring(BasicFileKeyring):
         self.__convert_0_9_1(keyring_password)
 
     def __convert_0_9_1(self, keyring_password):
-        pass
+        """
+        Convert keyring from the 0.9.1 format to the current format.
+        """
+        with open(self.file_path) as f:
+            encoded_lines = list(f)
+        try:
+            head, data = [line.decode('base64') for line in encoded_lines]
+        except Exception:
+            # not an 0.9.1 formatted file
+            return
+
+        print("Keyring from 0.9.1 detected. Upgrading...")
+
+        salt = head[:self.block_size]
+        IV = head[self.block_size:]
+
+        if keyring_password is None:
+            keyring_password = self._getpass(
+                "Please input your password for the keyring: ")
+
+        cipher = self._create_cipher(keyring_password, salt, IV)
+
+        config_file = StringIO(cipher.decrypt(data))
+        config = ConfigParser.RawConfigParser()
+        try:
+            config.readfp(config_file)
+        except ConfigParser.Error:
+            sys.stderr.write("Wrong password for the keyring.\n")
+            raise ValueError("Wrong password")
+
+        self.keyring_key = keyring_password
+
+        # wipe the existing file
+        os.remove(self.file_path)
+
+        self.set_password('keyring-setting', 'password reference',
+            'password reference value')
+
+        for service in config.sections():
+            for user in config.options(service):
+                password = config.get(service, user).decode('utf-8')
+                service = keyring.util.escape.unescape(service)
+                user = keyring.util.escape.unescape(user)
+                self.set_password(service, user, password)
+
+        print("File upgraded successfully")
 
     def __convert_0_9_0(self, keyring_password):
         """
-        Convert keyring from the 0.9.0 and earlier format to the new format.
+        Convert keyring from the 0.9.0 and earlier format to the current
+        format.
         """
         KEYRING_SETTING = 'keyring-setting'
         CRYPTED_PASSWORD = 'crypted-password'
