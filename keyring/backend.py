@@ -497,6 +497,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         """
         if not os.path.exists(self.file_path):
             return False
+        self._migrate()
         config = ConfigParser.RawConfigParser()
         config.read(self.file_path)
         try:
@@ -563,44 +564,60 @@ class CryptedFileKeyring(BasicFileKeyring):
         assert plaintext.startswith('pw:')
         return plaintext[3:]
 
-    def _convert_old_keyring(self, keyring_password=None):
-        """Convert keyring to new format.
+    def _migrate(self, keyring_password=None):
+        """
+        Convert older keyrings to the current format.
+        """
+        self.__convert_0_9_0(keyring_password)
+        self.__convert_0_9_1(keyring_password)
+
+    def __convert_0_9_1(self, keyring_password):
+        pass
+
+    def __convert_0_9_0(self, keyring_password):
+        """
+        Convert keyring from the 0.9.0 and earlier format to the new format.
         """
         KEYRING_SETTING = 'keyring-setting'
         CRYPTED_PASSWORD = 'crypted-password'
 
-        config_file = open(self.file_path, 'r')
-        config = ConfigParser.RawConfigParser()
-        config.readfp(config_file)
-        config_file.close()
-
-        if not config.get(KEYRING_SETTING, CRYPTED_PASSWORD):
+        try:
+            config = ConfigParser.RawConfigParser()
+            config.read(self.file_path)
+            config.get(KEYRING_SETTING, CRYPTED_PASSWORD)
+        except Exception:
             return
 
-        print("Old encrypted keyring detected. Upgrading...")
-
-        if keyring_password is None:
-            keyring_password = self._getpass("Please input your password for the keyring: ")
+        print("Keyring from 0.9.0 or earlier detected. Upgrading...")
 
         import crypt
+
+        if keyring_password is None:
+            keyring_password = self._getpass(
+                "Please input your password for the keyring: ")
+
         hashed = crypt.crypt(keyring_password, keyring_password)
         if config.get(KEYRING_SETTING, CRYPTED_PASSWORD) != hashed:
             sys.stderr.write("Wrong password for the keyring.\n")
             raise ValueError("Wrong password")
 
-        from Crypto.Cipher import AES
-        password = keyring_password + (self.block_size - len(keyring_password) % self.block_size) * self.pad_char
-
+        self.keyring_key = keyring_password
         config.remove_option(KEYRING_SETTING, CRYPTED_PASSWORD)
-        for section in config.sections():
-            for opt in config.options(section):
-                cipher = AES.new(password, AES.MODE_CFB, '\0' * AES.block_size)
-                p = config.get(section, opt).decode()
-                p = cipher.decrypt(p.decode('base64')).encode('base64').replace('\n','')
-                config.set(section, opt, p)
+        config.write(self.file_path)
+        self.set_password('keyring-setting', 'reference password')
 
-        self._write_config(config, keyring_password)
-        return (config, keyring_password)
+        from Crypto.Cipher import AES
+        password = keyring_password + (
+            self.block_size - len(keyring_password) % self.block_size
+            ) * self.pad_char
+
+        for service in config.sections():
+            for user in config.options(service):
+                cipher = AES.new(password, AES.MODE_CFB,
+                    '\0' * AES.block_size)
+                password_c = config.get(service, user).decode('base64')
+                password_p = cipher.decrypt(password_c)
+                self.set_password(service, user, password_p)
 
 
 class Win32CryptoKeyring(BasicFileKeyring):
