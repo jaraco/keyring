@@ -33,11 +33,6 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-_KEYRING_SETTING = 'keyring-setting'
-_CRYPTED_PASSWORD = 'crypted-password'
-_BLOCK_SIZE = 32
-_PADDING = '0'
-
 class PasswordSetError(Exception):
     """Raised when the password can't be set.
     """
@@ -439,6 +434,12 @@ class UncryptedFileKeyring(BasicFileKeyring):
 class CryptedFileKeyring(KeyringBackend):
     """PyCrypto File Keyring"""
 
+    # a couple constants
+    block_size = 32
+    pad_char = '0'
+
+    filename = 'crypted_pass.cfg'
+
     @properties.NonDataProperty
     def file_path(self):
         """
@@ -446,8 +447,6 @@ class CryptedFileKeyring(KeyringBackend):
         may be overridden by the subclass or at the instance level.
         """
         return os.path.join(keyring.util.platform.data_root(), self.filename)
-
-    filename = 'crypted_pass.cfg'
 
     def _relocate_file(self):
         old_location = os.path.join(os.path.expanduser('~'), self.filename)
@@ -501,8 +500,8 @@ class CryptedFileKeyring(KeyringBackend):
 
         from Crypto.Protocol.KDF import PBKDF2
         from Crypto.Cipher import AES
-        pw = PBKDF2(password, salt, dkLen=_BLOCK_SIZE)
-        return AES.new(pw[:_BLOCK_SIZE], AES.MODE_CFB, IV)
+        pw = PBKDF2(password, salt, dkLen=self.block_size)
+        return AES.new(pw[:self.block_size], AES.MODE_CFB, IV)
 
     def _write_config(self, config, keyring_password):
         """Write the keyring with the given password.
@@ -513,7 +512,7 @@ class CryptedFileKeyring(KeyringBackend):
         config_file.seek(0)
 
         from Crypto.Random import get_random_bytes
-        salt = get_random_bytes(_BLOCK_SIZE)
+        salt = get_random_bytes(self.block_size)
         from Crypto.Cipher import AES
         IV = get_random_bytes(AES.block_size)
         cipher = self._create_cipher(keyring_password, salt, IV)
@@ -529,6 +528,8 @@ class CryptedFileKeyring(KeyringBackend):
     def _convert_old_keyring(self, keyring_password=None):
         """Convert keyring to new format.
         """
+        KEYRING_SETTING = 'keyring-setting'
+        CRYPTED_PASSWORD = 'crypted-password'
 
         config_file = open(self.file_path, 'r')
         config = ConfigParser.RawConfigParser()
@@ -540,14 +541,14 @@ class CryptedFileKeyring(KeyringBackend):
 
         import crypt
         hashed = crypt.crypt(keyring_password, keyring_password)
-        if config.get(_KEYRING_SETTING, _CRYPTED_PASSWORD) != hashed:
+        if config.get(KEYRING_SETTING, CRYPTED_PASSWORD) != hashed:
             sys.stderr.write("Wrong password for the keyring.\n")
             raise ValueError("Wrong password")
 
         from Crypto.Cipher import AES
-        password = keyring_password + (_BLOCK_SIZE - len(keyring_password) % _BLOCK_SIZE) * _PADDING
+        password = keyring_password + (self.block_size - len(keyring_password) % self.block_size) * self.pad_char
 
-        config.remove_option(_KEYRING_SETTING, _CRYPTED_PASSWORD)
+        config.remove_option(KEYRING_SETTING, CRYPTED_PASSWORD)
         for section in config.sections():
             for opt in config.options(section):
                 cipher = AES.new(password, AES.MODE_CFB, '\0' * AES.block_size)
@@ -573,8 +574,8 @@ class CryptedFileKeyring(KeyringBackend):
             return self._convert_old_keyring(keyring_password)
 
         data = salt.decode('base64')
-        salt = data[:_BLOCK_SIZE]
-        IV = data[_BLOCK_SIZE:]
+        salt = data[:self.block_size]
+        IV = data[self.block_size:]
         data = encrypted_config_file.read().decode('base64')
         encrypted_config_file.close()
 
