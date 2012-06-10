@@ -16,20 +16,12 @@ import keyring.util.escape
 from keyring.util import properties
 import keyring.util.platform
 import keyring.util.loc_compat
-import keyring.py25compat as compat
+import keyring.py25compat
 
-try:
-    from abc import ABCMeta, abstractmethod, abstractproperty
-except ImportError:
-    # to keep compatible with older Python versions.
-    class ABCMeta(type):
-        pass
-
-    def abstractmethod(funcobj):
-        return funcobj
-
-    def abstractproperty(funcobj):
-        return property(funcobj)
+# use abstract base classes from the compat module
+abc = keyring.py25compat.abc
+# use json from the compat module
+json = keyring.py25compat.json
 
 class PasswordSetError(Exception):
     """Raised when the password can't be set.
@@ -39,9 +31,9 @@ class KeyringBackend(object):
     """The abstract base class of the keyring, every backend must implement
     this interface.
     """
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
-    @abstractmethod
+    @abc.abstractmethod
     def supported(self):
         """Return if this keyring supports current environment:
         -1: not applicable
@@ -50,13 +42,13 @@ class KeyringBackend(object):
         """
         return -1
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_password(self, service, username):
         """Get password of the username for the service
         """
         return None
 
-    @abstractmethod
+    @abc.abstractmethod
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
@@ -337,19 +329,19 @@ class BasicFileKeyring(KeyringBackend):
         """
         return os.path.join(keyring.util.platform.data_root(), self.filename)
 
-    @abstractproperty
+    @abc.abstractproperty
     def filename(self):
         """The filename used to store the passwords.
         """
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def encrypt(self, password):
         """Encrypt the password.
         """
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def decrypt(self, password_encrypted):
         """Decrypt the password.
         """
@@ -447,7 +439,7 @@ class CryptedFileKeyring(BasicFileKeyring):
             __import__('Crypto.Cipher.AES')
             __import__('Crypto.Protocol.KDF')
             __import__('Crypto.Random')
-            if not 'json' in vars(compat):
+            if not json:
                 raise AssertionError("JSON implementation needed (install "
                     "simplejson)")
             status = 0
@@ -545,11 +537,11 @@ class CryptedFileKeyring(BasicFileKeyring):
         )
         for key in data:
             data[key] = data[key].encode('base64')
-        return compat.json.dumps(data)
+        return json.dumps(data)
 
     def decrypt(self, password_encrypted):
         # unpack the encrypted payload
-        data = compat.json.loads(password_encrypted)
+        data = json.loads(password_encrypted)
         for key in data:
             data[key] = data[key].decode('base64')
         cipher = self._create_cipher(self.keyring_key, data['salt'],
