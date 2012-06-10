@@ -456,12 +456,6 @@ class CryptedFileKeyring(BasicFileKeyring):
             status = -1
         return status
 
-    def _getpass(self, *args, **kwargs):
-        """Wrap getpass.getpass(), so that we can override it when testing.
-        """
-
-        return getpass.getpass(*args, **kwargs)
-
     @properties.NonDataProperty
     def keyring_key(self):
         # _unlock or _init_file will set the key or raise an exception
@@ -470,9 +464,9 @@ class CryptedFileKeyring(BasicFileKeyring):
 
     def _get_new_password(self):
         while True:
-            password = self._getpass(
+            password = getpass.getpass(
                 "Please set a password for your new keyring: ")
-            confirm = self._getpass('Please confirm the password: ')
+            confirm = getpass.getpass('Please confirm the password: ')
             if password != confirm:
                 sys.stderr.write("Error: Your passwords didn't match\n")
                 continue
@@ -515,7 +509,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         Unlock this keyring by getting the password for the keyring from the
         user.
         """
-        self.keyring_key = self._getpass(
+        self.keyring_key = getpass.getpass(
             'Please enter password for encrypted keyring: ')
         try:
             ref_pw = self.get_password('keyring-setting', 'password reference')
@@ -590,7 +584,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         IV = head[self.block_size:]
 
         if keyring_password is None:
-            keyring_password = self._getpass(
+            keyring_password = getpass.getpass(
                 "Please input your password for the keyring: ")
 
         cipher = self._create_cipher(keyring_password, salt, IV)
@@ -640,7 +634,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         import crypt
 
         if keyring_password is None:
-            keyring_password = self._getpass(
+            keyring_password = getpass.getpass(
                 "Please input your password for the keyring: ")
 
         hashed = crypt.crypt(keyring_password, keyring_password)
