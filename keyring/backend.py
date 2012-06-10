@@ -500,7 +500,10 @@ class CryptedFileKeyring(BasicFileKeyring):
         config = ConfigParser.RawConfigParser()
         config.read(self.file_path)
         try:
-            config.get('keyring-setting', 'password reference')
+            config.get(
+                escape_for_ini('keyring-setting'),
+                escape_for_ini('password reference'),
+            )
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
             return False
         return True
@@ -512,10 +515,12 @@ class CryptedFileKeyring(BasicFileKeyring):
         """
         self.keyring_key = self._getpass(
             'Please enter password for encrypted keyring: ')
-        ref_pw = self.get_password('keyring-setting', 'password reference')
-        if ref_pw != 'password reference value':
+        try:
+            ref_pw = self.get_password('keyring-setting', 'password reference')
+            assert ref_pw == 'password reference value'
+        except AssertionError:
             self._lock()
-            raise ValueError("Incorrect password")
+            raise ValueError("Incorrect Password")
 
     def _lock(self):
         """
@@ -538,7 +543,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         from Crypto.Cipher import AES
         IV = get_random_bytes(AES.block_size)
         cipher = self._create_cipher(self.keyring_key, salt, IV)
-        password_encrypted = cipher.encrypt(password)
+        password_encrypted = cipher.encrypt('pw:' + password)
         # Serialize the salt, IV, and encrypted password in a secure format
         data = dict(
             salt=salt, IV=IV, password_encrypted=password_encrypted,
@@ -554,7 +559,9 @@ class CryptedFileKeyring(BasicFileKeyring):
             data[key] = data[key].decode('base64')
         cipher = self._create_cipher(self.keyring_key, data['salt'],
             data['IV'])
-        return cipher.decrypt(data['password_encrypted'])
+        plaintext = cipher.decrypt(data['password_encrypted'])
+        assert plaintext.startswith('pw:')
+        return plaintext[3:]
 
     def _convert_old_keyring(self, keyring_password=None):
         """Convert keyring to new format.
