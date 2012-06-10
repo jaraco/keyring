@@ -12,6 +12,7 @@ import base64
 import json
 
 from keyring.util.escape import escape as escape_for_ini
+import keyring.util.escape
 from keyring.util import properties
 import keyring.util.platform
 import keyring.util.loc_compat
@@ -603,8 +604,10 @@ class CryptedFileKeyring(BasicFileKeyring):
 
         self.keyring_key = keyring_password
         config.remove_option(KEYRING_SETTING, CRYPTED_PASSWORD)
-        config.write(self.file_path)
-        self.set_password('keyring-setting', 'reference password')
+        with open(self.file_path, 'w') as f:
+            config.write(f)
+        self.set_password('keyring-setting', 'password reference',
+            'password reference value')
 
         from Crypto.Cipher import AES
         password = keyring_password + (
@@ -616,6 +619,8 @@ class CryptedFileKeyring(BasicFileKeyring):
                 cipher = AES.new(password, AES.MODE_CFB,
                     '\0' * AES.block_size)
                 password_c = config.get(service, user).decode('base64')
+                service = keyring.util.escape.unescape(service)
+                user = keyring.util.escape.unescape(user)
                 password_p = cipher.decrypt(password_c)
                 self.set_password(service, user, password_p)
 
