@@ -371,9 +371,6 @@ class CryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
     def init_keyring(self):
         return keyring.backend.CryptedFileKeyring()
 
-    def test_encrypt_decrypt(self):
-        pass
-
 
 @unittest.skipUnless(is_win32_crypto_supported(),
                      "Need Windows")
