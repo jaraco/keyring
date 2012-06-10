@@ -397,11 +397,16 @@ class BasicFileKeyring(KeyringBackend):
         if not config.has_section(service):
             config.add_section(service)
         config.set(service, username, password_base64)
-        # ensure the storage path exists
-        if not os.path.isdir(os.path.dirname(self.file_path)):
-            os.makedirs(os.path.dirname(self.file_path))
+        self._ensure_file_path()
         config_file = open(self.file_path,'w')
         config.write(config_file)
+
+    def _ensure_file_path(self):
+        """ensure the storage path exists"""
+        storage_root = os.path.dirname(self.file_path)
+        if not os.path.isdir(storage_root):
+            os.makedirs(storage_root)
+
 
 class UncryptedFileKeyring(BasicFileKeyring):
     """Uncrypted File Keyring"""
