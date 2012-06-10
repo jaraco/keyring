@@ -404,7 +404,7 @@ class BasicFileKeyring(KeyringBackend):
     def _ensure_file_path(self):
         """ensure the storage path exists"""
         storage_root = os.path.dirname(self.file_path)
-        if not os.path.isdir(storage_root):
+        if storage_root and not os.path.isdir(storage_root):
             os.makedirs(storage_root)
 
 
