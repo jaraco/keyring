@@ -21,7 +21,6 @@ except ImportError:
     import unittest
 
 import keyring.backend
-from keyring.backend import PasswordSetError
 
 ALPHABET = string.ascii_letters + string.digits
 DIFFICULT_CHARS = string.whitespace + string.punctuation
