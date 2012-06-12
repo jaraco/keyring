@@ -131,7 +131,15 @@ def is_qt4_supported():
     return True
 
 def is_winvault_supported():
-    return sys.platform in ['win32'] and sys.getwindowsversion().major >= 6
+    try:
+        __import__('win32cred')
+        has_pywin32 = True
+    except ImportError:
+        has_pywin32 = False
+    return (
+        sys.platform in ['win32'] and sys.getwindowsversion().major >= 6
+        and has_pywin32
+    )
 
 def is_dbus_supported():
     try:
