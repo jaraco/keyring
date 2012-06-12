@@ -128,9 +128,11 @@ class LocationTestCase(unittest.TestCase):
             f.write('[test config]\n')
 
         # invoke load_config in a subprocess
-        cmd = [sys.executable, '-c', 'import keyring.core; keyring.core.load_config()']
+        cmd = [sys.executable, '-c', 'import sys; sys.path.remove(""); '
+            'import keyring.core; keyring.core.load_config()']
         proc = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         stdout, stderr = proc.communicate()
+        assert proc.returncode == 0, stderr
 
         try:
             assert not os.path.exists(self.legacy_location)
