@@ -27,7 +27,8 @@ def password_set(realmstring, username, password):
             stderr = subprocess.PIPE,
             stdout = subprocess.PIPE,
         )
-        code = call.wait()
+        stdoutdata, stderrdata = call.communicate()
+        code = call.returncode
         # check return code.
         if code is not 0:
             raise OSError('Can\'t store password in keychain')
@@ -52,10 +53,11 @@ def password_get(realmstring, username):
             stderr = subprocess.PIPE,
             stdout = subprocess.PIPE,
         )
-        code = call.wait()
+        stdoutdata, stderrdata = call.communicate()
+        code = call.returncode
         if code is not 0:
             raise OSError("Can't fetch password from system")
-        output = call.stderr.readlines()[0]
+        output = stderrdata
         # check for empty password.
         if output == 'password: \n':
             return ''

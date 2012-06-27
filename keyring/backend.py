@@ -771,8 +771,8 @@ class WinVaultKeyring(KeyringBackend):
             self.win32cred = None
 
     def supported(self):
-        '''Default Windows backend, when it is available
-        '''
+        """Default Windows backend, when it is available
+        """
         recommended = select_windows_backend()
         if recommended == None:
             return -1
