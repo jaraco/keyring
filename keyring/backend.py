@@ -3,16 +3,27 @@ backend.py
 
 Keyring Backend implementations
 """
-
 import getpass
 import os
 import sys
 import base64
-import StringIO
 import copy
 import ConfigParser
 import cPickle
 import codecs
+try:
+    import StringIO
+except ImportError:
+    # handle py3 move
+    import io
+    StringIO = io.StringIO
+
+try:
+    import ConfigParser
+except ImportError:
+    # handle py3 rename
+    import configparser as ConfigParser
+ 
 
 from keyring.util.escape import escape as escape_for_ini
 import keyring.util.escape
@@ -109,7 +120,8 @@ class _ExtensionKeyring(KeyringBackend):
         """
         try:
             self.keyring_impl.password_set(service, username, password)
-        except OSError, e:
+        except (OSError,):
+            e = sys.exc_info()[1]
             raise PasswordSetError(e.message)
 
 class OSXKeychain(_ExtensionKeyring):
@@ -783,7 +795,7 @@ class WinVaultKeyring(KeyringBackend):
 
     @staticmethod
     def _compound_name(username, service):
-        return u'%(username)s@%(service)s' % vars()
+        return keyring.util.escape.u('%(username)s@%(service)s') % vars()
 
     def get_password(self, service, username):
         # first attempt to get the password under the service name
@@ -802,7 +814,8 @@ class WinVaultKeyring(KeyringBackend):
                 Type=self.win32cred.CRED_TYPE_GENERIC,
                 TargetName=target,
             )
-        except self.pywintypes.error, e:
+        except (self.pywintypes.error,):
+            e = sys.exc_info()[1]
             if e.winerror == 1168 and e.funcname == 'CredRead': # not found
                 return None
             raise

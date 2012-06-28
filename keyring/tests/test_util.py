@@ -5,7 +5,11 @@ Test for simple escape/unescape routine
 """
 
 
-import unittest
+try:
+    # Python < 2.7 annd Python >= 3.0 < 3.1
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from keyring.util import escape
 
@@ -20,7 +24,7 @@ class EscapeTestCase(unittest.TestCase):
     def test_escape_unescape(self):
         self.check_escape_unescape("aaaa")
         self.check_escape_unescape("aaaa bbbb cccc")
-        self.check_escape_unescape(u"Zażółć gęślą jaźń")
+        self.check_escape_unescape(escape.u("Zażółć gęślą jaźń"))
         self.check_escape_unescape("(((P{{{{'''---; ;; '\"|%^")
 
     def test_low_byte(self):

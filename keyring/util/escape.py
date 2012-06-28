@@ -6,6 +6,20 @@ alphanumeric usernames, services, or other values
 import string
 import re
 import sys
+        
+# True if we are running on Python 3.
+# taken from six.py
+PY3 = sys.version_info[0] == 3
+
+# allow use of unicode literals
+if PY3:
+    def u(s):
+        return s
+    def unichr(c):
+        return chr(c)
+else:
+    def u(s):
+        return unicode(s, "unicode_escape")
 
 LEGAL_CHARS = (
     getattr(string, 'letters', None) # Python 2
@@ -42,3 +56,4 @@ def unescape(value):
         ESCAPE_FMT.replace('%02X', '(?P<code>[0-9A-F]{2})').encode('ascii')
     )
     return re_esc.sub(_unescape_code, value.encode('ascii')).decode('utf-8')
+

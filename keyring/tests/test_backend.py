@@ -6,7 +6,6 @@ Test case for keyring basic function
 
 created by Kang Zhang 2009-07-14
 """
-
 import base64
 import codecs
 import cPickle
@@ -26,13 +25,14 @@ except ImportError:
     import unittest
 
 import keyring.backend
+from keyring.util import escape
 
 from keyring.tests import mocks
 
 ALPHABET = string.ascii_letters + string.digits
 DIFFICULT_CHARS = string.whitespace + string.punctuation
-UNICODE_CHARS = u"""κόσμεНа берегу пустынных волнSîne klâwen durh die wolken sint
-geslagen, er stîget ûf mit grôzer kraft"""
+UNICODE_CHARS = escape.u("""κόσμεНа берегу пустынных волнSîne klâwen durh die 
+wolken sint geslagen, er stîget ûf mit grôzer kraft""")
 
 class ImportKiller(object):
     "Context manager to make an import of a given name or names fail."
@@ -385,7 +385,8 @@ class FileKeyringTests(BackendBasicTests):
     def tearDown(self):
         try:
             os.unlink(self.tmp_keyring_file)
-        except OSError, e:
+        except (OSError,):
+            e = sys.exc_info()[1]
             if e.errno != 2: # No such file or directory
                 raise
 
@@ -438,7 +439,8 @@ class WinVaultKeyringTestCase(BackendBasicTests, unittest.TestCase):
         for cred in self.credentials_created:
             try:
                 self.keyring.delete_password(*cred)
-            except Exception, e:
+            except (Exception,):
+                e = sys.exc_info()[1]
                 print >> sys.stderr, e
 
     def init_keyring(self):

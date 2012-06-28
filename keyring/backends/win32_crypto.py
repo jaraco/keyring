@@ -9,6 +9,7 @@ from ctypes import Structure, wintypes, POINTER, windll, \
      WinDLL, c_void_p, WINFUNCTYPE, cast, create_string_buffer, \
      c_char_p, byref, memmove
 
+from keyring.util.escape import u
 
 # Crypto API ctypes bindings
 
@@ -68,7 +69,7 @@ def encrypt(data, non_interactive=0):
     blobout = DATA_BLOB()
 
     if not CryptProtectData(byref(blobin),
-                            u'python-keyring-lib.win32crypto',
+                            u('python-keyring-lib.win32crypto'),
                             None, None, None,
                             CRYPTPROTECT_UI_FORBIDDEN,
                             byref(blobout)):
@@ -86,7 +87,7 @@ def decrypt(encrypted, non_interactive=0):
     blobout = DATA_BLOB()
 
     if not CryptUnprotectData(byref(blobin),
-                              u'python-keyring-lib.win32crypto',
+                              u('python-keyring-lib.win32crypto'),
                               None, None, None,
                               CRYPTPROTECT_UI_FORBIDDEN,
                               byref(blobout)):

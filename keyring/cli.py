@@ -37,12 +37,13 @@ class CommandLineTool(object):
                 backend = keyring.core.load_keyring(opts.keyring_path,
                                                     opts.keyring_backend)
                 keyring.set_keyring(backend)
-            except Exception, e:
+            except (Exception,):
                 # Tons of things can go wrong here:
                 #   ImportError when using "fjkljfljkl"
                 #   AttributeError when using "os.path.bar"
                 #   TypeError when using "__builtins__.str"
                 # So, we play on the safe side, and catch everything.
+                e = sys.exc_info()[1]
                 self.parser.error("Unable to load specified keyring: %s" % e)
 
 
@@ -79,7 +80,7 @@ class CommandLineTool(object):
         This mostly exists to ease the testing process.
         """
 
-        print password
+        print >> sys.stdout, password
 
 
 def main(argv=None):

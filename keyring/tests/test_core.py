@@ -3,7 +3,11 @@ test_core.py
 
 Created by Kang Zhang on 2009-08-09
 """
-import unittest
+try:
+    # Python < 2.7 annd Python >= 3.0 < 3.1
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 import os
 import sys
 import tempfile
