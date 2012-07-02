@@ -1388,15 +1388,25 @@ class BasicPyfilesystemKeyring(KeyringBackend):
     S3, FTP, WebDAV, memory and more.
     """
 
-    default_filename = '~/keyring_pyf_pass.cfg'
+    _filename = 'keyring_pyf_pass.cfg'
 
     def __init__(self, crypter, filename=None, can_create=True,
                  cache_timeout=None):
         super(BasicPyfilesystemKeyring, self).__init__()
         self._crypter = crypter
-        self._filename = filename or self.default_filename
+        self._filename = (filename or 
+                          os.path.join(keyring.util.platform.data_root(), 
+                                       self.__class__._filename))
         self._can_create = can_create
         self._cache_timeout = cache_timeout
+
+    @properties.NonDataProperty
+    def file_path(self):
+        """
+        The path to the file where passwords are stored. This property
+        may be overridden by the subclass or at the instance level.
+        """
+        return os.path.join(keyring.util.platform.data_root(), self.filename)
 
     @property
     def filename(self):
@@ -1556,8 +1566,7 @@ class UnencryptedPyfilesystemKeyring(BasicPyfilesystemKeyring):
     """Unencrypted Pyfilesystem Keyring
     """
 
-    def __init__(self, filename=BasicPyfilesystemKeyring.default_filename,
-                 can_create=True, cache_timeout=None):
+    def __init__(self, filename=None, can_create=True, cache_timeout=None):
         super(UnencryptedPyfilesystemKeyring, self).__init__(
             NullCrypter(), filename=filename, can_create=can_create,
             cache_timeout=cache_timeout)
@@ -1566,9 +1575,9 @@ class EncryptedPyfilesystemKeyring(BasicPyfilesystemKeyring):
     """Encrypted Pyfilesystem Keyring
     """
 
-    default_filename = '~/crypted_pyf_pass.cfg'
+    _filename = 'crypted_pyf_pass.cfg'
 
-    def __init__(self, crypter, filename=default_filename, can_create=True,
+    def __init__(self, crypter, filename=None, can_create=True,
                  cache_timeout=None):
         super(EncryptedPyfilesystemKeyring, self).__init__(
             crypter, filename=filename, can_create=can_create,
