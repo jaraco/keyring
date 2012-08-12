@@ -18,3 +18,4 @@ Contributors
 * André Sintzoff
 * Thomas Kluyver
 * Sebastian Ramacher
+* Robert Leftwich
