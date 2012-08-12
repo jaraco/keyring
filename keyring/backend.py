@@ -8,22 +8,20 @@ import os
 import sys
 import base64
 import copy
-import ConfigParser
 import cPickle
 import codecs
-try:
-    import StringIO
-except ImportError:
-    # handle py3 move
-    import io
-    StringIO = io.StringIO
 
 try:
-    import ConfigParser
+    import io
 except ImportError:
-    # handle py3 rename
-    import configparser as ConfigParser
- 
+    # Support Python 2.4, 2.5
+    import StringIO as io
+
+try:
+    import configparser
+except ImportError:
+    # Support Python 2.4-2.7
+    import ConfigParser as configparser
 
 from keyring.util.escape import escape as escape_for_ini
 import keyring.util.escape
@@ -223,7 +221,7 @@ class SecretServiceKeyring(KeyringBackend):
         if issubclass(s.__class__, unicode):
             # It's already unicode, no problem.
             return s
-        
+
         # It's not unicode.  Convert it to a unicode string.
         try:
             return unicode(s)
@@ -250,7 +248,7 @@ class SecretServiceKeyring(KeyringBackend):
         _, session = service_iface.OpenSession("plain", "")
         no_longer_locked, prompt = service_iface.Unlock(locked)
         assert prompt == "/"
-        secrets = service_iface.GetSecrets(unlocked + locked, session, 
+        secrets = service_iface.GetSecrets(unlocked + locked, session,
 	                                   byte_arrays=True)
         for item_path, secret in secrets.iteritems():
 	    return unicode(secret[2])
@@ -418,7 +416,7 @@ class BasicFileKeyring(KeyringBackend):
         username = escape_for_ini(username)
 
         # load the passwords from the file
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         if os.path.exists(self.file_path):
             config.read(self.file_path)
 
@@ -429,7 +427,7 @@ class BasicFileKeyring(KeyringBackend):
             password_encrypted = base64.decodestring(password_base64)
             # decrypted the password
             password = self.decrypt(password_encrypted).decode('utf-8')
-        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+        except (configparser.NoOptionError, configparser.NoSectionError):
             password = None
         return password
 
@@ -443,7 +441,7 @@ class BasicFileKeyring(KeyringBackend):
         # encrypt the password
         password_encrypted = self.encrypt(password.encode('utf-8'))
         # load the password from the disk
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         if os.path.exists(self.file_path):
             config.read(self.file_path)
 
@@ -545,14 +543,14 @@ class CryptedFileKeyring(BasicFileKeyring):
         if not os.path.exists(self.file_path):
             return False
         self._migrate()
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config.read(self.file_path)
         try:
             config.get(
                 escape_for_ini('keyring-setting'),
                 escape_for_ini('password reference'),
             )
-        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+        except (configparser.NoSectionError, configparser.NoOptionError):
             return False
         return True
 
@@ -641,11 +639,11 @@ class CryptedFileKeyring(BasicFileKeyring):
 
         cipher = self._create_cipher(keyring_password, salt, IV)
 
-        config_file = StringIO.StringIO(cipher.decrypt(data))
-        config = ConfigParser.RawConfigParser()
+        config_file = io.StringIO(cipher.decrypt(data))
+        config = configparser.RawConfigParser()
         try:
             config.readfp(config_file)
-        except ConfigParser.Error:
+        except configparser.Error:
             sys.stderr.write("Wrong password for the keyring.\n")
             raise ValueError("Wrong password")
 
@@ -675,7 +673,7 @@ class CryptedFileKeyring(BasicFileKeyring):
         CRYPTED_PASSWORD = 'crypted-password'
 
         try:
-            config = ConfigParser.RawConfigParser()
+            config = configparser.RawConfigParser()
             config.read(self.file_path)
             config.get(KEYRING_SETTING, CRYPTED_PASSWORD)
         except Exception:
@@ -951,8 +949,8 @@ class GoogleDocsKeyring(KeyringBackend):
     FAIL = 0
     CONFLICT = -1
 
-    def __init__(self, credential, source, crypter, 
-                 collection=None, client=None, 
+    def __init__(self, credential, source, crypter,
+                 collection=None, client=None,
                  can_create=True, input_getter=raw_input
                 ):
         from gdata.docs.service import DocsService
@@ -1034,7 +1032,7 @@ class GoogleDocsKeyring(KeyringBackend):
                     'Conflict detected, service:%s and username:%s was '\
                     'set to a different value by someone else' %(service,
                                                                  username))
-            
+
         raise PasswordSetError('Could not save keyring')
 
     @property
@@ -1158,7 +1156,7 @@ class GoogleDocsKeyring(KeyringBackend):
                     folder_entry = docs.entry[0]
                 else:
                     folder_entry = self.client.CreateFolder(self.collection)
-                file_handle = StringIO.StringIO(file_contents)
+                file_handle = io.StringIO(file_contents)
                 media_source = gdata.MediaSource(
                     file_handle=file_handle,
                     content_type='text/plain',
@@ -1395,7 +1393,7 @@ class BasicPyfilesystemKeyring(KeyringBackend):
 
     It stores the password directly in the file, and supports
     encryption and decryption. The encrypted password is stored in base64
-    format. 
+    format.
     Being based on Pyfilesystem the file can be local or network-based and
     served by any of the filesystems supported by Pyfilesystem including Amazon
     S3, FTP, WebDAV, memory and more.
@@ -1407,8 +1405,8 @@ class BasicPyfilesystemKeyring(KeyringBackend):
                  cache_timeout=None):
         super(BasicPyfilesystemKeyring, self).__init__()
         self._crypter = crypter
-        self._filename = (filename or 
-                          os.path.join(keyring.util.platform.data_root(), 
+        self._filename = (filename or
+                          os.path.join(keyring.util.platform.data_root(),
                                        self.__class__._filename))
         self._can_create = can_create
         self._cache_timeout = cache_timeout
@@ -1461,7 +1459,7 @@ class BasicPyfilesystemKeyring(KeyringBackend):
             else:
                 if not hasattr(self, '_pyfs'):
                     # reuse the pyfilesystem and path
-                    self._pyfs, self._path = fs.opener.opener.parse(self.filename, 
+                    self._pyfs, self._path = fs.opener.opener.parse(self.filename,
                                                writeable=writeable)
                     # cache if permitted
                     if self._cache_timeout is not None:
@@ -1521,7 +1519,7 @@ class BasicPyfilesystemKeyring(KeyringBackend):
         """load the passwords from the config file
         """
         if not hasattr(self, '_config'):
-            raw_config = ConfigParser.RawConfigParser()
+            raw_config = configparser.RawConfigParser()
             f = self._open()
             if f:
                 raw_config.readfp(f)
@@ -1542,7 +1540,7 @@ class BasicPyfilesystemKeyring(KeyringBackend):
             password_encrypted = base64.decodestring(password_base64)
             # decrypted the password
             password = self.decrypt(password_encrypted).decode('utf-8')
-        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+        except (configparser.NoOptionError, configparser.NoSectionError):
             password = None
         return password
 
