@@ -5,6 +5,7 @@ Keyring Backend implementations
 """
 import getpass
 import os
+import stat
 import sys
 import base64
 import copy
@@ -405,6 +406,11 @@ class BasicFileKeyring(KeyringBackend):
         old_location = os.path.join(os.path.expanduser('~'), self.filename)
         new_location = self.file_path
         keyring.util.loc_compat.relocate_file(old_location, new_location)
+        # user read/write only
+        try:
+            os.chmod(new_location, stat.S_IWRITE | stat.S_IREAD)
+        except OSError: # XXX fails during unit test against tmpfile
+            pass 
         # disable this function - it only needs to be run once
         self._relocate_file = lambda: None
 
@@ -953,8 +959,6 @@ class GoogleDocsKeyring(KeyringBackend):
                  collection=None, client=None,
                  can_create=True, input_getter=raw_input
                 ):
-        from gdata.docs.service import DocsService
-
         self.credential = credential
         self.crypter = crypter
         self.source = source
@@ -963,14 +967,18 @@ class GoogleDocsKeyring(KeyringBackend):
         self.input_getter = input_getter
         self._keyring_dict = None
 
-        if not client:
-            self._client = DocsService()
-        else:
-            self._client = client
-
-        self._client.source = source
-        self._client.ssl = True
+        if client:
+            self.__client = client
+            client.ssl = True
         self._login_reqd = True
+
+    def _client(self):
+        if not self.__client:
+            from gdata.docs.service import DocsService
+            self.__client = DocsService()
+            self.__client.ssl = True
+            self.__client.source = self.source
+        return self.__client
 
     def supported(self):
         """Return if this keyring supports current environment:
