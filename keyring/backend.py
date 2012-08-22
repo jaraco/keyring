@@ -509,7 +509,10 @@ class CryptedFileKeyring(BasicFileKeyring):
     @properties.NonDataProperty
     def keyring_key(self):
         # _unlock or _init_file will set the key or raise an exception
-        self._check_file() and self._unlock() or self._init_file()
+        if self._check_file():
+            self._unlock()
+        else:
+            self._init_file()
         return self.keyring_key
 
     def _get_new_password(self):
