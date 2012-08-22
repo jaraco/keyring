@@ -16,6 +16,7 @@ CHANGES
   username, or password.
 * Tweaked SecretService code to pass unicode to DBus, as unicode is the
   preferred format.
+* Issue #71 - Fixed logic in CryptedFileKeyring.
 
 -----
 0.9.2

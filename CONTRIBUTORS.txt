@@ -19,3 +19,4 @@ Contributors
 * Thomas Kluyver
 * Sebastian Ramacher
 * Robert Leftwich
+* Kyle Stark
