@@ -9,4 +9,4 @@ python:
   - 3.2
 
 script:
-  - python setup.py ptr
+  - python setup.py ptr --addopts="-rs -v"
