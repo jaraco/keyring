@@ -154,7 +154,7 @@ def is_dbus_supported():
         __import__('dbus')
     except ImportError:
         return False
-    return True
+    return 'DISPLAY' in os.environ
 
 def is_keyczar_supported():
     try:
