@@ -45,7 +45,7 @@ test_requirements = [
 "dependencies for running tests"
 
 if sys.version_info < (2, 7) or (
-        sys.version >= (3, 0) and sys.version < (3, 1)):
+        sys.version_info >= (3, 0) and sys.version_info < (3, 1)):
     # Require unittest2 for Python which doesn't contain the new unittest
     # module (appears in Python 2.7 and Python 3.1)
     test_requirements.append('unittest2')
