@@ -31,7 +31,7 @@ from keyring.tests import mocks
 
 ALPHABET = string.ascii_letters + string.digits
 DIFFICULT_CHARS = string.whitespace + string.punctuation
-UNICODE_CHARS = escape.u("""κόσμεНа берегу пустынных волнSîne klâwen durh die 
+UNICODE_CHARS = escape.u("""κόσμεНа берегу пустынных волнSîne klâwen durh die
 wolken sint geslagen, er stîget ûf mit grôzer kraft""")
 
 class ImportKiller(object):
@@ -468,7 +468,7 @@ class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
 def init_google_docs_keyring(client, can_create=True,
                              input_getter=raw_input):
     credentials = keyring.backend.BaseCredential('foo', 'bar')
-    return keyring.backend.GoogleDocsKeyring(credentials, 
+    return keyring.backend.GoogleDocsKeyring(credentials,
                                              'test_src',
                                              keyring.backend.NullCrypter(),
                                              client=client,
@@ -506,7 +506,7 @@ class GoogleDocsKeyringInteractionTestCase(unittest.TestCase):
                            mocks.MockDocumentListEntry()
                           ]
         return listfeed
-    
+
     def _encode_data(self, data):
         return base64.urlsafe_b64encode(cPickle.dumps(data))
 
@@ -629,7 +629,7 @@ class GoogleDocsKeyringInteractionTestCase(unittest.TestCase):
         import gdata
         client = self._init_client()
         dummy_entries = dict(sectionB=dict(user9='pwd9'))
-        client._request_response = dict(status=200, data=self._encode_data(dummy_entries)) 
+        client._request_response = dict(status=200, data=self._encode_data(dummy_entries))
         client._put_err = gdata.service.RequestError
         client._listfeed = self._init_listfeed()
         self._init_keyring(client)
