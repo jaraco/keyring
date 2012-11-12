@@ -3,6 +3,9 @@ backend.py
 
 Keyring Backend implementations
 """
+
+from __future__ import with_statement
+
 import getpass
 import os
 import stat
