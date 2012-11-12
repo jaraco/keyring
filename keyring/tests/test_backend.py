@@ -160,7 +160,6 @@ def is_keyczar_supported():
     try:
         __import__('keyczar')
     except ImportError:
-        print 'NO KEYCZAR'
         return False
     return True
 
@@ -168,7 +167,6 @@ def is_gdata_supported():
     try:
         __import__('gdata.service')
     except ImportError:
-        print 'NO GDAT'
         return False
     return True
 
@@ -176,7 +174,6 @@ def is_pyfilesystem_supported():
     try:
         __import__('fs.opener')
     except ImportError:
-        print 'NO FS'
         return False
     return True
 
