@@ -134,7 +134,12 @@ class LocationTestCase(unittest.TestCase):
         # invoke load_config in a subprocess
         cmd = [sys.executable, '-c', 'import sys; sys.path.remove(""); '
             'import keyring.core; keyring.core.load_config()']
-        proc = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        # ensure the subprocess has the same PYTHONPATH as this process to
+        # support running under pytest-runner (or other dynamic environments).
+        env = dict(os.environ)
+        env['PYTHONPATH'] = os.pathsep.join(sys.path)
+        proc = subprocess.Popen(cmd, stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE, env=env)
         stdout, stderr = proc.communicate()
         assert proc.returncode == 0, stderr
 
