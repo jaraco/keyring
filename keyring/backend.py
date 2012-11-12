@@ -5,6 +5,7 @@ Keyring Backend implementations
 """
 import getpass
 import os
+import stat
 import sys
 import base64
 import copy
@@ -405,6 +406,11 @@ class BasicFileKeyring(KeyringBackend):
         old_location = os.path.join(os.path.expanduser('~'), self.filename)
         new_location = self.file_path
         keyring.util.loc_compat.relocate_file(old_location, new_location)
+        # user read/write only
+        try:
+            os.chmod(new_location, stat.S_IWRITE | stat.S_IREAD)
+        except OSError: # XXX fails during unit test against tmpfile
+            pass 
         # disable this function - it only needs to be run once
         self._relocate_file = lambda: None
 

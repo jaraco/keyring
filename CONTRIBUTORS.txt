@@ -20,3 +20,4 @@ Contributors
 * Sebastian Ramacher
 * Robert Leftwich
 * Kyle Stark
+* Daniel Holth
