@@ -196,7 +196,7 @@ class GnomeKeyring(KeyringBackend):
             raise PasswordSetError("cancelled by user")
 
     def _safe_string(self, source, encoding='utf-8'):
-	"""Convert unicode to string as gnomekeyring barfs on unicode"""
+        """Convert unicode to string as gnomekeyring barfs on unicode"""
         if isinstance(source, unicode):
             return source.encode(encoding)
         return str(source)
