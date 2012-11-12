@@ -3,6 +3,9 @@ test_core.py
 
 Created by Kang Zhang on 2009-08-09
 """
+
+from __future__ import with_statement
+
 try:
     # Python < 2.7 annd Python >= 3.0 < 3.1
     import unittest2 as unittest
