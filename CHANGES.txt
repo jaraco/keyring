@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+---
+1.0
+---
+
+This backward-incompatible release attempts to remove some cruft from the
+codebase that's accumulated over the versions.
+
 ----
 0.10
 ----
