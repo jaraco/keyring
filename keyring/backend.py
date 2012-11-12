@@ -410,7 +410,7 @@ class BasicFileKeyring(KeyringBackend):
         try:
             os.chmod(new_location, stat.S_IWRITE | stat.S_IREAD)
         except OSError: # XXX fails during unit test against tmpfile
-            pass 
+            pass
         # disable this function - it only needs to be run once
         self._relocate_file = lambda: None
 
@@ -1169,7 +1169,7 @@ class GoogleDocsKeyring(KeyringBackend):
                     folder_entry = docs.entry[0]
                 else:
                     folder_entry = self.client.CreateFolder(self.collection)
-                file_handle = io.StringIO(file_contents)
+                file_handle = keyring.py25compat.BytesIO(file_contents)
                 media_source = gdata.MediaSource(
                     file_handle=file_handle,
                     content_type='text/plain',

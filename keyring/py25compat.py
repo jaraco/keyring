@@ -25,3 +25,10 @@ except ImportError:
 
     # here's a little trick to treat this module as 'abc'
     abc = __import__('sys').modules[__name__]
+
+try:
+    import io
+    BytesIO = io.BytesIO
+except ImportError:
+    import StringIO
+    BytesIO = StringIO.StringIO
