@@ -956,7 +956,11 @@ class GoogleDocsKeyring(KeyringBackend):
                  collection=None, client=None,
                  can_create=True, input_getter=raw_input
                 ):
-        from gdata.docs.service import DocsService
+        try:
+            DocsService = (__import__('gdata.docs.service')
+                .docs.service.DocsService)
+        except ImportError:
+            return
 
         self.credential = credential
         self.crypter = crypter
@@ -982,7 +986,7 @@ class GoogleDocsKeyring(KeyringBackend):
          1: recommended
         """
         try:
-            from gdata.docs.service import DocsService
+            __import__('gdata.docs.service')
         except ImportError:
             return -1
         return 0
