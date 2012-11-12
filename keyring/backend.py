@@ -31,7 +31,6 @@ from keyring.util.escape import escape as escape_for_ini
 import keyring.util.escape
 from keyring.util import properties
 import keyring.util.platform
-import keyring.util.loc_compat
 import keyring.py25compat
 try:
     from keyczar import keyczar
@@ -405,22 +404,9 @@ class BasicFileKeyring(KeyringBackend):
         """
         pass
 
-    def _relocate_file(self):
-        old_location = os.path.join(os.path.expanduser('~'), self.filename)
-        new_location = self.file_path
-        keyring.util.loc_compat.relocate_file(old_location, new_location)
-        # user read/write only
-        try:
-            os.chmod(new_location, stat.S_IWRITE | stat.S_IREAD)
-        except OSError: # XXX fails during unit test against tmpfile
-            pass
-        # disable this function - it only needs to be run once
-        self._relocate_file = lambda: None
-
     def get_password(self, service, username):
         """Read the password from the file.
         """
-        self._relocate_file()
         service = escape_for_ini(service)
         username = escape_for_ini(username)
 
@@ -443,7 +429,6 @@ class BasicFileKeyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Write the password in the file.
         """
-        self._relocate_file()
         service = escape_for_ini(service)
         username = escape_for_ini(username)
 

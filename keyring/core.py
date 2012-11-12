@@ -14,7 +14,6 @@ import sys
 from keyring import logger
 from keyring import backend
 from keyring.util import platform
-from keyring.util import loc_compat
 
 
 def set_keyring(keyring):
@@ -117,9 +116,7 @@ def load_config():
     filename = 'keyringrc.cfg'
 
     local_path = os.path.join(os.getcwd(), filename)
-    legacy_path = os.path.join(os.path.expanduser("~"), filename)
     config_path = os.path.join(platform.data_root(), filename)
-    loc_compat.relocate_file(legacy_path, config_path)
 
     # search from current working directory and the data root
     keyring_cfg_candidates = [local_path, config_path]

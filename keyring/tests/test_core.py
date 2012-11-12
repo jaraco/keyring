@@ -114,54 +114,10 @@ class CoreTestCase(unittest.TestCase):
         if personal_renamed:
             os.rename(personal_cfg+'.old', personal_cfg)
 
-class LocationTestCase(unittest.TestCase):
-    legacy_location = os.path.expanduser('~/keyringrc.cfg')
-    new_location = os.path.join(keyring.util.platform.data_root(),
-        'keyringrc.cfg')
-
-    @unittest.skipIf(os.path.exists(legacy_location),
-        "Location test requires non-existence of ~/keyringrc.cfg")
-    @unittest.skipIf(os.path.exists(new_location),
-        "Location test requires non-existence of %(new_location)s"
-        % vars())
-    def test_moves_compat(self):
-        """
-        When starting the keyring module and ~/keyringrc.cfg exists, it
-        should be moved and the user should be informed that it was
-        moved.
-        """
-        # create the legacy config
-        with open(self.legacy_location, 'w') as f:
-            f.write('[test config]\n')
-
-        # invoke load_config in a subprocess
-        cmd = [sys.executable, '-c', 'import sys; sys.path.remove(""); '
-            'import keyring.core; keyring.core.load_config()']
-        # ensure the subprocess has the same PYTHONPATH as this process to
-        # support running under pytest-runner (or other dynamic environments).
-        env = dict(os.environ)
-        env['PYTHONPATH'] = os.pathsep.join(sys.path)
-        proc = subprocess.Popen(cmd, stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE, env=env)
-        stdout, stderr = proc.communicate()
-        assert proc.returncode == 0, stderr
-
-        try:
-            assert not os.path.exists(self.legacy_location)
-            assert os.path.exists(self.new_location)
-            with open(self.new_location) as f:
-                assert 'test config' in f.read()
-        finally:
-            if os.path.exists(self.legacy_location):
-                os.remove(self.legacy_location)
-            if os.path.exists(self.new_location):
-                os.remove(self.new_location)
-
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(CoreTestCase))
-    suite.addTest(unittest.makeSuite(LocationTestCase))
     return suite
 
 if __name__ == "__main__":

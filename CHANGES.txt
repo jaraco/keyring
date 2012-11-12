@@ -9,6 +9,12 @@ CHANGES
 This backward-incompatible release attempts to remove some cruft from the
 codebase that's accumulated over the versions.
 
+* Removed legacy file relocation support. `keyring` no longer supports loading
+  configuration or file-based backends from ~. If upgrading from 0.8 or later,
+  the files should already have been migrated to their new proper locations.
+  If upgrading from 0.7.x or earlier, the files will have to be migrated
+  manually.
+
 ----
 0.10
 ----
