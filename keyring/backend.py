@@ -253,9 +253,9 @@ class SecretServiceKeyring(KeyringBackend):
         no_longer_locked, prompt = service_iface.Unlock(locked)
         assert prompt == "/"
         secrets = service_iface.GetSecrets(unlocked + locked, session,
-	                                   byte_arrays=True)
+            byte_arrays=True)
         for item_path, secret in secrets.iteritems():
-	    return unicode(secret[2])
+            return unicode(secret[2])
         return None
 
     def set_password(self, service, username, password):
