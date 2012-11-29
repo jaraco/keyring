@@ -445,8 +445,11 @@ class BasicFileKeyring(KeyringBackend):
             config.add_section(service)
         config.set(service, username, password_base64)
         self._ensure_file_path()
-        config_file = open(self.file_path,'w')
-        config.write(config_file)
+        config_file = open(self.file_path, 'w')
+        try:
+            config.write(config_file)
+        finally:
+            config_file.close()
 
     def _ensure_file_path(self):
         """ensure the storage path exists"""
