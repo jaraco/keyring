@@ -17,6 +17,8 @@ codebase that's accumulated over the versions.
 * Removed CryptedFileKeyring migration support. To maintain an existing
   CryptedFileKeyring, one must first upgrade to 0.9.2 or later and access the
   keyring before upgrading to 1.0 to retain the existing keyring.
+* File System backends now create files without group and world permissions.
+  Fixes #67.
 
 ------
 0.10.1

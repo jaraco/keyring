@@ -441,8 +441,7 @@ class BasicFileKeyring(KeyringBackend):
 
         # load the keyring from the disk
         config = configparser.RawConfigParser()
-        if os.path.exists(self.file_path):
-            config.read(self.file_path)
+        config.read(self.file_path)
 
         # update the keyring with the password
         if not config.has_section(service):
@@ -457,10 +456,19 @@ class BasicFileKeyring(KeyringBackend):
             config_file.close()
 
     def _ensure_file_path(self):
-        """ensure the storage path exists"""
+        """
+        Ensure the storage path exists.
+        If it doesn't, create it with "go-rwx" permissions.
+        """
         storage_root = os.path.dirname(self.file_path)
         if storage_root and not os.path.isdir(storage_root):
             os.makedirs(storage_root)
+        if not os.path.isfile(self.file_path):
+            # create the file without group/world permissions
+            with open(self.file_path, 'w'):
+                pass
+            user_read_write = 0600
+            os.chmod(self.file_path, user_read_write)
 
 
 class UncryptedFileKeyring(BasicFileKeyring):
