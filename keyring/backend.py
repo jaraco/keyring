@@ -433,18 +433,23 @@ class BasicFileKeyring(KeyringBackend):
 
         # encrypt the password
         password_encrypted = self.encrypt(password.encode('utf-8'))
-        # load the password from the disk
+        # encode with base64
+        password_base64 = base64.encodestring(password_encrypted).decode()
+
+        # ensure the file exists
+        self._ensure_file_path()
+
+        # load the keyring from the disk
         config = configparser.RawConfigParser()
         if os.path.exists(self.file_path):
             config.read(self.file_path)
 
-        # encode with base64
-        password_base64 = base64.encodestring(password_encrypted).decode()
-        # write the modification
+        # update the keyring with the password
         if not config.has_section(service):
             config.add_section(service)
         config.set(service, username, password_base64)
-        self._ensure_file_path()
+
+        # save the keyring back to the file
         config_file = open(self.file_path, 'w')
         try:
             config.write(config_file)
