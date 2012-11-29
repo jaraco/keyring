@@ -3,6 +3,13 @@ CHANGES
 =======
 
 -----
+0.9.3
+-----
+
+* Ensure migration is run when get_password is called. Fixes #75. Thanks to
+  Marc Deslauriers for reporting the bug and supplying the patch.
+
+-----
 0.9.2
 -----
 
