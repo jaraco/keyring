@@ -18,6 +18,12 @@ codebase that's accumulated over the versions.
   CryptedFileKeyring, one must first upgrade to 0.9.2 or later and access the
   keyring before upgrading to 1.0 to retain the existing keyring.
 
+------
+0.10.1
+------
+
+* Merged 0.9.3 to include fix for #75.
+
 ----
 0.10
 ----
@@ -35,6 +41,13 @@ codebase that's accumulated over the versions.
 * Issue #71 - Fixed logic in CryptedFileKeyring.
 * Unencrypted keyring file will be saved with user read/write (and not group
   or world read/write).
+
+-----
+0.9.3
+-----
+
+* Ensure migration is run when get_password is called. Fixes #75. Thanks to
+  Marc Deslauriers for reporting the bug and supplying the patch.
 
 -----
 0.9.2
