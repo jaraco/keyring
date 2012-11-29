@@ -180,7 +180,7 @@ Here's a code snippet from the ``keyringdemo.py``. It shows the usage of
     try:
         keyring.set_password("demo-service", "tarek", "passexample")
         print "password stored sucessfully"
-    except keyring.backend.PasswordError:
+    except keyring.backend.PasswordSetError:
         print "failed to store password"
     print "password", keyring.get_password("demo-service", "tarek")
 
