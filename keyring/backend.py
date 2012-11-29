@@ -347,6 +347,11 @@ class BasicFileKeyring(KeyringBackend):
         """
         pass
 
+    def _migrate(self, keyring_password=None):
+        """Convert older keyrings to the current format.
+        """
+        pass
+
     def _relocate_file(self):
         old_location = os.path.join(os.path.expanduser('~'), self.filename)
         new_location = self.file_path
@@ -364,6 +369,7 @@ class BasicFileKeyring(KeyringBackend):
         # load the passwords from the file
         config = ConfigParser.RawConfigParser()
         if os.path.exists(self.file_path):
+            self._migrate()
             config.read(self.file_path)
 
         # fetch the password
