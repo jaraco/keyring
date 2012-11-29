@@ -8,7 +8,6 @@ from __future__ import with_statement
 
 import getpass
 import os
-import stat
 import sys
 import base64
 import copy
