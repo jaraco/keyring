@@ -401,6 +401,19 @@ class UncryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
     def init_keyring(self):
         return keyring.backend.UncryptedFileKeyring()
 
+    @unittest.skipIf(sys.platform == 'win32',
+        "Group/World permissions aren't meaningful on Windows")
+    def test_keyring_not_created_world_writable(self):
+        """
+        Ensure that when keyring creates the file that it's not overly-
+        permissive.
+        """
+        self.keyring.set_password('system', 'user', 'password')
+
+        self.assertTrue(os.path.exists(self.keyring.file_path))
+        group_other_perms = os.stat(self.keyring.file_path).st_mode & 0077
+        self.assertEqual(group_other_perms, 0)
+
 
 @unittest.skipUnless(is_crypto_supported(),
                      "Need Crypto module")
