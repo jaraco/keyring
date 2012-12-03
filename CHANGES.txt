@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+------------
+Next release
+------------
+
+* Generate a script to access the keyring command line interface
+
 ---
 1.0
 ---

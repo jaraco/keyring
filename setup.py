@@ -79,6 +79,11 @@ setup_params = dict(
     setup_requires = [
         'pytest-runner',
     ],
+    entry_points = {
+        'console_scripts': [
+            'keyring=keyring.cli:main',
+        ],
+    },
 )
 
 
