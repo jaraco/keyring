@@ -49,11 +49,24 @@ class InitError(Exception):
     """Raised when the keyring could not be initialised
     """
 
+class KeyringBackendMeta(abc.ABCMeta):
+    """
+    A metaclass that's both an ABCMeta and a type that keeps a registry of
+    all (non-abstract) types.
+    """
+    def __init__(cls, name, bases, dict):
+        super(KeyringBackendMeta, cls).__init__(name, bases, dict)
+        if not hasattr(cls, '_classes'):
+            cls._classes = set()
+        classes = cls._classes
+        if not cls.__abstractmethods__:
+            classes.add(cls)
+
 class KeyringBackend(object):
     """The abstract base class of the keyring, every backend must implement
     this interface.
     """
-    __metaclass__ = abc.ABCMeta
+    __metaclass__ = KeyringBackendMeta
 
     @abc.abstractmethod
     def supported(self):
