@@ -5,12 +5,7 @@ import sys
 
 from ..py25compat import json
 from ..py25compat import abc
-
-try:
-    import configparser
-except ImportError:
-    # Support Python 2.4-2.7
-    import ConfigParser as configparser
+from ..py27compat import configparser
 
 import keyring.util.platform
 from keyring.backend import KeyringBackend

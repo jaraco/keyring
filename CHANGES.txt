@@ -32,6 +32,10 @@ Next release
   - KeyczarCrypter -> backends.keyczar.Crypter
   - EnvironKeyczarCrypter -> backends.keyczar.EnvironCrypter
   - EnvironGoogleDocsKeyring -> backends.Google.KeyczarDocsKeyring
+  - BasicPyfilesystemKeyring -> backends.pyfs.BasicKeyring
+  - UnencryptedPyfilesystemKeyring -> backends.pyfs.PlaintextKeyring
+  - EncryptedPyfilesystemKeyring -> backends.pyfs.EncryptedKeyring
+  - EnvironEncryptedPyfilesystemKeyring -> backends.pyfs.KeyczarKeyring
 * Officially require Python 2.5 or greater (although unofficially, this
   requirement has been in place since 0.10).
 
