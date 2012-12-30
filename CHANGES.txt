@@ -8,7 +8,11 @@ Next release
 
 * Generate a script to access the keyring command line interface.
 * Deprecated _ExtensionKeyring.
-* Moved PasswordSetError and InitError to an `errors` module.
+* Moved PasswordSetError and InitError to an `errors` module (references kept
+  for backward-compatibility).
+* Moved concrete backend implementations into their own modules (references
+  kept for backward compatibility):
+  - OSXKeychain -> backends.OS_X.Keyring
 
 ---
 1.0
