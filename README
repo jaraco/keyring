@@ -279,7 +279,19 @@ Running Tests
 =============
 
 To run the tests, you'll want keyring installed to some environment in which
-it can be tested. Two recommended techniques are described below.
+it can be tested. Three recommended techniques are described below.
+
+Using pytest runner
+-------------------
+
+Keyring is instrumented with `pytest runner
+<https://bitbucket.org/jaraco/pytest-runner>`_. Thus, you may invoke the tests
+from any supported Python (with distribute installed) using this command::
+
+    python setup.py ptr
+
+pytest runner will download any unmet dependencies and run the tests using
+`pytest <https://bitbucket.org/hpk42/pytest>`_.
 
 Using virtualenv and pytest/nose/unittest2
 ------------------------------------------
