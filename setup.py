@@ -43,6 +43,7 @@ test_requirements = [
     'pytest',
     'gdata',
     'python-keyczar',
+    'fs',
 ]
 "dependencies for running tests"
 
