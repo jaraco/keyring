@@ -23,6 +23,11 @@ Next release
   - WinVaultKeyring -> backends.Windows.WinVaultKeyring
   - Win32CryptoRegistry -> backends.Windows.RegistryKeyring
   - select_windows_backend -> backends.Windows.select_windows_backend
+  - GoogleDocsKeyring -> keyring.backends.Google.DocsKeyring
+  - Credential -> keyring.credentials.Credential
+  - BaseCredential -> keyring.credentials.SimpleCredential
+  - EnvironCredential -> keyring.credentials.EnvironCredential
+  - GoogleEnvironCredential -> keyring.backends.Google.EnvironCredential
 
 ---
 1.0
