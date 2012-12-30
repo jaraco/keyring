@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 import os
 import getpass
 import base64
