@@ -12,10 +12,8 @@ try:
 except ImportError:
     import unittest
 import os
-import sys
 import tempfile
 import shutil
-import subprocess
 
 import keyring.backend
 import keyring.core
