@@ -25,6 +25,7 @@ and updated module structure.
   for backward-compatibility).
 * Moved concrete backend implementations into their own modules (references
   kept for backward compatibility):
+
   - OSXKeychain -> backends.OS_X.Keyring
   - GnomeKeyring -> backends.Gnome.Keyring
   - SecretServiceKeyring -> backends.SecretService.Keyring
@@ -49,6 +50,7 @@ and updated module structure.
   - UnencryptedPyfilesystemKeyring -> backends.pyfs.PlaintextKeyring
   - EncryptedPyfilesystemKeyring -> backends.pyfs.EncryptedKeyring
   - EnvironEncryptedPyfilesystemKeyring -> backends.pyfs.KeyczarKeyring
+
 * Officially require Python 2.5 or greater (although unofficially, this
   requirement has been in place since 0.10).
 
