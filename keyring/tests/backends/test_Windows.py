@@ -1,10 +1,6 @@
 import sys
 
-try:
-    # Python < 2.7 annd Python >= 3.0 < 3.1
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+from ..py30compat import unittest
 
 import keyring.backends.Windows
 from ..test_backend import FileKeyringTests, BackendBasicTests

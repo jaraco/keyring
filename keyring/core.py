@@ -18,10 +18,9 @@ def set_keyring(keyring):
     """Set current keyring backend.
     """
     global _keyring_backend
-    if isinstance(keyring, backend.KeyringBackend):
-        _keyring_backend = keyring
-    else:
+    if not isinstance(keyring, backend.KeyringBackend):
         raise TypeError("The keyring must be a subclass of KeyringBackend")
+    _keyring_backend = keyring
 
 def get_keyring():
     """Get current keyring backend.

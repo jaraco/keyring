@@ -3,11 +3,8 @@ Test case to access the keyring from the command line
 """
 
 import os.path
-try:
-    # Python < 2.7 annd Python >= 3.0 < 3.1
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+
+from keyring.tests.py30compat import unittest
 
 from keyring import cli
 import keyring.backend
