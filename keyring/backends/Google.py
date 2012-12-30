@@ -1,9 +1,13 @@
+from __future__ import absolute_import
+
+import os
 import sys
 import copy
 import codecs
 import cPickle
 import base64
 
+from . import keyczar
 from keyring import errors
 from keyring import credentials
 import keyring.py25compat
@@ -275,3 +279,27 @@ class DocsKeyring(KeyringBackend):
                 result = self.FAIL
 
         return result
+
+class KeyczarDocsKeyring(DocsKeyring):
+    """Google Docs keyring using keyczar initialized from environment
+    variables
+    """
+
+    def __init__(self):
+        crypter = keyczar.EnvironCrypter()
+        credential = EnvironCredential()
+        source = os.environ.get('GOOGLE_KEYRING_SOURCE')
+        super(KeyczarDocsKeyring, self).__init__(
+            credential, source, crypter)
+
+    def supported(self):
+        """Return if this keyring supports current environment:
+        -1: not applicable
+         0: suitable
+         1: recommended
+        """
+        try:
+            from keyczar import keyczar
+            return super(KeyczarDocsKeyring, self).supported()
+        except ImportError:
+            return -1

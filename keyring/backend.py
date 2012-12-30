@@ -157,30 +157,7 @@ from keyring.backends.Google import EnvironCredential as GoogleEnvironCredential
 from keyring.backends.keyczar import BaseCrypter as BaseKeyczarCrypter
 from keyring.backends.keyczar import Crypter as KeyczarCrypter
 from keyring.backends.keyczar import EnvironCrypter as EnvironKeyczarCrypter
-
-class EnvironGoogleDocsKeyring(GoogleDocsKeyring):
-    """Google Docs keyring using keyczar initialized from environment
-    variables
-    """
-
-    def __init__(self):
-        crypter = EnvironKeyczarCrypter()
-        credential = GoogleEnvironCredential()
-        source = os.environ.get('GOOGLE_KEYRING_SOURCE')
-        super(EnvironGoogleDocsKeyring, self).__init__(
-            credential, source, crypter)
-
-    def supported(self):
-        """Return if this keyring supports current environment:
-        -1: not applicable
-         0: suitable
-         1: recommended
-        """
-        try:
-            from keyczar import keyczar
-            return super(EnvironGoogleDocsKeyring, self).supported()
-        except ImportError:
-            return -1
+from keyring.backends.Google import KeyczarDocsKeyring as EnvironGoogleDocsKeyring
 
 class BasicPyfilesystemKeyring(KeyringBackend):
     """BasicPyfilesystemKeyring is a Pyfilesystem-based implementation of
