@@ -13,6 +13,7 @@ Next release
 * Moved concrete backend implementations into their own modules (references
   kept for backward compatibility):
   - OSXKeychain -> backends.OS_X.Keyring
+  - GnomeKeyring -> backends.Gnome.Keyring
 
 ---
 1.0
