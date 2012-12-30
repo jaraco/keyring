@@ -20,7 +20,7 @@ except ImportError:
     pass
 
 # for backward-compatibility
-from .errors import PasswordSetError
+from .errors import PasswordSetError, InitError
 
 # use abstract base classes from the compat module
 abc = keyring.py25compat.abc
