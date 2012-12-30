@@ -15,6 +15,7 @@ Next release
   - OSXKeychain -> backends.OS_X.Keyring
   - GnomeKeyring -> backends.Gnome.Keyring
   - SecretServiceKeyring -> backends.SecretService.Keyring
+  - KDEKWallet -> backends.kwallet.Keyring
 
 ---
 1.0

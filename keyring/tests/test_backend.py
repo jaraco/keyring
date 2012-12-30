@@ -110,12 +110,6 @@ def is_win32_crypto_supported():
 def is_osx_keychain_supported():
     return sys.platform in ('mac','darwin')
 
-def is_kwallet_supported():
-    supported = keyring.backend.KDEKWallet().supported()
-    if supported == -1:
-        return False
-    return True
-
 def is_crypto_supported():
     try:
         __import__('Crypto.Cipher.AES')
@@ -128,13 +122,6 @@ def is_crypto_supported():
 def is_gnomekeyring_supported():
     supported = keyring.backend.GnomeKeyring().supported()
     if supported == -1:
-        return False
-    return True
-
-def is_qt4_supported():
-    try:
-        __import__('PyQt4.QtGui')
-    except ImportError:
         return False
     return True
 
@@ -297,80 +284,6 @@ class GnomeKeyringTestCase(BackendBasicTests, unittest.TestCase):
             environ['DBUS_SESSION_BUS_ADDRESS'] = None
             with Environ(**environ):
                 self.assertEqual(0, self.keyring.supported())
-
-@unittest.skipUnless(is_kwallet_supported(),
-                     "Need KWallet")
-class KDEKWalletTestCase(BackendBasicTests, unittest.TestCase):
-
-    def init_keyring(self):
-        return keyring.backend.KDEKWallet()
-
-
-class UnOpenableKWallet(object):
-    """A module-like object used to test KDE wallet fall-back."""
-
-    Synchronous = None
-
-    def openWallet(self, *args):
-        return None
-
-    def NetworkWallet(self):
-        return None
-
-
-class FauxQtGui(object):
-    """A fake module-like object used in testing the open_kwallet function."""
-
-    class qApp:
-        @staticmethod
-        def instance():
-            pass
-
-    class QApplication(object):
-        def __init__(self, *args):
-            pass
-
-        def exit(self):
-            pass
-
-    class QWidget(object):
-        def __init__(self, *args):
-            pass
-
-        def winId(self):
-            pass
-
-class KDEWalletCanceledTestCase(unittest.TestCase):
-
-    def test_user_canceled(self):
-        # If the user cancels either the "enter your password to unlock the
-        # keyring" dialog or clicks "deny" on the "can this application access
-        # the wallet" dialog then openWallet() will return None.  The
-        # open_wallet() function should handle that eventuality by returning
-        # None to signify that the KWallet backend is not available.
-        self.assertEqual(
-            keyring.backend.open_kwallet(UnOpenableKWallet(), FauxQtGui()),
-            None)
-
-
-@unittest.skipUnless(is_kwallet_supported() and
-                     is_qt4_supported(),
-                     "Need KWallet and Qt4")
-class KDEKWalletInQApplication(unittest.TestCase):
-    def test_QApplication(self):
-        try:
-            from PyKDE4.kdeui import KWallet
-            from PyQt4.QtGui import QApplication
-        except:
-            return
-
-        app = QApplication([])
-        wallet = keyring.backend.open_kwallet()
-        self.assertTrue(isinstance(wallet, KWallet.Wallet),
-                        msg="The object wallet should be type "
-                        "<KWallet.Wallet> but it is: %s" % repr(wallet))
-        app.exit()
-
 
 class FileKeyringTests(BackendBasicTests):
 
@@ -1090,9 +1003,6 @@ def test_suite():
     suite.addTest(unittest.makeSuite(OSXKeychainTestCase))
     suite.addTest(unittest.makeSuite(GnomeKeyringTestCase))
     suite.addTest(unittest.makeSuite(SecretServiceKeyringTestCase))
-    suite.addTest(unittest.makeSuite(KDEWalletCanceledTestCase))
-    suite.addTest(unittest.makeSuite(KDEKWalletTestCase))
-    suite.addTest(unittest.makeSuite(KDEKWalletInQApplication))
     suite.addTest(unittest.makeSuite(UncryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(CryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(Win32CryptoKeyringTestCase))
