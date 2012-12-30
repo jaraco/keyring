@@ -64,7 +64,7 @@ setup_params = dict(
     maintainer = 'Jason R. Coombs',
     maintainer_email = 'jaraco@jaraco.com',
     license = "PSF",
-    long_description = load('README') + load('CHANGES.txt'),
+    long_description = load('README.rst') + load('CHANGES.rst'),
     classifiers = [
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
