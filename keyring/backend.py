@@ -1649,20 +1649,8 @@ class MultipartKeyringWrapper(KeyringBackend):
 @keyring.util.once
 def get_all_keyring():
     """
-    Return a list of all implemented keyrings.
+    Return a list of all implemented keyrings that can be constructed without
+    parameters.
     """
-
-    # except don't include these because they can't be constructed without
-    #  additional parameters.
-    exclude_classes = [
-        MultipartKeyringWrapper,
-        BasicPyfilesystemKeyring,
-        EncryptedPyfilesystemKeyring,
-        KeyczarCrypter,
-        GoogleDocsKeyring,
-    ]
-    return [
-        keyring_class()
-        for keyring_class in KeyringBackend._classes
-        if keyring_class not in exclude_classes
-    ]
+    return list(keyring.util.suppress_exceptions(KeyringBackend._classes,
+        exceptions=TypeError))
