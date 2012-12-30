@@ -4,12 +4,10 @@ core.py
 Created by Kang Zhang on 2009-07-09
 """
 import os
-try:
-    import configparser as config_parser
-except ImportError:
-    import ConfigParser as config_parser
 import imp
 import sys
+
+from .py27compat import configparser
 
 from keyring import logger
 from keyring import backend
@@ -129,7 +127,7 @@ def load_config():
             break
 
     if os.path.exists(keyring_cfg):
-        config = config_parser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config.read(keyring_cfg)
         # load the keyring-path option
         try:
@@ -137,7 +135,7 @@ def load_config():
                 keyring_path = config.get("backend", "keyring-path").strip()
             else:
                 keyring_path = None
-        except config_parser.NoOptionError:
+        except configparser.NoOptionError:
             keyring_path = None
 
         # load the keyring class name, and then load this keyring
@@ -145,10 +143,10 @@ def load_config():
             if config.has_section("backend"):
                 keyring_name = config.get("backend", "default-keyring").strip()
             else:
-                raise config_parser.NoOptionError('backend', 'default-keyring')
+                raise configparser.NoOptionError('backend', 'default-keyring')
 
             keyring = load_keyring(keyring_path, keyring_name)
-        except (config_parser.NoOptionError, ImportError):
+        except (configparser.NoOptionError, ImportError):
             logger.warning("Keyring config file contains incorrect values.\n" +
                            "Config file: %s" % keyring_cfg)
 
