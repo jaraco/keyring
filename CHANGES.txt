@@ -16,6 +16,9 @@ Next release
   - GnomeKeyring -> backends.Gnome.Keyring
   - SecretServiceKeyring -> backends.SecretService.Keyring
   - KDEKWallet -> backends.kwallet.Keyring
+  - BasicFileKeyring -> backends.file.BaseKeyring
+  - CryptedFileKeyring -> backends.file.EncryptedKeyring
+  - UncryptedFileKeyring -> backends.file.PlaintextKeyring
 
 ---
 1.0
