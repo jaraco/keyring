@@ -2,11 +2,24 @@
 CHANGES
 =======
 
-------------
-Next release
-------------
+---
+1.1
+---
 
-* Generate a script to access the keyring command line interface.
+This is the last build that will support installation in a pure-distutils
+mode. Subsequent releases will require setuptools/distribute to install.
+Python 3 installs have always had this requirement (for 2to3 install support),
+but starting with the next minor release (1.2+), setuptools will be required.
+
+Additionally, this release has made some substantial refactoring in an
+attempt to modularize the backends. An attempt has been made to maintain 100%
+backward-compatibility, although if your library does anything fancy with
+module structure or clasess, some tweaking may be necessary. The
+backward-compatible references will be removed in 2.0, so the 1.1+ releases
+represent a transitional implementation which should work with both legacy
+and updated module structure.
+
+* Added a console-script 'keyring' invoking the command-line interface.
 * Deprecated _ExtensionKeyring.
 * Moved PasswordSetError and InitError to an `errors` module (references kept
   for backward-compatibility).
