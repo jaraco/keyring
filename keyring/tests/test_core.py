@@ -15,6 +15,7 @@ from keyring.tests.py30compat import unittest
 import keyring.backend
 import keyring.core
 import keyring.util.platform
+from keyring.backends import file
 
 PASSWORD_TEXT = "This is password"
 PASSWORD_TEXT_2 = "This is password2"
@@ -39,8 +40,13 @@ class TestKeyring2(TestKeyring):
         return PASSWORD_TEXT_2
 
 class CoreTestCase(unittest.TestCase):
+    @unittest.skip("the default keyring might be a keyring "
+        "which requires input (such as file.EncryptedKeyring), "
+        "in which case the test blocks forever. TODO: patch rawinput "
+        "to supply a password.")
     def test_set_get_password(self):
-        """Test the basic function of the keyring.
+        """
+        set/get_password on the default keyring.
         """
         keyring.core.set_password("test", "user", "passtest")
         self.assertEqual(keyring.core.get_password("test", "user"), "passtest")
