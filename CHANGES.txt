@@ -8,6 +8,7 @@ Next release
 
 * Generate a script to access the keyring command line interface.
 * Deprecated _ExtensionKeyring.
+* Moved PasswordSetError and InitError to an `errors` module.
 
 ---
 1.0

@@ -39,18 +39,13 @@ try:
 except ImportError:
     pass
 
+# for backward-compatibility
+from .errors import PasswordSetError, InitError
+
 # use abstract base classes from the compat module
 abc = keyring.py25compat.abc
 # use json from the compat module
 json = keyring.py25compat.json
-
-class PasswordSetError(Exception):
-    """Raised when the password can't be set.
-    """
-
-class InitError(Exception):
-    """Raised when the keyring could not be initialised
-    """
 
 class KeyringBackendMeta(abc.ABCMeta):
     """
