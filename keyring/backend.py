@@ -1595,8 +1595,6 @@ class EnvironEncryptedPyfilesystemKeyring(EncryptedPyfilesystemKeyring):
         super(EnvironEncryptedPyfilesystemKeyring, self).__init__(
             EnvironKeyczarCrypter())
 
-_all_keyring = None
-
 class MultipartKeyringWrapper(KeyringBackend):
 
     """A wrapper around an existing keyring that breaks the password into
@@ -1648,16 +1646,12 @@ class MultipartKeyringWrapper(KeyringBackend):
                 curr_username += '{{part_%d}}' %i
             self._keyring.set_password(service, curr_username, password_part)
 
+@keyring.util.once
 def get_all_keyring():
-    """Return the list of all keyrings in the lib
     """
-    global _all_keyring
-    if _all_keyring is None:
-        _all_keyring = [OSXKeychain(), GnomeKeyring(), KDEKWallet(),
-                        CryptedFileKeyring(), UncryptedFileKeyring(),
-                        Win32CryptoKeyring(), Win32CryptoRegistry(),
-                        WinVaultKeyring(), SecretServiceKeyring(),
-                        EnvironGoogleDocsKeyring(),
-                        UnencryptedPyfilesystemKeyring(),
-                        EnvironEncryptedPyfilesystemKeyring()]
-    return _all_keyring
+    Return a list of all implemented keyrings.
+    """
+    return [
+        keyring_class()
+        for keyring_class in KeyringBackend._classes
+    ]
