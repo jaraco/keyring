@@ -6,7 +6,8 @@ CHANGES
 Next release
 ------------
 
-* Generate a script to access the keyring command line interface
+* Generate a script to access the keyring command line interface.
+* Deprecated _ExtensionKeyring.
 
 ---
 1.0

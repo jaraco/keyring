@@ -90,9 +90,7 @@ class KeyringBackend(object):
         raise PasswordSetError("reason")
 
 class _ExtensionKeyring(KeyringBackend):
-    """_ExtensionKeyring is a adaptor class for the platform related keyring
-    backends.
-    """
+    """**deprecated**"""
     def __init__(self):
         try:
             self.keyring_impl = self._init_backend()
