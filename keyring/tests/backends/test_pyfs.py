@@ -14,8 +14,9 @@ def is_pyfilesystem_supported():
         return False
     return True
 
-# Due to a `bug <http://code.google.com/p/pyfilesystem/issues/detail?id=143>`_
-# in pyfilesystem, the tests fail on Windows, so mark them as such.
+# Due to a `bug <https://bitbucket.org/kang/python-keyring-lib/issue/78>`_
+# in our usage of pyfilesystem, the tests fail on Windows, so mark them as
+# such.
 xfail_win = (unittest.expectedFailure
     if platform.system() == 'Windows' else lambda func: func)
 
