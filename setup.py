@@ -42,6 +42,7 @@ def encodes_as_ascii(string):
 test_requirements = [
     'pytest',
     'gdata',
+    'python-keyczar',
 ]
 "dependencies for running tests"
 
