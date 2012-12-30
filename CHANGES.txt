@@ -50,6 +50,7 @@ and updated module structure.
   - UnencryptedPyfilesystemKeyring -> backends.pyfs.PlaintextKeyring
   - EncryptedPyfilesystemKeyring -> backends.pyfs.EncryptedKeyring
   - EnvironEncryptedPyfilesystemKeyring -> backends.pyfs.KeyczarKeyring
+  - MultipartKeyringWrapper -> backends.multi.MultipartKeyringWrapper
 
 * Officially require Python 2.5 or greater (although unofficially, this
   requirement has been in place since 0.10).

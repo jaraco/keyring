@@ -1,22 +1,12 @@
 """
-backend.py
-
-Keyring Backend implementations
+Keyring implementation support
 """
-
-from __future__ import with_statement
 
 import sys
 
-import keyring.util.escape
-import keyring.util.platform
-import keyring.py25compat
+from keyring.py25compat import abc
 
-# for backward-compatibility
-from .errors import PasswordSetError, InitError
-
-# use abstract base classes from the compat module
-abc = keyring.py25compat.abc
+import keyring.util
 
 class KeyringBackendMeta(abc.ABCMeta):
     """
@@ -130,7 +120,17 @@ class NullCrypter(Crypter):
     def decrypt(self, value):
         return value
 
+@keyring.util.once
+def get_all_keyring():
+    """
+    Return a list of all implemented keyrings that can be constructed without
+    parameters.
+    """
+    return list(keyring.util.suppress_exceptions(KeyringBackend._classes,
+        exceptions=TypeError))
+
 # for backward-compatibility
+from .errors import PasswordSetError, InitError
 from keyring.backends.OS_X import Keyring as OSXKeychain
 from keyring.backends.Gnome import Keyring as GnomeKeyring
 from keyring.backends.SecretService import Keyring as SecretServiceKeyring
@@ -155,63 +155,4 @@ from keyring.backends.pyfs import BasicKeyring as BasicPyfilesystemKeyring
 from keyring.backends.pyfs import PlaintextKeyring as UnencryptedPyfilesystemKeyring
 from keyring.backends.pyfs import EncryptedKeyring as EncryptedPyfilesystemKeyring
 from keyring.backends.pyfs import KeyczarKeyring as EnvironEncryptedPyfilesystemKeyring
-
-class MultipartKeyringWrapper(KeyringBackend):
-
-    """A wrapper around an existing keyring that breaks the password into
-    smaller parts to handle implementations that have limits on the maximum
-    length of passwords i.e. Windows Vault
-    """
-
-    def __init__(self, keyring, max_password_size=512):
-        self._keyring = keyring
-        self._max_password_size = max_password_size
-
-    def supported(self):
-        """Return if this keyring supports current environment:
-        -1: not applicable
-         0: suitable
-         1: recommended
-        """
-        return self._keyring.supported()
-
-    def get_password(self, service, username):
-        """Get password of the username for the service
-        """
-        init_part = self._keyring.get_password(service, username)
-        if init_part:
-            parts = [init_part,]
-            i = 1
-            while True:
-                next_part = self._keyring.get_password(
-                    service,
-                    '%s{{part_%d}}' %(username, i))
-                if next_part:
-                    parts.append(next_part)
-                    i += 1
-                else:
-                    break
-            return ''.join(parts)
-        return None
-
-    def set_password(self, service, username, password):
-        """Set password for the username of the service
-        """
-        password_parts = [
-            password[i:i + self._max_password_size] for i in range(0,
-                                                                   len(password),
-                                                                   self._max_password_size)]
-        for i, password_part in enumerate(password_parts):
-            curr_username = username
-            if i > 0:
-                curr_username += '{{part_%d}}' %i
-            self._keyring.set_password(service, curr_username, password_part)
-
-@keyring.util.once
-def get_all_keyring():
-    """
-    Return a list of all implemented keyrings that can be constructed without
-    parameters.
-    """
-    return list(keyring.util.suppress_exceptions(KeyringBackend._classes,
-        exceptions=TypeError))
+from keyring.backends.multi import MultipartKeyringWrapper as MultipartKeyringWrapper
