@@ -18,11 +18,7 @@ import sys
 import tempfile
 import types
 
-try:
-    # Python < 2.7 annd Python >= 3.0 < 3.1
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+from .py30compat import unittest
 
 import keyring.backend
 from keyring.util import escape
@@ -124,13 +120,6 @@ def is_dbus_supported():
     except ImportError:
         return False
     return 'DISPLAY' in os.environ
-
-def is_keyczar_supported():
-    try:
-        __import__('keyczar')
-    except ImportError:
-        return False
-    return True
 
 def is_gdata_supported():
     try:
@@ -832,81 +821,6 @@ class EncryptedLocalPyfilesystemKeyringSubDirTestCase(
             ReverseCrypter(),
             filename='temp://a/sub/dir/hierarchy/keyring.cfg')
 
-@unittest.skipUnless(is_keyczar_supported(),
-                     "Need Keyczar")
-class KeyczarCrypterTestCase(unittest.TestCase):
-
-    """Test the keyczar crypter"""
-
-    def setUp(self):
-        self._orig_keyczar = keyring.backend.keyczar
-        keyring.backend.keyczar = mocks.MockKeyczar()
-
-    def tearDown(self):
-        keyring.backend.keyczar = self._orig_keyczar
-        if keyring.backend.EnvironKeyczarCrypter.KEYSET_ENV_VAR in os.environ:
-            del os.environ[keyring.backend.EnvironKeyczarCrypter.KEYSET_ENV_VAR]
-        if keyring.backend.EnvironKeyczarCrypter.ENC_KEYSET_ENV_VAR in os\
-        .environ:
-            del os.environ[
-                keyring.backend.EnvironKeyczarCrypter.ENC_KEYSET_ENV_VAR]
-
-    def testKeyczarCrypterWithUnencryptedReader(self):
-        """
-        """
-        location = 'bar://baz'
-        kz_crypter = keyring.backend.KeyczarCrypter(location)
-        self.assertEquals(location, kz_crypter.keyset_location)
-        self.assertIsNone(kz_crypter.encrypting_keyset_location)
-        self.assertIsInstance(kz_crypter.crypter, mocks.MockKeyczarCrypter)
-        self.assertIsInstance(kz_crypter.crypter.reader, mocks.MockKeyczarReader)
-        self.assertEquals(location, kz_crypter.crypter.reader.location)
-
-    def testKeyczarCrypterWithEncryptedReader(self):
-        """
-        """
-        location = 'foo://baz'
-        encrypting_location = 'castle://aaargh'
-        kz_crypter = keyring.backend.KeyczarCrypter(location, encrypting_location)
-        self.assertEquals(location, kz_crypter.keyset_location)
-        self.assertEquals(encrypting_location,
-                          kz_crypter.encrypting_keyset_location)
-        self.assertIsInstance(kz_crypter.crypter, mocks.MockKeyczarCrypter)
-        self.assertIsInstance(kz_crypter.crypter.reader,
-                              mocks.MockKeyczarEncryptedReader)
-        self.assertEquals(location, kz_crypter.crypter.reader._reader.location)
-        self.assertEquals(encrypting_location,
-                          kz_crypter.crypter.reader._crypter.reader.location)
-
-    def testKeyczarCrypterEncryptDecryptHandlesEmptyNone(self):
-        location = 'castle://aargh'
-        kz_crypter = keyring.backend.KeyczarCrypter(location)
-        self.assertEquals('', kz_crypter.encrypt(''))
-        self.assertEquals('', kz_crypter.encrypt(None))
-        self.assertEquals('', kz_crypter.decrypt(''))
-        self.assertEquals('', kz_crypter.decrypt(None))
-
-    def testEnvironCrypterReadsCorrectValues(self):
-        location = 'foo://baz'
-        encrypting_location = 'castle://aaargh'
-        kz_crypter = keyring.backend.EnvironKeyczarCrypter()
-        os.environ[kz_crypter.KEYSET_ENV_VAR] = location
-        self.assertEqual(location, kz_crypter.keyset_location)
-        self.assertIsNone(kz_crypter.encrypting_keyset_location)
-        os.environ[kz_crypter.ENC_KEYSET_ENV_VAR] = encrypting_location
-        self.assertEqual(encrypting_location, kz_crypter.encrypting_keyset_location)
-
-    def testEnvironCrypterThrowsExceptionOnMissingValues(self):
-        location = 'foo://baz'
-        encrypting_location = 'castle://aaargh'
-        kz_crypter = keyring.backend.EnvironKeyczarCrypter()
-        try:
-            locn = kz_crypter.keyset_location
-            self.assertTrue(False, msg="Should have thrown ValueError")
-        except ValueError:
-            # expected
-            pass
-        self.assertIsNone(kz_crypter.encrypting_keyset_location)
 
 class MultipartKeyringWrapperTestCase(unittest.TestCase):
 
@@ -972,7 +886,6 @@ def test_suite():
     suite.addTest(unittest.makeSuite(EncryptedMemoryPyfilesystemKeyringTestCase))
     suite.addTest(unittest.makeSuite(EncryptedLocalPyfilesystemKeyringNoSubDirTestCase))
     suite.addTest(unittest.makeSuite(EncryptedLocalPyfilesystemKeyringSubDirTestCase))
-    suite.addTest(unittest.makeSuite(KeyczarCrypterTestCase))
     suite.addTest(unittest.makeSuite(MultipartKeyringWrapperTestCase))
     return suite
 
