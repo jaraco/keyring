@@ -111,24 +111,6 @@ class _ExtensionKeyring(KeyringBackend):
             e = sys.exc_info()[1]
             raise PasswordSetError(e.message)
 
-# for backward-compatibility
-from keyring.backends.OS_X import Keyring as OSXKeychain
-from keyring.backends.Gnome import Keyring as GnomeKeyring
-from keyring.backends.SecretService import Keyring as SecretServiceKeyring
-from keyring.backends.kwallet import Keyring as KDEKWallet
-from keyring.backends.file import BaseKeyring as BasicFileKeyring
-from keyring.backends.file import PlaintextKeyring as UncryptedFileKeyring
-from keyring.backends.file import EncryptedKeyring as CryptedFileKeyring
-from keyring.backends.Windows import EncryptedKeyring as Win32CryptoKeyring
-from keyring.backends.Windows import WinVaultKeyring
-from keyring.backends.Windows import RegistryKeyring as Win32CryptoRegistry
-from keyring.backends.Windows import select_windows_backend
-from keyring.backends.Google import DocsKeyring as GoogleDocsKeyring
-from keyring.credentials import Credential
-from keyring.credentials import SimpleCredential as BaseCredential
-from keyring.credentials import EnvironCredential
-from keyring.backends.Google import EnvironCredential as GoogleEnvironCredential
-
 class Crypter(object):
     """Base class providing encryption and decryption
     """
@@ -154,6 +136,24 @@ class NullCrypter(Crypter):
 
     def decrypt(self, value):
         return value
+
+# for backward-compatibility
+from keyring.backends.OS_X import Keyring as OSXKeychain
+from keyring.backends.Gnome import Keyring as GnomeKeyring
+from keyring.backends.SecretService import Keyring as SecretServiceKeyring
+from keyring.backends.kwallet import Keyring as KDEKWallet
+from keyring.backends.file import BaseKeyring as BasicFileKeyring
+from keyring.backends.file import PlaintextKeyring as UncryptedFileKeyring
+from keyring.backends.file import EncryptedKeyring as CryptedFileKeyring
+from keyring.backends.Windows import EncryptedKeyring as Win32CryptoKeyring
+from keyring.backends.Windows import WinVaultKeyring
+from keyring.backends.Windows import RegistryKeyring as Win32CryptoRegistry
+from keyring.backends.Windows import select_windows_backend
+from keyring.backends.Google import DocsKeyring as GoogleDocsKeyring
+from keyring.credentials import Credential
+from keyring.credentials import SimpleCredential as BaseCredential
+from keyring.credentials import EnvironCredential
+from keyring.backends.Google import EnvironCredential as GoogleEnvironCredential
 
 class BaseKeyczarCrypter(Crypter):
     """Base Keyczar keyset encryption and decryption.
