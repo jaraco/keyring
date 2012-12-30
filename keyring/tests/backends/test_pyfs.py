@@ -1,5 +1,6 @@
 import os
 import tempfile
+import platform
 
 from ..py30compat import unittest
 
@@ -13,6 +14,10 @@ def is_pyfilesystem_supported():
         return False
     return True
 
+# Due to a `bug <http://code.google.com/p/pyfilesystem/issues/detail?id=143>`_
+# in pyfilesystem, the tests fail on Windows, so mark them as such.
+xfail_win = (unittest.expectedFailure
+    if platform.system() == 'Windows' else lambda func: func)
 
 class ReverseCrypter(keyring.backend.Crypter):
     """Very silly crypter class"""
@@ -39,6 +44,7 @@ class PyfilesystemKeyringTests(BackendBasicTests):
 
         self.assertEqual(password, self.keyring.decrypt(encrypted))
 
+@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedMemoryPyfilesystemKeyringNoSubDirTestCase(
@@ -52,6 +58,7 @@ class UnencryptedMemoryPyfilesystemKeyringNoSubDirTestCase(
         return keyring.backend.UnencryptedPyfilesystemKeyring(
             filename=self.keyring_filename)
 
+@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedMemoryPyfilesystemKeyringSubDirTestCase(
@@ -65,6 +72,7 @@ class UnencryptedMemoryPyfilesystemKeyringSubDirTestCase(
         return keyring.backend.UnencryptedPyfilesystemKeyring(
             filename=self.keyring_filename)
 
+@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedLocalPyfilesystemKeyringNoSubDirTestCase(
@@ -96,6 +104,7 @@ user1 = cHdkMQ==
         if os.path.exists(self.keyring_filename):
             os.remove(self.keyring_filename)
 
+@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedLocalPyfilesystemKeyringSubDirTestCase(
@@ -113,6 +122,7 @@ class UnencryptedLocalPyfilesystemKeyringSubDirTestCase(
         return keyring.backend.UnencryptedPyfilesystemKeyring(
             filename=self.keyring_filename)
 
+@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class EncryptedMemoryPyfilesystemKeyringTestCase(PyfilesystemKeyringTests,
@@ -124,6 +134,7 @@ class EncryptedMemoryPyfilesystemKeyringTestCase(PyfilesystemKeyringTests,
             ReverseCrypter(),
             filename='mem://encrypted/keyring.cfg')
 
+@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class EncryptedLocalPyfilesystemKeyringNoSubDirTestCase(
@@ -136,6 +147,7 @@ class EncryptedLocalPyfilesystemKeyringNoSubDirTestCase(
             ReverseCrypter(),
             filename='temp://keyring.cfg')
 
+@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class EncryptedLocalPyfilesystemKeyringSubDirTestCase(
