@@ -100,13 +100,6 @@ def random_string(k, source = ALPHABET):
     return result
 
 
-def is_win32_crypto_supported():
-    try:
-        __import__('keyring.backends.win32_crypto')
-    except ImportError:
-        return False
-    return sys.platform in ['win32'] and sys.getwindowsversion()[-2] == 2
-
 def is_osx_keychain_supported():
     return sys.platform in ('mac','darwin')
 
@@ -124,17 +117,6 @@ def is_gnomekeyring_supported():
     if supported == -1:
         return False
     return True
-
-def is_winvault_supported():
-    try:
-        __import__('win32cred')
-        has_pywin32 = True
-    except ImportError:
-        has_pywin32 = False
-    return (
-        sys.platform in ['win32'] and sys.getwindowsversion().major >= 6
-        and has_pywin32
-    )
 
 def is_dbus_supported():
     try:
@@ -344,30 +326,6 @@ class CryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
 
     def init_keyring(self):
         return keyring.backend.CryptedFileKeyring()
-
-
-@unittest.skipUnless(is_win32_crypto_supported(),
-                     "Need Windows")
-class Win32CryptoKeyringTestCase(FileKeyringTests, unittest.TestCase):
-
-    def init_keyring(self):
-        return keyring.backend.Win32CryptoKeyring()
-
-
-@unittest.skipUnless(is_winvault_supported(),
-                     "Need WinVault")
-class WinVaultKeyringTestCase(BackendBasicTests, unittest.TestCase):
-    def tearDown(self):
-        # clean up any credentials created
-        for cred in self.credentials_created:
-            try:
-                self.keyring.delete_password(*cred)
-            except (Exception,):
-                e = sys.exc_info()[1]
-                print >> sys.stderr, e
-
-    def init_keyring(self):
-        return keyring.backend.WinVaultKeyring()
 
 @unittest.skipUnless(is_dbus_supported(),
     "DBus needed for SecretServiceKeyring")
@@ -1005,8 +963,6 @@ def test_suite():
     suite.addTest(unittest.makeSuite(SecretServiceKeyringTestCase))
     suite.addTest(unittest.makeSuite(UncryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(CryptedFileKeyringTestCase))
-    suite.addTest(unittest.makeSuite(Win32CryptoKeyringTestCase))
-    suite.addTest(unittest.makeSuite(WinVaultKeyringTestCase))
     suite.addTest(unittest.makeSuite(GoogleDocsKeyringTestCase))
     suite.addTest(unittest.makeSuite(GoogleDocsKeyringInteractionTestCase))
     suite.addTest(unittest.makeSuite(UnencryptedMemoryPyfilesystemKeyringNoSubDirTestCase))

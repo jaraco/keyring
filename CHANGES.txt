@@ -19,6 +19,10 @@ Next release
   - BasicFileKeyring -> backends.file.BaseKeyring
   - CryptedFileKeyring -> backends.file.EncryptedKeyring
   - UncryptedFileKeyring -> backends.file.PlaintextKeyring
+  - Win32CryptoKeyring -> backends.Windows.EncryptedKeyring
+  - WinVaultKeyring -> backends.Windows.WinVaultKeyring
+  - Win32CryptoRegistry -> backends.Windows.RegistryKeyring
+  - select_windows_backend -> backends.Windows.select_windows_backend
 
 ---
 1.0
