@@ -14,6 +14,7 @@ Next release
   kept for backward compatibility):
   - OSXKeychain -> backends.OS_X.Keyring
   - GnomeKeyring -> backends.Gnome.Keyring
+  - SecretServiceKeyring -> backends.SecretService.Keyring
 
 ---
 1.0
