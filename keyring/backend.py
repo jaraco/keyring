@@ -10,12 +10,6 @@ import os
 import sys
 import base64
 
-try:
-    import io
-except ImportError:
-    # Support Python 2.4, 2.5
-    import StringIO as io
-
 import keyring.util.escape
 from keyring.util import properties
 import keyring.util.platform
