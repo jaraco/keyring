@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+-----
+1.1.1
+-----
+
+* Fixed MANIFEST.in so .rst files are included.
+
 ---
 1.1
 ---
