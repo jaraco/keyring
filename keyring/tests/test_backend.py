@@ -18,7 +18,7 @@ import sys
 import tempfile
 
 from .py30compat import unittest
-from .util import ImportKiller
+from .util import ImportKiller, Environ
 
 import keyring.backend
 from keyring.util import escape
