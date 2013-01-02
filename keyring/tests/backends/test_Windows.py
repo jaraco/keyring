@@ -3,7 +3,8 @@ import sys
 from ..py30compat import unittest
 
 import keyring.backends.Windows
-from ..test_backend import FileKeyringTests, BackendBasicTests
+from ..test_backend import BackendBasicTests
+from .test_file import FileKeyringTests
 
 def is_win32_crypto_supported():
     try:

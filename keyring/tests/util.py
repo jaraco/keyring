@@ -1,6 +1,8 @@
 import contextlib
 import os
 import sys
+import random
+import string
 
 class ImportKiller(object):
     "Context manager to make an import of a given name or names fail."
@@ -49,3 +51,13 @@ def NoNoneDictMutator(destination, **changes):
 def Environ(**changes):
     """A context manager to temporarily change the os.environ"""
     return NoNoneDictMutator(os.environ, **changes)
+
+ALPHABET = string.ascii_letters + string.digits
+
+def random_string(k, source = ALPHABET):
+    """Generate a random string with length <i>k</i>
+    """
+    result = ''
+    for i in range(0, k):
+        result += random.choice(source)
+    return result

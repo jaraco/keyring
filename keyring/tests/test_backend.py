@@ -12,31 +12,20 @@ import base64
 import codecs
 import cPickle
 import os
-import random
 import string
 import sys
-import tempfile
 
 from .py30compat import unittest
-from .util import ImportKiller, Environ
+from .util import ImportKiller, Environ, random_string
 
 import keyring.backend
 from keyring.util import escape
 
 from keyring.tests import mocks
 
-ALPHABET = string.ascii_letters + string.digits
 DIFFICULT_CHARS = string.whitespace + string.punctuation
 UNICODE_CHARS = escape.u("""κόσμεНа берегу пустынных волнSîne klâwen durh die
 wolken sint geslagen, er stîget ûf mit grôzer kraft""")
-
-def random_string(k, source = ALPHABET):
-    """Generate a random string with length <i>k</i>
-    """
-    result = ''
-    for i in range(0, k):
-        result += random.choice(source)
-    return result
 
 
 def is_dbus_supported():
@@ -116,48 +105,6 @@ class BackendBasicTests(object):
         self.set_password('service2', 'user3', 'password3')
         self.assertEqual(keyring.get_password('service1', 'user1'),
             'password1')
-
-class FileKeyringTests(BackendBasicTests):
-
-    def setUp(self):
-        super(FileKeyringTests, self).setUp()
-        self.keyring = self.init_keyring()
-        self.keyring.file_path = self.tmp_keyring_file = tempfile.mktemp()
-
-    def tearDown(self):
-        try:
-            os.unlink(self.tmp_keyring_file)
-        except (OSError,):
-            e = sys.exc_info()[1]
-            if e.errno != 2: # No such file or directory
-                raise
-
-    def test_encrypt_decrypt(self):
-        password = random_string(20)
-        # keyring.encrypt expects bytes
-        password = password.encode('utf-8')
-        encrypted = self.keyring.encrypt(password)
-
-        self.assertEqual(password, self.keyring.decrypt(encrypted))
-
-
-class UncryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
-
-    def init_keyring(self):
-        return keyring.backend.UncryptedFileKeyring()
-
-    @unittest.skipIf(sys.platform == 'win32',
-        "Group/World permissions aren't meaningful on Windows")
-    def test_keyring_not_created_world_writable(self):
-        """
-        Ensure that when keyring creates the file that it's not overly-
-        permissive.
-        """
-        self.keyring.set_password('system', 'user', 'password')
-
-        self.assertTrue(os.path.exists(self.keyring.file_path))
-        group_other_perms = os.stat(self.keyring.file_path).st_mode & 0077
-        self.assertEqual(group_other_perms, 0)
 
 @unittest.skipUnless(is_dbus_supported(),
     "DBus needed for SecretServiceKeyring")
@@ -534,7 +481,6 @@ class GoogleDocsKeyringInteractionTestCase(unittest.TestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(SecretServiceKeyringTestCase))
-    suite.addTest(unittest.makeSuite(UncryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(GoogleDocsKeyringTestCase))
     suite.addTest(unittest.makeSuite(GoogleDocsKeyringInteractionTestCase))
     return suite
