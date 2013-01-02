@@ -3,6 +3,12 @@ CHANGES
 =======
 
 -----
+1.1.2
+-----
+
+* Issue #78: pyfilesystem backend now works on Windows.
+
+-----
 1.1.1
 -----
 
