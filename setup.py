@@ -56,7 +56,7 @@ if sys.version_info < (2, 7) or (
 
 setup_params = dict(
     name = 'keyring',
-    version = "1.1.2",
+    version = "1.1.3",
     description = "Store and access your passwords safely.",
     url = "http://bitbucket.org/kang/python-keyring-lib",
     keywords = "keyring Keychain GnomeKeyring Kwallet password storage",
