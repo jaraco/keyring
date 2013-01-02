@@ -22,7 +22,7 @@ try:
 except Exception:
 	pass
 
-VERSION = setup.setup_params
+VERSION = setup.setup_params['version']
 
 def get_next_version():
 	digits = map(int, VERSION.split('.'))
