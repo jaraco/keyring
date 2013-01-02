@@ -11,16 +11,14 @@ from __future__ import with_statement
 import base64
 import codecs
 import cPickle
-import contextlib
-import getpass
 import os
 import random
 import string
 import sys
 import tempfile
-import types
 
 from .py30compat import unittest
+from .util import ImportKiller
 
 import keyring.backend
 from keyring.util import escape
@@ -32,63 +30,6 @@ DIFFICULT_CHARS = string.whitespace + string.punctuation
 UNICODE_CHARS = escape.u("""κόσμεНа берегу пустынных волнSîne klâwen durh die
 wolken sint geslagen, er stîget ûf mit grôzer kraft""")
 
-class ImportKiller(object):
-    "Context manager to make an import of a given name or names fail."
-    def __init__(self, *names):
-        self.names = names
-    def find_module(self, fullname, path=None):
-        if fullname in self.names:
-            return self
-    def load_module(self, fullname):
-        assert fullname in self.names
-        raise ImportError(fullname)
-    def __enter__(self):
-        self.original = {}
-        for name in self.names:
-            self.original[name] = sys.modules.pop(name, None)
-        sys.meta_path.append(self)
-    def __exit__(self, *args):
-        sys.meta_path.remove(self)
-        for key, value in self.original.items():
-            if value is not None:
-                sys.modules[key] = value
-
-
-@contextlib.contextmanager
-def NoNoneDictMutator(destination, **changes):
-    """Helper context manager to make and unmake changes to a dict.
-
-    A None is not a valid value for the destination, and so means that the
-    associated name should be removed."""
-    original = {}
-    for key, value in changes.items():
-        original[key] = destination.get(key)
-        if value is None:
-            if key in destination:
-                del destination[key]
-        else:
-            destination[key] = value
-    yield
-    for key, value in original.items():
-        if value is None:
-            if key in destination:
-                del destination[key]
-        else:
-            destination[key] = value
-
-
-def Environ(**changes):
-    """A context manager to temporarily change the os.environ"""
-    return NoNoneDictMutator(os.environ, **changes)
-
-
-def ImportBlesser(*names, **changes):
-    """A context manager to temporarily make it possible to import a module"""
-    for name in names:
-        changes[name] = types.ModuleType(name)
-    return NoNoneDictMutator(sys.modules, **changes)
-
-
 def random_string(k, source = ALPHABET):
     """Generate a random string with length <i>k</i>
     """
@@ -97,12 +38,6 @@ def random_string(k, source = ALPHABET):
         result += random.choice(source)
     return result
 
-
-def is_gnomekeyring_supported():
-    supported = keyring.backend.GnomeKeyring().supported()
-    if supported == -1:
-        return False
-    return True
 
 def is_dbus_supported():
     try:
@@ -181,55 +116,6 @@ class BackendBasicTests(object):
         self.set_password('service2', 'user3', 'password3')
         self.assertEqual(keyring.get_password('service1', 'user1'),
             'password1')
-
-@unittest.skipUnless(is_gnomekeyring_supported(),
-                     "Need GnomeKeyring")
-class GnomeKeyringTestCase(BackendBasicTests, unittest.TestCase):
-
-    def environ(self):
-        return dict(GNOME_KEYRING_CONTROL='1',
-                    DISPLAY='1',
-                    DBUS_SESSION_BUS_ADDRESS='1')
-
-    def init_keyring(self):
-        k = keyring.backend.GnomeKeyring()
-
-        # Store passwords in the session (in-memory) keyring for the tests. This
-        # is going to be automatically cleared when the user logoff.
-        k.KEYRING_NAME = 'session'
-
-        return k
-
-    def test_supported(self):
-        with ImportBlesser('gnomekeyring'):
-            with Environ(**self.environ()):
-                self.assertEqual(1, self.keyring.supported())
-
-    def test_supported_no_module(self):
-        with ImportKiller('gnomekeyring'):
-            with Environ(**self.environ()):
-                self.assertEqual(-1, self.keyring.supported())
-
-    def test_supported_no_keyring(self):
-        with ImportBlesser('gnomekeyring'):
-            environ = self.environ()
-            environ['GNOME_KEYRING_CONTROL'] = None
-            with Environ(**environ):
-                self.assertEqual(0, self.keyring.supported())
-
-    def test_supported_no_display(self):
-        with ImportBlesser('gnomekeyring'):
-            environ = self.environ()
-            environ['DISPLAY'] = None
-            with Environ(**environ):
-                self.assertEqual(0, self.keyring.supported())
-
-    def test_supported_no_session(self):
-        with ImportBlesser('gnomekeyring'):
-            environ = self.environ()
-            environ['DBUS_SESSION_BUS_ADDRESS'] = None
-            with Environ(**environ):
-                self.assertEqual(0, self.keyring.supported())
 
 class FileKeyringTests(BackendBasicTests):
 
@@ -647,7 +533,6 @@ class GoogleDocsKeyringInteractionTestCase(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(GnomeKeyringTestCase))
     suite.addTest(unittest.makeSuite(SecretServiceKeyringTestCase))
     suite.addTest(unittest.makeSuite(UncryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(GoogleDocsKeyringTestCase))
