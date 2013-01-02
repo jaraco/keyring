@@ -86,7 +86,8 @@ Config file content
 -------------------
 
 To specify a keyring backend, you need tell the lib the module name of the
-backend, such as ``keyring.backend.OSXKeychain``. If the backend is not shipped
+backend, such as ``keyring.backends.OS_X.Keyring``. If the backend is not
+shipped
 with the lib, in another word, is made by you own, you need also tell the lib
 the path of your own backend module. The module name should be written after the
 **default-keyring** option, while the module path belongs the **keyring-path**
@@ -321,12 +322,11 @@ or::
 Using buildout
 --------------
 
-The keyring repo bundles buildout's bootstrap script as a subrepo, so using
-buildout is three easy steps::
+Keyring supplies a buildout.cfg for use with buildout. If you have buildout
+installed, tests can be invoked as so::
 
-    1. python buildout/bootstrap  # bootstrap the buildout.
-    2. bin/buildout  # prepare the buildout.
-    3. bin/test  # execute the test runner.
+    1. bin/buildout  # prepare the buildout.
+    2. bin/test  # execute the test runner.
 
 For more information about the options that the script provides do execute::
 
