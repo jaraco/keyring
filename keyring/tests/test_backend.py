@@ -8,27 +8,15 @@ created by Kang Zhang 2009-07-14
 """
 from __future__ import with_statement
 
-import os
 import string
-import sys
 
-from .py30compat import unittest
-from .util import ImportKiller, Environ, random_string
-
-import keyring.backend
 from keyring.util import escape
+from .util import random_string
 
 DIFFICULT_CHARS = string.whitespace + string.punctuation
 UNICODE_CHARS = escape.u("""κόσμεНа берегу пустынных волнSîne klâwen durh die
 wolken sint geslagen, er stîget ûf mit grôzer kraft""")
 
-
-def is_dbus_supported():
-    try:
-        __import__('dbus')
-    except ImportError:
-        return False
-    return 'DISPLAY' in os.environ
 
 class BackendBasicTests(object):
     """Test for the keyring's basic funtions. password_set and password_get
@@ -93,29 +81,3 @@ class BackendBasicTests(object):
         self.set_password('service2', 'user3', 'password3')
         self.assertEqual(keyring.get_password('service1', 'user1'),
             'password1')
-
-@unittest.skipUnless(is_dbus_supported(),
-    "DBus needed for SecretServiceKeyring")
-class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
-    __test__ = True
-
-    def environ(self):
-        return dict(DISPLAY='1',
-                    DBUS_SESSION_BUS_ADDRESS='1')
-
-    def init_keyring(self):
-        print >> sys.stderr, "Testing SecretServiceKeyring, following password prompts are for this keyring"
-        return keyring.backend.SecretServiceKeyring()
-
-    def test_supported_no_module(self):
-        with ImportKiller('dbus'):
-            with Environ(**self.environ()):
-                self.assertEqual(-1, self.keyring.supported())
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(SecretServiceKeyringTestCase))
-    return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest="test_suite")
