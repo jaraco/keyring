@@ -15,12 +15,14 @@ import urllib2
 import getpass
 import collections
 
+import setup
+
 try:
 	import keyring
 except Exception:
 	pass
 
-VERSION = '1.2'
+VERSION = setup.setup_params
 
 def get_next_version():
 	digits = map(int, VERSION.split('.'))
@@ -29,7 +31,7 @@ def get_next_version():
 
 NEXT_VERSION = get_next_version()
 
-files_with_versions = ('setup.py', 'release.py')
+files_with_versions = 'setup.py',
 
 def get_repo_name():
 	"""
