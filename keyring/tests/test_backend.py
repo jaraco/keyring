@@ -101,15 +101,6 @@ def random_string(k, source = ALPHABET):
 def is_osx_keychain_supported():
     return sys.platform in ('mac','darwin')
 
-def is_crypto_supported():
-    try:
-        __import__('Crypto.Cipher.AES')
-        __import__('Crypto.Protocol.KDF')
-        __import__('Crypto.Random')
-    except ImportError:
-        return False
-    return True
-
 def is_gnomekeyring_supported():
     supported = keyring.backend.GnomeKeyring().supported()
     if supported == -1:
@@ -292,24 +283,6 @@ class UncryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
         self.assertTrue(os.path.exists(self.keyring.file_path))
         group_other_perms = os.stat(self.keyring.file_path).st_mode & 0077
         self.assertEqual(group_other_perms, 0)
-
-
-@unittest.skipUnless(is_crypto_supported(),
-                     "Need Crypto module")
-class CryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
-
-    def setUp(self):
-        super(self.__class__, self).setUp()
-        # patch the getpass module to bypass user input
-        self.getpass_orig = getpass.getpass
-        getpass.getpass = lambda *args, **kwargs: "abcdef"
-
-    def tearDown(self):
-        getpass.getpass = self.getpass_orig
-        del self.getpass_orig
-
-    def init_keyring(self):
-        return keyring.backend.CryptedFileKeyring()
 
 @unittest.skipUnless(is_dbus_supported(),
     "DBus needed for SecretServiceKeyring")
@@ -689,7 +662,6 @@ def test_suite():
     suite.addTest(unittest.makeSuite(GnomeKeyringTestCase))
     suite.addTest(unittest.makeSuite(SecretServiceKeyringTestCase))
     suite.addTest(unittest.makeSuite(UncryptedFileKeyringTestCase))
-    suite.addTest(unittest.makeSuite(CryptedFileKeyringTestCase))
     suite.addTest(unittest.makeSuite(GoogleDocsKeyringTestCase))
     suite.addTest(unittest.makeSuite(GoogleDocsKeyringInteractionTestCase))
     return suite
