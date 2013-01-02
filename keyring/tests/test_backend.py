@@ -98,9 +98,6 @@ def random_string(k, source = ALPHABET):
     return result
 
 
-def is_osx_keychain_supported():
-    return sys.platform in ('mac','darwin')
-
 def is_gnomekeyring_supported():
     supported = keyring.backend.GnomeKeyring().supported()
     if supported == -1:
@@ -184,14 +181,6 @@ class BackendBasicTests(object):
         self.set_password('service2', 'user3', 'password3')
         self.assertEqual(keyring.get_password('service1', 'user1'),
             'password1')
-
-@unittest.skipUnless(is_osx_keychain_supported(),
-                     "Need OS X")
-class OSXKeychainTestCase(BackendBasicTests, unittest.TestCase):
-
-    def init_keyring(self):
-        return keyring.backend.OSXKeychain()
-
 
 @unittest.skipUnless(is_gnomekeyring_supported(),
                      "Need GnomeKeyring")
@@ -658,7 +647,6 @@ class GoogleDocsKeyringInteractionTestCase(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(OSXKeychainTestCase))
     suite.addTest(unittest.makeSuite(GnomeKeyringTestCase))
     suite.addTest(unittest.makeSuite(SecretServiceKeyringTestCase))
     suite.addTest(unittest.makeSuite(UncryptedFileKeyringTestCase))
