@@ -1,4 +1,4 @@
-import getpass
+import mock
 
 from ..py30compat import unittest
 from ..test_backend import FileKeyringTests
@@ -21,13 +21,12 @@ class CryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
 
     def setUp(self):
         super(self.__class__, self).setUp()
-        # patch the getpass module to bypass user input
-        self.getpass_orig = getpass.getpass
-        getpass.getpass = lambda *args, **kwargs: "abcdef"
+        fake_getpass = mock.Mock(return_value='abcdef')
+        self.patcher = mock.patch('getpass.getpass', fake_getpass)
+        self.patcher.start()
 
     def tearDown(self):
-        getpass.getpass = self.getpass_orig
-        del self.getpass_orig
+        self.patcher.stop()
 
     def init_keyring(self):
         return file.EncryptedKeyring()

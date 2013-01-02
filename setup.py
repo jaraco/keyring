@@ -44,6 +44,7 @@ test_requirements = [
     'gdata',
     'python-keyczar',
     'fs',
+    'mock',
 ]
 "dependencies for running tests"
 
