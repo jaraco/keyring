@@ -14,11 +14,6 @@ def is_pyfilesystem_supported():
         return False
     return True
 
-# Due to a `bug <https://bitbucket.org/kang/python-keyring-lib/issue/78>`_
-# in our usage of pyfilesystem, the tests fail on Windows, so mark them as
-# such.
-xfail_win = (unittest.expectedFailure
-    if platform.system() == 'Windows' else lambda func: func)
 
 class ReverseCrypter(keyring.backend.Crypter):
     """Very silly crypter class"""
@@ -45,7 +40,6 @@ class PyfilesystemKeyringTests(BackendBasicTests):
 
         self.assertEqual(password, self.keyring.decrypt(encrypted))
 
-@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedMemoryPyfilesystemKeyringNoSubDirTestCase(
@@ -59,7 +53,6 @@ class UnencryptedMemoryPyfilesystemKeyringNoSubDirTestCase(
         return keyring.backend.UnencryptedPyfilesystemKeyring(
             filename=self.keyring_filename)
 
-@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedMemoryPyfilesystemKeyringSubDirTestCase(
@@ -73,7 +66,6 @@ class UnencryptedMemoryPyfilesystemKeyringSubDirTestCase(
         return keyring.backend.UnencryptedPyfilesystemKeyring(
             filename=self.keyring_filename)
 
-@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedLocalPyfilesystemKeyringNoSubDirTestCase(
@@ -105,7 +97,6 @@ user1 = cHdkMQ==
         if os.path.exists(self.keyring_filename):
             os.remove(self.keyring_filename)
 
-@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedLocalPyfilesystemKeyringSubDirTestCase(
@@ -113,8 +104,8 @@ class UnencryptedLocalPyfilesystemKeyringSubDirTestCase(
     unittest.TestCase):
     """Test using local temp files with no encryption"""
 
-    keyring_dir = '%s//more/sub/dirs' %tempfile.mkdtemp()
-    keyring_filename = '%s/keyring.cfg' %keyring_dir
+    keyring_dir = os.path.join(tempfile.mkdtemp(), 'more', 'sub', 'dirs')
+    keyring_filename = os.path.join(keyring_dir, 'keyring.cfg')
 
     def init_keyring(self):
 
@@ -123,7 +114,6 @@ class UnencryptedLocalPyfilesystemKeyringSubDirTestCase(
         return keyring.backend.UnencryptedPyfilesystemKeyring(
             filename=self.keyring_filename)
 
-@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class EncryptedMemoryPyfilesystemKeyringTestCase(PyfilesystemKeyringTests,
@@ -135,7 +125,6 @@ class EncryptedMemoryPyfilesystemKeyringTestCase(PyfilesystemKeyringTests,
             ReverseCrypter(),
             filename='mem://encrypted/keyring.cfg')
 
-@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class EncryptedLocalPyfilesystemKeyringNoSubDirTestCase(
@@ -148,7 +137,6 @@ class EncryptedLocalPyfilesystemKeyringNoSubDirTestCase(
             ReverseCrypter(),
             filename='temp://keyring.cfg')
 
-@xfail_win
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class EncryptedLocalPyfilesystemKeyringSubDirTestCase(
