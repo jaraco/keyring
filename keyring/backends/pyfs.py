@@ -109,14 +109,16 @@ class BasicKeyring(KeyringBackend):
                     if self._cache_timeout is not None:
                         pyfs = fs.remote.CacheFS(
                             pyfs, cache_timeout=self._cache_timeout)
-                    url2_path, url2_filename = fs.path.split(url2)
+                    # NOTE: fs.path.split does not function in the same way os os.path.split... at least under windows
+                    url2_path, url2_filename = os.path.split(url2)
                     if url2_path and not pyfs.exists(url2_path):
                         pyfs.makedir(url2_path, recursive=True)
                 else:
                     # assume local filesystem
                     import fs.osfs
                     full_url = fs.opener._expand_syspath(self.filename)
-                    url2_path, url2 = fs.path.split(full_url)
+                    # NOTE: fs.path.split does not function in the same way os os.path.split... at least under windows
+                    url2_path, url2 = os.path.split(full_url)
                     pyfs = fs.osfs.OSFS(url2_path)
 
                 try:
