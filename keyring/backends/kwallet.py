@@ -1,6 +1,7 @@
 import os
 
 from keyring.backend import KeyringBackend
+from keyring.errors import PasswordDeleteError
 
 try:
     from PyKDE4.kdeui import KWallet
@@ -76,3 +77,11 @@ class Keyring(KeyringBackend):
         """
         wallet = open_kwallet()
         wallet.writePassword(username+'@'+service, password)
+
+    def delete_password(self, service, username):
+        """Delete the password for the username of the service.
+        """
+        key = username + '@' + service
+        if kwallet.keyDoesNotExist(kwallet.walletName(), 'Python', key):
+            raise PasswordDeleteError("can't found the password")
+        kwallet.removeEntry(key)

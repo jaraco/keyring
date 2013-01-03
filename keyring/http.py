@@ -15,6 +15,7 @@ in the keyring. Then, it adds it to the keyring for subsequent use.
 import keyring
 import getpass
 
+
 class PasswordMgr(object):
     def get_username(self, realm, authuri):
         return getpass.getuser()

@@ -12,6 +12,7 @@ import string
 
 from keyring.util import escape
 from .util import random_string
+from keyring import errors
 
 DIFFICULT_CHARS = string.whitespace + string.punctuation
 UNICODE_CHARS = escape.u("""κόσμεНа берегу пустынных волнSîne klâwen durh die
@@ -57,6 +58,20 @@ class BackendBasicTests(object):
         username = random_string(20, DIFFICULT_CHARS)
         service = random_string(20, DIFFICULT_CHARS)
         self.check_set_get(service, username, password)
+
+    def test_delete_present(self):
+        password = random_string(20, DIFFICULT_CHARS)
+        username = random_string(20, DIFFICULT_CHARS)
+        service = random_string(20, DIFFICULT_CHARS)
+        self.keyring.set_password(service, username, password)
+        self.keyring.delete_password(service, username)
+        self.assertTrue(self.keyring.get_password(service, username) is None)
+
+    def test_delete_not_present(self):
+        username = random_string(20, DIFFICULT_CHARS)
+        service = random_string(20, DIFFICULT_CHARS)
+        self.assertRaises(errors.PasswordDeleteError,
+            self.keyring.delete_password, service, username)
 
     def test_unicode_chars(self):
         password = random_string(20, UNICODE_CHARS)

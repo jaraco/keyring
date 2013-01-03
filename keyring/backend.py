@@ -21,6 +21,12 @@ class KeyringBackendMeta(abc.ABCMeta):
         if not cls.__abstractmethods__:
             classes.add(cls)
 
+
+class PasswordDeleteError(Exception):
+    """Raised when the password can't be deleted.
+    """
+
+
 class KeyringBackend(object):
     """The abstract base class of the keyring, every backend must implement
     this interface.
@@ -47,6 +53,13 @@ class KeyringBackend(object):
         """Set password for the username of the service
         """
         raise PasswordSetError("reason")
+
+    @abc.abstractmethod
+    def delete_password(self, service, username):
+        """Delete the password for the username of the service.
+        """
+        raise PasswordDeleteError("reason")
+
 
 class _ExtensionKeyring(KeyringBackend):
     """**deprecated**"""

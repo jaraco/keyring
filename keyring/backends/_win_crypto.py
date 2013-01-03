@@ -17,6 +17,7 @@ class DATA_BLOB(Structure):
     _fields_ = [('cbData', wintypes.DWORD),
                 ('pbData', POINTER(wintypes.BYTE))]
 
+
 class CRYPTPROTECT_PROMPTSTRUCT(Structure):
     _fields_ = [('cbSize', wintypes.DWORD),
                 ('dwPromptFlags', wintypes.DWORD),
@@ -26,17 +27,17 @@ class CRYPTPROTECT_PROMPTSTRUCT(Structure):
 # Flags for CRYPTPROTECT_PROMPTSTRUCT
 
 CRYPTPROTECT_PROMPT_ON_UNPROTECT = 1
-CRYPTPROTECT_PROMPT_ON_PROTECT   = 2
+CRYPTPROTECT_PROMPT_ON_PROTECT = 2
 
 # Flags for CryptProtectData/CryptUnprotectData
 
-CRYPTPROTECT_UI_FORBIDDEN      = 0x01
-CRYPTPROTECT_LOCAL_MACHINE     = 0x04
-CRYPTPROTECT_CRED_SYNC         = 0x08
-CRYPTPROTECT_AUDIT             = 0x10
-CRYPTPROTECT_NO_RECOVERY       = 0x20
+CRYPTPROTECT_UI_FORBIDDEN = 0x01
+CRYPTPROTECT_LOCAL_MACHINE = 0x04
+CRYPTPROTECT_CRED_SYNC = 0x08
+CRYPTPROTECT_AUDIT = 0x10
+CRYPTPROTECT_NO_RECOVERY = 0x20
 CRYPTPROTECT_VERIFY_PROTECTION = 0x40
-CRYPTPROTECT_CRED_REGENERATE   = 0x80
+CRYPTPROTECT_CRED_REGENERATE = 0x80
 
 # Crypto API Functions
 
@@ -57,10 +58,11 @@ CryptUnprotectData = WINFUNCTYPE(wintypes.BOOL,
                                  POINTER(DATA_BLOB),
                                  c_void_p,
                                  POINTER(CRYPTPROTECT_PROMPTSTRUCT),
-                                 wintypes.DWORD,
-                                 POINTER(DATA_BLOB))(('CryptUnprotectData', _dll))
+                                 wintypes.DWORD, POINTER(DATA_BLOB))(
+                                         ('CryptUnprotectData', _dll))
 
 # Functions
+
 
 def encrypt(data, non_interactive=0):
     blobin = DATA_BLOB(cbData=len(data),
@@ -79,6 +81,7 @@ def encrypt(data, non_interactive=0):
     memmove(encrypted, blobout.pbData, blobout.cbData)
     windll.kernel32.LocalFree(blobout.pbData)
     return encrypted.raw
+
 
 def decrypt(encrypted, non_interactive=0):
     blobin = DATA_BLOB(cbData=len(encrypted),

@@ -10,6 +10,7 @@ from ..py25compat import abc
 from ..py27compat import configparser
 
 import keyring.util.platform
+from keyring.errors import PasswordDeleteError
 from keyring.backend import KeyringBackend
 from keyring.util import properties
 from keyring.util.escape import escape as escape_for_ini
@@ -117,6 +118,18 @@ class BaseKeyring(KeyringBackend):
             user_read_write = 0600
             os.chmod(self.file_path, user_read_write)
 
+    def delete_password(self, service, username):
+        """Delete the password for the username of the service.
+        """
+        service = escape_for_ini(service)
+        config = configparser.RawConfigParser()
+        if os.path.exists(self.file_path):
+            config.read(self.file_path)
+        if not config.remove_section(service):
+            raise PasswordDeleteError("can't found the password")
+        # update the file
+        config_file = open(self.file_path, 'w')
+        config.write(config_file)
 
 class PlaintextKeyring(BaseKeyring):
     """Simple File Keyring with no encryption"""

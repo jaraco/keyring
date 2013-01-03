@@ -1,7 +1,7 @@
 import os
 
 from keyring.backend import KeyringBackend
-from keyring.errors import PasswordSetError
+from keyring.errors import PasswordSetError, PasswordDeleteError
 
 class Keyring(KeyringBackend):
     """Gnome Keyring"""
@@ -58,6 +58,20 @@ class Keyring(KeyringBackend):
         except gnomekeyring.CancelledError:
             # The user pressed "Cancel" when prompted to unlock their keyring.
             raise PasswordSetError("cancelled by user")
+
+    def delete_password(self, service, username):
+        """Delete the password for the username of the service.
+        """
+        import gnomekeyring
+        try:
+            items = gnomekeyring.find_network_password_sync(username, service)
+            for current in items:
+                gnomekeyring.item_delete_sync(current['keyring'],
+                                              current['item_id'])
+        except gnomekeyring.NoMatchError:
+            raise PasswordDeleteError("can't found the password")
+        except gnomekeyring.CancelledError:
+            raise PasswordDeleteError("cancelled by user")
 
     def _safe_string(self, source, encoding='utf-8'):
         """Convert unicode to string as gnomekeyring barfs on unicode"""

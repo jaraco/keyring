@@ -4,6 +4,7 @@ import base64
 
 import keyring.util.escape
 from keyring.backend import KeyringBackend
+from keyring.errors import PasswordDeleteError
 from . import file
 
 class EncryptedKeyring(file.BaseKeyring):
@@ -200,6 +201,18 @@ class RegistryKeyring(KeyringBackend):
         from _winreg import HKEY_CURRENT_USER, CreateKey, SetValueEx, REG_SZ
         hkey = CreateKey(HKEY_CURRENT_USER, r'Software\%s\Keyring' % service)
         SetValueEx(hkey, username, 0, REG_SZ, password_base64)
+
+    def delete_password(self, service, username):
+        """Delete the password for the username of the service.
+        """
+        from _winreg import (KEY_ALL_ACCESS, HKEY_CURRENT_USER, DeleteValue,
+                             OpenKey)
+        try:
+            key = r'Software\%s\Keyring' % service
+            hkey = OpenKey(HKEY_CURRENT_USER, key, 0, KEY_ALL_ACCESS)
+            DeleteValue(hkey, username)
+        except WindowsError, e:
+            raise PasswordDeleteError(e)
 
 def select_windows_backend():
     if os.name != 'nt':
