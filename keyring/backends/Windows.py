@@ -132,10 +132,14 @@ class WinVaultKeyring(KeyringBackend):
 
     def delete_password(self, service, username):
         compound = self._compound_name(username, service)
+        deleted = False
         for target in service, compound:
             existing_pw = self._get_password(target)
             if existing_pw and existing_pw['UserName'] == username:
+                deleted = True
                 self._delete_password(target)
+        if not deleted:
+            raise PasswordDeleteError(service)
 
     def _delete_password(self, target):
         self.win32cred.CredDelete(

@@ -15,9 +15,8 @@ from keyring.tests.py30compat import unittest
 import keyring.backend
 import keyring.core
 import keyring.util.platform
+from keyring import errors
 from keyring.backends import file
-
-from keyring.backend import PasswordDeleteError
 
 PASSWORD_TEXT = "This is password"
 PASSWORD_TEXT_2 = "This is password2"
@@ -27,6 +26,9 @@ KEYRINGRC = "keyringrc.cfg"
 class TestKeyring(keyring.backend.KeyringBackend):
     """A faked keyring for test.
     """
+    def __init__(self):
+        self.passwords = {}
+
     def supported(self):
         return 0
 
@@ -34,10 +36,14 @@ class TestKeyring(keyring.backend.KeyringBackend):
         return PASSWORD_TEXT
 
     def set_password(self, service, username, password):
+        self.passwords[(service, username)] = password
         return 0
 
     def delete_password(self, service, username):
-        return 0
+        try:
+            del self.passwords[(service, username)]
+        except KeyError:
+            raise errors.PasswordDeleteError("not set")
 
 
 class TestKeyring2(TestKeyring):
@@ -65,8 +71,8 @@ class CoreTestCase(unittest.TestCase):
         self.assertTrue(keyring.core.get_password("test", "user") is None)
 
     def test_delete_password_not_present(self):
-        self.assertRaises(PasswordDeleteError, keyring.core.delete_password,
-                          "test", "user")
+        self.assertRaises(errors.PasswordDeleteError,
+            keyring.core.delete_password, "test", "user")
 
     def test_set_keyring_in_runtime(self):
         """Test the function of set keyring in runtime.

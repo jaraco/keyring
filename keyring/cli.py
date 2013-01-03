@@ -61,8 +61,8 @@ class CommandLineTool(object):
             keyring.set_password(service, username, password)
             return 0
 
-        elif kid == 'del':
-            password = input_password("Deleting password for '%s' in '%s': " %
+        elif kind == 'del':
+            password = self.input_password("Deleting password for '%s' in '%s': " %
                                       (username, service))
             keyring.delete_password(service, username)
             return 0

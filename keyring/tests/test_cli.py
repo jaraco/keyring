@@ -6,8 +6,9 @@ import os.path
 
 from keyring.tests.py30compat import unittest
 
-from keyring import cli
 import keyring.backend
+from keyring import cli
+from keyring import errors
 
 
 class FakeKeyring(keyring.backend.KeyringBackend):
@@ -22,6 +23,8 @@ class FakeKeyring(keyring.backend.KeyringBackend):
     def get_password(self, service, username):
         return self.PASSWORD
 
+    def delete_password(self, service, username):
+        pass
 
 class SimpleKeyring(keyring.backend.KeyringBackend):
     """A very simple keyring"""
@@ -41,6 +44,11 @@ class SimpleKeyring(keyring.backend.KeyringBackend):
         except KeyError:
             return None
 
+    def delete_password(self, service, username):
+        try:
+            del self.pwd[(service, username)]
+        except KeyError:
+            raise errors.PasswordDeleteError("No key")
 
 class CommandLineTestCase(unittest.TestCase):
     def setUp(self):

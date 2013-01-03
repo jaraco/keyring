@@ -5,6 +5,7 @@ Keyring implementation support
 import sys
 
 from keyring.py25compat import abc
+from keyring import errors
 
 import keyring.util
 
@@ -20,11 +21,6 @@ class KeyringBackendMeta(abc.ABCMeta):
         classes = cls._classes
         if not cls.__abstractmethods__:
             classes.add(cls)
-
-
-class PasswordDeleteError(Exception):
-    """Raised when the password can't be deleted.
-    """
 
 
 class KeyringBackend(object):
@@ -52,13 +48,13 @@ class KeyringBackend(object):
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        raise PasswordSetError("reason")
+        raise errors.PasswordSetError("reason")
 
     @abc.abstractmethod
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
         """
-        raise PasswordDeleteError("reason")
+        raise errors.PasswordDeleteError("reason")
 
 
 class _ExtensionKeyring(KeyringBackend):
