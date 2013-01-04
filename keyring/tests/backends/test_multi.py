@@ -2,6 +2,7 @@ from ..py30compat import unittest
 
 from keyring.backend import KeyringBackend
 from keyring.backends import multi
+import keyring.errors
 
 class MultipartKeyringWrapperTestCase(unittest.TestCase):
 
@@ -20,6 +21,12 @@ class MultipartKeyringWrapperTestCase(unittest.TestCase):
 
         def set_password(self, service, username, password):
             self.passwords[service+username] = password
+
+        def delete_password(self, service, username):
+            try:
+                del self.passwords[service+username]
+            except KeyError:
+                raise keyring.errors.PasswordDeleteError('not found')
 
     def testSupportedPassThru(self):
         kr = multi.MultipartKeyringWrapper(self.MockKeyring())

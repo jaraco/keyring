@@ -1,4 +1,7 @@
+import itertools
+
 from keyring.backend import KeyringBackend
+from keyring import errors
 
 class MultipartKeyringWrapper(KeyringBackend):
 
@@ -50,3 +53,14 @@ class MultipartKeyringWrapper(KeyringBackend):
             if i > 0:
                 curr_username += '{{part_%d}}' %i
             self._keyring.set_password(service, curr_username, password_part)
+
+    def delete_password(self, service, username):
+        self._keyring.delete_password(service, username)
+        count = itertools.count(1)
+        while True:
+            part_name = '%(username)s{{part_%(index)d}}' % dict(
+                index = count.next(), **vars())
+            try:
+                self._keyring.delete_password(service, part_name)
+            except errors.PasswordDeleteError:
+                break
