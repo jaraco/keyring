@@ -58,7 +58,6 @@ class Keyring(KeyringBackend):
             byte_arrays=True)
         for item_path, secret in secrets.iteritems():
             return unicode(secret[2])
-        return None
 
     @property
     def collection(self):
