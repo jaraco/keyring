@@ -1,6 +1,5 @@
 import os
 import tempfile
-import platform
 
 from ..py30compat import unittest
 
