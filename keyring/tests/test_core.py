@@ -16,7 +16,6 @@ import keyring.backend
 import keyring.core
 import keyring.util.platform
 from keyring import errors
-from keyring.backends import file
 
 PASSWORD_TEXT = "This is password"
 PASSWORD_TEXT_2 = "This is password2"
