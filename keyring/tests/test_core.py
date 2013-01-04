@@ -54,10 +54,13 @@ class TestKeyring2(TestKeyring):
 
 
 class CoreTestCase(unittest.TestCase):
-    @unittest.skip("the default keyring might be a keyring "
+    skip_arbitrary_keyring = unittest.skip("the default keyring might be a "
+        "keyring "
         "which requires input (such as file.EncryptedKeyring), "
         "in which case the test blocks forever. TODO: patch rawinput "
         "to supply a password.")
+
+    @skip_arbitrary_keyring
     def test_set_get_password(self):
         """
         set/get_password on the default keyring.
@@ -65,11 +68,13 @@ class CoreTestCase(unittest.TestCase):
         keyring.core.set_password("test", "user", "passtest")
         self.assertEqual(keyring.core.get_password("test", "user"), "passtest")
 
+    @skip_arbitrary_keyring
     def test_delete_password_present(self):
         keyring.core.set_password("test", "user", "passtest")
         keyring.core.delete_password("test", "user")
         self.assertTrue(keyring.core.get_password("test", "user") is None)
 
+    @skip_arbitrary_keyring
     def test_delete_password_not_present(self):
         self.assertRaises(errors.PasswordDeleteError,
             keyring.core.delete_password, "test", "user")
