@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+---
+1.2
+---
+
+* Implemented delete_password on most keyrings. Keyring 2.0 will require
+  delete_password to implement a Keyring. Fixes #79.
+
 -----
 1.1.2
 -----
