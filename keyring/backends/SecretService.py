@@ -21,7 +21,8 @@ class Keyring(KeyringBackend):
         else:
             return 1
 
-    def _str_to_dbus_str(self, s, strict=False):
+    @staticmethod
+    def _str_to_dbus_str(s, strict=False):
         """Given a string, do our best to turn it into a unicode compatible
         object.
         """
