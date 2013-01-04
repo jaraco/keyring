@@ -12,6 +12,8 @@ import shutil
 
 from keyring.tests.py30compat import unittest
 
+import mock
+
 import keyring.backend
 import keyring.core
 import keyring.util.platform
@@ -53,30 +55,29 @@ class TestKeyring2(TestKeyring):
 
 
 class CoreTestCase(unittest.TestCase):
-    skip_arbitrary_keyring = unittest.skip("the default keyring might be a "
-        "keyring "
-        "which requires input (such as file.EncryptedKeyring), "
-        "in which case the test blocks forever. TODO: patch rawinput "
-        "to supply a password.")
+    mock_global_backend = mock.patch('keyring.core._keyring_backend')
 
-    @skip_arbitrary_keyring
-    def test_set_get_password(self):
+    @mock_global_backend
+    def test_set_password(self, backend):
         """
-        set/get_password on the default keyring.
+        set_password on the default keyring is called.
         """
         keyring.core.set_password("test", "user", "passtest")
-        self.assertEqual(keyring.core.get_password("test", "user"), "passtest")
+        backend.set_password.assert_called_once_with('test', 'user',
+            'passtest')
 
-    @skip_arbitrary_keyring
-    def test_delete_password_present(self):
-        keyring.core.set_password("test", "user", "passtest")
+    @mock_global_backend
+    def test_get_password(self, backend):
+        """
+        set_password on the default keyring is called.
+        """
+        keyring.core.get_password("test", "user")
+        backend.get_password.assert_called_once_with('test', 'user')
+
+    @mock_global_backend
+    def test_delete_password(self, backend):
         keyring.core.delete_password("test", "user")
-        self.assertTrue(keyring.core.get_password("test", "user") is None)
-
-    @skip_arbitrary_keyring
-    def test_delete_password_not_present(self):
-        self.assertRaises(errors.PasswordDeleteError,
-            keyring.core.delete_password, "test", "user")
+        backend.delete_password.assert_called_once_with('test', 'user')
 
     def test_set_keyring_in_runtime(self):
         """Test the function of set keyring in runtime.
