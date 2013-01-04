@@ -42,8 +42,7 @@ class PyfilesystemKeyringTests(BackendBasicTests):
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedMemoryPyfilesystemKeyringNoSubDirTestCase(
-    PyfilesystemKeyringTests,
-    unittest.TestCase):
+        PyfilesystemKeyringTests, unittest.TestCase):
     """Test in memory with no encryption"""
 
     keyring_filename = 'mem://unencrypted'
@@ -55,8 +54,7 @@ class UnencryptedMemoryPyfilesystemKeyringNoSubDirTestCase(
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedMemoryPyfilesystemKeyringSubDirTestCase(
-    PyfilesystemKeyringTests,
-    unittest.TestCase):
+        PyfilesystemKeyringTests, unittest.TestCase):
     """Test in memory with no encryption"""
 
     keyring_filename = 'mem://some/sub/dir/unencrypted'
@@ -68,8 +66,7 @@ class UnencryptedMemoryPyfilesystemKeyringSubDirTestCase(
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedLocalPyfilesystemKeyringNoSubDirTestCase(
-    PyfilesystemKeyringTests,
-    unittest.TestCase):
+        PyfilesystemKeyringTests, unittest.TestCase):
     """Test using local temp files with no encryption"""
 
     keyring_filename = '%s/keyring.cfg' %tempfile.mkdtemp()
@@ -99,8 +96,7 @@ user1 = cHdkMQ==
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class UnencryptedLocalPyfilesystemKeyringSubDirTestCase(
-    PyfilesystemKeyringTests,
-    unittest.TestCase):
+        PyfilesystemKeyringTests, unittest.TestCase):
     """Test using local temp files with no encryption"""
 
     keyring_dir = os.path.join(tempfile.mkdtemp(), 'more', 'sub', 'dirs')
@@ -116,7 +112,7 @@ class UnencryptedLocalPyfilesystemKeyringSubDirTestCase(
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class EncryptedMemoryPyfilesystemKeyringTestCase(PyfilesystemKeyringTests,
-                                                 unittest.TestCase):
+        unittest.TestCase):
     """Test in memory with encryption"""
 
     def init_keyring(self):
@@ -127,8 +123,7 @@ class EncryptedMemoryPyfilesystemKeyringTestCase(PyfilesystemKeyringTests,
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class EncryptedLocalPyfilesystemKeyringNoSubDirTestCase(
-    PyfilesystemKeyringTests,
-    unittest.TestCase):
+        PyfilesystemKeyringTests, unittest.TestCase):
     """Test using local temp files with encryption"""
 
     def init_keyring(self):
@@ -139,8 +134,7 @@ class EncryptedLocalPyfilesystemKeyringNoSubDirTestCase(
 @unittest.skipUnless(is_pyfilesystem_supported(),
                      "Need Pyfilesystem")
 class EncryptedLocalPyfilesystemKeyringSubDirTestCase(
-    PyfilesystemKeyringTests,
-    unittest.TestCase):
+        PyfilesystemKeyringTests, unittest.TestCase):
     """Test using local temp files with encryption"""
 
     def init_keyring(self):
