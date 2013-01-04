@@ -89,3 +89,6 @@ class Keyring(KeyringBackend):
         (item, prompt) = collection.CreateItem(properties, secret,
             True)
         assert prompt == "/"
+
+    def delete_password(self, service, username):
+        raise NotImplementedError()
