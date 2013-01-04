@@ -19,7 +19,8 @@ class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, "Testing SecretServiceKeyring, following password prompts are for this keyring"
+        print >> sys.stderr, ("Testing SecretServiceKeyring; the following "
+            "password prompts are for this keyring")
         return SecretService.Keyring()
 
 class SecretServiceKeyringUnitTests(unittest.TestCase):
