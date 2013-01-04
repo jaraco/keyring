@@ -124,6 +124,9 @@ class DocsKeyring(KeyringBackend):
 
         raise errors.PasswordSetError('Could not save keyring')
 
+    def delete_password(self, service, username):
+        return self._del_entry(self._keyring, service, username)
+
     @property
     def client(self):
         if not self._client.GetClientLoginToken():
@@ -166,6 +169,17 @@ class DocsKeyring(KeyringBackend):
         if service_entries:
             result = service_entries.get(username)
         return result
+
+    def _del_entry(self, keyring_dict, service, username):
+        service_entries = keyring_dict.get(service)
+        if not service_entries:
+            raise errors.PasswordDeleteError("no matching service")
+        try:
+            del service_entries[username]
+        except KeyError:
+            raise errors.PasswordDeleteError("not found")
+        if not service_entries:
+            del keyring_dict[service]
 
     def _decrypt(self, value):
         if not value:
