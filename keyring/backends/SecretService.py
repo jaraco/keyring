@@ -1,4 +1,8 @@
+import logging
+
 from keyring.backend import KeyringBackend
+
+log = logging.getLogger(__name__)
 
 class Keyring(KeyringBackend):
     """Secret Service Keyring"""
@@ -29,7 +33,7 @@ class Keyring(KeyringBackend):
         try:
             return unicode(s)
         except UnicodeEncodeError:
-            logger.exception("Failed to convert '%s' to unicode" % s)
+            log.exception("Failed to convert '%s' to unicode" % s)
             if strict:
                 raise
             else:
