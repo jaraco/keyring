@@ -104,9 +104,8 @@ class Keyring(KeyringBackend):
             "org.freedesktop.Secret.Item.Label": "%s @ %s" % (
                 username, service),
             "org.freedesktop.Secret.Item.Attributes": attributes}
-        (item, prompt) = self.collection.CreateItem(properties, secret,
-            True)
-        assert prompt == "/"
+        item, prompt = self.collection.CreateItem(properties, secret, True)
+        self._check_prompt(prompt)
 
     def delete_password(self, service, username):
         raise NotImplementedError()
