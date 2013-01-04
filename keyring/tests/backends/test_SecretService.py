@@ -4,7 +4,7 @@ import sys
 from ..py30compat import unittest
 from ..test_backend import BackendBasicTests
 from keyring.backends import SecretService
-from ..util import ImportKiller, Environ
+from ..util import ImportKiller
 
 def is_dbus_supported():
     try:
@@ -18,15 +18,14 @@ def is_dbus_supported():
 class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
     __test__ = True
 
-    def environ(self):
-        return dict(DISPLAY='1',
-                    DBUS_SESSION_BUS_ADDRESS='1')
-
     def init_keyring(self):
         print >> sys.stderr, "Testing SecretServiceKeyring, following password prompts are for this keyring"
         return SecretService.Keyring()
 
+class SecretServiceKeyringUnitTests(unittest.TestCase):
     def test_supported_no_module(self):
+        """
+        SecretService Keyring is not supported if dbus can't be imported.
+        """
         with ImportKiller('dbus'):
-            with Environ(**self.environ()):
-                self.assertEqual(-1, self.keyring.supported())
+            self.assertEqual(-1, SecretService.Keyring().supported())
