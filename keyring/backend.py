@@ -50,7 +50,9 @@ class KeyringBackend(object):
         """
         raise errors.PasswordSetError("reason")
 
-    @abc.abstractmethod
+    # for backward-compatibility, don't require a backend to implement
+    #  delete_password
+    #@abc.abstractmethod
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
         """
