@@ -53,11 +53,22 @@ class Keyring(KeyringBackend):
             {"username": username, "service": service})
         _, session = secret_service.OpenSession("plain", "")
         no_longer_locked, prompt = secret_service.Unlock(locked)
-        assert prompt == "/"
+        self._check_prompt(prompt)
         secrets = secret_service.GetSecrets(unlocked + locked, session,
             byte_arrays=True)
         for item_path, secret in secrets.iteritems():
             return unicode(secret[2])
+
+    def _check_prompt(self, prompt):
+        """
+        Ensure we support the supplied prompt value.
+
+        from http://standards.freedesktop.org/secret-service/re01.html:
+        Prompt is a prompt object which can be used to unlock the remaining
+        objects, or the special value '/' when no prompt is necessary.
+        """
+        if not prompt == '/':
+            raise ValueError("Keyring does not support prompts")
 
     @property
     def collection(self):
