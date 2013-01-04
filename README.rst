@@ -178,7 +178,7 @@ Here's a code snippet from the ``keyringdemo.py``. It shows the usage of
         def get_password(self, servicename, username):
             return "password from TestKeyring"
         def delete_password(self, servicename, username, password): return 0
-        
+
     # set the keyring for keyring lib
     import keyring
     keyring.set_keyring(TestKeyring())
@@ -199,8 +199,9 @@ Integrate the keyring lib with your application
 API interface
 =============
 
-The keyring lib has two functions:
+The keyring lib has a few functions:
 
+* ``get_keyring()`` : Return the currently-loaded keyring implementation.
 * ``get_password(service, username)`` : Returns the password stored in keyring.
   If the password does not exist, it will return None.
 * ``set_password(service, username, password)`` : Store the password in the
