@@ -4,6 +4,7 @@ import base64
 from ..py27compat import configparser
 
 import keyring.util.platform
+from keyring import errors
 from keyring.util.escape import escape as escape_for_ini
 from keyring.util import properties
 from keyring.backend import KeyringBackend, NullCrypter
@@ -184,6 +185,18 @@ class BasicKeyring(KeyringBackend):
         if not self.config.has_section(service):
             self.config.add_section(service)
         self.config.set(service, username, password_base64)
+        config_file = self._open('w')
+        self.config.write(config_file)
+        config_file.close()
+
+    def delete_password(self, service, username):
+        service = escape_for_ini(service)
+        username = escape_for_ini(username)
+
+        try:
+            self.config.remove_option(service, username)
+        except configparser.NoSectionError:
+            raise errors.PasswordDeleteError('not found')
         config_file = self._open('w')
         self.config.write(config_file)
         config_file.close()
