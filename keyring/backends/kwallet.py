@@ -82,6 +82,7 @@ class Keyring(KeyringBackend):
         """Delete the password for the username of the service.
         """
         key = username + '@' + service
-        if kwallet.keyDoesNotExist(kwallet.walletName(), 'Python', key):
+        wallet = open_kwallet()
+        if wallet.keyDoesNotExist(wallet.walletName(), 'Python', key):
             raise PasswordDeleteError("can't found the password")
-        kwallet.removeEntry(key)
+        wallet.removeEntry(key)
