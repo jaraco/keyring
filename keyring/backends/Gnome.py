@@ -69,7 +69,7 @@ class Keyring(KeyringBackend):
                 gnomekeyring.item_delete_sync(current['keyring'],
                                               current['item_id'])
         except gnomekeyring.NoMatchError:
-            raise PasswordDeleteError("can't found the password")
+            raise PasswordDeleteError("Password not found")
         except gnomekeyring.CancelledError:
             raise PasswordDeleteError("cancelled by user")
 

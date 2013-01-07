@@ -126,7 +126,7 @@ class BaseKeyring(KeyringBackend):
         if os.path.exists(self.file_path):
             config.read(self.file_path)
         if not config.remove_section(service):
-            raise PasswordDeleteError("can't found the password")
+            raise PasswordDeleteError("Password not found")
         # update the file
         config_file = open(self.file_path, 'w')
         config.write(config_file)

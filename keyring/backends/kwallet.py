@@ -84,5 +84,5 @@ class Keyring(KeyringBackend):
         key = username + '@' + service
         wallet = open_kwallet()
         if wallet.keyDoesNotExist(wallet.walletName(), 'Python', key):
-            raise PasswordDeleteError("can't found the password")
+            raise PasswordDeleteError("Password not found")
         wallet.removeEntry(key)
