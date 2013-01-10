@@ -196,7 +196,7 @@ class BasicKeyring(KeyringBackend):
         try:
             self.config.remove_option(service, username)
         except configparser.NoSectionError:
-            raise errors.PasswordDeleteError('not found')
+            raise errors.PasswordDeleteError('Password not found')
         config_file = self._open('w')
         self.config.write(config_file)
         config_file.close()
