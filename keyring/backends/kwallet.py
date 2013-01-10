@@ -64,6 +64,9 @@ class Keyring(KeyringBackend):
         key = username + '@' + service
         network = KWallet.Wallet.NetworkWallet()
         wallet = open_kwallet()
+        if wallet is None:
+            # the user pressed "cancel" when prompted to unlock their keyring.
+            return None
         if wallet.keyDoesNotExist(network, 'Python', key):
             return None
 
@@ -76,6 +79,9 @@ class Keyring(KeyringBackend):
         """Set password for the username of the service
         """
         wallet = open_kwallet()
+        if wallet is None:
+            # the user pressed "cancel" when prompted to unlock their keyring.
+            raise PasswordSetError("Cancelled by user")
         wallet.writePassword(username+'@'+service, password)
 
     def delete_password(self, service, username):
@@ -83,6 +89,9 @@ class Keyring(KeyringBackend):
         """
         key = username + '@' + service
         wallet = open_kwallet()
+        if wallet is None:
+            # the user pressed "cancel" when prompted to unlock their keyring.
+            raise PasswordDeleteError("Cancelled by user")
         if wallet.keyDoesNotExist(wallet.walletName(), 'Python', key):
             raise PasswordDeleteError("Password not found")
         wallet.removeEntry(key)
