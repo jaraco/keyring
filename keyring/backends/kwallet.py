@@ -2,6 +2,7 @@ import os
 
 from keyring.backend import KeyringBackend
 from keyring.errors import PasswordDeleteError
+from keyring.errors import PasswordSetError
 
 try:
     from PyKDE4.kdeui import KWallet
