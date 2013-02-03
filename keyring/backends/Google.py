@@ -13,6 +13,10 @@ from keyring import credentials
 import keyring.py25compat
 from keyring.backend import KeyringBackend
 
+# Fix Python 2.x.-3.x
+try: input = raw_input
+except: pass
+
 class EnvironCredential(credentials.EnvironCredential):
     """Retrieve credentials from specifically named environment variables
     """
