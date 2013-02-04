@@ -64,7 +64,7 @@ class Keyring(KeyringBackend):
             code = call.returncode
             if code is not 0:
                 raise OSError("Can't fetch password from system")
-            output = stderrdata
+            output = stderrdata.decode()
             # check for empty password.
             if output == 'password: \n':
                 return ''
