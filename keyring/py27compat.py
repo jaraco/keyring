@@ -6,3 +6,8 @@ try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
+
+if 'raw_input' in __builtins__:
+    input = raw_input
+else:
+    input = input

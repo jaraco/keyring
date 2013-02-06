@@ -11,6 +11,7 @@ from . import keyczar
 from keyring import errors
 from keyring import credentials
 import keyring.py25compat
+import keyring.py27compat
 from keyring.backend import KeyringBackend
 
 class EnvironCredential(credentials.EnvironCredential):
@@ -36,7 +37,7 @@ class DocsKeyring(KeyringBackend):
 
     def __init__(self, credential, source, crypter,
                  collection=None, client=None,
-                 can_create=True, input_getter=raw_input
+                 can_create=True, input_getter=keyring.py27compat.input
                 ):
         try:
             DocsService = (__import__('gdata.docs.service')
