@@ -6,11 +6,7 @@ from keyring.backends import keyczar
 from .. import mocks
 
 def is_keyczar_supported():
-    try:
-        __import__('keyczar')
-    except ImportError:
-        return False
-    return True
+    return hasattr(keyczar, 'keyczar')
 
 @unittest.skipUnless(is_keyczar_supported(),
                      "Need Keyczar")
