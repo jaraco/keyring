@@ -2,6 +2,7 @@ import codecs
 import base64
 import cPickle
 
+import keyring.py27compat
 from ..py30compat import unittest
 from ..test_backend import BackendBasicTests
 from keyring.backends import Google
@@ -18,7 +19,7 @@ def is_gdata_supported():
     return True
 
 def init_google_docs_keyring(client, can_create=True,
-                             input_getter=raw_input):
+                             input_getter=keyring.py27compat.input):
     credentials = SimpleCredential('foo', 'bar')
     return Google.DocsKeyring(credentials,
                                              'test_src',
