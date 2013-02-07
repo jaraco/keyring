@@ -6,7 +6,7 @@ alphanumeric usernames, services, or other values
 import re
 import string
 import sys
-        
+
 # True if we are running on Python 3.
 # taken from six.py
 PY3 = sys.version_info[0] == 3
@@ -15,11 +15,13 @@ PY3 = sys.version_info[0] == 3
 if PY3:
     def u(s):
         return s
-    def unichr(c):
+    def _unichr(c):
         return chr(c)
 else:
     def u(s):
         return unicode(s, "unicode_escape")
+    def _unichr(c):
+        return unichr(c)
 
 LEGAL_CHARS = (
     getattr(string, 'letters', None)  # Python 2
@@ -31,7 +33,7 @@ ESCAPE_FMT = "_%02X"
 def _escape_char(c):
     "Single char escape. Return the char, escaped if not already legal"
     if isinstance(c, int):
-        c = unichr(c)
+        c = _unichr(c)
     return c if c in LEGAL_CHARS else ESCAPE_FMT % ord(c)
 
 def escape(value):
@@ -56,4 +58,3 @@ def unescape(value):
         ESCAPE_FMT.replace('%02X', '(?P<code>[0-9A-F]{2})').encode('ascii')
     )
     return re_esc.sub(_unescape_code, value.encode('ascii')).decode('utf-8')
-
