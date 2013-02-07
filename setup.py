@@ -45,6 +45,7 @@ test_requirements = [
     'python-keyczar',
     'fs',
     'mock',
+    'pycrypto',
 ]
 "dependencies for running tests"
 
