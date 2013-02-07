@@ -85,7 +85,7 @@ setup_params = dict(
     ],
     platforms = ["Many"],
     packages = ['keyring', 'keyring.tests', 'keyring.util',
-                'keyring.backends'],
+                'keyring.backends', 'keyring.tests.backends'],
     extras_require = {'test': test_requirements},
     tests_require = test_requirements,
     setup_requires = [
