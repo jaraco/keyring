@@ -54,6 +54,15 @@ if sys.version_info < (2, 7) or (
     # module (appears in Python 2.7 and Python 3.1)
     test_requirements.append('unittest2')
 
+if sys.version_info >= (3, 0):
+    # the fs lib doesn't currently install on Python 3. Omit it for now.
+    # See http://code.google.com/p/pyfilesystem/issues/detail?id=135
+    test_requirements.remove('fs')
+
+    # gdata doesn't currently install on Python 3. Omit it also.
+    # http://code.google.com/p/gdata-python-client/issues/detail?id=229
+    test_requirements.remove('gdata')
+
 setup_params = dict(
     name = 'keyring',
     version = "1.2.1",
