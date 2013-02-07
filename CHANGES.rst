@@ -2,6 +2,15 @@
 CHANGES
 =======
 
+-----
+1.2.1
+-----
+
+* Fix for kwallet delete.
+* Fix for OS X backend on Python 3.
+* Issue #84: Fix for Google backend on Python 3 (use of raw_input not caught
+  by 2to3).
+
 ---
 1.2
 ---
