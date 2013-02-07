@@ -288,8 +288,16 @@ contributors.
 Running Tests
 =============
 
-To run the tests, you'll want keyring installed to some environment in which
-it can be tested. Three recommended techniques are described below.
+Tests are `continuously run <https://travis-ci.org/#!/jaraco/keyring>`_ using
+Travis-CI.
+
+|BuildStatus|_
+
+.. |BuildStatus| image:: https://secure.travis-ci.org/jaraco/keyring.png
+.. _BuildStatus: http://travis-ci.org/jaraco/keyring
+
+To run the tests yourself, you'll want keyring installed to some environment
+in which it can be tested. Three recommended techniques are described below.
 
 Using pytest runner
 -------------------
@@ -302,6 +310,8 @@ from any supported Python (with distribute installed) using this command::
 
 pytest runner will download any unmet dependencies and run the tests using
 `pytest <https://bitbucket.org/hpk42/pytest>`_.
+
+This technique is the one used by the Travis-CI script.
 
 Using virtualenv and pytest/nose/unittest2
 ------------------------------------------
