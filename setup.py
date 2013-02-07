@@ -63,6 +63,10 @@ if sys.version_info >= (3, 0):
     # http://code.google.com/p/gdata-python-client/issues/detail?id=229
     test_requirements.remove('gdata')
 
+    # keyczar doesn't currently install on Python 3. Omit it also.
+    # http://code.google.com/p/keyczar/issues/detail?id=125
+    test_requirements.remove('python-keyczar')
+
 setup_params = dict(
     name = 'keyring',
     version = "1.2.1",
