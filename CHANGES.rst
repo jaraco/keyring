@@ -3,6 +3,13 @@ CHANGES
 =======
 
 -----
+1.2.2
+-----
+
+* Fixed handling situations when user cancels kwallet dialog or denies access
+  for the app.
+
+-----
 1.2.1
 -----
 
