@@ -174,11 +174,11 @@ class DocsKeyring(KeyringBackend):
     def _del_entry(self, keyring_dict, service, username):
         service_entries = keyring_dict.get(service)
         if not service_entries:
-            raise errors.PasswordDeleteError("no matching service")
+            raise errors.PasswordDeleteError("No matching service")
         try:
             del service_entries[username]
         except KeyError:
-            raise errors.PasswordDeleteError("not found")
+            raise errors.PasswordDeleteError("Not found")
         if not service_entries:
             del keyring_dict[service]
 

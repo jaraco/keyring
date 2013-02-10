@@ -57,7 +57,7 @@ class Keyring(KeyringBackend):
                 password, True)
         except gnomekeyring.CancelledError:
             # The user pressed "Cancel" when prompted to unlock their keyring.
-            raise PasswordSetError("cancelled by user")
+            raise PasswordSetError("Cancelled by user")
 
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
@@ -71,7 +71,7 @@ class Keyring(KeyringBackend):
         except gnomekeyring.NoMatchError:
             raise PasswordDeleteError("Password not found")
         except gnomekeyring.CancelledError:
-            raise PasswordDeleteError("cancelled by user")
+            raise PasswordDeleteError("Cancelled by user")
 
     def _safe_string(self, source, encoding='utf-8'):
         """Convert unicode to string as gnomekeyring barfs on unicode"""
