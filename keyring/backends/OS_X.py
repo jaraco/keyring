@@ -9,6 +9,10 @@ from keyring.errors import PasswordSetError
 class Keyring(KeyringBackend):
     """Mac OS X Keychain"""
 
+    # regex for extracting password from security call
+    password_regex = re.compile("""password:\s*(?:0x(?P<hex>[0-9A-F]+)\s*)?"""
+                                """(?:"(?P<pw>.*)")?""")
+
     def supported(self):
         """Recommended for all OSX environment.
         """
@@ -69,13 +73,14 @@ class Keyring(KeyringBackend):
             if output == 'password: \n':
                 return ''
             # search for special password pattern.
-            matches = re.search('password:(?P<hex>.*?)"(?P<pw>.*)"', output)
+            matches = Keyring.password_regex.search(output)
             if matches:
-                hex = matches.group('hex').strip()
-                pw = matches.group('pw')
+                group_dict = matches.groupdict()
+                hex = group_dict.get('hex')
+                pw = group_dict.get('pw')
                 if hex:
                     # it's a weird hex password, decode it.
-                    return binascii.unhexlify(hex[2:])
+                    return unicode(binascii.unhexlify(hex), 'utf-8')
                 else:
                     # it's a normal password, send it back.
                     return pw

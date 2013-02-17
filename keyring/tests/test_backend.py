@@ -15,12 +15,21 @@ from .util import random_string
 from keyring import errors
 
 DIFFICULT_CHARS = string.whitespace + string.punctuation
-UNICODE_CHARS = escape.u("""κόσμεНа берегу пустынных волнSîne klâwen durh die
-wolken sint geslagen, er stîget ûf mit grôzer kraft""")
+# unicode only characters
+# Sourced from The Quick Brown Fox... Pangrams
+# http://www.columbia.edu/~fdc/utf8/
+UNICODE_CHARS = escape.u(
+    """זהכיףסתםלשמועאיךתנצחקרפדעץטובבגן"""
+    """ξεσκεπάζωτηνψυχοφθόραβδελυγμία"""
+    """Съешьжеещёэтихмягкихфранцузскихбулокдавыпейчаю"""
+    """Жълтатадюлябешещастливачепухъткойтоцъфназамръзнакатогьон"""
+)
 
+# ensure no-ascii chars slip by - watch your editor!
+assert min(ord(char) for char in UNICODE_CHARS) > 127
 
 class BackendBasicTests(object):
-    """Test for the keyring's basic funtions. password_set and password_get
+    """Test for the keyring's basic functions. password_set and password_get
     """
 
     def setUp(self):
@@ -77,6 +86,14 @@ class BackendBasicTests(object):
         password = random_string(20, UNICODE_CHARS)
         username = random_string(20, UNICODE_CHARS)
         service = random_string(20, UNICODE_CHARS)
+        self.check_set_get(service, username, password)
+
+    def test_unicode_and_ascii_chars(self):
+        source = (random_string(10, UNICODE_CHARS) + random_string(10) +
+                 random_string(10, DIFFICULT_CHARS))
+        password = random_string(20, source)
+        username = random_string(20, source)
+        service = random_string(20, source)
         self.check_set_get(service, username, password)
 
     def test_different_user(self):
