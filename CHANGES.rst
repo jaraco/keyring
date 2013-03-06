@@ -3,6 +3,13 @@ CHANGES
 =======
 
 -----
+1.2.3
+-----
+
+* Made Secret Service backend use SecretStorage library. This adds support
+  for prompting and deleting passwords.
+
+-----
 1.2.2
 -----
 
