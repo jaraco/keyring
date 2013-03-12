@@ -1,3 +1,24 @@
+class ClassProperty(property):
+    """
+    An implementation of a property callable on a class. Used to decorate a
+    classmethod but to then treat it like a property.
+
+    Example:
+
+    >>> class MyClass:
+    ...    @ClassProperty
+    ...    @classmethod
+    ...    def skillz(cls):
+    ...        return cls.__name__.startswith('My')
+    >>> MyClass.skillz
+    True
+    >>> class YourClass(MyClass): pass
+    >>> YourClass.skillz
+    False
+    """
+    def __get__(self, cls, owner):
+        return self.fget.__get__(None, owner)()
+
 # borrowed from jaraco.util.dictlib
 class NonDataProperty(object):
     """Much like the property builtin, but only implements __get__,
