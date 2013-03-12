@@ -58,53 +58,6 @@ class KeyringBackend(object):
         """
         raise errors.PasswordDeleteError("reason")
 
-
-class _ExtensionKeyring(KeyringBackend):
-    """**deprecated**"""
-    def __init__(self):
-        try:
-            self.keyring_impl = self._init_backend()
-        except ImportError:
-            # keyring is not installed properly
-            self.keyring_impl = None
-
-    def _init_backend(self):
-        """Return the keyring implementation handler
-        """
-        return None
-
-    def _recommend(self):
-        """If this keyring is recommended on current environment.
-        """
-        return False
-
-    def supported(self):
-        """Override the supported() in KeyringBackend.
-        """
-        if self.keyring_impl is None:
-            return -1
-        elif self._recommend():
-            return 1
-        return 0
-
-    def get_password(self, service, username):
-        """Override the get_password() in KeyringBackend.
-        """
-        try:
-            password = self.keyring_impl.password_get(service, username)
-        except OSError:
-            password = None
-        return password
-
-    def set_password(self, service, username, password):
-        """Override the set_password() in KeyringBackend.
-        """
-        try:
-            self.keyring_impl.password_set(service, username, password)
-        except (OSError,):
-            e = sys.exc_info()[1]
-            raise PasswordSetError(e.message)
-
 class Crypter(object):
     """Base class providing encryption and decryption
     """
