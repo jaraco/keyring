@@ -156,9 +156,9 @@ class RegistryKeyring(KeyringBackend):
         super(RegistryKeyring, self).__init__()
 
         try:
-            from backends import win32_crypto
+            from keyring.backends import _win_crypto
             __import__('_winreg')
-            self.crypt_handler = win32_crypto
+            self.crypt_handler = _win_crypto
         except ImportError:
             self.crypt_handler = None
 
