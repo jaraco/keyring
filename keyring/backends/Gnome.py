@@ -1,7 +1,13 @@
 import os
 
+try:
+    import gnomekeyring
+except ImportError:
+    pass
+
 from keyring.backend import KeyringBackend
 from keyring.errors import PasswordSetError, PasswordDeleteError
+from keyring.util import properties
 
 class Keyring(KeyringBackend):
     """Gnome Keyring"""
@@ -10,24 +16,30 @@ class Keyring(KeyringBackend):
     # Use None for the default keyring.
     KEYRING_NAME = None
 
-    def supported(self):
-        try:
-            __import__('gnomekeyring')
-        except ImportError:
-            return -1
-        else:
-            if ("GNOME_KEYRING_CONTROL" in os.environ and
-                "DISPLAY" in os.environ and
-                "DBUS_SESSION_BUS_ADDRESS" in os.environ):
-                return 1
-            else:
-                return 0
+    requisite_vars = [
+        'GNOME_KEYRING_CONTROL',
+        'DISPLAY',
+        'DBUS_SESSION_BUS_ADDRESS',
+    ]
+
+    @properties.ClassProperty
+    @classmethod
+    def priority(cls):
+        if 'gnomekeyring' not in globals():
+            raise RuntimeError("gnomekeyring module required")
+        return int(cls.has_requisite_vars())
+
+    @classmethod
+    def has_requisite_vars(cls):
+        """
+        Return True if the requisite environment vars are present in the
+        environment.
+        """
+        return set(cls.requisite_vars).issubset(os.environ)
 
     def get_password(self, service, username):
         """Get password of the username for the service
         """
-        import gnomekeyring
-
         service = self._safe_string(service)
         username = self._safe_string(username)
         try:
@@ -44,8 +56,6 @@ class Keyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        import gnomekeyring
-
         service = self._safe_string(service)
         username = self._safe_string(username)
         password = self._safe_string(password)
@@ -62,7 +72,6 @@ class Keyring(KeyringBackend):
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
         """
-        import gnomekeyring
         try:
             items = gnomekeyring.find_network_password_sync(username, service)
             for current in items:
