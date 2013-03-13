@@ -134,6 +134,9 @@ class BaseKeyring(KeyringBackend):
 class PlaintextKeyring(BaseKeyring):
     """Simple File Keyring with no encryption"""
 
+    priority = .5
+    "Applicable for all platforms, but not recommended"
+
     filename = 'keyring_pass.cfg'
 
     def encrypt(self, password):
@@ -146,11 +149,6 @@ class PlaintextKeyring(BaseKeyring):
         """
         return password_encrypted
 
-    def supported(self):
-        """Applicable for all platforms, but do not recommend.
-        """
-        return 0
-
 class EncryptedKeyring(BaseKeyring):
     """PyCrypto File Keyring"""
 
@@ -160,20 +158,20 @@ class EncryptedKeyring(BaseKeyring):
 
     filename = 'crypted_pass.cfg'
 
-    def supported(self):
-        """Applicable for all platforms, but not recommend"
-        """
+    @properties.ClassProperty
+    @classmethod
+    def priority(self):
+        "Applicable for all platforms, but not recommended."
         try:
             __import__('Crypto.Cipher.AES')
             __import__('Crypto.Protocol.KDF')
             __import__('Crypto.Random')
-            if not json:
-                raise AssertionError("JSON implementation needed (install "
-                    "simplejson)")
-            status = 0
-        except (ImportError, AssertionError):
-            status = -1
-        return status
+        except ImportError:
+            raise RuntimeError("PyCrypto required")
+        if not json:
+            raise RuntimeError("JSON implementation such as simplejson "
+                "required.")
+        return .6
 
     @properties.NonDataProperty
     def keyring_key(self):

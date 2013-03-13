@@ -1,48 +1,57 @@
-import os
 import sys
 import base64
 
 import keyring.util.escape
+from keyring.util import properties
 from keyring.backend import KeyringBackend
 from keyring.errors import PasswordDeleteError
 from . import file
+
+try:
+    import pywintypes
+    import win32cred
+except ImportError:
+    pass
+
+try:
+    import winreg
+except ImportError:
+    try:
+        # Python 2 compatibility
+        import _winreg as winreg
+    except ImportError:
+        pass
+
+try:
+    from . import _win_crypto
+except ImportError:
+    pass
+
+def has_pywin32():
+    return 'win32cred' in globals()
 
 class EncryptedKeyring(file.BaseKeyring):
     """
     A File-based keyring secured by Windows Crypto API.
     """
 
+    priority = .8
+    """
+    Preferred over file.EncryptedKeyring but not other, more sophisticated
+    Windows backends.
+    """
+
     filename = 'wincrypto_pass.cfg'
-
-    def __init__(self):
-        super(EncryptedKeyring, self).__init__()
-
-        try:
-            from . import _win_crypto
-            self.crypt_handler = _win_crypto
-        except ImportError:
-            self.crypt_handler = None
-
-    def supported(self):
-        """Recommended when other Windows backends are unavailable
-        """
-        recommended = select_windows_backend()
-        if recommended == None:
-            return -1
-        elif recommended == 'file':
-            return 1
-        else:
-            return 0
 
     def encrypt(self, password):
         """Encrypt the password using the CryptAPI.
         """
-        return self.crypt_handler.encrypt(password)
+        return _win_crypto.encrypt(password)
 
     def decrypt(self, password_encrypted):
         """Decrypt the password using the CryptAPI.
         """
-        return self.crypt_handler.decrypt(password_encrypted)
+        return _win_crypto.decrypt(password_encrypted)
 
 
 class WinVaultKeyring(KeyringBackend):
@@ -62,26 +71,16 @@ class WinVaultKeyring(KeyringBackend):
     in which case the previous password is moved into a compound name:
     {username}@{service}
     """
-    def __init__(self):
-        super(WinVaultKeyring, self).__init__()
-        try:
-            import pywintypes
-            import win32cred
-            self.win32cred = win32cred
-            self.pywintypes = pywintypes
-        except ImportError:
-            self.win32cred = None
 
-    def supported(self):
-        """Default Windows backend, when it is available
+    @properties.ClassProperty
+    @classmethod
+    def priority(cls):
         """
-        recommended = select_windows_backend()
-        if recommended == None:
-            return -1
-        elif recommended == 'cred':
-            return 1
-        else:
-            return 0
+        If available, the preferred backend on Windows.
+        """
+        if not has_pywin32():
+            raise RuntimeError("Requires Windows and pywin32")
+        return 5
 
     @staticmethod
     def _compound_name(username, service):
@@ -100,11 +99,11 @@ class WinVaultKeyring(KeyringBackend):
 
     def _get_password(self, target):
         try:
-            res = self.win32cred.CredRead(
-                Type=self.win32cred.CRED_TYPE_GENERIC,
+            res = win32cred.CredRead(
+                Type=win32cred.CRED_TYPE_GENERIC,
                 TargetName=target,
             )
-        except (self.pywintypes.error,):
+        except pywintypes.error:
             e = sys.exc_info()[1]
             if e.winerror == 1168 and e.funcname == 'CredRead': # not found
                 return None
@@ -122,13 +121,13 @@ class WinVaultKeyring(KeyringBackend):
         self._set_password(service, username, unicode(password))
 
     def _set_password(self, target, username, password):
-        credential = dict(Type=self.win32cred.CRED_TYPE_GENERIC,
+        credential = dict(Type=win32cred.CRED_TYPE_GENERIC,
                           TargetName=target,
                           UserName=username,
                           CredentialBlob=password,
                           Comment="Stored using python-keyring",
-                          Persist=self.win32cred.CRED_PERSIST_ENTERPRISE)
-        self.win32cred.CredWrite(credential, 0)
+                          Persist=win32cred.CRED_PERSIST_ENTERPRISE)
+        win32cred.CredWrite(credential, 0)
 
     def delete_password(self, service, username):
         compound = self._compound_name(username, service)
@@ -143,52 +142,41 @@ class WinVaultKeyring(KeyringBackend):
 
     def _delete_password(self, target):
         self.win32cred.CredDelete(
-            Type=self.win32cred.CRED_TYPE_GENERIC,
+            Type=win32cred.CRED_TYPE_GENERIC,
             TargetName=target,
         )
 
 
 class RegistryKeyring(KeyringBackend):
-    """RegistryKeyring is a keyring which use Windows CryptAPI to encrypt
+    """
+    RegistryKeyring is a keyring which use Windows CryptAPI to encrypt
     the user's passwords and store them under registry keys
     """
-    def __init__(self):
-        super(RegistryKeyring, self).__init__()
 
-        try:
-            from keyring.backends import _win_crypto
-            __import__('_winreg')
-            self.crypt_handler = _win_crypto
-        except ImportError:
-            self.crypt_handler = None
-
-    def supported(self):
-        """Return if this keyring supports current enviroment.
-        -1: not applicable
-         0: suitable
-         1: recommended
+    @properties.ClassProperty
+    @classmethod
+    def priority(self):
         """
-        recommended = select_windows_backend()
-        if recommended == None:
-            return -1
-        elif recommended == 'reg':
-            return 1
-        else:
-            return 0
+        Preferred on Windows when pywin32 isn't installed
+        """
+        if not 'winreg' in globals():
+            raise RuntimeError("Requires Windows")
+        if not '_win_crypto' in globals():
+            raise RuntimeError("Requires ctypes")
+        return 2
 
     def get_password(self, service, username):
         """Get password of the username for the service
         """
-        from _winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx
         try:
             # fetch the password
             key = r'Software\%s\Keyring' % service
-            hkey = OpenKey(HKEY_CURRENT_USER, key)
-            password_base64 = QueryValueEx(hkey, username)[0]
+            hkey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key)
+            password_base64 = winreg.QueryValueEx(hkey, username)[0]
             # decode with base64
             password_encrypted = base64.decodestring(password_base64)
             # decrypted the password
-            password = self.crypt_handler.decrypt(password_encrypted)
+            password = _win_crypto.decrypt(password_encrypted)
         except EnvironmentError:
             password = None
         return password
@@ -197,50 +185,23 @@ class RegistryKeyring(KeyringBackend):
         """Write the password to the registry
         """
         # encrypt the password
-        password_encrypted = self.crypt_handler.encrypt(password)
+        password_encrypted = _win_crypto.encrypt(password)
         # encode with base64
         password_base64 = base64.encodestring(password_encrypted)
 
         # store the password
-        from _winreg import HKEY_CURRENT_USER, CreateKey, SetValueEx, REG_SZ
-        hkey = CreateKey(HKEY_CURRENT_USER, r'Software\%s\Keyring' % service)
-        SetValueEx(hkey, username, 0, REG_SZ, password_base64)
+        key_name = r'Software\%s\Keyring' % service
+        hkey = winreg.CreateKey(winreg.HKEY_CURRENT_USER, key_name)
+        winreg.SetValueEx(hkey, username, 0, winreg.REG_SZ, password_base64)
 
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
         """
-        from _winreg import (KEY_ALL_ACCESS, HKEY_CURRENT_USER, DeleteValue,
-                             OpenKey)
         try:
-            key = r'Software\%s\Keyring' % service
-            hkey = OpenKey(HKEY_CURRENT_USER, key, 0, KEY_ALL_ACCESS)
-            DeleteValue(hkey, username)
-        except WindowsError, e:
+            key_name = r'Software\%s\Keyring' % service
+            hkey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_name, 0,
+                winreg.KEY_ALL_ACCESS)
+            winreg.DeleteValue(hkey, username)
+        except WindowsError:
+            e = sys.exc_info()[1]
             raise PasswordDeleteError(e)
-
-def select_windows_backend():
-    if os.name != 'nt':
-        return None
-    major, minor, build, platform, text = sys.getwindowsversion()
-    try:
-        __import__('pywintypes')
-        __import__('win32cred')
-        if (major, minor) >= (5, 1):
-            # recommend for windows xp+
-            return 'cred'
-    except ImportError:
-        pass
-    try:
-        __import__('keyring.backends.win32_crypto')
-        __import__('_winreg')
-        if (major, minor) >= (5, 0):
-            # recommend for windows 2k+
-            return 'reg'
-    except ImportError:
-        pass
-    try:
-        __import__('keyring.backends.win32_crypto')
-        return 'file'
-    except ImportError:
-        pass
-    return None

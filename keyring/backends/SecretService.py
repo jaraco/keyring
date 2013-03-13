@@ -1,25 +1,31 @@
 import logging
 
+from keyring.util import properties
 from keyring.backend import KeyringBackend
+
+try:
+    import dbus
+except ImportError:
+    pass
 
 log = logging.getLogger(__name__)
 
 class Keyring(KeyringBackend):
     """Secret Service Keyring"""
 
-    def supported(self):
-        try:
-            import dbus
-        except ImportError:
-            return -1
+    @properties.ClassProperty
+    @classmethod
+    def priority(cls):
+        if not 'dbus' in globals():
+            raise RuntimeError("dbus required")
         try:
             bus = dbus.SessionBus()
             bus.get_object('org.freedesktop.secrets',
                 '/org/freedesktop/secrets')
         except dbus.exceptions.DBusException:
-            return -1
-        else:
-            return 1
+            raise RuntimeError("Unable to get dbus resource "
+                "org.freedesktop.secrets")
+        return 5
 
     @staticmethod
     def _str_to_dbus_str(s, strict=False):
@@ -42,7 +48,6 @@ class Keyring(KeyringBackend):
 
     @property
     def secret_service(self):
-        import dbus
         bus = dbus.SessionBus()
         service_obj = bus.get_object('org.freedesktop.secrets',
             '/org/freedesktop/secrets')
@@ -77,7 +82,6 @@ class Keyring(KeyringBackend):
 
     @property
     def collection(self):
-        import dbus
         bus = dbus.SessionBus()
         collection_obj = bus.get_object(
             'org.freedesktop.secrets',
@@ -88,7 +92,6 @@ class Keyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        import dbus
         service = self._str_to_dbus_str(service)
         username = self._str_to_dbus_str(username)
         password = self._str_to_dbus_str(password)

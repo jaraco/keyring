@@ -2,8 +2,6 @@
 Keyring implementation support
 """
 
-import sys
-
 from keyring.py25compat import abc
 from keyring import errors
 
@@ -29,14 +27,22 @@ class KeyringBackend(object):
     """
     __metaclass__ = KeyringBackendMeta
 
-    @abc.abstractmethod
-    def supported(self):
-        """Return if this keyring supports current environment:
-        -1: not applicable
-         0: suitable
-         1: recommended
+    @abc.abstractproperty
+    def priority(cls):
         """
-        return -1
+        Each backend class must supply a priority, a number (float or integer)
+        indicating the priority of the backend relative to all other backends.
+        The priority need not be static -- it may (and should) vary based
+        attributes of the environment in which is runs (platform, available
+        packages, etc.).
+
+        A higher number indicates a higher priority. The priority should raise
+        a RuntimeError with a message indicating the underlying cause if the
+        backend is not suitable for the current environment.
+
+        As a rule of thumb, a priority between zero but less than one is
+        suitable, but a priority of one or greater is recommended.
+        """
 
     @abc.abstractmethod
     def get_password(self, service, username):

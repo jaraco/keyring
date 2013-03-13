@@ -1,13 +1,7 @@
-#!/usr/bin/python
 
-import sys
-if sys.platform != 'win32':
-    raise ImportError('Windows-only module')
-
-
-from ctypes import Structure, wintypes, POINTER, windll, \
-     WinDLL, c_void_p, WINFUNCTYPE, cast, create_string_buffer, \
-     c_char_p, byref, memmove
+from ctypes import Structure, POINTER, c_void_p, cast, create_string_buffer, \
+    c_char_p, byref, memmove
+from ctypes import windll, WinDLL, WINFUNCTYPE, wintypes
 
 from keyring.util.escape import u
 

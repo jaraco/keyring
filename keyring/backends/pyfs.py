@@ -10,6 +10,14 @@ from keyring.util import properties
 from keyring.backend import KeyringBackend, NullCrypter
 from . import keyczar
 
+try:
+    import fs.opener
+    import fs.errors
+    import fs.path
+    import fs.remote
+except ImportError:
+    pass
+
 class BasicKeyring(KeyringBackend):
     """BasicKeyring is a Pyfilesystem-based implementation of
     keyring.
@@ -65,10 +73,6 @@ class BasicKeyring(KeyringBackend):
     def _open(self, mode='rb'):
         """Open the password file in the specified mode
         """
-        import fs.opener
-        import fs.errors
-        import fs.path
-        import fs.remote
         open_file = None
         writeable = 'w' in mode or 'a' in mode or '+' in mode
         try:
@@ -201,14 +205,12 @@ class BasicKeyring(KeyringBackend):
         self.config.write(config_file)
         config_file.close()
 
-    def supported(self):
-        """Applicable when Pyfilesystem installed, but do not recommend.
-        """
-        try:
-            from fs.opener import fsopen
-            return 0
-        except ImportError:
-            return -1
+    @properties.ClassProperty
+    @classmethod
+    def priority(cls):
+        if not 'fs' in globals():
+            raise RuntimeError("pyfs required")
+        return 2
 
 class PlaintextKeyring(BasicKeyring):
     """Unencrypted Pyfilesystem Keyring
