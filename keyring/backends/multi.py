@@ -1,5 +1,6 @@
 import itertools
 
+from keyring.util import properties
 from keyring.backend import KeyringBackend
 from keyring import errors
 

@@ -2,6 +2,8 @@
 Keyring implementation support
 """
 
+import itertools
+
 from keyring.py25compat import abc
 from keyring import errors
 
@@ -27,7 +29,7 @@ class KeyringBackend(object):
     """
     __metaclass__ = KeyringBackendMeta
 
-    @abc.abstractproperty
+    #@abc.abstractproperty
     def priority(cls):
         """
         Each backend class must supply a priority, a number (float or integer)
@@ -96,7 +98,16 @@ def get_all_keyring():
     Return a list of all implemented keyrings that can be constructed without
     parameters.
     """
-    return list(keyring.util.suppress_exceptions(KeyringBackend._classes,
+    def is_class_viable(keyring_cls):
+        try:
+            keyring_cls.priority
+        except RuntimeError:
+            return False
+        return True
+
+    all_classes = KeyringBackend._classes
+    viable_classes = itertools.ifilter(is_class_viable, all_classes)
+    return list(keyring.util.suppress_exceptions(viable_classes,
         exceptions=TypeError))
 
 # for backward-compatibility
@@ -111,7 +122,6 @@ from keyring.backends.file import EncryptedKeyring as CryptedFileKeyring
 from keyring.backends.Windows import EncryptedKeyring as Win32CryptoKeyring
 from keyring.backends.Windows import WinVaultKeyring
 from keyring.backends.Windows import RegistryKeyring as Win32CryptoRegistry
-from keyring.backends.Windows import select_windows_backend
 from keyring.backends.Google import DocsKeyring as GoogleDocsKeyring
 from keyring.credentials import Credential
 from keyring.credentials import SimpleCredential as BaseCredential
