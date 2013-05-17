@@ -5,6 +5,7 @@ import binascii
 
 from keyring.backend import KeyringBackend
 from keyring.errors import PasswordSetError
+from keyring.errors import PasswordDeleteError
 
 class Keyring(KeyringBackend):
     """Mac OS X Keychain"""
@@ -88,3 +89,29 @@ class Keyring(KeyringBackend):
             return None
         except:
             return None
+
+    @staticmethod
+    def delete_password(service, username):
+        if username is None:
+            username = ''
+        try:
+            # set up the call for security.
+            call = subprocess.Popen([
+                    'security',
+                    'delete-generic-password',
+                    '-a',
+                    username,
+                    '-s',
+                    service
+                ],
+                stderr = subprocess.PIPE,
+                stdout = subprocess.PIPE
+            )
+            stdoutdata, stderrdata = call.communicate()
+            code = call.returncode
+            # check return code.
+            if code is not 0:
+                raise PasswordDeleteError('Can\'t delete password in keychain')
+        except:
+            raise PasswordDeleteError("Can't delete password in keychain")
+
