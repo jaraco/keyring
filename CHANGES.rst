@@ -10,6 +10,8 @@ CHANGES
   to implement the Secret Service backend (instead of using dbus directly).
   Now the keyring supports prompting for and deleting passwords. Fixes #69,
   #77, and #93.
+* Catch `gnomekeyring.IOError` per the issue `reported in Nova client
+  <https://bugs.launchpad.net/python-novaclient/+bug/1116302>`_.
 
 -----
 1.2.3
