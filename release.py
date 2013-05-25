@@ -23,6 +23,7 @@ except Exception:
 	pass
 
 VERSION = setup.setup_params['version']
+PACKAGE_INDEX = 'https://pypi.python.org/pypi'
 
 def get_next_version():
 	digits = map(int, VERSION.split('.'))
@@ -107,14 +108,7 @@ def do_release():
 
 	subprocess.check_call(['hg', 'update', VERSION])
 
-	has_docs = build_docs()
-	if os.path.isdir('./dist'):
-		shutil.rmtree('./dist')
-	cmd = [sys.executable, 'setup.py', '-q', 'egg_info', '-RD', '-b', '',
-		'sdist', 'register', 'upload']
-	if has_docs:
-		cmd.append('upload_docs')
-	subprocess.check_call(cmd)
+	upload_to_pypi()
 
 	# update to the tip for the next operation
 	subprocess.check_call(['hg', 'update'])
@@ -129,6 +123,21 @@ def do_release():
 	subprocess.check_call(['hg', 'push'])
 
 	add_milestone_and_version()
+
+def upload_to_pypi():
+	has_docs = build_docs()
+	if os.path.isdir('./dist'):
+		shutil.rmtree('./dist')
+	cmd = [
+		sys.executable, 'setup.py', '-q',
+		'egg_info', '-RD', '-b', '',
+		'sdist',
+		'register', '-r', PACKAGE_INDEX,
+		'upload', '-r', PACKAGE_INDEX,
+	]
+	if has_docs:
+		cmd.extend(['upload_docs', '-r', PACKAGE_INDEX])
+	subprocess.check_call(cmd)
 
 def build_docs():
 	if not os.path.isdir('docs'):
