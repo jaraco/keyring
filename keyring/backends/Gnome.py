@@ -32,6 +32,8 @@ class Keyring(KeyringBackend):
         username = self._safe_string(username)
         try:
             items = gnomekeyring.find_network_password_sync(username, service)
+        except gnomekeyring.IOError:
+            return None
         except gnomekeyring.NoMatchError:
             return None
         except gnomekeyring.CancelledError:
