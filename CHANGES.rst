@@ -3,6 +3,13 @@ CHANGES
 =======
 
 -----
+1.2.3
+-----
+
+* Fix for Encrypted File backend on Python 3.
+* Issue #97 Improved support for PyPy.
+
+-----
 1.2.2
 -----
 
