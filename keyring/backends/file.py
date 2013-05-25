@@ -261,24 +261,24 @@ class EncryptedKeyring(BaseKeyring):
         from Crypto.Cipher import AES
         IV = get_random_bytes(AES.block_size)
         cipher = self._create_cipher(self.keyring_key, salt, IV)
-        password_encrypted = cipher.encrypt('pw:' + password)
+        password_encrypted = cipher.encrypt(b'pw:' + password)
         # Serialize the salt, IV, and encrypted password in a secure format
         data = dict(
             salt=salt, IV=IV, password_encrypted=password_encrypted,
         )
         for key in data:
-            data[key] = data[key].encode('base64')
-        return json.dumps(data)
+            data[key] = base64.encodestring(data[key]).decode()
+        return json.dumps(data).encode()
 
     def decrypt(self, password_encrypted):
         # unpack the encrypted payload
-        data = json.loads(password_encrypted)
+        data = json.loads(password_encrypted.decode())
         for key in data:
-            data[key] = data[key].decode('base64')
+            data[key] = base64.decodestring(data[key].encode())
         cipher = self._create_cipher(self.keyring_key, data['salt'],
             data['IV'])
         plaintext = cipher.decrypt(data['password_encrypted'])
-        assert plaintext.startswith('pw:')
+        assert plaintext.startswith(b'pw:')
         return plaintext[3:]
 
     def _migrate(self, keyring_password=None):
