@@ -70,7 +70,7 @@ def add_milestone_and_version(version=NEXT_VERSION):
 		}
 	base = 'https://api.bitbucket.org'
 	for type in 'milestones', 'versions':
-		url = (base + '/1.2/repositories/{repo}/issues/{type}'
+		url = (base + '/1.0/repositories/{repo}/issues/{type}'
 			.format(repo = get_repo_name(), type=type))
 		req = urllib2.Request(url = url, headers = headers,
 			data='name='+version)
