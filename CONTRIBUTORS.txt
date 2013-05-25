@@ -22,3 +22,4 @@ Contributors
 * Kyle Stark
 * Daniel Holth
 * Manuel de la Peña
+* Dmitry Shachnev

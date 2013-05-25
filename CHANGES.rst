@@ -2,6 +2,15 @@
 CHANGES
 =======
 
+---
+1.3
+---
+
+* Use the `SecretStorage library <https://pypi.python.org/pypi/SecretStorage>`_
+  to implement the Secret Service backend (instead of using dbus directly).
+  Now the keyring supports prompting for and deleting passwords. Fixes #69,
+  #77, and #93.
+
 -----
 1.2.3
 -----
