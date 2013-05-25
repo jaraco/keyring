@@ -12,7 +12,7 @@ CHANGES
   #77, and #93.
 * Catch `gnomekeyring.IOError` per the issue `reported in Nova client
   <https://bugs.launchpad.net/python-novaclient/+bug/1116302>`_.
-* Added support for delete_password on Mac OS X Keychain.
+* Issue #92 Added support for delete_password on Mac OS X Keychain.
 
 -----
 1.2.3
