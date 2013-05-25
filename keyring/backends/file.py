@@ -159,6 +159,7 @@ class EncryptedKeyring(BaseKeyring):
     pad_char = '0'
 
     filename = 'crypted_pass.cfg'
+    pw_prefix = 'pw:'.encode()
 
     def supported(self):
         """Applicable for all platforms, but not recommend"
@@ -261,7 +262,7 @@ class EncryptedKeyring(BaseKeyring):
         from Crypto.Cipher import AES
         IV = get_random_bytes(AES.block_size)
         cipher = self._create_cipher(self.keyring_key, salt, IV)
-        password_encrypted = cipher.encrypt(b'pw:' + password)
+        password_encrypted = cipher.encrypt(self.pw_prefix + password)
         # Serialize the salt, IV, and encrypted password in a secure format
         data = dict(
             salt=salt, IV=IV, password_encrypted=password_encrypted,
@@ -278,7 +279,7 @@ class EncryptedKeyring(BaseKeyring):
         cipher = self._create_cipher(self.keyring_key, data['salt'],
             data['IV'])
         plaintext = cipher.decrypt(data['password_encrypted'])
-        assert plaintext.startswith(b'pw:')
+        assert plaintext.startswith(self.pw_prefix)
         return plaintext[3:]
 
     def _migrate(self, keyring_password=None):
