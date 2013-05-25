@@ -35,24 +35,26 @@ class BaseKeyring(KeyringBackend):
 
     @abc.abstractproperty
     def filename(self):
-        """The filename used to store the passwords.
         """
-        pass
+        The filename used to store the passwords.
+        """
 
     @abc.abstractmethod
     def encrypt(self, password):
-        """Encrypt the password.
         """
-        pass
+        Given a password (byte string), return an encrypted byte string.
+        """
 
     @abc.abstractmethod
     def decrypt(self, password_encrypted):
-        """Decrypt the password.
         """
-        pass
+        Given a password encrypted by a previous call to `encrypt`, return
+        the original byte string.
+        """
 
     def get_password(self, service, username):
-        """Read the password from the file.
+        """
+        Read the password from the file.
         """
         service = escape_for_ini(service)
         username = escape_for_ini(username)
