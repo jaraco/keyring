@@ -10,6 +10,7 @@ CHANGES
   to implement the Secret Service backend (instead of using dbus directly).
   Now the keyring supports prompting for and deleting passwords. Fixes #69,
   #77, and #93.
+* Added support for delete_password on Mac OS X Keychain.
 
 -----
 1.2.3
