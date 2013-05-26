@@ -141,7 +141,7 @@ class WinVaultKeyring(KeyringBackend):
             raise PasswordDeleteError(service)
 
     def _delete_password(self, target):
-        self.win32cred.CredDelete(
+        win32cred.CredDelete(
             Type=win32cred.CRED_TYPE_GENERIC,
             TargetName=target,
         )
