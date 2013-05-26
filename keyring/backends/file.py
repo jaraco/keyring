@@ -35,24 +35,26 @@ class BaseKeyring(KeyringBackend):
 
     @abc.abstractproperty
     def filename(self):
-        """The filename used to store the passwords.
         """
-        pass
+        The filename used to store the passwords.
+        """
 
     @abc.abstractmethod
     def encrypt(self, password):
-        """Encrypt the password.
         """
-        pass
+        Given a password (byte string), return an encrypted byte string.
+        """
 
     @abc.abstractmethod
     def decrypt(self, password_encrypted):
-        """Decrypt the password.
         """
-        pass
+        Given a password encrypted by a previous call to `encrypt`, return
+        the original byte string.
+        """
 
     def get_password(self, service, username):
-        """Read the password from the file.
+        """
+        Read the password from the file.
         """
         service = escape_for_ini(service)
         username = escape_for_ini(username)
@@ -157,6 +159,7 @@ class EncryptedKeyring(BaseKeyring):
     pad_char = '0'
 
     filename = 'crypted_pass.cfg'
+    pw_prefix = 'pw:'.encode()
 
     @properties.ClassProperty
     @classmethod
@@ -259,24 +262,24 @@ class EncryptedKeyring(BaseKeyring):
         from Crypto.Cipher import AES
         IV = get_random_bytes(AES.block_size)
         cipher = self._create_cipher(self.keyring_key, salt, IV)
-        password_encrypted = cipher.encrypt('pw:' + password)
+        password_encrypted = cipher.encrypt(self.pw_prefix + password)
         # Serialize the salt, IV, and encrypted password in a secure format
         data = dict(
             salt=salt, IV=IV, password_encrypted=password_encrypted,
         )
         for key in data:
-            data[key] = data[key].encode('base64')
-        return json.dumps(data)
+            data[key] = base64.encodestring(data[key]).decode()
+        return json.dumps(data).encode()
 
     def decrypt(self, password_encrypted):
         # unpack the encrypted payload
-        data = json.loads(password_encrypted)
+        data = json.loads(password_encrypted.decode())
         for key in data:
-            data[key] = data[key].decode('base64')
+            data[key] = base64.decodestring(data[key].encode())
         cipher = self._create_cipher(self.keyring_key, data['salt'],
             data['IV'])
         plaintext = cipher.decrypt(data['password_encrypted'])
-        assert plaintext.startswith('pw:')
+        assert plaintext.startswith(self.pw_prefix)
         return plaintext[3:]
 
     def _migrate(self, keyring_password=None):

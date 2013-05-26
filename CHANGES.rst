@@ -2,6 +2,25 @@
 CHANGES
 =======
 
+---
+1.3
+---
+
+* Use the `SecretStorage library <https://pypi.python.org/pypi/SecretStorage>`_
+  to implement the Secret Service backend (instead of using dbus directly).
+  Now the keyring supports prompting for and deleting passwords. Fixes #69,
+  #77, and #93.
+* Catch `gnomekeyring.IOError` per the issue `reported in Nova client
+  <https://bugs.launchpad.net/python-novaclient/+bug/1116302>`_.
+* Issue #92 Added support for delete_password on Mac OS X Keychain.
+
+-----
+1.2.3
+-----
+
+* Fix for Encrypted File backend on Python 3.
+* Issue #97 Improved support for PyPy.
+
 -----
 1.2.2
 -----

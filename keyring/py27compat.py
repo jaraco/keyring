@@ -7,7 +7,7 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-if 'raw_input' in __builtins__:
+if hasattr(__builtins__, 'raw_input'):
     input = raw_input
 else:
     input = input
