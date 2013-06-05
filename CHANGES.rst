@@ -3,6 +3,13 @@ CHANGES
 =======
 
 ---
+1.4
+---
+
+* Switch GnomeKeyring backend to use native libgnome-keyring via
+  GObject Introspection, not the obsolete python-gnomekeyring module.
+
+---
 1.3
 ---
 
