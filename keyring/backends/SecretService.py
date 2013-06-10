@@ -17,7 +17,7 @@ class Keyring(KeyringBackend):
     @properties.ClassProperty
     @classmethod
     def priority(cls):
-        if not 'secretservice' in globals():
+        if not 'secretstorage' in globals():
             raise RuntimeError("SecretService required")
         try:
             bus = secretstorage.dbus_init()
