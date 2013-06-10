@@ -36,6 +36,10 @@ class BackendBasicTests(object):
         self.keyring = self.init_keyring()
         self.credentials_created = set()
 
+    def tearDown(self):
+        for item in self.credentials_created:
+            self.keyring.delete_password(*item)
+
     def set_password(self, service, username, password):
         # set the password and save the result so the test runner can clean
         #  up after if necessary.
