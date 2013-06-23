@@ -3,6 +3,24 @@ CHANGES
 =======
 
 ---
+1.5
+---
+
+*  SecretService: allow deleting items created using previous python-keyring
+   versions.
+
+   Before the switch to secretstorage, python-keyring didn't set "application"
+   attribute. Now in addition to supporting searching for items without that
+   attribute, python-keyring also supports deleting them.
+
+*  Use ``secretstorage.get_default_collection`` if it's available.
+
+   On secretstorage 1.0 or later, python-keyring now tries to create the
+   default collection if it doesn't exist, instead of just raising the error.
+
+*  Improvements for tests, including fix for Issue #102.
+
+---
 1.4
 ---
 
