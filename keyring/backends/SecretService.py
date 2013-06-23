@@ -28,7 +28,10 @@ class Keyring(KeyringBackend):
 
     def get_default_collection(self):
         bus = secretstorage.dbus_init()
-        collection = secretstorage.Collection(bus)
+        if hasattr(secretstorage, 'get_default_collection'):
+            collection = secretstorage.get_default_collection(bus)
+        else:
+            collection = secretstorage.Collection(bus)
         if collection.is_locked():
             if collection.unlock():
                 raise InitError("Failed to unlock the collection!")
@@ -59,12 +62,8 @@ class Keyring(KeyringBackend):
         """Delete the stored password (only the first one)
         """
         collection = self.get_default_collection()
-        attributes = {
-            "application": "python-keyring",
-            "service": service,
-            "username": username
-            }
-        items = collection.search_items(attributes)
+        items = collection.search_items(
+            {"username": username, "service": service})
         for item in items:
             return item.delete()
         raise PasswordDeleteError("No such password!")

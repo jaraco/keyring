@@ -44,27 +44,24 @@ class GnomeKeyringTestCase(BackendBasicTests, unittest.TestCase):
                 self.assertEqual(1, self.keyring.supported())
 
     def test_supported_no_module(self):
-        with ImportKiller('gnomekeyring'):
+        with ImportKiller('gi.repository'):
             with Environ(**self.environ()):
                 self.assertEqual(-1, self.keyring.supported())
 
     def test_supported_no_keyring(self):
-        with ImportBlesser('gnomekeyring'):
-            environ = self.environ()
-            environ['GNOME_KEYRING_CONTROL'] = None
-            with Environ(**environ):
-                self.assertEqual(0, self.keyring.supported())
+        environ = self.environ()
+        environ['GNOME_KEYRING_CONTROL'] = None
+        with Environ(**environ):
+            self.assertEqual(0, self.keyring.supported())
 
     def test_supported_no_display(self):
-        with ImportBlesser('gnomekeyring'):
-            environ = self.environ()
-            environ['DISPLAY'] = None
-            with Environ(**environ):
-                self.assertEqual(0, self.keyring.supported())
+        environ = self.environ()
+        environ['DISPLAY'] = None
+        with Environ(**environ):
+            self.assertEqual(0, self.keyring.supported())
 
     def test_supported_no_session(self):
-        with ImportBlesser('gnomekeyring'):
-            environ = self.environ()
-            environ['DBUS_SESSION_BUS_ADDRESS'] = None
-            with Environ(**environ):
-                self.assertEqual(0, self.keyring.supported())
+        environ = self.environ()
+        environ['DBUS_SESSION_BUS_ADDRESS'] = None
+        with Environ(**environ):
+            self.assertEqual(0, self.keyring.supported())
