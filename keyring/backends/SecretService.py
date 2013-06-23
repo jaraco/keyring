@@ -56,12 +56,8 @@ class Keyring(KeyringBackend):
         """Delete the stored password (only the first one)
         """
         collection = self.get_default_collection()
-        attributes = {
-            "application": "python-keyring",
-            "service": service,
-            "username": username
-            }
-        items = collection.search_items(attributes)
+        items = collection.search_items(
+            {"username": username, "service": service})
         for item in items:
             return item.delete()
         raise PasswordDeleteError("No such password!")
