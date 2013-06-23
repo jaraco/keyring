@@ -6,6 +6,7 @@ import itertools
 
 from keyring.py25compat import abc
 from keyring import errors
+from keyring.util import properties
 
 import keyring.util
 
@@ -45,6 +46,13 @@ class KeyringBackend(object):
         As a rule of thumb, a priority between zero but less than one is
         suitable, but a priority of one or greater is recommended.
         """
+
+    @properties.ClassProperty
+    @classmethod
+    def viable(cls):
+        with errors.ExceptionRaisedContext() as exc:
+            cls.priority
+        return bool(exc)
 
     @abc.abstractmethod
     def get_password(self, service, username):
