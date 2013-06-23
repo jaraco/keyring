@@ -9,9 +9,7 @@ try:
     from PyKDE4.kdeui import KWallet
     from PyQt4 import QtGui
 except ImportError:
-    kwallet_support = False
-else:
-    kwallet_support = True
+    pass
 
 kwallet = None
 
