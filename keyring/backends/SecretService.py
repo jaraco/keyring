@@ -25,7 +25,10 @@ class Keyring(KeyringBackend):
     def get_default_collection(self):
         import secretstorage
         bus = secretstorage.dbus_init()
-        collection = secretstorage.Collection(bus)
+        if hasattr(secretstorage, 'get_default_collection'):
+            collection = secretstorage.get_default_collection(bus)
+        else:
+            collection = secretstorage.Collection(bus)
         if collection.is_locked():
             if collection.unlock():
                 raise InitError("Failed to unlock the collection!")
