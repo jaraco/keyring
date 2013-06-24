@@ -12,6 +12,7 @@ from . import keyczar
 
 try:
     import fs.opener
+    import fs.osfs
     import fs.errors
     import fs.path
     import fs.remote
@@ -120,7 +121,6 @@ class BasicKeyring(KeyringBackend):
                         pyfs.makedir(url2_path, recursive=True)
                 else:
                     # assume local filesystem
-                    import fs.osfs
                     full_url = fs.opener._expand_syspath(self.filename)
                     # NOTE: fs.path.split does not function in the same way os os.path.split... at least under windows
                     url2_path, url2 = os.path.split(full_url)
