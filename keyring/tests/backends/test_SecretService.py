@@ -1,4 +1,3 @@
-import os
 import sys
 
 from ..py30compat import unittest
@@ -6,14 +5,7 @@ from ..test_backend import BackendBasicTests
 from keyring.backends import SecretService
 from ..util import ImportKiller
 
-def is_secretstorage_supported():
-    try:
-        __import__('secretstorage')
-    except ImportError:
-        return False
-    return 'DISPLAY' in os.environ
-
-@unittest.skipUnless(is_secretstorage_supported(),
+@unittest.skipUnless(SecretService.Keyring.viable,
     "SecretStorage package is needed for SecretServiceKeyring")
 class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
     __test__ = True
