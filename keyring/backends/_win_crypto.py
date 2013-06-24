@@ -1,7 +1,12 @@
 
 from ctypes import Structure, POINTER, c_void_p, cast, create_string_buffer, \
     c_char_p, byref, memmove
-from ctypes import windll, WinDLL, WINFUNCTYPE, wintypes
+from ctypes import windll, WinDLL, WINFUNCTYPE
+try:
+    from ctypes import wintypes
+except ValueError:
+    # see http://bugs.python.org/issue16396
+    raise ImportError("wintypes")
 
 from keyring.util.escape import u
 
