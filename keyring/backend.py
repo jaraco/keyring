@@ -52,7 +52,7 @@ class KeyringBackend(object):
     def viable(cls):
         with errors.ExceptionRaisedContext() as exc:
             cls.priority
-        return bool(exc)
+        return not bool(exc)
 
     @abc.abstractmethod
     def get_password(self, service, username):
