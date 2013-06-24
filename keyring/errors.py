@@ -27,7 +27,8 @@ class ExceptionRaisedContext(object):
 
     def __exit__(self, *exc_info):
         self.exc_info.__init__(*exc_info)
-        return issubclass(self.exc_info.type, self.ExpectedException)
+        return self.exc_info.type and issubclass(
+            self.exc_info.type, self.ExpectedException)
 
 class ExceptionInfo(object):
     def __init__(self, *info):
