@@ -81,7 +81,7 @@ class BasicKeyring(KeyringBackend):
             #       which causes errors on close()
             #       so we add a dummy name and open it separately
             if (self.filename.startswith('mem://') or
-                self.filename.startswith('ram://')):
+                    self.filename.startswith('ram://')):
                 open_file = fs.opener.fsopendir(self.filename).open('kr.cfg',
                                                                     mode)
             else:
