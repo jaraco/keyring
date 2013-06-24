@@ -27,7 +27,7 @@ class MultipartKeyringWrapperTestCase(unittest.TestCase):
             except KeyError:
                 raise keyring.errors.PasswordDeleteError('not found')
 
-    def testSupportedPassThru(self):
+    def testViablePassThru(self):
         kr = multi.MultipartKeyringWrapper(self.MockKeyring())
         self.assertTrue(kr.viable)
 
