@@ -23,27 +23,34 @@ class Keyring(KeyringBackend):
             else:
                 return 0
 
-    def get_password(self, service, username):
-        """Get password of the username for the service
-        """
+    def _find_passwords(self, service, username, deleting=False):
         from gi.repository import GnomeKeyring
+        passwords = []
 
         service = self._safe_string(service)
         username = self._safe_string(username)
-        attrs = GnomeKeyring.Attribute.list_new()
-        GnomeKeyring.Attribute.list_append_string(attrs, 'user', username)
-        GnomeKeyring.Attribute.list_append_string(attrs, 'domain', service)
-        result, items = GnomeKeyring.find_items_sync(
-            GnomeKeyring.ItemType.NETWORK_PASSWORD, attrs)
-        if result == GnomeKeyring.Result.IO_ERROR:
-            return None
-        if result == GnomeKeyring.Result.NO_MATCH:
-            return None
-        if result == GnomeKeyring.Result.CANCELLED:
-            # The user pressed "Cancel" when prompted to unlock their keyring.
+        for attrs_tuple in (('username', 'service'), ('user', 'domain')):
+            attrs = GnomeKeyring.Attribute.list_new()
+            GnomeKeyring.Attribute.list_append_string(attrs, attrs_tuple[0], username)
+            GnomeKeyring.Attribute.list_append_string(attrs, attrs_tuple[1], service)
+            result, items = GnomeKeyring.find_items_sync(
+                GnomeKeyring.ItemType.NETWORK_PASSWORD, attrs)
+            if result == GnomeKeyring.Result.OK:
+                passwords += items
+            elif deleting:
+                if result == GnomeKeyring.Result.CANCELLED:
+                    raise PasswordDeleteError("Cancelled by user")
+                elif result != GnomeKeyring.Result.NO_MATCH:
+                    raise PasswordDeleteError(result.value_name)
+        return passwords
+
+    def get_password(self, service, username):
+        """Get password of the username for the service
+        """
+        items = self._find_passwords(service, username)
+        if not items:
             return None
 
-        assert len(items) == 1, 'no more than one entry should ever match'
         secret = items[0].secret
         return secret if isinstance(secret, unicode) else secret.decode('utf-8')
 
@@ -56,8 +63,9 @@ class Keyring(KeyringBackend):
         username = self._safe_string(username)
         password = self._safe_string(password)
         attrs = GnomeKeyring.Attribute.list_new()
-        GnomeKeyring.Attribute.list_append_string(attrs, 'user', username)
-        GnomeKeyring.Attribute.list_append_string(attrs, 'domain', service)
+        GnomeKeyring.Attribute.list_append_string(attrs, 'username', username)
+        GnomeKeyring.Attribute.list_append_string(attrs, 'service', service)
+        GnomeKeyring.Attribute.list_append_string(attrs, 'application', 'python-keyring')
         result = GnomeKeyring.item_create_sync(
             self.KEYRING_NAME, GnomeKeyring.ItemType.NETWORK_PASSWORD,
             "Password for '%s' on '%s'" % (username, service),
@@ -65,23 +73,23 @@ class Keyring(KeyringBackend):
         if result == GnomeKeyring.Result.CANCELLED:
             # The user pressed "Cancel" when prompted to unlock their keyring.
             raise PasswordSetError("Cancelled by user")
+        elif result != GnomeKeyring.Result.OK:
+            raise PasswordSetError(result.value_name)
 
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
         """
         from gi.repository import GnomeKeyring
-        attrs = GnomeKeyring.Attribute.list_new()
-        GnomeKeyring.Attribute.list_append_string(attrs, 'user', username)
-        GnomeKeyring.Attribute.list_append_string(attrs, 'domain', service)
-        result, items = GnomeKeyring.find_items_sync(
-            GnomeKeyring.ItemType.NETWORK_PASSWORD, attrs)
-        if result == GnomeKeyring.Result.NO_MATCH:
+        items = self._find_passwords(service, username, deleting=True)
+        if not items:
             raise PasswordDeleteError("Password not found")
         for current in items:
             result = GnomeKeyring.item_delete_sync(current.keyring,
                                                    current.item_id)
             if result == GnomeKeyring.Result.CANCELLED:
                 raise PasswordDeleteError("Cancelled by user")
+            elif result != GnomeKeyring.Result.OK:
+                raise PasswordDeleteError(result.value_name)
 
     def _safe_string(self, source, encoding='utf-8'):
         """Convert unicode to string as gnomekeyring barfs on unicode"""
