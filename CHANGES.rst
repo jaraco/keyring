@@ -13,6 +13,10 @@ CHANGES
    - Also set ``application`` attribute.
    - Correctly handle all types of errors, not only ``CANCELLED`` and ``NO_MATCH``.
 
+* Secret Service backend:
+
+   - Use a better label for passwords, the same as GNOME Keyring backend uses.
+
 ---
 1.5
 ---
