@@ -12,6 +12,7 @@ CHANGES
      backend uses, allow searching for old ones for compatibility.
    - Also set ``application`` attribute.
    - Correctly handle all types of errors, not only ``CANCELLED`` and ``NO_MATCH``.
+   - Avoid printing warnings to stderr when GnomeKeyring is not available.
 
 * Secret Service backend:
 

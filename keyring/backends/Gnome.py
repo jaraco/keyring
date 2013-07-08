@@ -12,6 +12,9 @@ class Keyring(KeyringBackend):
 
     def supported(self):
         try:
+            from gi import Repository
+            if not Repository.get_default().enumerate_versions('GnomeKeyring'):
+                return -1
             from gi.repository import GnomeKeyring
         except ImportError:
             return -1
