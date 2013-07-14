@@ -1,5 +1,6 @@
 import itertools
 
+from keyring.util import properties
 from keyring.backend import KeyringBackend
 from keyring import errors
 
@@ -14,13 +15,10 @@ class MultipartKeyringWrapper(KeyringBackend):
         self._keyring = keyring
         self._max_password_size = max_password_size
 
-    def supported(self):
-        """Return if this keyring supports current environment:
-        -1: not applicable
-         0: suitable
-         1: recommended
-        """
-        return self._keyring.supported()
+    @properties.ClassProperty
+    @classmethod
+    def priority(cls):
+        return 0
 
     def get_password(self, service, username):
         """Get password of the username for the service

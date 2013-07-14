@@ -6,12 +6,6 @@ from ..test_backend import BackendBasicTests
 from ..util import ImportKiller, Environ, NoNoneDictMutator
 from keyring.backends import Gnome
 
-def is_gnomekeyring_supported():
-    supported = Gnome.Keyring().supported()
-    if supported == -1:
-        return False
-    return True
-
 
 def ImportBlesser(*names, **changes):
     """A context manager to temporarily make it possible to import a module"""
@@ -20,8 +14,7 @@ def ImportBlesser(*names, **changes):
     return NoNoneDictMutator(sys.modules, **changes)
 
 
-@unittest.skipUnless(is_gnomekeyring_supported(),
-                     "Need GnomeKeyring")
+@unittest.skipUnless(Gnome.Keyring.viable, "Need GnomeKeyring")
 class GnomeKeyringTestCase(BackendBasicTests, unittest.TestCase):
 
     def environ(self):

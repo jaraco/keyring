@@ -10,6 +10,15 @@ from keyring.util import properties
 from keyring.backend import KeyringBackend, NullCrypter
 from . import keyczar
 
+try:
+    import fs.opener
+    import fs.osfs
+    import fs.errors
+    import fs.path
+    import fs.remote
+except ImportError:
+    pass
+
 class BasicKeyring(KeyringBackend):
     """BasicKeyring is a Pyfilesystem-based implementation of
     keyring.
@@ -65,10 +74,6 @@ class BasicKeyring(KeyringBackend):
     def _open(self, mode='rb'):
         """Open the password file in the specified mode
         """
-        import fs.opener
-        import fs.errors
-        import fs.path
-        import fs.remote
         open_file = None
         writeable = 'w' in mode or 'a' in mode or '+' in mode
         try:
@@ -76,7 +81,7 @@ class BasicKeyring(KeyringBackend):
             #       which causes errors on close()
             #       so we add a dummy name and open it separately
             if (self.filename.startswith('mem://') or
-                self.filename.startswith('ram://')):
+                    self.filename.startswith('ram://')):
                 open_file = fs.opener.fsopendir(self.filename).open('kr.cfg',
                                                                     mode)
             else:
@@ -116,7 +121,6 @@ class BasicKeyring(KeyringBackend):
                         pyfs.makedir(url2_path, recursive=True)
                 else:
                     # assume local filesystem
-                    import fs.osfs
                     full_url = fs.opener._expand_syspath(self.filename)
                     # NOTE: fs.path.split does not function in the same way os os.path.split... at least under windows
                     url2_path, url2 = os.path.split(full_url)
@@ -201,14 +205,12 @@ class BasicKeyring(KeyringBackend):
         self.config.write(config_file)
         config_file.close()
 
-    def supported(self):
-        """Applicable when Pyfilesystem installed, but do not recommend.
-        """
-        try:
-            from fs.opener import fsopen
-            return 0
-        except ImportError:
-            return -1
+    @properties.ClassProperty
+    @classmethod
+    def priority(cls):
+        if not 'fs' in globals():
+            raise RuntimeError("pyfs required")
+        return 2
 
 class PlaintextKeyring(BasicKeyring):
     """Unencrypted Pyfilesystem Keyring

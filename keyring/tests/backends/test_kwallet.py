@@ -3,12 +3,6 @@ from ..py30compat import unittest
 from keyring.backends import kwallet
 from ..test_backend import BackendBasicTests
 
-def is_kwallet_supported():
-    supported = kwallet.Keyring().supported()
-    if supported == -1:
-        return False
-    return True
-
 def is_qt4_supported():
     try:
         __import__('PyQt4.QtGui')
@@ -16,8 +10,7 @@ def is_qt4_supported():
         return False
     return True
 
-@unittest.skipUnless(is_kwallet_supported(),
-                     "Need KWallet")
+@unittest.skipUnless(kwallet.Keyring.viable, "Need KWallet")
 class KDEKWalletTestCase(BackendBasicTests, unittest.TestCase):
 
     def init_keyring(self):
@@ -71,7 +64,7 @@ class KDEWalletCanceledTestCase(unittest.TestCase):
             None)
 
 
-@unittest.skipUnless(is_kwallet_supported() and
+@unittest.skipUnless(kwallet.Keyring.viable and
                      is_qt4_supported(),
                      "Need KWallet and Qt4")
 class KDEKWalletInQApplication(unittest.TestCase):

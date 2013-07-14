@@ -2,10 +2,11 @@
 Keyring implementation support
 """
 
-import sys
+import itertools
 
 from keyring.py25compat import abc
 from keyring import errors
+from keyring.util import properties
 
 import keyring.util
 
@@ -29,14 +30,29 @@ class KeyringBackend(object):
     """
     __metaclass__ = KeyringBackendMeta
 
-    @abc.abstractmethod
-    def supported(self):
-        """Return if this keyring supports current environment:
-        -1: not applicable
-         0: suitable
-         1: recommended
+    #@abc.abstractproperty
+    def priority(cls):
         """
-        return -1
+        Each backend class must supply a priority, a number (float or integer)
+        indicating the priority of the backend relative to all other backends.
+        The priority need not be static -- it may (and should) vary based
+        attributes of the environment in which is runs (platform, available
+        packages, etc.).
+
+        A higher number indicates a higher priority. The priority should raise
+        a RuntimeError with a message indicating the underlying cause if the
+        backend is not suitable for the current environment.
+
+        As a rule of thumb, a priority between zero but less than one is
+        suitable, but a priority of one or greater is recommended.
+        """
+
+    @properties.ClassProperty
+    @classmethod
+    def viable(cls):
+        with errors.ExceptionRaisedContext() as exc:
+            cls.priority
+        return not bool(exc)
 
     @abc.abstractmethod
     def get_password(self, service, username):
@@ -90,7 +106,16 @@ def get_all_keyring():
     Return a list of all implemented keyrings that can be constructed without
     parameters.
     """
-    return list(keyring.util.suppress_exceptions(KeyringBackend._classes,
+    def is_class_viable(keyring_cls):
+        try:
+            keyring_cls.priority
+        except RuntimeError:
+            return False
+        return True
+
+    all_classes = KeyringBackend._classes
+    viable_classes = itertools.ifilter(is_class_viable, all_classes)
+    return list(keyring.util.suppress_exceptions(viable_classes,
         exceptions=TypeError))
 
 # for backward-compatibility
@@ -105,7 +130,6 @@ from keyring.backends.file import EncryptedKeyring as CryptedFileKeyring
 from keyring.backends.Windows import EncryptedKeyring as Win32CryptoKeyring
 from keyring.backends.Windows import WinVaultKeyring
 from keyring.backends.Windows import RegistryKeyring as Win32CryptoRegistry
-from keyring.backends.Windows import select_windows_backend
 from keyring.backends.Google import DocsKeyring as GoogleDocsKeyring
 from keyring.credentials import Credential
 from keyring.credentials import SimpleCredential as BaseCredential

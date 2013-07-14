@@ -3,14 +3,13 @@ import os
 from keyring.backend import KeyringBackend
 from keyring.errors import PasswordDeleteError
 from keyring.errors import PasswordSetError
+from keyring.util import properties
 
 try:
     from PyKDE4.kdeui import KWallet
     from PyQt4 import QtGui
 except ImportError:
-    kwallet_support = False
-else:
-    kwallet_support = True
+    pass
 
 kwallet = None
 
@@ -51,13 +50,14 @@ def open_kwallet(kwallet_module=None, qt_module=None):
 class Keyring(KeyringBackend):
     """KDE KWallet"""
 
-    def supported(self):
-        if kwallet_support and 'KDE_SESSION_UID' in os.environ:
-            return 1
-        elif kwallet_support:
+    @properties.ClassProperty
+    @classmethod
+    def priority(cls):
+        if 'KWallet' not in globals():
+            raise RuntimeError("KDE libraries not available")
+        if 'KDE_SESSION_ID' not in os.environ:
             return 0
-        else:
-            return -1
+        return 5
 
     def get_password(self, service, username):
         """Get password of the username for the service

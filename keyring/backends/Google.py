@@ -7,12 +7,18 @@ import codecs
 import cPickle
 import base64
 
+try:
+    import gdata.docs.service
+except ImportError:
+    pass
+
 from . import keyczar
 from keyring import errors
 from keyring import credentials
 import keyring.py25compat
 import keyring.py27compat
 from keyring.backend import KeyringBackend
+from keyring.util import properties
 
 class EnvironCredential(credentials.EnvironCredential):
     """Retrieve credentials from specifically named environment variables
@@ -39,12 +45,6 @@ class DocsKeyring(KeyringBackend):
                  collection=None, client=None,
                  can_create=True, input_getter=keyring.py27compat.input
                 ):
-        try:
-            DocsService = (__import__('gdata.docs.service')
-                .docs.service.DocsService)
-        except ImportError:
-            return
-
         self.credential = credential
         self.crypter = crypter
         self.source = source
@@ -54,7 +54,7 @@ class DocsKeyring(KeyringBackend):
         self._keyring_dict = None
 
         if not client:
-            self._client = DocsService()
+            self._client = gdata.docs.service.DocsService()
         else:
             self._client = client
 
@@ -62,17 +62,14 @@ class DocsKeyring(KeyringBackend):
         self._client.ssl = True
         self._login_reqd = True
 
-    def supported(self):
-        """Return if this keyring supports current environment:
-        -1: not applicable
-         0: suitable
-         1: recommended
-        """
-        try:
-            __import__('gdata.docs.service')
-        except ImportError:
-            return -1
-        return 0
+    @properties.ClassProperty
+    @classmethod
+    def priority(cls):
+        if 'gdata' not in globals():
+            raise RuntimeError("Requires gdata")
+        if not hasattr(keyczar, 'keyczar'):
+            raise RuntimeError("Requires keyczar")
+        return 3
 
     def get_password(self, service, username):
         """Get password of the username for the service
@@ -131,7 +128,6 @@ class DocsKeyring(KeyringBackend):
     @property
     def client(self):
         if not self._client.GetClientLoginToken():
-            import gdata
             try:
                 self._client.ClientLogin(self.credential.username,
                                          self.credential.password,

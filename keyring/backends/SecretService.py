@@ -1,29 +1,36 @@
+import os
 import logging
 
+from keyring.util import properties
 from keyring.backend import KeyringBackend
 from keyring.errors import InitError, PasswordDeleteError
+
+try:
+    import secretstorage.exceptions
+except ImportError:
+    pass
 
 log = logging.getLogger(__name__)
 
 class Keyring(KeyringBackend):
     """Secret Service Keyring"""
 
-    def supported(self):
-        try:
-            import secretstorage
-        except ImportError:
-            return -1
-        from secretstorage.exceptions import SecretServiceNotAvailableException
+    @properties.ClassProperty
+    @classmethod
+    def priority(cls):
+        if not 'secretstorage' in globals():
+            raise RuntimeError("SecretService required")
         try:
             bus = secretstorage.dbus_init()
             secretstorage.Collection(bus)
-        except (ImportError, SecretServiceNotAvailableException):
-            return -1
-        else:
-            return 1
+        except secretstorage.exceptions.SecretServiceNotAvailableException:
+            raise RuntimeError("Unable to get initialize SecretService")
+        if 'DISPLAY' not in os.environ:
+            raise RuntimeError("SecretService cannot run without a DISPLAY "
+                "environment variable")
+        return 5
 
     def get_default_collection(self):
-        import secretstorage
         bus = secretstorage.dbus_init()
         if hasattr(secretstorage, 'get_default_collection'):
             collection = secretstorage.get_default_collection(bus)

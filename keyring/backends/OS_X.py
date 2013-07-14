@@ -6,6 +6,7 @@ import binascii
 from keyring.backend import KeyringBackend
 from keyring.errors import PasswordSetError
 from keyring.errors import PasswordDeleteError
+from keyring.util import properties
 
 class Keyring(KeyringBackend):
     """Mac OS X Keychain"""
@@ -14,10 +15,15 @@ class Keyring(KeyringBackend):
     password_regex = re.compile("""password:\s*(?:0x(?P<hex>[0-9A-F]+)\s*)?"""
                                 """(?:"(?P<pw>.*)")?""")
 
-    def supported(self):
-        """Recommended for all OSX environment.
+    @properties.ClassProperty
+    @classmethod
+    def priority(cls):
         """
-        return sys.platform == 'darwin' or -1
+        Preferred for all OS X environments.
+        """
+        if not sys.platform == 'darwin':
+            raise RuntimeError("OS X required")
+        return 5
 
     @staticmethod
     def set_password(service, username, password):

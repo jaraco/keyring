@@ -10,11 +10,10 @@ class MultipartKeyringWrapperTestCase(unittest.TestCase):
 
     class MockKeyring(KeyringBackend):
 
+        priority = 1
+
         def __init__(self):
             self.passwords = {}
-
-        def supported(self):
-            return 'yes'
 
         def get_password(self, service, username):
             return self.passwords.get(service+username)
@@ -28,9 +27,9 @@ class MultipartKeyringWrapperTestCase(unittest.TestCase):
             except KeyError:
                 raise keyring.errors.PasswordDeleteError('not found')
 
-    def testSupportedPassThru(self):
+    def testViablePassThru(self):
         kr = multi.MultipartKeyringWrapper(self.MockKeyring())
-        self.assertEquals(kr.supported(), 'yes')
+        self.assertTrue(kr.viable)
 
     def testMissingPassword(self):
         wrapped_kr = self.MockKeyring()

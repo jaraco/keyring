@@ -61,8 +61,8 @@ def init_backend():
     if keyring is None:
 
         keyrings = backend.get_all_keyring()
-        # rank according to the supported result
-        keyrings.sort(key = lambda x: -x.supported())
+        # rank by priority
+        keyrings.sort(key = lambda x: -x.priority)
         # get the most recommended one
         keyring = keyrings[0]
 
