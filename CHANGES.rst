@@ -3,6 +3,22 @@ CHANGES
 =======
 
 ---
+1.6
+---
+
+*  GNOME Keyring backend:
+
+   - Use the same attributes (``username`` / ``service``) as the SecretService
+     backend uses, allow searching for old ones for compatibility.
+   - Also set ``application`` attribute.
+   - Correctly handle all types of errors, not only ``CANCELLED`` and ``NO_MATCH``.
+   - Avoid printing warnings to stderr when GnomeKeyring is not available.
+
+* Secret Service backend:
+
+   - Use a better label for passwords, the same as GNOME Keyring backend uses.
+
+---
 1.5
 ---
 
