@@ -3,6 +3,18 @@ CHANGES
 =======
 
 ---
+2.0
+---
+
+*  Prioritized backend support. The primary interface for Keyring backend
+   classes has been refactored to now emit a 'priority' based on the current
+   environment (operating system, libraries available, etc). These priorities
+   provide an indication of the applicability of that backend for the current
+   environment. Users are still welcome to specify a particular backend in
+   configuration, but the default behavior should now be to select the most
+   appropriate backend by default.
+
+---
 1.6
 ---
 
