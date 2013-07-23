@@ -68,6 +68,9 @@ if sys.version_info >= (3, 0):
     # http://code.google.com/p/keyczar/issues/detail?id=125
     test_requirements.remove('python-keyczar')
 
+# only request pytest_runner when command-line indicates invocation
+pytest_runner = ['pytest-runner'] if 'ptr' in sys.argv else []
+
 setup_params = dict(
     name = 'keyring',
     version = "2.0",
@@ -94,8 +97,7 @@ setup_params = dict(
     extras_require = {'test': test_requirements},
     tests_require = test_requirements,
     setup_requires = [
-        'pytest-runner',
-    ],
+    ] + pytest_runner,
     entry_points = {
         'console_scripts': [
             'keyring=keyring.cli:main',
