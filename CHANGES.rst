@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+-----
+1.6.1
+-----
+
+* Only include pytest-runner in 'setup requirements' when ptr invocation is
+  indicated in the command-line (Issue #105).
+
 ---
 1.6
 ---
