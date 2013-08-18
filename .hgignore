@@ -10,3 +10,4 @@ syntax: regexp
 ^develop-eggs
 ^.installed.cfg
 ^eggs/
+^dist$
