@@ -2,13 +2,6 @@
 CHANGES
 =======
 
------
-1.6.1
------
-
-* Only include pytest-runner in 'setup requirements' when ptr invocation is
-  indicated in the command-line (Issue #105).
-
 ---
 2.0
 ---
@@ -20,6 +13,13 @@ CHANGES
    environment. Users are still welcome to specify a particular backend in
    configuration, but the default behavior should now be to select the most
    appropriate backend by default.
+
+-----
+1.6.1
+-----
+
+* Only include pytest-runner in 'setup requirements' when ptr invocation is
+  indicated in the command-line (Issue #105).
 
 ---
 1.6
