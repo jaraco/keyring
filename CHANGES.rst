@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+-----
+2.0.1
+-----
+
+*  Issue #110: Fix issues with ``Windows.RegistryKeyring``.
+
 ---
 2.0
 ---
