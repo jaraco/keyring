@@ -49,8 +49,8 @@ class WinVaultKeyringTestCase(BackendBasicTests, unittest.TestCase):
         return keyring.backends.Windows.WinVaultKeyring()
 
 
-@unittest.skipUnless(keyring.backends.Windows.RegistryKeyring.viable,
-                     "RegistryKeyring not viable")
+@unittest.skipUnless(keyring.backends.Windows.RegistryKeyring.viable
+    and sys.version_info > (3,), "RegistryKeyring not viable")
 class RegistryKeyringTestCase(BackendBasicTests, unittest.TestCase):
     def tearDown(self):
         # clean up any credentials created
