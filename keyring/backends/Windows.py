@@ -172,11 +172,12 @@ class RegistryKeyring(KeyringBackend):
             # fetch the password
             key = r'Software\%s\Keyring' % service
             hkey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key)
-            password_base64 = winreg.QueryValueEx(hkey, username)[0]
+            password_saved = winreg.QueryValueEx(hkey, username)[0]
+            password_base64 = password_saved.encode('ascii')
             # decode with base64
             password_encrypted = base64.decodestring(password_base64)
             # decrypted the password
-            password = _win_crypto.decrypt(password_encrypted)
+            password = _win_crypto.decrypt(password_encrypted).decode('utf-8')
         except EnvironmentError:
             password = None
         return password
@@ -185,14 +186,16 @@ class RegistryKeyring(KeyringBackend):
         """Write the password to the registry
         """
         # encrypt the password
-        password_encrypted = _win_crypto.encrypt(password)
+        password_encrypted = _win_crypto.encrypt(password.encode('utf-8'))
         # encode with base64
         password_base64 = base64.encodestring(password_encrypted)
+        # encode again to unicode
+        password_saved = password_base64.decode('ascii')
 
         # store the password
         key_name = r'Software\%s\Keyring' % service
         hkey = winreg.CreateKey(winreg.HKEY_CURRENT_USER, key_name)
-        winreg.SetValueEx(hkey, username, 0, winreg.REG_SZ, password_base64)
+        winreg.SetValueEx(hkey, username, 0, winreg.REG_SZ, password_saved)
 
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
