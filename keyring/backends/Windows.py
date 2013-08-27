@@ -35,11 +35,16 @@ class EncryptedKeyring(file.BaseKeyring):
     A File-based keyring secured by Windows Crypto API.
     """
 
-    priority = .8
-    """
-    Preferred over file.EncryptedKeyring but not other, more sophisticated
-    Windows backends.
-    """
+    @properties.ClassProperty
+    @classmethod
+    def priority(self):
+        """
+        Preferred over file.EncryptedKeyring but not other, more sophisticated
+        Windows backends.
+        """
+        if not 'winreg' in globals():
+            raise RuntimeError("Requires Windows")
+        return .8
 
     filename = 'wincrypto_pass.cfg'
 

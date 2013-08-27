@@ -3,6 +3,12 @@ CHANGES
 =======
 
 -----
+2.0.2
+-----
+
+*  Issue #111: Windows backend isn't viable on non-Windows platforms.
+
+-----
 2.0.1
 -----
 
