@@ -25,8 +25,7 @@ class Keyring(KeyringBackend):
             raise RuntimeError("OS X required")
         return 5
 
-    @staticmethod
-    def set_password(service, username, password):
+    def set_password(self, service, username, password):
         if username is None:
             username = ''
         set_error = PasswordSetError("Can't store password in keychain")
@@ -50,8 +49,7 @@ class Keyring(KeyringBackend):
         except:
             raise set_error
 
-    @staticmethod
-    def get_password(service, username):
+    def get_password(self, service, username):
         if username is None:
             username = ''
         try:
@@ -89,8 +87,7 @@ class Keyring(KeyringBackend):
         except:
             pass
 
-    @staticmethod
-    def delete_password(service, username):
+    def delete_password(self, service, username):
         del_error = PasswordDeleteError("Can't delete password in keychain")
         if username is None:
             username = ''
