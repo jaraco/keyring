@@ -10,5 +10,5 @@ python:
   - 3.3
 
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then OPTS="build/lib"; fi
+  - if [[ ${TRAVIS_PYTHON_VERSION:0:1} == '3' ]]; then OPTS="build/lib"; fi
   - python setup.py ptr --addopts="-rs -v $OPTS"
