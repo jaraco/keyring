@@ -98,6 +98,7 @@ class Keyring(KeyringBackend):
 
     @staticmethod
     def delete_password(service, username):
+        del_error = PasswordDeleteError("Can't delete password in keychain")
         if username is None:
             username = ''
         try:
@@ -117,7 +118,6 @@ class Keyring(KeyringBackend):
             code = call.returncode
             # check return code.
             if code is not 0:
-                raise PasswordDeleteError('Can\'t delete password in keychain')
+                raise del_error
         except:
-            raise PasswordDeleteError("Can't delete password in keychain")
-
+            raise del_error
