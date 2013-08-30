@@ -29,29 +29,26 @@ class Keyring(KeyringBackend):
     def set_password(service, username, password):
         if username is None:
             username = ''
+        set_error = PasswordSetError("Can't store password in keychain")
         try:
             # set up the call for security.
-            call = subprocess.Popen([
-                    'security',
-                    'add-generic-password',
-                    '-a',
-                    username,
-                    '-s',
-                    service,
-                    '-w',
-                    password,
-                    '-U'
-                ],
-                stderr = subprocess.PIPE,
-                stdout = subprocess.PIPE,
-            )
+            cmd = [
+                'security',
+                'add-generic-password',
+                '-a', username,
+                '-s', service,
+                '-w', password,
+                '-U',
+            ]
+            call = subprocess.Popen(cmd, stderr=subprocess.PIPE,
+                stdout=subprocess.PIPE)
             stdoutdata, stderrdata = call.communicate()
             code = call.returncode
             # check return code.
             if code is not 0:
-                raise PasswordSetError('Can\'t store password in keychain')
+                raise set_error
         except:
-            raise PasswordSetError("Can't store password in keychain")
+            raise set_error
 
     @staticmethod
     def get_password(service, username):
@@ -59,18 +56,15 @@ class Keyring(KeyringBackend):
             username = ''
         try:
             # set up the call to security.
-            call = subprocess.Popen([
-                    'security',
-                    'find-generic-password',
-                    '-g',
-                    '-a',
-                    username,
-                    '-s',
-                    service
-                ],
-                stderr = subprocess.PIPE,
-                stdout = subprocess.PIPE,
-            )
+            cmd = [
+                'security',
+                'find-generic-password',
+                '-g',
+                '-a', username,
+                '-s', service,
+            ]
+            call = subprocess.Popen(cmd, stderr=subprocess.PIPE,
+                stdout=subprocess.PIPE)
             stdoutdata, stderrdata = call.communicate()
             code = call.returncode
             if code is not 0:
@@ -92,9 +86,8 @@ class Keyring(KeyringBackend):
                     # it's a normal password, send it back.
                     return pw
             # nothing was found, it doesn't exist.
-            return None
         except:
-            return None
+            pass
 
     @staticmethod
     def delete_password(service, username):
@@ -102,18 +95,15 @@ class Keyring(KeyringBackend):
         if username is None:
             username = ''
         try:
+            cmd = [
+                'security',
+                'delete-generic-password',
+                '-a', username,
+                '-s', service,
+            ]
             # set up the call for security.
-            call = subprocess.Popen([
-                    'security',
-                    'delete-generic-password',
-                    '-a',
-                    username,
-                    '-s',
-                    service
-                ],
-                stderr = subprocess.PIPE,
-                stdout = subprocess.PIPE
-            )
+            call = subprocess.Popen(cmd, stderr=subprocess.PIPE,
+                stdout=subprocess.PIPE)
             stdoutdata, stderrdata = call.communicate()
             code = call.returncode
             # check return code.
