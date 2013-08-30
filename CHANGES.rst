@@ -2,6 +2,23 @@
 CHANGES
 =======
 
+---
+2.1
+---
+
+*  Issue #10: Added a 'store' attribute to the OS X Keyring, enabling custom
+   instances of the KeyringBackend to use another store, such as the
+   'internet' store. For example::
+
+       keys = keyring.backends.OS_X.Keyring()
+       keys.store = 'internet'
+       keys.set_password(system, user, password)
+       keys.get_password(system, user)
+
+   The default for all instances can be set in the class::
+
+       keyring.backends.OS_X.Keyring.store = 'internet'
+
 -----
 2.0.3
 -----

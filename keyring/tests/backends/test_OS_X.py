@@ -19,4 +19,6 @@ class OSXKeychainTestCase(BackendBasicTests, unittest.TestCase):
         """Not implemented"""
         super(OSXKeychainTestCase, self).test_delete_present()
 
-
+def test_SecurityCommand():
+    assert OS_X.SecurityCommand('get') == 'get-generic-password'
+    assert OS_X.SecurityCommand('set', 'internet') == 'set-internet-password'

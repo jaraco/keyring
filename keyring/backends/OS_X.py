@@ -8,12 +8,24 @@ from keyring.errors import PasswordSetError
 from keyring.errors import PasswordDeleteError
 from keyring.util import properties
 
+
+class SecurityCommand(unicode):
+    """
+    A string suitable for passing as the 'command' parameter to the
+    OS X 'security' command.
+    """
+    def __new__(cls, cmd, store='generic'):
+        cmd = '%(cmd)s-%(store)s-password' % vars()
+        return super(SecurityCommand, cls).__new__(cls, cmd)
+
+
 class Keyring(KeyringBackend):
     """Mac OS X Keychain"""
 
     # regex for extracting password from security call
     password_regex = re.compile("""password:\s*(?:0x(?P<hex>[0-9A-F]+)\s*)?"""
                                 """(?:"(?P<pw>.*)")?""")
+    store = 'generic'
 
     @properties.ClassProperty
     @classmethod
@@ -33,7 +45,7 @@ class Keyring(KeyringBackend):
             # set up the call for security.
             cmd = [
                 'security',
-                'add-generic-password',
+                SecurityCommand('add', self.store),
                 '-a', username,
                 '-s', service,
                 '-w', password,
@@ -56,7 +68,7 @@ class Keyring(KeyringBackend):
             # set up the call to security.
             cmd = [
                 'security',
-                'find-generic-password',
+                SecurityCommand('find', self.store),
                 '-g',
                 '-a', username,
                 '-s', service,
@@ -94,7 +106,7 @@ class Keyring(KeyringBackend):
         try:
             cmd = [
                 'security',
-                'delete-generic-password',
+                SecurityCommand('delete', self.store),
                 '-a', username,
                 '-s', service,
             ]
