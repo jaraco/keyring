@@ -2,7 +2,7 @@ import os
 
 from keyring.backend import KeyringBackend
 from keyring.errors import PasswordDeleteError
-from keyring.errors import PasswordSetError
+from keyring.errors import PasswordSetError, ExceptionRaisedContext
 from keyring.util import properties
 
 try:
@@ -53,7 +53,9 @@ class Keyring(KeyringBackend):
     @properties.ClassProperty
     @classmethod
     def priority(cls):
-        if 'KWallet' not in globals():
+        with ExceptionRaisedContext() as exc:
+            KWallet.__name__
+        if exc:
             raise RuntimeError("KDE libraries not available")
         if 'KDE_SESSION_ID' not in os.environ:
             return 0

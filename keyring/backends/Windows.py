@@ -1,10 +1,11 @@
 import sys
 import base64
+import platform
 
 import keyring.util.escape
 from keyring.util import properties
 from keyring.backend import KeyringBackend
-from keyring.errors import PasswordDeleteError
+from keyring.errors import PasswordDeleteError, ExceptionRaisedContext
 from . import file
 
 try:
@@ -28,7 +29,24 @@ except ImportError:
     pass
 
 def has_pywin32():
-    return 'win32cred' in globals()
+    """
+    Does this environment have pywin32?
+    Should return False even when Mercurial's Demand Import allowed import of
+    win32cred.
+    """
+    with ExceptionRaisedContext() as exc:
+        win32cred.__name__
+    return not bool(exc)
+
+def has_wincrypto():
+    """
+    Does this environment have wincrypto?
+    Should return False even when Mercurial's Demand Import allowed import of
+    _win_crypto, so accesses an attribute of the module.
+    """
+    with ExceptionRaisedContext() as exc:
+        _win_crypto.__name__
+    return not bool(exc)
 
 class EncryptedKeyring(file.BaseKeyring):
     """
@@ -42,7 +60,7 @@ class EncryptedKeyring(file.BaseKeyring):
         Preferred over file.EncryptedKeyring but not other, more sophisticated
         Windows backends.
         """
-        if not 'winreg' in globals():
+        if not platform.system() == 'Windows':
             raise RuntimeError("Requires Windows")
         return .8
 
@@ -164,9 +182,9 @@ class RegistryKeyring(KeyringBackend):
         """
         Preferred on Windows when pywin32 isn't installed
         """
-        if not 'winreg' in globals():
+        if platform.system() != 'Windows':
             raise RuntimeError("Requires Windows")
-        if not '_win_crypto' in globals():
+        if not has_wincrypto():
             raise RuntimeError("Requires ctypes")
         return 2
 

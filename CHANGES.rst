@@ -3,6 +3,14 @@ CHANGES
 =======
 
 -----
+2.0.3
+-----
+
+*  Issue #112: Backend viability/priority checks now are more aggressive about
+   module presence checking, requesting ``__name__`` from imported modules to
+   force the demand importer to actually attempt the import.
+
+-----
 2.0.2
 -----
 

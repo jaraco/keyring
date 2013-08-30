@@ -19,6 +19,7 @@ import keyring.py25compat
 import keyring.py27compat
 from keyring.backend import KeyringBackend
 from keyring.util import properties
+from keyring.errors import ExceptionRaisedContext
 
 class EnvironCredential(credentials.EnvironCredential):
     """Retrieve credentials from specifically named environment variables
@@ -65,11 +66,17 @@ class DocsKeyring(KeyringBackend):
     @properties.ClassProperty
     @classmethod
     def priority(cls):
-        if 'gdata' not in globals():
+        if not cls._has_gdata():
             raise RuntimeError("Requires gdata")
-        if not hasattr(keyczar, 'keyczar'):
+        if not keyczar.has_keyczar():
             raise RuntimeError("Requires keyczar")
         return 3
+
+    @classmethod
+    def _has_gdata(cls):
+        with ExceptionRaisedContext() as exc:
+            gdata.__name__
+        return not bool(exc)
 
     def get_password(self, service, username):
         """Get password of the username for the service

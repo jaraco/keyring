@@ -1,4 +1,4 @@
-import sys
+import platform
 import subprocess
 import re
 import binascii
@@ -21,7 +21,7 @@ class Keyring(KeyringBackend):
         """
         Preferred for all OS X environments.
         """
-        if not sys.platform == 'darwin':
+        if platform.system() != 'Darwin':
             raise RuntimeError("OS X required")
         return 5
 

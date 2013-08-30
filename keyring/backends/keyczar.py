@@ -9,6 +9,12 @@ except ImportError:
 
 from keyring.py25compat import abc
 from keyring.backend import Crypter
+from keyring import errors
+
+def has_keyczar():
+    with errors.ExceptionRaisedContext() as exc:
+        keyczar.__name__
+    return not bool(exc)
 
 class BaseCrypter(Crypter):
     """Base Keyczar keyset encryption and decryption.

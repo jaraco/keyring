@@ -3,7 +3,8 @@ import logging
 
 from keyring.util import properties
 from keyring.backend import KeyringBackend
-from keyring.errors import InitError, PasswordDeleteError
+from keyring.errors import (InitError, PasswordDeleteError,
+    ExceptionRaisedContext)
 
 try:
     import secretstorage.exceptions
@@ -18,7 +19,9 @@ class Keyring(KeyringBackend):
     @properties.ClassProperty
     @classmethod
     def priority(cls):
-        if not 'secretstorage' in globals():
+        with ExceptionRaisedContext() as exc:
+            secretstorage.__name__
+        if exc:
             raise RuntimeError("SecretService required")
         try:
             bus = secretstorage.dbus_init()
