@@ -19,6 +19,9 @@ CHANGES
 
        keyring.backends.OS_X.Keyring.store = 'internet'
 
+*  GnomeKeyring: fix availability checks, and make sure the warning
+   message from pygobject is not printed.
+
 -----
 2.0.3
 -----

@@ -1,8 +1,9 @@
 import os
 
 try:
-    import gi.repository
-    from gi.repository import GnomeKeyring
+    from gi import Repository
+    if Repository.get_default().enumerate_versions('GnomeKeyring'):
+        from gi.repository import GnomeKeyring
 except ImportError:
     pass
 
@@ -28,8 +29,8 @@ class Keyring(KeyringBackend):
     def priority(cls):
         if 'GnomeKeyring' not in globals():
             raise RuntimeError("GnomeKeyring module required")
-        if not gi.Repository.get_default().enumerate_versions('GnomeKeyring'):
-            raise RuntimeError("No GnomeKeyring repository")
+        if not cls.has_requisite_vars():
+            raise RuntimeError("Requisite environment vars are not present")
         return int(cls.has_requisite_vars())
 
     @classmethod
