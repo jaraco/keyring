@@ -71,6 +71,8 @@ if sys.version_info >= (3, 0):
 # only request pytest_runner when command-line indicates invocation
 pytest_runner = ['pytest-runner'] if 'ptr' in sys.argv else []
 
+hgtools = ['hgtools'] if sys.version_info >= (2,6) else ['hgtools<3dev']
+
 setup_params = dict(
     name = 'keyring',
     version = "2.2",
@@ -97,7 +99,7 @@ setup_params = dict(
     extras_require = {'test': test_requirements},
     tests_require = test_requirements,
     setup_requires = [
-    ] + pytest_runner,
+    ] + pytest_runner + hgtools,
     entry_points = {
         'console_scripts': [
             'keyring=keyring.cli:main',
