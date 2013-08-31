@@ -32,29 +32,29 @@ class GnomeKeyringTestCase(BackendBasicTests, unittest.TestCase):
         return k
 
     def test_supported(self):
-        with ImportBlesser('gnomekeyring'):
+        with ImportBlesser('gi.repository'):
             with Environ(**self.environ()):
-                self.assertEqual(1, self.keyring.supported())
+                self.assertTrue(Gnome.Keyring.viable)
 
     def test_supported_no_module(self):
-        with ImportKiller('gi.repository'):
+        with NoNoneDictMutator(Gnome.__dict__, GnomeKeyring=None):
             with Environ(**self.environ()):
-                self.assertEqual(-1, self.keyring.supported())
+                self.assertFalse(Gnome.Keyring.viable)
 
     def test_supported_no_keyring(self):
         environ = self.environ()
         environ['GNOME_KEYRING_CONTROL'] = None
         with Environ(**environ):
-            self.assertEqual(0, self.keyring.supported())
+            self.assertFalse(Gnome.Keyring.viable)
 
     def test_supported_no_display(self):
         environ = self.environ()
         environ['DISPLAY'] = None
         with Environ(**environ):
-            self.assertEqual(0, self.keyring.supported())
+            self.assertFalse(Gnome.Keyring.viable)
 
     def test_supported_no_session(self):
         environ = self.environ()
         environ['DBUS_SESSION_BUS_ADDRESS'] = None
         with Environ(**environ):
-            self.assertEqual(0, self.keyring.supported())
+            self.assertFalse(Gnome.Keyring.viable)

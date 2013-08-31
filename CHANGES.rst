@@ -22,6 +22,8 @@ CHANGES
 *  GnomeKeyring: fix availability checks, and make sure the warning
    message from pygobject is not printed.
 
+*  Fixes to GnomeKeyring and SecretService tests.
+
 -----
 2.0.3
 -----

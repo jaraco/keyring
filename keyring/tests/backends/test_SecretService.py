@@ -1,5 +1,3 @@
-import sys
-
 from ..py30compat import unittest
 from ..test_backend import BackendBasicTests
 from keyring.backends import SecretService
@@ -11,18 +9,11 @@ class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
     __test__ = True
 
     def init_keyring(self):
-        print >> sys.stderr, ("Testing SecretServiceKeyring; the following "
+        print ("Testing SecretServiceKeyring; the following "
             "password prompts are for this keyring")
         return SecretService.Keyring()
 
 class SecretServiceKeyringUnitTests(unittest.TestCase):
-    def test_supported_no_dbus(self):
-        """
-        SecretService Keyring is not viable if dbus can't be imported.
-        """
-        with util.ImportKiller('dbus'):
-            self.assertFalse(SecretService.Keyring.viable)
-
     def test_supported_no_secretstorage(self):
         """
         SecretService Keyring is not viable if secretstorage can't be imported.
