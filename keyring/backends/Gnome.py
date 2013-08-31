@@ -26,8 +26,8 @@ class Keyring(KeyringBackend):
     @properties.ClassProperty
     @classmethod
     def priority(cls):
-        if 'gnomekeyring' not in globals():
-            raise RuntimeError("gnomekeyring module required")
+        if 'GnomeKeyring' not in globals():
+            raise RuntimeError("GnomeKeyring module required")
         if not gi.Repository.get_default().enumerate_versions('GnomeKeyring'):
             raise RuntimeError("No GnomeKeyring repository")
         return int(cls.has_requisite_vars())
