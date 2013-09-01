@@ -1,12 +1,7 @@
-import os
-import sys
+from __future__ import absolute_import
 
-# While we support Python 2.4, use a convoluted technique to import
-#  platform from the stdlib.
-# With Python 2.5 or later, just do "from __future__ import absolute_import"
-#  and "import platform"
-exec('__import__("platform", globals=dict())')
-platform = sys.modules['platform']
+import os
+import platform
 
 def _data_root_Windows():
 	try:
