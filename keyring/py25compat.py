@@ -13,9 +13,6 @@ except ImportError:
 
 try:
     import abc
-
-    def is_abstract(cls):
-        return bool(cls.__abstractmethods__)
 except ImportError:
     class ABCMeta(type):
         pass
@@ -28,10 +25,6 @@ except ImportError:
 
     # here's a little trick to treat this module as 'abc'
     abc = __import__('sys').modules[__name__]
-
-    def is_abstract(cls):
-        "A hacky workaround"
-        return cls.__name__ in ('KeyringBackend', 'BaseKeyring')
 
 try:
     import io
