@@ -7,6 +7,8 @@ CHANGES
 ---
 
 * Removed support for Python 2.5.
+* Removed names in ``keyring.backend`` moved in 1.1 and previously retained
+  for compatibilty.
 
 -----
 2.1.1

@@ -119,30 +119,3 @@ def get_all_keyring():
     viable_classes = itertools.ifilter(is_class_viable, all_classes)
     return list(keyring.util.suppress_exceptions(viable_classes,
         exceptions=TypeError))
-
-# for backward-compatibility
-from .errors import PasswordSetError, InitError
-from keyring.backends.OS_X import Keyring as OSXKeychain
-from keyring.backends.Gnome import Keyring as GnomeKeyring
-from keyring.backends.SecretService import Keyring as SecretServiceKeyring
-from keyring.backends.kwallet import Keyring as KDEKWallet
-from keyring.backends.file import BaseKeyring as BasicFileKeyring
-from keyring.backends.file import PlaintextKeyring as UncryptedFileKeyring
-from keyring.backends.file import EncryptedKeyring as CryptedFileKeyring
-from keyring.backends.Windows import EncryptedKeyring as Win32CryptoKeyring
-from keyring.backends.Windows import WinVaultKeyring
-from keyring.backends.Windows import RegistryKeyring as Win32CryptoRegistry
-from keyring.backends.Google import DocsKeyring as GoogleDocsKeyring
-from keyring.credentials import Credential
-from keyring.credentials import SimpleCredential as BaseCredential
-from keyring.credentials import EnvironCredential
-from keyring.backends.Google import EnvironCredential as GoogleEnvironCredential
-from keyring.backends.keyczar import BaseCrypter as BaseKeyczarCrypter
-from keyring.backends.keyczar import Crypter as KeyczarCrypter
-from keyring.backends.keyczar import EnvironCrypter as EnvironKeyczarCrypter
-from keyring.backends.Google import KeyczarDocsKeyring as EnvironGoogleDocsKeyring
-from keyring.backends.pyfs import BasicKeyring as BasicPyfilesystemKeyring
-from keyring.backends.pyfs import PlaintextKeyring as UnencryptedPyfilesystemKeyring
-from keyring.backends.pyfs import EncryptedKeyring as EncryptedPyfilesystemKeyring
-from keyring.backends.pyfs import KeyczarKeyring as EnvironEncryptedPyfilesystemKeyring
-from keyring.backends.multi import MultipartKeyringWrapper as MultipartKeyringWrapper
