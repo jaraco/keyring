@@ -25,16 +25,18 @@ def is_winvault_supported():
     )
 
 
-@unittest.skipUnless(is_win32_crypto_supported(),
+need_win_cr = unittest.skipUnless(is_win32_crypto_supported(),
                      "Need Windows")
 class Win32CryptoKeyringTestCase(FileKeyringTests, unittest.TestCase):
 
     def init_keyring(self):
         return keyring.backends.Windows.EncryptedKeyring()
 
+Win32CryptoKeyringTestCase = need_win_cr(Win32CryptoKeyringTestCase)
 
-@unittest.skipUnless(is_winvault_supported(),
+need_winvault = unittest.skipUnless(is_winvault_supported(),
                      "Need WinVault")
+
 class WinVaultKeyringTestCase(BackendBasicTests, unittest.TestCase):
     def tearDown(self):
         # clean up any credentials created
@@ -48,9 +50,11 @@ class WinVaultKeyringTestCase(BackendBasicTests, unittest.TestCase):
     def init_keyring(self):
         return keyring.backends.Windows.WinVaultKeyring()
 
+WinVaultKeyringTestCase = need_winvault(WinVaultKeyringTestCase)
 
-@unittest.skipUnless(keyring.backends.Windows.RegistryKeyring.viable
+need_winreg = unittest.skipUnless(keyring.backends.Windows.RegistryKeyring.viable
     and sys.version_info > (3,), "RegistryKeyring not viable")
+
 class RegistryKeyringTestCase(BackendBasicTests, unittest.TestCase):
     def tearDown(self):
         # clean up any credentials created
@@ -63,3 +67,5 @@ class RegistryKeyringTestCase(BackendBasicTests, unittest.TestCase):
 
     def init_keyring(self):
         return keyring.backends.Windows.RegistryKeyring()
+
+RegistryKeyringTestCase = need_winreg(RegistryKeyringTestCase)

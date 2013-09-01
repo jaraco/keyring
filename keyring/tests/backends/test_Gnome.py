@@ -16,7 +16,8 @@ def ImportBlesser(*names, **changes):
     return NoNoneDictMutator(sys.modules, **changes)
 
 
-@unittest.skipUnless(Gnome.Keyring.viable, "Need GnomeKeyring")
+need_gnome = unittest.skipUnless(Gnome.Keyring.viable, "Need GnomeKeyring")
+
 class GnomeKeyringTestCase(BackendBasicTests, unittest.TestCase):
 
     def environ(self):
@@ -60,3 +61,5 @@ class GnomeKeyringTestCase(BackendBasicTests, unittest.TestCase):
         environ['DBUS_SESSION_BUS_ADDRESS'] = None
         with Environ(**environ):
             self.assertFalse(Gnome.Keyring.viable)
+
+GnomeKeyringTestCase = need_gnome(GnomeKeyringTestCase)
