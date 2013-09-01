@@ -6,7 +6,7 @@ from __future__ import with_statement, absolute_import
 
 import itertools
 
-from keyring.py25compat import abc
+from keyring.py25compat import abc, is_abstract
 from keyring import errors
 from keyring.util import properties
 
@@ -22,7 +22,7 @@ class KeyringBackendMeta(abc.ABCMeta):
         if not hasattr(cls, '_classes'):
             cls._classes = set()
         classes = cls._classes
-        if not cls.__abstractmethods__:
+        if not is_abstract(cls):
             classes.add(cls)
 
 
@@ -33,6 +33,8 @@ class KeyringBackend(object):
     __metaclass__ = KeyringBackendMeta
 
     #@abc.abstractproperty
+    @properties.ClassProperty
+    @classmethod
     def priority(cls):
         """
         Each backend class must supply a priority, a number (float or integer)
