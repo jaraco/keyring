@@ -2,6 +2,8 @@
 Keyring implementation support
 """
 
+from __future__ import with_statement
+
 import itertools
 
 from keyring.py25compat import abc

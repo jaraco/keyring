@@ -1,3 +1,5 @@
+from __future__ import with_statement, absolute_import
+
 from ..py30compat import unittest
 from ..test_backend import BackendBasicTests
 from keyring.backends import SecretService
@@ -9,7 +11,7 @@ class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
     __test__ = True
 
     def init_keyring(self):
-        print ("Testing SecretServiceKeyring; the following "
+        print("Testing SecretServiceKeyring; the following "
             "password prompts are for this keyring")
         return SecretService.Keyring()
 
