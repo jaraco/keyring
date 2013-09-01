@@ -8,9 +8,8 @@ from .. import mocks
 def is_keyczar_supported():
     return hasattr(keyczar, 'keyczar')
 
-need_keyczar = unittest.skipUnless(is_keyczar_supported(),
+@unittest.skipUnless(is_keyczar_supported(),
                      "Need Keyczar")
-
 class KeyczarCrypterTestCase(unittest.TestCase):
 
     """Test the keyczar crypter"""
@@ -82,5 +81,3 @@ class KeyczarCrypterTestCase(unittest.TestCase):
             # expected
             pass
         self.assertIsNone(kz_crypter.encrypting_keyset_location)
-
-KeyczarCrypterTestCase = need_keyczar(KeyczarCrypterTestCase)

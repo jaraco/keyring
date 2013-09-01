@@ -5,9 +5,8 @@ from ..test_backend import BackendBasicTests
 from keyring.backends import SecretService
 from .. import util
 
-need_ss = unittest.skipUnless(SecretService.Keyring.viable,
+@unittest.skipUnless(SecretService.Keyring.viable,
     "SecretStorage package is needed for SecretServiceKeyring")
-
 class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
     __test__ = True
 
@@ -15,8 +14,6 @@ class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
         print("Testing SecretServiceKeyring; the following "
             "password prompts are for this keyring")
         return SecretService.Keyring()
-
-SecretServiceKeyringTestCase = need_ss(SecretServiceKeyringTestCase)
 
 class SecretServiceKeyringUnitTests(unittest.TestCase):
     def test_supported_no_secretstorage(self):

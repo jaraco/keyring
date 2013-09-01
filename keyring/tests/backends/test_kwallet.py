@@ -10,14 +10,12 @@ def is_qt4_supported():
         return False
     return True
 
-need_kwallet = unittest.skipUnless(kwallet.Keyring.viable, "Need KWallet")
-
+@unittest.skipUnless(kwallet.Keyring.viable, "Need KWallet")
 class KDEKWalletTestCase(BackendBasicTests, unittest.TestCase):
 
     def init_keyring(self):
         return kwallet.Keyring()
 
-KDEWalletCanceledTestCase = need_kwallet(KDEKWalletTestCase)
 
 class UnOpenableKWallet(object):
     """A module-like object used to test KDE wallet fall-back."""
@@ -66,10 +64,9 @@ class KDEWalletCanceledTestCase(unittest.TestCase):
             None)
 
 
-need_kw_and_qt4 = unittest.skipUnless(kwallet.Keyring.viable and
+@unittest.skipUnless(kwallet.Keyring.viable and
                      is_qt4_supported(),
                      "Need KWallet and Qt4")
-
 class KDEKWalletInQApplication(unittest.TestCase):
     def test_QApplication(self):
         try:
@@ -84,5 +81,3 @@ class KDEKWalletInQApplication(unittest.TestCase):
                         msg="The object wallet should be type "
                         "<KWallet.Wallet> but it is: %s" % repr(wallet))
         app.exit()
-
-KDEKWalletInQApplication = need_kw_and_qt4(KDEKWalletInQApplication)

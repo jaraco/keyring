@@ -29,9 +29,8 @@ def init_google_docs_keyring(client, can_create=True,
                                              input_getter=input_getter
                                             )
 
-need_gdata = unittest.skipUnless(is_gdata_supported(),
+@unittest.skipUnless(is_gdata_supported(),
                      "Need Google Docs (gdata)")
-
 class GoogleDocsKeyringTestCase(BackendBasicTests, unittest.TestCase):
     """Run all the standard tests on a new keyring"""
 
@@ -40,8 +39,8 @@ class GoogleDocsKeyringTestCase(BackendBasicTests, unittest.TestCase):
         client.SetClientLoginToken('foo')
         return init_google_docs_keyring(client)
 
-GoogleDocsKeyringTestCase = need_gdata(GoogleDocsKeyringTestCase)
-
+@unittest.skipUnless(is_gdata_supported(),
+                     "Need Google Docs (gdata)")
 class GoogleDocsKeyringInteractionTestCase(unittest.TestCase):
     """Additional tests for Google Doc interactions"""
 
@@ -370,5 +369,3 @@ class GoogleDocsKeyringInteractionTestCase(unittest.TestCase):
         self.assertEqual(self.keyring.get_password('service-a', 'user-A'),
                          'password-A',
                          'Correct password should be set')
-
-GoogleDocsKeyringInteractionTestCase = need_gdata(GoogleDocsKeyringInteractionTestCase)

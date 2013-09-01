@@ -15,9 +15,8 @@ def is_crypto_supported():
     return True
 
 
-need_crypto = unittest.skipUnless(is_crypto_supported(),
+@unittest.skipUnless(is_crypto_supported(),
                      "Need Crypto module")
-
 class CryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
 
     def setUp(self):
@@ -31,5 +30,3 @@ class CryptedFileKeyringTestCase(FileKeyringTests, unittest.TestCase):
 
     def init_keyring(self):
         return file.EncryptedKeyring()
-
-CryptedFileKeyringTestCase = need_crypto(CryptedFileKeyringTestCase)

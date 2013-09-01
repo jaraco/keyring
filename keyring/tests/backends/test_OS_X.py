@@ -7,7 +7,7 @@ from keyring.backends import OS_X
 def is_osx_keychain_supported():
     return sys.platform in ('mac','darwin')
 
-need_osx = unittest.skipUnless(is_osx_keychain_supported(),
+@unittest.skipUnless(is_osx_keychain_supported(),
                      "Need OS X")
 class OSXKeychainTestCase(BackendBasicTests, unittest.TestCase):
 
@@ -18,8 +18,6 @@ class OSXKeychainTestCase(BackendBasicTests, unittest.TestCase):
     def test_delete_present(self):
         """Not implemented"""
         super(OSXKeychainTestCase, self).test_delete_present()
-
-OSXKeychainTestCase = need_osx(OSXKeychainTestCase)
 
 def test_SecurityCommand():
     assert OS_X.SecurityCommand('get') == 'get-generic-password'
