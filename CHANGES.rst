@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+-----
+2.1.1
+-----
+
+* Restored Python 2.5 compatibility (lost in 2.0).
+
 ---
 2.1
 ---
