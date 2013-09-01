@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+---
+3.0
+---
+
+* Removed support for Python 2.5.
+
 -----
 2.1.1
 -----

@@ -1,13 +1,13 @@
 from __future__ import absolute_import
 
 import os
+import abc
 
 try:
     from keyczar import keyczar
 except ImportError:
     pass
 
-from keyring.py25compat import abc
 from keyring.backend import Crypter
 from keyring import errors
 

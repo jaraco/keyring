@@ -6,6 +6,7 @@ import copy
 import codecs
 import cPickle
 import base64
+import io
 
 try:
     import gdata.docs.service
@@ -15,7 +16,6 @@ except ImportError:
 from . import keyczar
 from keyring import errors
 from keyring import credentials
-import keyring.py25compat
 import keyring.py27compat
 from keyring.backend import KeyringBackend
 from keyring.util import properties
@@ -263,7 +263,7 @@ class DocsKeyring(KeyringBackend):
                     folder_entry = docs.entry[0]
                 else:
                     folder_entry = self.client.CreateFolder(self.collection)
-                file_handle = keyring.py25compat.BytesIO(file_contents)
+                file_handle = io.BytesIO(file_contents)
                 media_source = gdata.MediaSource(
                     file_handle=file_handle,
                     content_type='text/plain',

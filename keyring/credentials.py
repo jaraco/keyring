@@ -1,6 +1,5 @@
 import os
-
-from keyring.py25compat import abc
+import abc
 
 class Credential(object):
     """Abstract class to manage credentials

@@ -4,9 +4,9 @@ Keyring implementation support
 
 from __future__ import absolute_import
 
+import abc
 import itertools
 
-from keyring.py25compat import abc
 from keyring import errors
 from keyring.util import properties
 

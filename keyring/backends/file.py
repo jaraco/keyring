@@ -4,9 +4,9 @@ import os
 import getpass
 import base64
 import sys
+import json
+import abc
 
-from ..py25compat import json
-from ..py25compat import abc
 from ..py27compat import configparser
 
 import keyring.util.platform
