@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+-----
+3.0.1
+-----
+
+* Ensure that modules are actually imported even in Mercurial's Demand Import
+  environment.
+
 ---
 3.0
 ---
