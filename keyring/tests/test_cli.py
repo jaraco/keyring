@@ -107,11 +107,11 @@ class CommandLineTestCase(unittest.TestCase):
     def test_load_builtin_backend(self):
         self.assertEqual(1, self.cli.run([
             "get",
-            "-b", "keyring.backend.UncryptedFileKeyring",
+            "-b", "keyring.backends.file.PlaintextKeyring",
             "foo", "bar"]))
         backend = keyring.get_keyring()
         self.assertTrue(isinstance(backend,
-                                   keyring.backend.UncryptedFileKeyring))
+                                   keyring.backends.file.PlaintextKeyring))
 
     def test_load_specific_backend_with_path(self):
         keyring_path = os.path.join(os.path.dirname(keyring.__file__), 'tests')
