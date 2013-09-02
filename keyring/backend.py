@@ -108,6 +108,11 @@ def get_all_keyring():
     Return a list of all implemented keyrings that can be constructed without
     parameters.
     """
+    # ensure that all keyring backends are loaded
+    for mod_name in ('file', 'Gnome', 'Google', 'keyczar', 'kwallet', 'multi',
+            'OS_X', 'pyfs', 'SecretService', 'Windows'):
+        __import__('keyring.backends.'+mod_name)
+
     def is_class_viable(keyring_cls):
         try:
             keyring_cls.priority

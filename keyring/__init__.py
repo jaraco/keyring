@@ -11,4 +11,4 @@ logger = logging.getLogger('keyring')
 
 from .core import (set_keyring, get_keyring, set_password, get_password,
                   delete_password)
-from keyring.getpassbackend import get_password as get_pass_get_password
+from .getpassbackend import get_password as get_pass_get_password
