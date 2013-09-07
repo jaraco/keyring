@@ -3,6 +3,19 @@ CHANGES
 =======
 
 -----
+3.0.2
+-----
+
+* Renamed ``keyring.util.platform`` to ``keyring.util.platform_``. As reported
+  in Issue #112 and `mercurial_keyring #31
+  <https://bitbucket.org/Mekk/mercurial_keyring/issue/31>`_ and in `Mercurial
+  itself <http://bz.selenic.com/show_bug.cgi?id=4029>`_, Mercurial's Demand
+  Import does not honor ``absolute_import`` directives, so it's not possible
+  to have a module with the same name as another top-level module. A patch is
+  in place to fix this issue upstream, but to support older Mercurial
+  versions, this patch will remain for some time.
+
+-----
 3.0.1
 -----
 

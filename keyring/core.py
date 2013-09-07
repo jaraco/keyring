@@ -11,7 +11,7 @@ from .py27compat import configparser
 
 from keyring import logger
 from keyring import backend
-from keyring.util import platform
+from keyring.util import platform_ as platform
 
 
 

@@ -3,7 +3,7 @@ import base64
 
 from ..py27compat import configparser
 
-import keyring.util.platform
+import keyring.util.platform_
 from keyring import errors
 from keyring.util.escape import escape as escape_for_ini
 from keyring.util import properties
@@ -38,7 +38,7 @@ class BasicKeyring(KeyringBackend):
         super(BasicKeyring, self).__init__()
         self._crypter = crypter
         self._filename = (filename or
-                          os.path.join(keyring.util.platform.data_root(),
+                          os.path.join(keyring.util.platform_.data_root(),
                                        self.__class__._filename))
         self._can_create = can_create
         self._cache_timeout = cache_timeout
@@ -49,7 +49,7 @@ class BasicKeyring(KeyringBackend):
         The path to the file where passwords are stored. This property
         may be overridden by the subclass or at the instance level.
         """
-        return os.path.join(keyring.util.platform.data_root(), self.filename)
+        return os.path.join(keyring.util.platform_.data_root(), self.filename)
 
     @property
     def filename(self):

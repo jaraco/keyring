@@ -16,7 +16,6 @@ import mock
 
 import keyring.backend
 import keyring.core
-import keyring.util.platform
 from keyring import errors
 
 PASSWORD_TEXT = "This is password"
