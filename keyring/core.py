@@ -4,8 +4,8 @@ core.py
 Created by Kang Zhang on 2009-07-09
 """
 import os
-import imp
 import sys
+import warnings
 
 from .py27compat import configparser
 
@@ -70,47 +70,21 @@ def init_backend():
 
 
 def load_keyring(keyring_path, keyring_name):
-    """Load the specified keyring name from the specified path
-
-    `keyring_path` can be None and it will not interfere with the loading
-    process.
     """
+    Load the specified keyring by name (a fully-qualified name to the
+    keyring, such as 'keyring.backends.file.PlaintextKeyring')
 
-    def load_module(name, path):
-        """Load the specified module from the disk.
-        """
-        path_list = name.split('.')
-        module_info = imp.find_module(path_list[0], path)
-        module_file, pathname, description = module_info
-        module = imp.load_module(path_list[0], module_file,
-                                 pathname, description)
-
-        if module_file:
-            module_file.close()
-
-        if len(path_list) > 1:
-            # for the class name containing dots
-            sub_name = '.'.join(path_list[1:])
-            sub_path = path
-
-            try:
-                sub_path = path + module.__path__
-            except AttributeError:
-                return module
-
-            return load_module(sub_name, sub_path)
-        return module
-
-    try:
-        # avoid import the imported modules
-        module = sys.modules[keyring_name[:keyring_name.rfind('.')]]
-    except KeyError:
-        module = load_module(keyring_name, sys.path + [keyring_path])
-
-    keyring_class = keyring_name.split('.')[-1].strip()
-    keyring_temp = getattr(module, keyring_class)()
-
-    return keyring_temp
+    `keyring_path` is an additional, optional search path and may be None.
+    **deprecated** In the future, keyring_path must be None.
+    """
+    module_name, sep, class_name = keyring_name.rpartition('.')
+    if keyring_path is not None and keyring_path not in sys.path:
+        warnings.warn("keyring_path is deprecated and should always be None",
+            DeprecationWarning)
+        sys.path.insert(0, keyring_path)
+    __import__(module_name)
+    module = sys.modules[module_name]
+    return getattr(module, class_name)()
 
 
 def load_config():
@@ -139,14 +113,7 @@ def load_config():
     if os.path.exists(keyring_cfg):
         config = configparser.RawConfigParser()
         config.read(keyring_cfg)
-        # load the keyring-path option
-        try:
-            if config.has_section("backend"):
-                keyring_path = config.get("backend", "keyring-path").strip()
-            else:
-                keyring_path = None
-        except configparser.NoOptionError:
-            keyring_path = None
+        _load_keyring_path(config)
 
         # load the keyring class name, and then load this keyring
         try:
@@ -155,12 +122,20 @@ def load_config():
             else:
                 raise configparser.NoOptionError('backend', 'default-keyring')
 
-            keyring = load_keyring(keyring_path, keyring_name)
+            keyring = load_keyring(None, keyring_name)
         except (configparser.NoOptionError, ImportError):
             logger.warning("Keyring config file contains incorrect values.\n" +
                            "Config file: %s" % keyring_cfg)
 
     return keyring
+
+def _load_keyring_path(config):
+    "load the keyring-path option (if present)"
+    try:
+        path = config.get("backend", "keyring-path").strip()
+        sys.path.insert(0, path)
+    except (configparser.NoOptionError, configparser.NoSectionError):
+        pass
 
 # init the _keyring_backend
 init_backend()

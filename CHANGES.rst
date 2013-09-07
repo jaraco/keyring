@@ -3,6 +3,18 @@ CHANGES
 =======
 
 -----
+3.0.3
+-----
+
+* Simplified the implementation of ``keyring.core.load_keyring``. It now uses
+  ``__import__`` instead of loading modules explicitly. The ``keyring_path``
+  parameter to ``load_keyring`` is now deprecated. Callers should instead
+  ensure their module is available on ``sys.path`` before calling
+  ``load_keyring``. Keyring still honors ``keyring-path``. This change fixes
+  Issue #113 in which the explicit module loading of keyring modules was
+  breaking package-relative imports.
+
+-----
 3.0.2
 -----
 
