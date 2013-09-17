@@ -105,11 +105,5 @@ setup_params = dict(
 )
 
 
-if sys.version_info >= (3, 0):
-    setup_params.update(
-        use_2to3=True,
-    )
-
-
 if __name__ == '__main__':
     setup_mod.setup(**setup_params)

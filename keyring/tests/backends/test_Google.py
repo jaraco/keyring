@@ -1,14 +1,13 @@
 import codecs
 import base64
-import cPickle
 
-import keyring.py27compat
 from ..py30compat import unittest
 from ..test_backend import BackendBasicTests
 from keyring.backends import Google
 from keyring.credentials import SimpleCredential
 from keyring.backend import NullCrypter
 from keyring import errors
+from keyring.py27compat import input, pickle
 from .. import mocks
 
 def is_gdata_supported():
@@ -19,7 +18,7 @@ def is_gdata_supported():
     return True
 
 def init_google_docs_keyring(client, can_create=True,
-                             input_getter=keyring.py27compat.input):
+                             input_getter=input):
     credentials = SimpleCredential('foo', 'bar')
     return Google.DocsKeyring(credentials,
                                              'test_src',
@@ -61,7 +60,7 @@ class GoogleDocsKeyringInteractionTestCase(unittest.TestCase):
         return listfeed
 
     def _encode_data(self, data):
-        return base64.urlsafe_b64encode(cPickle.dumps(data))
+        return base64.urlsafe_b64encode(pickle.dumps(data))
 
     def test_handles_auth_failure(self):
         import gdata

@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+---
+3.1
+---
+
+* All code now runs natively on both Python 2 and Python 3, no 2to3 conversion
+  is required.
+
 -----
 3.0.3
 -----

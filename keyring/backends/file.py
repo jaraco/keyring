@@ -117,7 +117,7 @@ class BaseKeyring(KeyringBackend):
             # create the file without group/world permissions
             with open(self.file_path, 'w'):
                 pass
-            user_read_write = 0600
+            user_read_write = 0o600
             os.chmod(self.file_path, user_read_write)
 
     def delete_password(self, service, username):
