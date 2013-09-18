@@ -218,7 +218,7 @@ class BasicKeyring(KeyringBackend):
     @properties.ClassProperty
     @classmethod
     def priority(cls):
-        if has_pyfs():
+        if not has_pyfs():
             raise RuntimeError("pyfs required")
         return 2
 

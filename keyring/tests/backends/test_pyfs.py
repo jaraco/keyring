@@ -7,13 +7,6 @@ import keyring.backend
 from keyring.backends import pyfs
 from ..test_backend import BackendBasicTests, random_string
 
-def is_pyfilesystem_supported():
-    try:
-        __import__('fs.opener')
-    except ImportError:
-        return False
-    return True
-
 
 class ReverseCrypter(keyring.backend.Crypter):
     """Very silly crypter class"""
