@@ -3,6 +3,12 @@ CHANGES
 =======
 
 -----
+3.0.5
+-----
+
+* Issue #114: Fix logic in pyfs detection.
+
+-----
 3.0.4
 -----
 
