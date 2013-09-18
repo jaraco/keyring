@@ -17,6 +17,7 @@ The keyring services supported by the Python keyring lib:
 * **KDEKWallet**: supports the KDE's Kwallet service.
 * **GnomeKeyring**: for Gnome 2 environment.
 * **SecretServiceKeyring**: for newer GNOME and KDE environments.
+* **WinVaultKeyring**: supports the Windows Credential Vault
 
 Besides these native password storing services provided by operating systems.
 Python keyring lib also provides following build-in keyrings.
