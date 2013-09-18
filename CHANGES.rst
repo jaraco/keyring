@@ -10,6 +10,12 @@ CHANGES
   is required.
 
 -----
+3.0.4
+-----
+
+* Issue #114: Fix detection of pyfs under Mercurial Demand Import.
+
+-----
 3.0.3
 -----
 
