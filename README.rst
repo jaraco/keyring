@@ -313,17 +313,11 @@ pytest runner will download any unmet dependencies and run the tests using
 
 This technique is the one used by the Travis-CI script.
 
-If you want to run the tests under Python 3, you must be sure that you are
-testing the library after `2to3` got executed. The easiest way to do it would be
-to use::
-
-    python3 setup.py build ptr --addopts "build/lib"
-
 Using virtualenv and pytest/nose/unittest2
 ------------------------------------------
 
 Pytest and Nose are two popular test runners that will discover tests and run
-them. Unittest2 (also known as simply unittest in Python 3) also has a mode
+them. Unittest (unittest2 under Python 2.6) also has a mode
 to discover tests.
 
 First, however, these test runners typically need a test environment in which
