@@ -19,6 +19,16 @@ try:
 except ImportError:
     pass
 
+def has_pyfs():
+    """
+    Does this environment have pyfs installed?
+    Should return False even when Mercurial's Demand Import allowed import of
+    fs.*.
+    """
+    with errors.ExceptionRaisedContext() as exc:
+        fs.__name__
+    return not bool(exc)
+
 class BasicKeyring(KeyringBackend):
     """BasicKeyring is a Pyfilesystem-based implementation of
     keyring.
@@ -208,7 +218,7 @@ class BasicKeyring(KeyringBackend):
     @properties.ClassProperty
     @classmethod
     def priority(cls):
-        if not 'fs' in globals():
+        if has_pyfs():
             raise RuntimeError("pyfs required")
         return 2
 
