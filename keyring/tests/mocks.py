@@ -5,7 +5,6 @@ Various mock objects for testing
 """
 
 import base64
-import codecs
 from keyring.py27compat import pickle, unicode_str
 try:
     from StringIO import StringIO
@@ -98,7 +97,6 @@ class MockDocumentService(MockGDataService):
     def Put(self, data, uri, extra_headers=None, url_params=None, 
             escape_params=True, redirects_remaining=3, media_source=None,
             converter=None):
-        import gdata
         self._put_data = None
         if not hasattr(self, '_put_count'):
             self._put_count = 0

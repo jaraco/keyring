@@ -78,7 +78,7 @@ class BackendBasicTests(object):
         service = random_string(20, DIFFICULT_CHARS)
         self.keyring.set_password(service, username, password)
         self.keyring.delete_password(service, username)
-        self.assertTrue(self.keyring.get_password(service, username) is None)
+        self.assertIsNone(self.keyring.get_password(service, username))
 
     def test_delete_not_present(self):
         username = random_string(20, DIFFICULT_CHARS)

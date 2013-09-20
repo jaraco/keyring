@@ -199,7 +199,6 @@ class DocsKeyring(KeyringBackend):
 
     def _read(self):
         from gdata.docs.service import DocumentQuery
-        import gdata
         title_query = DocumentQuery(categories=[self.collection])
         title_query['title'] = self._get_doc_title()
         title_query['title-exact'] = 'true'

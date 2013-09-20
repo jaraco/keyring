@@ -8,6 +8,7 @@ CHANGES
 
 * All code now runs natively on both Python 2 and Python 3, no 2to3 conversion
   is required.
+* Testsuite: clean up, and make more use of unittest2 methods.
 
 -----
 3.0.5
