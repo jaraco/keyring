@@ -18,6 +18,10 @@ CHANGES
 
 * Add a test for removing one item in group.
 
+* Issue #81: Added experimental support for third-party backends. See
+  :func:`keyring.core._load_library_extensions` for information on supplying
+  a third-party backend.
+
 ---
 3.1
 ---
