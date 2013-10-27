@@ -14,6 +14,8 @@ from keyring import backend
 from keyring.util import platform_ as platform
 
 
+_keyring_backend = None
+
 def set_keyring(keyring):
     """Set current keyring backend.
     """
