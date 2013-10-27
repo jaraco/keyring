@@ -49,6 +49,18 @@ Download the source tarball, and uncompress it, then run the install command::
     $ python setup.py install
 
 
+-------------
+Using Keyring
+-------------
+
+The basic usage of keyring is pretty simple: just call
+:func:`keyring.set_password` and :func:`keyring.get_password`:
+
+    >>> import keyring
+    >>> keyring.set_password("system", "username", "password")
+    >>> keyring.get_password("system", "username")
+    'password'
+
 --------------------------
 Configure your keyring lib
 --------------------------
