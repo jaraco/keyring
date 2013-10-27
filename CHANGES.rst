@@ -6,6 +6,10 @@ CHANGES
 3.2
 ---
 
+* Issue #120: Invoke KeyringBackend.priority during load_keyring to ensure
+  that any keyring loaded is actually viable (or raises an informative
+  exception).
+
 * File keyring:
 
    - Issue #123: fix removing items.

@@ -83,7 +83,10 @@ def load_keyring(keyring_path, keyring_name):
         sys.path.insert(0, keyring_path)
     __import__(module_name)
     module = sys.modules[module_name]
-    return getattr(module, class_name)()
+    class_ = getattr(module, class_name)
+    # invoke the priority to ensure it is viable, or raise a RuntimeError
+    class_.priority
+    return class_()
 
 
 def load_config():
