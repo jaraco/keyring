@@ -86,6 +86,17 @@ class BackendBasicTests(object):
         self.assertRaises(errors.PasswordDeleteError,
             self.keyring.delete_password, service, username)
 
+    def test_delete_one_in_group(self):
+        username1 = random_string(20, DIFFICULT_CHARS)
+        username2 = random_string(20, DIFFICULT_CHARS)
+        password  = random_string(20, DIFFICULT_CHARS)
+        service   = random_string(20, DIFFICULT_CHARS)
+        self.keyring.set_password(service, username1, password)
+        self.keyring.set_password(service, username2, password)
+        self.keyring.delete_password(service, username1)
+        self.assertEqual(self.keyring.get_password(
+           service, username2), password)
+
     def test_unicode_chars(self):
         password = random_string(20, UNICODE_CHARS)
         username = random_string(20, UNICODE_CHARS)
