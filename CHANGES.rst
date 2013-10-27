@@ -3,6 +3,18 @@ CHANGES
 =======
 
 ---
+3.2
+---
+
+* File keyring:
+
+   - Issue #123: fix removing items.
+   - Correctly escape item name when removing.
+   - Use with statement when working with files.
+
+* Add a test for removing one item in group.
+
+---
 3.1
 ---
 
