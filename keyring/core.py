@@ -14,7 +14,6 @@ from keyring import backend
 from keyring.util import platform_ as platform
 
 
-
 def set_keyring(keyring):
     """Set current keyring backend.
     """
@@ -49,24 +48,22 @@ def delete_password(service_name, username):
 
 
 def init_backend():
-    """Load a keyring from a config file or for the default platform.
-
-    First try to load the keyring in the config file, if it has not
-    been declared, assign a default keyring according to the platform.
     """
-    # select a backend according to the config file
-    keyring = load_config()
+    Load a keyring specified in the config file or infer the best available.
+    """
+    set_keyring(load_config() or _get_best_keyring())
 
-    # if the user doesn't specify a keyring, we apply a default one
-    if keyring is None:
 
-        keyrings = backend.get_all_keyring()
-        # rank by priority
-        keyrings.sort(key = lambda x: -x.priority)
-        # get the most recommended one
-        keyring = keyrings[0]
-
-    set_keyring(keyring)
+def _get_best_keyring():
+    """
+    Return the best keyring backend for the given environment based on
+    priority.
+    """
+    keyrings = backend.get_all_keyring()
+    # rank by priority
+    keyrings.sort(key = lambda x: -x.priority)
+    # get the most recommended one
+    return keyrings[0]
 
 
 def load_keyring(keyring_path, keyring_name):
