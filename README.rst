@@ -93,7 +93,7 @@ Beginning with keyring 0.8, the config root is platform specific. To determine
 where in the home directory the config file (and other data files) are stored,
 run the following::
 
-    python -c "import keyring.util.platform; print(keyring.util.platform.data_root())"
+    python -c "import keyring.util.platform_; print(keyring.util.platform_.data_root())"
 
 Config file content
 -------------------
