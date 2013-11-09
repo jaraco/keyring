@@ -2,6 +2,18 @@
 CHANGES
 =======
 
+-----
+3.2.1
+-----
+
+* SecretService backend: use a different function to check that the
+  backend is functional. The default collection may not exist, but
+  the collection will remain usable in that case.
+
+  Also, make the error message more verbose.
+
+  Resolves https://bugs.launchpad.net/bugs/1242412.
+
 ---
 3.2
 ---
