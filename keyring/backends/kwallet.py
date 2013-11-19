@@ -58,7 +58,8 @@ class Keyring(KeyringBackend):
             KWallet.__name__
         if exc:
             raise RuntimeError("KDE libraries not available")
-        if 'KDE_SESSION_ID' not in os.environ:
+        if ('KDE_SESSION_ID' not in os.environ and
+                'KDE_FULL_SESSION' not in os.environ):
             return 0
         return 5
 
