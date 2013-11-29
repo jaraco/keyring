@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+---
+3.3
+---
+
+* Pull request #40: KWallet backend will now honor the ``KDE_FULL_SESSION``
+  environment variable as found on openSUSE.
+
 -----
 3.2.1
 -----
