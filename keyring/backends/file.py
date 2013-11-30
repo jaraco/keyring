@@ -15,15 +15,13 @@ from keyring.backend import KeyringBackend
 from keyring.util import properties
 from keyring.util.escape import escape as escape_for_ini
 
-class BaseKeyring(KeyringBackend):
-    """
-    BaseKeyring is a file-based implementation of keyring.
 
-    This keyring stores the password directly in the file and provides methods
-    which may be overridden by subclasses to support
-    encryption and decryption. The encrypted payload is stored in base64
-    format.
-    """
+class FileBacked(object):
+    @abc.abstractproperty
+    def filename(self):
+        """
+        The filename used to store the passwords.
+        """
 
     @properties.NonDataProperty
     def file_path(self):
@@ -33,11 +31,16 @@ class BaseKeyring(KeyringBackend):
         """
         return os.path.join(keyring.util.platform_.data_root(), self.filename)
 
-    @abc.abstractproperty
-    def filename(self):
-        """
-        The filename used to store the passwords.
-        """
+
+class BaseKeyring(FileBacked, KeyringBackend):
+    """
+    BaseKeyring is a file-based implementation of keyring.
+
+    This keyring stores the password directly in the file and provides methods
+    which may be overridden by subclasses to support
+    encryption and decryption. The encrypted payload is stored in base64
+    format.
+    """
 
     @abc.abstractmethod
     def encrypt(self, password):
@@ -152,12 +155,39 @@ class PlaintextKeyring(BaseKeyring):
         """
         return password_encrypted
 
-class EncryptedKeyring(BaseKeyring):
-    """PyCrypto File Keyring"""
+class Encrypted(object):
+    """
+    PyCrypto-backed Encryption support
+    """
 
-    # a couple constants
     block_size = 32
-    pad_char = '0'
+
+    def _create_cipher(self, password, salt, IV):
+        """
+        Create the cipher object to encrypt or decrypt a payload.
+        """
+        from Crypto.Protocol.KDF import PBKDF2
+        from Crypto.Cipher import AES
+        pw = PBKDF2(password, salt, dkLen=self.block_size)
+        return AES.new(pw[:self.block_size], AES.MODE_CFB, IV)
+
+    def _get_new_password(self):
+        while True:
+            password = getpass.getpass(
+                "Please set a password for your new keyring: ")
+            confirm = getpass.getpass('Please confirm the password: ')
+            if password != confirm:
+                sys.stderr.write("Error: Your passwords didn't match\n")
+                continue
+            if '' == password.strip():
+                # forbid the blank password
+                sys.stderr.write("Error: blank passwords aren't allowed.\n")
+                continue
+            return password
+
+
+class EncryptedKeyring(Encrypted, BaseKeyring):
+    """PyCrypto File Keyring"""
 
     filename = 'crypted_pass.cfg'
     pw_prefix = 'pw:'.encode()
@@ -185,20 +215,6 @@ class EncryptedKeyring(BaseKeyring):
         else:
             self._init_file()
         return self.keyring_key
-
-    def _get_new_password(self):
-        while True:
-            password = getpass.getpass(
-                "Please set a password for your new keyring: ")
-            confirm = getpass.getpass('Please confirm the password: ')
-            if password != confirm:
-                sys.stderr.write("Error: Your passwords didn't match\n")
-                continue
-            if '' == password.strip():
-                # forbid the blank password
-                sys.stderr.write("Error: blank passwords aren't allowed.\n")
-                continue
-            return password
 
     def _init_file(self):
         """
@@ -247,15 +263,6 @@ class EncryptedKeyring(BaseKeyring):
         Remove the keyring key from this instance.
         """
         del self.keyring_key
-
-    def _create_cipher(self, password, salt, IV):
-        """
-        Create the cipher object to encrypt or decrypt a payload.
-        """
-        from Crypto.Protocol.KDF import PBKDF2
-        from Crypto.Cipher import AES
-        pw = PBKDF2(password, salt, dkLen=self.block_size)
-        return AES.new(pw[:self.block_size], AES.MODE_CFB, IV)
 
     def encrypt(self, password):
         from Crypto.Random import get_random_bytes
