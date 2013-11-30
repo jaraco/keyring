@@ -294,3 +294,140 @@ class EncryptedKeyring(Encrypted, BaseKeyring):
         """
         Convert older keyrings to the current format.
         """
+
+
+import contextlib
+import copy
+
+class EncryptedKeyringEx(Encrypted, FileBacked, KeyringBackend):
+    filename = 'crypted keyring.json'
+    iteration_count = 2000
+
+    @properties.ClassProperty
+    @classmethod
+    def priority(self):
+        "Applicable for all platforms, but not recommended."
+        try:
+            __import__('Crypto.Cipher.AES')
+            __import__('Crypto.Protocol.KDF')
+            __import__('Crypto.Random')
+        except ImportError:
+            raise RuntimeError("PyCrypto required")
+        if not json:
+            raise RuntimeError("JSON implementation such as simplejson "
+                "required.")
+        return -1 # disabled
+
+    def get_password(self, service, username):
+        with self.get_entries() as entries:
+            return entries[service][username]
+
+    def set_password(self, service, username, password):
+        with self.get_entries() as entries:
+            service = entries.setdefault(service, {})
+            service[username] = password
+
+    @contextlib.contextmanager
+    def get_entries(self):
+        """
+        Yield the decrypted entries and re-write any changes.
+        """
+        self._unlock()
+        with self.get_data() as data:
+            cipher_info = data['cipher']
+            entries = self._decrypt_json(cipher_info, data.get('entries')) or {}
+            yield entries
+            data['entries'] = self._encrypt_json(entries)
+
+    def _decrypt_json(self, cipher_info, payload):
+        """
+        Decrypt an encrypted payload that's expected to be JSON.
+        """
+        if payload is None:
+            return
+
+        cipher = self._create_cipher(self.master_key,
+            cipher_info['salt'], cipher_info['initialization_vector'])
+
+        cipher_text = base64.decodestring(payload)
+        plain_text = cipher.decrypt(cipher_text)
+        return json.loads(plain_text)
+
+    def _encrypt_json(self, cipher_info, doc):
+        """
+        Encrypt a JSON document as a base64-encoded payload.
+        """
+        cipher = self._create_cipher(self.master_key,
+            cipher_info['salt'], cipher_info['initialization_vector'])
+
+        plain_text = json.dumps(doc)
+        cipher_text = cipher.encrypt(plain_text)
+        return base64.encodestring(cipher_text)
+
+    def _generate_key(self, password):
+        from Crypto.Random import get_random_bytes
+        from Crypto.Cipher import AES
+        salt = get_random_bytes(self.block_size)
+        master_key = self._PBKDF2_SHA256(salt, password, self.iteration_count)
+        verification_value = self._SHA256("V:" + self.master_key)
+        initialization_vector = get_random_bytes(AES.block_size)
+        cipher_info = dict(
+            salt=salt,
+            iteration_count=self.iteration_count,
+            verification_value=verification_value,
+            initialization_vector=initialization_vector,
+        )
+        return master_key, cipher_info
+
+    def _verify_password(self, password, info):
+        master_key = self._PBKDF2_SHA256(info['salt'], password, info['iteration_count'])
+        candidate_verification = self._SHA256("V:" + master_key)
+        if candidate_verification != info['verification_value']:
+            raise Exception("Incorrect Password")
+        return master_key
+
+    def _init_file(self):
+        master_pass = self._get_new_password()
+        self.master_key, cipher_info = self._generate_key(master_pass)
+        with self.get_data() as data:
+            data.update(
+                version=1,
+                cipher=cipher_info,
+            )
+
+    @contextlib.contextmanager
+    def get_data(self):
+        """
+        Open the datafile, yield its decoded contents, and then re-save the
+        contents if the result has changed.
+
+        # TODO: open the file only once with exclusive perms
+        """
+        data = {}
+        if os.path.exists(self.file_path):
+            with open(self.file_path) as f:
+                data = json.load(f)
+        orig_data = copy.deepcopy(data)
+        try:
+            yield data
+        finally:
+            if data != orig_data:
+                with open(self.file_path, 'w') as f:
+                    json.dump(f, data)
+
+    def _unlock(self):
+        """
+        Unlock this keyring by getting the password for the keyring from the
+        user.
+        """
+        master_pass = getpass.getpass(
+            'Please enter password for encrypted keyring: ')
+        with self.get_data() as data:
+            assert data['version'] == 1, "Unsupported version"
+            self.master_key = self._verify_password(master_pass, data['cipher'])
+
+    def _lock(self):
+        """
+        Remove the keyring key from this instance.
+        """
+        del self.master_key
