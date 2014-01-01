@@ -6,7 +6,8 @@ from keyring.errors import (InitError, PasswordDeleteError,
     ExceptionRaisedContext)
 
 try:
-    import secretstorage.exceptions
+    import secretstorage
+    import secretstorage.exceptions as exceptions
 except ImportError:
     pass
 
@@ -21,23 +22,26 @@ class Keyring(KeyringBackend):
         with ExceptionRaisedContext() as exc:
             secretstorage.__name__
         if exc:
-            raise RuntimeError("SecretService required")
+            raise RuntimeError("SecretStorage required")
+        if not hasattr(secretstorage, 'get_default_collection'):
+            raise RuntimeError("SecretStorage 1.0 or newer required")
         try:
             bus = secretstorage.dbus_init()
             list(secretstorage.get_all_collections(bus))
-        except secretstorage.exceptions.SecretServiceNotAvailableException as e:
+        except exceptions.SecretServiceNotAvailableException as e:
             raise RuntimeError(
                 "Unable to initialize SecretService: %s" % e)
         return 5
 
     def get_default_collection(self):
         bus = secretstorage.dbus_init()
-        if hasattr(secretstorage, 'get_default_collection'):
+        try:
             collection = secretstorage.get_default_collection(bus)
-        else:
-            collection = secretstorage.Collection(bus)
+        except exceptions.SecretStorageException as e:
+            raise InitError("Failed to create the collection: %s." % e)
         if collection.is_locked():
-            if collection.unlock():
+            collection.unlock()
+            if collection.is_locked(): # User dismissed the prompt
                 raise InitError("Failed to unlock the collection!")
         return collection
 
