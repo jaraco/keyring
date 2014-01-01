@@ -3,6 +3,16 @@ CHANGES
 =======
 
 ---
+3.4
+---
+
+* Extracted FileBacked and Encrypted base classes.
+* Add a pyinstaller hook to expose backend modules. Ref #124
+* Pull request #41: Use errno module instead of hardcoding error codes.
+* SecretService backend: correctly handle cases when user dismissed
+  the collection creation or unlock prompt.
+
+---
 3.3
 ---
 
