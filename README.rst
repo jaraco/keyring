@@ -11,6 +11,9 @@ What is Python keyring lib?
 The Python keyring lib provides a easy way to access the system keyring service
 from python. It can be used in any application that needs safe password storage.
 
+The keyring library is licensed under both the `MIT license
+<http://opensource.org/licenses/MIT>`_ and the PSF license.
+
 The keyring services supported by the Python keyring lib:
 
 * **OSXKeychain**: supports the Keychain service in Mac OS X.

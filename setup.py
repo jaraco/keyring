@@ -81,7 +81,7 @@ setup_params = dict(
     author_email = "jobo.zh@gmail.com",
     maintainer = 'Jason R. Coombs',
     maintainer_email = 'jaraco@jaraco.com',
-    license = "PSF",
+    license = "PSF and MIT",
     long_description = load('README.rst') + load('CHANGES.rst'),
     classifiers = [
         "Development Status :: 5 - Production/Stable",
@@ -89,6 +89,8 @@ setup_params = dict(
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: Python Software Foundation License",
+        "License :: OSI Approved :: MIT License",
     ],
     platforms = ["Many"],
     packages = ['keyring', 'keyring.tests', 'keyring.util',
