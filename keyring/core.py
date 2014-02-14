@@ -103,7 +103,7 @@ def load_config():
     filename = 'keyringrc.cfg'
 
     local_path = os.path.join(os.getcwd(), filename)
-    config_path = os.path.join(platform.data_root(), filename)
+    config_path = os.path.join(platform.config_root(), filename)
 
     # search from current working directory and the data root
     keyring_cfg_candidates = [local_path, config_path]

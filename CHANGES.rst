@@ -9,6 +9,9 @@ CHANGES
 * Issue #49: Give the backend priorities a 1.5 multiplier bump when an
   XDG_CURRENT_DESKTOP environment variable matches the keyring's target
   environment.
+* Issue #99: Clarified documentation on location of config and data files.
+  Prepared the code base to treat the two differently on Unix-based systems.
+  For now, the behavior is unchanged.
 
 ---
 3.4

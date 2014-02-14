@@ -31,7 +31,8 @@ def _config_root_Linux():
 	location.
 	"""
 	fallback = os.path.expanduser('~/.local/share')
-	root = os.environ.get('XDG_CONFIG_HOME', None) or fallback
+	key = 'XDG_DATA_HOME' # TODO: use XDG_CONFIG_HOME, ref #99.
+	root = os.environ.get(key, None) or fallback
 	return os.path.join(root, 'python_keyring')
 
 # by default, use Unix convention

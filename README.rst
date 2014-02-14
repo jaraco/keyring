@@ -82,21 +82,17 @@ This section is about how to change your option in the config file.
 Config file path
 ----------------
 
-The configuration of the lib is stored in a file named "keyringrc.cfg". The file
-can be stored in either of following two paths.
+The configuration of the lib is stored in a file named "keyringrc.cfg". This
+file must be found in a platform-specific location. To determine
+where the config file is stored, run the following::
 
-1. The working directory of the python
-2. The home directory for current user
+    python -c "import keyring.util.platform_; print(keyring.util.platform_.config_root())"
 
-The lib will first look for the config file in the working directory. If no
-config file exists **or** the config file cannot be written properly, keyring
-will reference the config in the home directory.
-
-Beginning with keyring 0.8, the config root is platform specific. To determine
-where in the home directory the config file (and other data files) are stored,
-run the following::
+Some keyrings also store the keyring data in the file system. To determine
+where the data files are stored, run this command::
 
     python -c "import keyring.util.platform_; print(keyring.util.platform_.data_root())"
+
 
 Config file content
 -------------------
