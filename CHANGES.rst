@@ -3,6 +3,14 @@ CHANGES
 =======
 
 ---
+3.5
+---
+
+* Issue #49: Give the backend priorities a 1.5 multiplier bump when an
+  XDG_CURRENT_DESKTOP environment variable matches the keyring's target
+  environment.
+
+---
 3.4
 ---
 

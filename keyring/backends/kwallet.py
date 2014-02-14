@@ -5,6 +5,7 @@ from keyring.backend import KeyringBackend
 from keyring.errors import PasswordDeleteError
 from keyring.errors import PasswordSetError, ExceptionRaisedContext
 from keyring.util import properties
+from keyring.util import XDG
 
 try:
     from PyKDE4.kdeui import KWallet
@@ -53,6 +54,7 @@ class Keyring(KeyringBackend):
 
     @properties.ClassProperty
     @classmethod
+    @XDG.Preference('KDE')
     def priority(cls):
         with ExceptionRaisedContext() as exc:
             KWallet.__name__
