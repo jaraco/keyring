@@ -7,7 +7,7 @@ def _settings_root_XP():
 	return os.path.join(os.environ['USERPROFILE'], 'Local Settings')
 
 def _settings_root_Vista():
-	return os.environ['LOCALAPPDATA']
+	return os.environ.get('LOCALAPPDATA', os.environ.get('ProgramData', '.'))
 
 def _data_root_Windows():
 	release, version, csd, ptype = platform.win32_ver()
