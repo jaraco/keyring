@@ -3,12 +3,15 @@ from __future__ import absolute_import
 import os
 import platform
 
+def _settings_root_XP():
+	return os.path.join(os.environ['USERPROFILE'], 'Local Settings')
+
+def _settings_root_Vista():
+	return os.environ['LOCALAPPDATA']
+
 def _data_root_Windows():
-	try:
-		root = os.environ['LOCALAPPDATA']
-	except KeyError:
-		# Windows XP
-		root = os.path.join(os.environ['USERPROFILE'], 'Local Settings')
+	release, version, csd, ptype = platform.win32_ver()
+	root = _settings_root_XP() if release == 'XP' else _settings_root_Vista()
 	return os.path.join(root, 'Python Keyring')
 
 def _data_root_Linux():
