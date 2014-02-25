@@ -9,11 +9,10 @@ import abc
 
 from ..py27compat import configparser
 
-import keyring.util.platform_
-from keyring.errors import PasswordDeleteError
-from keyring.backend import KeyringBackend
-from keyring.util import properties
-from keyring.util.escape import escape as escape_for_ini
+from ..errors import PasswordDeleteError
+from ..backend import KeyringBackend
+from ..util import platform_, properties
+from ..util.escape import escape as escape_for_ini
 
 
 class FileBacked(object):
@@ -29,7 +28,7 @@ class FileBacked(object):
         The path to the file where passwords are stored. This property
         may be overridden by the subclass or at the instance level.
         """
-        return os.path.join(keyring.util.platform_.data_root(), self.filename)
+        return os.path.join(platform_.data_root(), self.filename)
 
 
 class BaseKeyring(FileBacked, KeyringBackend):
