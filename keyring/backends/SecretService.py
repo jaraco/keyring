@@ -1,9 +1,9 @@
 import logging
 
-from keyring.util import properties
-from keyring.util import XDG
-from keyring.backend import KeyringBackend
-from keyring.errors import (InitError, PasswordDeleteError,
+from ..util import properties
+from ..util import XDG
+from ..backend import KeyringBackend
+from ..errors import (InitError, PasswordDeleteError,
     ExceptionRaisedContext)
 
 try:

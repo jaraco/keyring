@@ -107,10 +107,8 @@ def get_all_keyring():
     parameters.
     """
     # ensure that all keyring backends are loaded
-    for mod_name in ('file', 'Gnome', 'Google', 'keyczar', 'kwallet', 'multi',
-            'OS_X', 'pyfs', 'SecretService', 'Windows'):
-        # use fromlist to cause the module to resolve under Demand Import
-        __import__('keyring.backends.'+mod_name, fromlist=('__name__',))
+    from .backends import (file, Gnome, Google, keyczar, kwallet, multi, OS_X,
+            pyfs, SecretService, Windows)
 
     def is_class_viable(keyring_cls):
         try:

@@ -1,11 +1,13 @@
+from __future__ import absolute_import
+
 import os
 
-from keyring.py27compat import unicode_str
-from keyring.backend import KeyringBackend
-from keyring.errors import PasswordDeleteError
-from keyring.errors import PasswordSetError, ExceptionRaisedContext
-from keyring.util import properties
-from keyring.util import XDG
+from ..py27compat import unicode_str
+from ..backend import KeyringBackend
+from ..errors import PasswordDeleteError
+from ..errors import PasswordSetError, ExceptionRaisedContext
+from ..util import properties
+from ..util import XDG
 
 try:
     from PyKDE4.kdeui import KWallet
