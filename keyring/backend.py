@@ -6,7 +6,13 @@ from __future__ import absolute_import
 
 import abc
 
+try:
+    import importlib
+except ImportError:
+    pass
+
 from . import errors, util
+from . import backends
 from .util import properties
 from .py27compat import add_metaclass, filter
 
@@ -103,9 +109,14 @@ class NullCrypter(Crypter):
 
 def _load_backend(name):
     "Load a backend by name"
+    if 'importlib' in globals():
+        mod = importlib.import_module('.'+name, backends.__package__)
+    else:
+        # Python 2.6 support
+        exec("from .backends import {name} as mod".format(name=name))
     # invoke __name__ on each module to ensure it's loaded in demand-import
     # environments
-    exec("from .backends import {name}; {name}.__name__".format(name=name))
+    mod.__name__
 
 def _load_backends():
     "ensure that all keyring backends are loaded"
