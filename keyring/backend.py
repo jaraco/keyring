@@ -103,7 +103,9 @@ class NullCrypter(Crypter):
 
 def _load_backend(name):
     "Load a backend by name"
-    exec("from .backends import {name}".format(name=name))
+    # invoke __name__ on each module to ensure it's loaded in demand-import
+    # environments
+    exec("from .backends import {name}; {name}.__name__".format(name=name))
 
 def _load_backends():
     "ensure that all keyring backends are loaded"
