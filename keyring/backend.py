@@ -113,7 +113,10 @@ def _load_backend(name):
         mod = importlib.import_module('.'+name, backends.__package__)
     else:
         # Python 2.6 support
-        exec("from .backends import {name} as mod".format(name=name))
+        ns = {}
+        exec("from .backends import {name} as mod".format(name=name),
+            globals(), ns)
+        mod = ns['mod']
     # invoke __name__ on each module to ensure it's loaded in demand-import
     # environments
     mod.__name__
