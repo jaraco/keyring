@@ -100,15 +100,18 @@ class NullCrypter(Crypter):
     def decrypt(self, value):
         return value
 
+def _load_backends():
+    "ensure that all keyring backends are loaded"
+    from .backends import (file, Gnome, Google, keyczar, kwallet, multi, OS_X,
+        pyfs, SecretService, Windows)
+
 @util.once
 def get_all_keyring():
     """
     Return a list of all implemented keyrings that can be constructed without
     parameters.
     """
-    # ensure that all keyring backends are loaded
-    from .backends import (file, Gnome, Google, keyczar, kwallet, multi, OS_X,
-            pyfs, SecretService, Windows)
+    _load_backends()
 
     def is_class_viable(keyring_cls):
         try:
