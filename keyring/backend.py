@@ -110,7 +110,8 @@ class NullCrypter(Crypter):
 def _load_backend(name):
     "Load a backend by name"
     if 'importlib' in globals():
-        mod = importlib.import_module('.'+name, backends.__package__)
+        package = backends.__package__ or backends.__name__
+        mod = importlib.import_module('.'+name, package)
     else:
         # Python 2.6 support
         ns = {}
