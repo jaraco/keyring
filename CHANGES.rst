@@ -3,6 +3,14 @@ CHANGES
 =======
 
 ---
+3.6
+---
+
+* `Pull Request #1 (github) <https://github.com/jaraco/keyring/pull/1>`_:
+  Add support for packages that wish to bundle keyring by using relative
+  imports throughout.
+
+---
 3.5
 ---
 
