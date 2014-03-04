@@ -10,9 +10,9 @@ import logging
 
 from .py27compat import configparser
 
-from keyring import logger
-from keyring import backend
-from keyring.util import platform_ as platform
+from . import logger
+from . import backend
+from .util import platform_ as platform
 
 log = logging.getLogger(__name__)
 

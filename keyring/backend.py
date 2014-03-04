@@ -6,11 +6,9 @@ from __future__ import absolute_import
 
 import abc
 
-from keyring import errors
-from keyring.util import properties
-from keyring.py27compat import add_metaclass, filter
-
-import keyring.util
+from . import errors, util
+from .util import properties
+from .py27compat import add_metaclass, filter
 
 class KeyringBackendMeta(abc.ABCMeta):
     """
@@ -102,17 +100,15 @@ class NullCrypter(Crypter):
     def decrypt(self, value):
         return value
 
-@keyring.util.once
+@util.once
 def get_all_keyring():
     """
     Return a list of all implemented keyrings that can be constructed without
     parameters.
     """
     # ensure that all keyring backends are loaded
-    for mod_name in ('file', 'Gnome', 'Google', 'keyczar', 'kwallet', 'multi',
-            'OS_X', 'pyfs', 'SecretService', 'Windows'):
-        # use fromlist to cause the module to resolve under Demand Import
-        __import__('keyring.backends.'+mod_name, fromlist=('__name__',))
+    from .backends import (file, Gnome, Google, keyczar, kwallet, multi, OS_X,
+            pyfs, SecretService, Windows)
 
     def is_class_viable(keyring_cls):
         try:
@@ -123,5 +119,5 @@ def get_all_keyring():
 
     all_classes = KeyringBackend._classes
     viable_classes = filter(is_class_viable, all_classes)
-    return list(keyring.util.suppress_exceptions(viable_classes,
+    return list(util.suppress_exceptions(viable_classes,
         exceptions=TypeError))
