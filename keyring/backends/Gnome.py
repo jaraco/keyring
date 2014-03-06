@@ -21,7 +21,6 @@ class Keyring(KeyringBackend):
     KEYRING_NAME = None
 
     requisite_vars = [
-        'GNOME_KEYRING_CONTROL',
         'DISPLAY',
         'DBUS_SESSION_BUS_ADDRESS',
     ]
