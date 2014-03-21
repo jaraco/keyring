@@ -3,6 +3,13 @@ CHANGES
 =======
 
 ---
+3.7
+---
+
+* Gnome keyring no longer relies on the GNOME_KEYRING_CONTROL environment
+  variable.
+
+---
 3.6
 ---
 
