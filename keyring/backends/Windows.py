@@ -126,8 +126,7 @@ class WinVaultKeyring(KeyringBackend):
                 Type=win32cred.CRED_TYPE_GENERIC,
                 TargetName=target,
             )
-        except pywintypes.error:
-            e = sys.exc_info()[1]
+        except pywintypes.error as e:
             if e.winerror == 1168 and e.funcname == 'CredRead': # not found
                 return None
             raise
