@@ -8,7 +8,7 @@ CHANGES
 
 * Gnome keyring no longer relies on the GNOME_KEYRING_CONTROL environment
   variable.
-
+* Issue #140: Restore compatibility for older versions of PyWin32.
 ---
 3.6
 ---

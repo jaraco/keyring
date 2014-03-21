@@ -1,6 +1,7 @@
 import sys
 import base64
 import platform
+import functools
 
 from ..py27compat import unicode_str
 from ..util import escape, properties
@@ -127,6 +128,7 @@ class WinVaultKeyring(KeyringBackend):
                 TargetName=target,
             )
         except pywintypes.error as e:
+            e = OldPywinError.wrap(e)
             if e.winerror == 1168 and e.funcname == 'CredRead': # not found
                 return None
             raise
@@ -230,3 +232,26 @@ class RegistryKeyring(KeyringBackend):
         except WindowsError:
             e = sys.exc_info()[1]
             raise PasswordDeleteError(e)
+
+
+class OldPywinError(object):
+    """
+    A compatibility wrapper for old PyWin32 errors, such as reported in
+    https://bitbucket.org/kang/python-keyring-lib/issue/140/
+    """
+    def __init__(self, orig):
+        self.orig = orig
+
+    @property
+    def funcname(self):
+        return self.orig[1]
+
+    @property
+    def winerror(self):
+        return self.orig[0]
+
+    @classmethod
+    def wrap(cls, orig_err):
+        attr_check = functools.partial(hasattr, orig_err)
+        is_old = not all(map(attr_check, ['funcname', 'winerror']))
+        return cls(orig_err) if is_old else orig_err
