@@ -43,7 +43,7 @@ test_requirements = [
     'pytest',
     'gdata',
     'python-keyczar',
-    'fs',
+    'fs==0.4.0',
     'mock',
     'pycrypto',
 ]
@@ -58,7 +58,7 @@ if sys.version_info < (2, 7) or (
 if sys.version_info >= (3, 0):
     # the fs lib doesn't currently install on Python 3. Omit it for now.
     # See http://code.google.com/p/pyfilesystem/issues/detail?id=135
-    test_requirements.remove('fs')
+    test_requirements.remove('fs==0.4.0')
 
     # gdata doesn't currently install on Python 3. Omit it also.
     # http://code.google.com/p/gdata-python-client/issues/detail?id=229
