@@ -1,3 +1,4 @@
+import os
 import sys
 import base64
 import platform
@@ -229,9 +230,31 @@ class RegistryKeyring(KeyringBackend):
             hkey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_name, 0,
                 winreg.KEY_ALL_ACCESS)
             winreg.DeleteValue(hkey, username)
+            winreg.CloseKey(hkey)
         except WindowsError:
             e = sys.exc_info()[1]
             raise PasswordDeleteError(e)
+        self._delete_key_if_empty(service)
+
+    def _delete_key_if_empty(self, service):
+        key_name = r'Software\%s\Keyring' % service
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_name, 0,
+            winreg.KEY_ALL_ACCESS)
+        try:
+            winreg.EnumValue(key, 0)
+            return
+        except WindowsError:
+            pass
+        winreg.CloseKey(key)
+
+        # it's empty; delete everything
+        while key_name != 'Software':
+            parent, sep, base = key_name.rpartition('\\')
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, parent, 0,
+                winreg.KEY_ALL_ACCESS)
+            winreg.DeleteKey(key, base)
+            winreg.CloseKey(key)
+            key_name = parent
 
 
 class OldPywinError(object):
