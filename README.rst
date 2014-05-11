@@ -14,20 +14,15 @@ from python. It can be used in any application that needs safe password storage.
 The keyring library is licensed under both the `MIT license
 <http://opensource.org/licenses/MIT>`_ and the PSF license.
 
-The keyring services supported by the Python keyring lib:
+These primary keyring services are supported by the Python keyring lib:
 
-* **OSXKeychain**: supports the Keychain service in Mac OS X.
-* **KDEKWallet**: supports the KDE's Kwallet service.
-* **GnomeKeyring**: for Gnome 2 environment.
-* **SecretServiceKeyring**: for newer GNOME and KDE environments.
-* **WinVaultKeyring**: supports the Windows Credential Vault
+* Mac OS X Keychain
+* Linux Secret Service
+* Windows Credential Vault
 
-Besides these native password storing services provided by operating systems.
-Python keyring lib also provides following build-in keyrings.
-
-* **Win32CryptoKeyring**: for Windows 2k+.
-* **CryptedFileKeyring**: a command line interface keyring base on PyCrypto.
-* **UncryptedFileKeyring**: a keyring which leaves passwords directly in file.
+Other keyring implementations are provided as well. For more detail, `browse
+the source
+<https://bitbucket.org/kang/python-keyring-lib/src/default/keyring/backends/>`_.
 
 -------------------------
 Installation Instructions
@@ -64,9 +59,8 @@ and `keyring.get_password`:
 Configure your keyring lib
 --------------------------
 
-The python keyring lib contains implementations for several backends,
-including **OS X Keychain**, **Windows Credential Vault**, **Gnome Keyring**,
-**KDE Kwallet** and more. The lib will
+The python keyring lib contains implementations for several backends. The
+library will
 automatically choose the keyring that is most suitable for your current
 environment. You can also specify the keyring you like to be used in the
 config file or by calling the ``set_keyring()`` function.
