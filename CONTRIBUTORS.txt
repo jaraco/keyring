@@ -3,7 +3,7 @@ Contributors
 ------------
 
 * Kang Zhang
-* Tarek Ziade
+* Tarek Ziadé
 * Marcin Kasperski
 * Steve Borho
 * Michael Gruenewald
