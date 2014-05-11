@@ -102,6 +102,10 @@ def load_config():
 
     filename = 'keyringrc.cfg'
 
+    if os.path.exists(filename):
+        warnings.warn("Loading config from the current directory "
+            "(./keyringrc.cfg). This behavior is deprecated and will be "
+            "removed in a future version.")
     local_path = os.path.join(os.getcwd(), filename)
     config_path = os.path.join(platform.config_root(), filename)
 

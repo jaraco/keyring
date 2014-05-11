@@ -3,6 +3,13 @@ CHANGES
 =======
 
 ---
+3.8
+---
+
+* Issue #22: Deprecated loading of config from current directory. Support for
+  loading the config in this manner will be removed in a future version.
+
+---
 3.7
 ---
 
