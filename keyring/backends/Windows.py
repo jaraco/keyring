@@ -10,10 +10,18 @@ from ..errors import PasswordDeleteError, ExceptionRaisedContext
 from . import file
 
 try:
-    import pywintypes
-    import win32cred
+    # prefer pywin32-ctypes
+    from win32ctypes import pywintypes
+    from win32ctypes import win32cred
+    # force demand import to raise ImportError
+    win32cred.__name__
 except ImportError:
-    pass
+    # fallback to pywin32
+    try:
+        import pywintypes
+        import win32cred
+    except ImportError:
+        pass
 
 try:
     import winreg

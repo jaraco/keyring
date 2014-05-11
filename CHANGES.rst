@@ -8,6 +8,8 @@ CHANGES
 
 * Issue #22: Deprecated loading of config from current directory. Support for
   loading the config in this manner will be removed in a future version.
+* Issue #131: Keyring now will prefer ``pywin32-ctypes
+  <https://pypi.python.org/pypi/pywin32-ctypes>``_ to pywin32 if available.
 
 ---
 3.7
