@@ -5,7 +5,6 @@ Created by Kang Zhang on 2009-07-09
 """
 import os
 import sys
-import warnings
 import logging
 
 from .py27compat import configparser
