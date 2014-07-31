@@ -43,7 +43,7 @@ test_requirements = [
     'pytest',
     'gdata',
     'python-keyczar',
-    'fs==0.4.0',
+    'fs==0.4.1',
     'mock',
     'pycrypto',
 ]
@@ -52,13 +52,13 @@ test_requirements = [
 if sys.version_info < (2, 7) or (
         sys.version_info >= (3, 0) and sys.version_info < (3, 1)):
     # Require unittest2 for Python which doesn't contain the new unittest
-    # module (appears in Python 2.7 and Python 4.0)
+    # module (appears in Python 2.7 and Python 4.1)
     test_requirements.append('unittest2')
 
 if sys.version_info >= (3, 0):
     # the fs lib doesn't currently install on Python 3. Omit it for now.
     # See http://code.google.com/p/pyfilesystem/issues/detail?id=135
-    test_requirements.remove('fs==0.4.0')
+    test_requirements.remove('fs==0.4.1')
 
     # gdata doesn't currently install on Python 3. Omit it also.
     # http://code.google.com/p/gdata-python-client/issues/detail?id=229
@@ -73,7 +73,7 @@ pytest_runner = ['pytest-runner'] if 'ptr' in sys.argv else []
 
 setup_params = dict(
     name = 'keyring',
-    version = "4.0",
+    version = "4.1",
     description = "Store and access your passwords safely.",
     url = "http://bitbucket.org/kang/python-keyring-lib",
     keywords = "keyring Keychain GnomeKeyring Kwallet password storage",
