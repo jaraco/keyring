@@ -115,16 +115,16 @@ class TestCore:
 
     def test_load_config_empty(self, config_filename):
         "A non-existent or empty config should load"
-        keyring.core.load_config()
+        assert keyring.core.load_config() is None
 
     def test_load_config_degenerate(self, config_filename):
         "load_config should succeed in the absence of a backend section"
         with open(config_filename, 'w') as config_file:
             config_file.write('[keyring]')
-        keyring.core.load_config()
+        assert keyring.core.load_config() is None
 
     def test_load_config_blank_backend(self, config_filename):
         "load_config should succeed with an empty [backend] section"
         with open(config_filename, 'w') as config_file:
             config_file.write('[backend]')
-        keyring.core.load_config()
+        assert keyring.core.load_config() is None
