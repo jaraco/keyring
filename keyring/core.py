@@ -88,30 +88,29 @@ def load_keyring(keyring_name):
 def load_config():
     """Load a keyring using the config file in the config root."""
 
-    keyring = None
-
     filename = 'keyringrc.cfg'
 
     keyring_cfg = os.path.join(platform.config_root(), filename)
 
-    if os.path.exists(keyring_cfg):
-        config = configparser.RawConfigParser()
-        config.read(keyring_cfg)
-        _load_keyring_path(config)
+    if not os.path.exists(keyring_cfg):
+        return
 
-        # load the keyring class name, and then load this keyring
-        try:
-            if config.has_section("backend"):
-                keyring_name = config.get("backend", "default-keyring").strip()
-            else:
-                raise configparser.NoOptionError('backend', 'default-keyring')
+    config = configparser.RawConfigParser()
+    config.read(keyring_cfg)
+    _load_keyring_path(config)
 
-            keyring = load_keyring(keyring_name)
-        except (configparser.NoOptionError, ImportError):
-            logger.warning("Keyring config file contains incorrect values.\n" +
-                           "Config file: %s" % keyring_cfg)
+    # load the keyring class name, and then load this keyring
+    try:
+        if config.has_section("backend"):
+            keyring_name = config.get("backend", "default-keyring").strip()
+        else:
+            raise configparser.NoOptionError('backend', 'default-keyring')
 
-    return keyring
+    except (configparser.NoOptionError, ImportError):
+        logger.warning("Keyring config file contains incorrect values.\n" +
+                       "Config file: %s" % keyring_cfg)
+
+    return load_keyring(keyring_name)
 
 def _load_keyring_path(config):
     "load the keyring-path option (if present)"
