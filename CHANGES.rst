@@ -3,6 +3,13 @@ CHANGES
 =======
 
 ---
+4.0
+---
+
+* Removed ``keyring_path`` parameter from ``load_keyring``. See release notes
+  for 3.0.3 for more details.
+
+---
 3.8
 ---
 

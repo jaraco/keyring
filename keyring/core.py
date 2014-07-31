@@ -71,19 +71,12 @@ def _get_best_keyring():
     return keyrings[0]
 
 
-def load_keyring(keyring_path, keyring_name):
+def load_keyring(keyring_name):
     """
     Load the specified keyring by name (a fully-qualified name to the
     keyring, such as 'keyring.backends.file.PlaintextKeyring')
-
-    `keyring_path` is an additional, optional search path and may be None.
-    **deprecated** In the future, keyring_path must be None.
     """
     module_name, sep, class_name = keyring_name.rpartition('.')
-    if keyring_path is not None and keyring_path not in sys.path:
-        warnings.warn("keyring_path is deprecated and should always be None",
-            DeprecationWarning)
-        sys.path.insert(0, keyring_path)
     __import__(module_name)
     module = sys.modules[module_name]
     class_ = getattr(module, class_name)
@@ -131,7 +124,7 @@ def load_config():
             else:
                 raise configparser.NoOptionError('backend', 'default-keyring')
 
-            keyring = load_keyring(None, keyring_name)
+            keyring = load_keyring(keyring_name)
         except (configparser.NoOptionError, ImportError):
             logger.warning("Keyring config file contains incorrect values.\n" +
                            "Config file: %s" % keyring_cfg)
