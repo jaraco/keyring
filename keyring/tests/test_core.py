@@ -11,14 +11,22 @@ import tempfile
 import shutil
 
 import mock
+import pytest
 
 import keyring.backend
 import keyring.core
+import keyring.util.platform_
 from keyring import errors
 
 PASSWORD_TEXT = "This is password"
 PASSWORD_TEXT_2 = "This is password2"
-KEYRINGRC = "keyringrc.cfg"
+
+
+@pytest.yield_fixture()
+def config_filename(tmpdir):
+    filename = tmpdir / 'keyringrc.cfg'
+    with mock.patch('keyring.util.platform_.config_root', lambda: str(tmpdir)):
+        yield str(filename)
 
 
 class TestKeyring(keyring.backend.KeyringBackend):
@@ -85,19 +93,18 @@ class TestCore:
         keyring.core.set_password("test", "user", "password")
         assert keyring.core.get_password("test", "user") == PASSWORD_TEXT
 
-    def test_set_keyring_in_config(self):
+    def test_set_keyring_in_config(self, config_filename):
         """Test setting the keyring by config file.
         """
         # create the config file
-        config_file = open(KEYRINGRC, 'w')
-        config_file.writelines([
-            "[backend]\n",
-            # the path for the user created keyring
-            "keyring-path= %s\n" % os.path.dirname(os.path.abspath(__file__)),
-            # the name of the keyring class
-            "default-keyring=test_core.TestKeyring2\n",
-            ])
-        config_file.close()
+        with open(config_filename, 'w') as config_file:
+            config_file.writelines([
+                "[backend]\n",
+                # the path for the user created keyring
+                "keyring-path= %s\n" % os.path.dirname(os.path.abspath(__file__)),
+                # the name of the keyring class
+                "default-keyring=test_core.TestKeyring2\n",
+                ])
 
         # init the keyring lib, the lib will automaticlly load the
         # config file and load the user defined module
@@ -105,8 +112,6 @@ class TestCore:
 
         keyring.core.set_password("test", "user", "password")
         assert keyring.core.get_password("test", "user") == PASSWORD_TEXT_2
-
-        os.remove(KEYRINGRC)
 
     def test_load_config(self):
         tempdir = tempfile.mkdtemp()
