@@ -113,35 +113,18 @@ class TestCore:
         keyring.core.set_password("test", "user", "password")
         assert keyring.core.get_password("test", "user") == PASSWORD_TEXT_2
 
-    def test_load_config(self):
-        tempdir = tempfile.mkdtemp()
-        old_location = os.getcwd()
-        os.chdir(tempdir)
-        personal_cfg = os.path.join(os.path.expanduser("~"), "keyringrc.cfg")
-        if os.path.exists(personal_cfg):
-            os.rename(personal_cfg, personal_cfg + '.old')
-            personal_renamed = True
-        else:
-            personal_renamed = False
-
-        # loading with an empty environment
+    def test_load_config_empty(self, config_filename):
+        "A non-existent or empty config should load"
         keyring.core.load_config()
 
-        # loading with a file that doesn't have a backend section
-        cfg = os.path.join(tempdir, "keyringrc.cfg")
-        f = open(cfg, 'w')
-        f.write('[keyring]')
-        f.close()
+    def test_load_config_degenerate(self, config_filename):
+        "load_config should succeed in the absence of a backend section"
+        with open(config_filename, 'w') as config_file:
+            config_file.write('[keyring]')
         keyring.core.load_config()
 
-        # loading with a file that doesn't have a default-keyring value
-        cfg = os.path.join(tempdir, "keyringrc.cfg")
-        f = open(cfg, 'w')
-        f.write('[backend]')
-        f.close()
+    def test_load_config_blank_backend(self, config_filename):
+        "load_config should succeed with an empty [backend] section"
+        with open(config_filename, 'w') as config_file:
+            config_file.write('[backend]')
         keyring.core.load_config()
-
-        os.chdir(old_location)
-        shutil.rmtree(tempdir)
-        if personal_renamed:
-            os.rename(personal_cfg + '.old', personal_cfg)
