@@ -10,8 +10,6 @@ import os
 import tempfile
 import shutil
 
-from keyring.tests.py30compat import unittest
-
 import mock
 
 import keyring.backend
@@ -53,7 +51,7 @@ class TestKeyring2(TestKeyring):
         return PASSWORD_TEXT_2
 
 
-class CoreTestCase(unittest.TestCase):
+class TestCore:
     mock_global_backend = mock.patch('keyring.core._keyring_backend')
 
     @mock_global_backend
@@ -72,7 +70,7 @@ class CoreTestCase(unittest.TestCase):
         """
         result = keyring.core.get_password("test", "user")
         backend.get_password.assert_called_once_with('test', 'user')
-        self.assertIsNotNone(result)
+        assert result is not None
 
     @mock_global_backend
     def test_delete_password(self, backend):
@@ -85,8 +83,7 @@ class CoreTestCase(unittest.TestCase):
         keyring.core.set_keyring(TestKeyring())
 
         keyring.core.set_password("test", "user", "password")
-        self.assertEqual(keyring.core.get_password("test", "user"),
-            PASSWORD_TEXT)
+        assert keyring.core.get_password("test", "user") == PASSWORD_TEXT
 
     def test_set_keyring_in_config(self):
         """Test setting the keyring by config file.
@@ -107,8 +104,7 @@ class CoreTestCase(unittest.TestCase):
         keyring.core.init_backend()
 
         keyring.core.set_password("test", "user", "password")
-        self.assertEqual(keyring.core.get_password("test", "user"),
-            PASSWORD_TEXT_2)
+        assert keyring.core.get_password("test", "user") == PASSWORD_TEXT_2
 
         os.remove(KEYRINGRC)
 
@@ -144,12 +140,3 @@ class CoreTestCase(unittest.TestCase):
         shutil.rmtree(tempdir)
         if personal_renamed:
             os.rename(personal_cfg + '.old', personal_cfg)
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(CoreTestCase))
-    return suite
-
-if __name__ == "__main__":
-    unittest.main(defaultTest="test_suite")
