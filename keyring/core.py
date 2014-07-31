@@ -86,31 +86,13 @@ def load_keyring(keyring_name):
 
 
 def load_config():
-    """Load a keyring using the config file.
+    """Load a keyring using the config file in the config root."""
 
-    The config file can be in the current working directory, or in the user's
-    home directory.
-    """
     keyring = None
 
     filename = 'keyringrc.cfg'
 
-    if os.path.exists(filename):
-        warnings.warn("Loading config from the current directory "
-            "(./keyringrc.cfg). This behavior is deprecated and will be "
-            "removed in a future version.")
-    local_path = os.path.join(os.getcwd(), filename)
-    config_path = os.path.join(platform.config_root(), filename)
-
-    # search from current working directory and the data root
-    keyring_cfg_candidates = [local_path, config_path]
-
-    # initialize the keyring_config with the first detected config file
-    keyring_cfg = None
-    for path in keyring_cfg_candidates:
-        keyring_cfg = path
-        if os.path.exists(path):
-            break
+    keyring_cfg = os.path.join(platform.config_root(), filename)
 
     if os.path.exists(keyring_cfg):
         config = configparser.RawConfigParser()

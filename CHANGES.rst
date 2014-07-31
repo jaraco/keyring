@@ -8,6 +8,9 @@ CHANGES
 
 * Removed ``keyring_path`` parameter from ``load_keyring``. See release notes
   for 3.0.3 for more details.
+* Issue #22: Removed support for loading the config from the current
+  directory. The config file must now be located in the platform-specific
+  config location.
 
 ---
 3.8
