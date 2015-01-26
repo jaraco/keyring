@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+-----
+4.1.1
+-----
+
+* The entry point group must look like a module name, so the group is now
+  "keyring.backends".
+
 ---
 4.1
 ---

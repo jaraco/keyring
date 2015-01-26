@@ -159,7 +159,7 @@ def _load_plugins():
     """
     if 'pkg_resources' not in globals():
         return
-    group = 'keyring backends'
+    group = 'keyring.backends'
     entry_points = pkg_resources.iter_entry_points(group=group)
     for ep in entry_points:
         try:
