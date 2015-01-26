@@ -1,5 +1,6 @@
 import os
 import tempfile
+import textwrap
 
 from ..py30compat import unittest
 
@@ -69,11 +70,12 @@ class UnencryptedLocalPyfilesystemKeyringNoSubDirTestCase(
     def test_handles_preexisting_keyring(self):
         from fs.opener import opener
         fs, path = opener.parse(self.keyring_filename, writeable=True)
-        keyring_file = fs.open(path, 'wb')
-        keyring_file.write(
-            """[svc1]
-user1 = cHdkMQ==
-            """)
+        keyring_file = fs.open(path, 'w')
+        file_data = textwrap.dedent("""
+            [svc1]
+            user1 = cHdkMQ==
+            """).lstrip()
+        keyring_file.write(file_data)
         keyring_file.close()
         pyf_keyring = keyring.backends.pyfs.PlaintextKeyring(
             filename=self.keyring_filename)

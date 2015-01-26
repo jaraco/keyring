@@ -70,14 +70,14 @@ class BasicKeyring(KeyringBackend):
         """Encrypt the password.
         """
         if not password or not self._crypter:
-            return password or ''
+            return password or b''
         return self._crypter.encrypt(password)
 
     def decrypt(self, password_encrypted):
         """Decrypt the password.
         """
         if not password_encrypted or not self._crypter:
-            return password_encrypted or ''
+            return password_encrypted or b''
         return self._crypter.decrypt(password_encrypted)
 
     def _open(self, mode='rb'):
