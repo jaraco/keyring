@@ -4,6 +4,8 @@ import textwrap
 
 from ..py30compat import unittest
 
+import pytest
+
 import keyring.backend
 from keyring.backends import pyfs
 from ..test_backend import BackendBasicTests, random_string
@@ -56,6 +58,8 @@ class UnencryptedMemoryPyfilesystemKeyringSubDirTestCase(
         return keyring.backends.pyfs.PlaintextKeyring(
             filename=self.keyring_filename)
 
+
+@pytest.mark.xfail(reason="pyfs 0.5 breaks everything. Ref #156")
 @unittest.skipUnless(pyfs.BasicKeyring.viable, "Need Pyfilesystem")
 class UnencryptedLocalPyfilesystemKeyringNoSubDirTestCase(
         PyfilesystemKeyringTests, unittest.TestCase):
