@@ -3,6 +3,13 @@ CHANGES
 =======
 
 ---
+4.1
+---
+
+* Added preliminary support for loading keyring backends through ``setuptools
+  entry points``, specifically "keyring backends".
+
+---
 4.0
 ---
 
