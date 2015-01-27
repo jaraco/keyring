@@ -6,6 +6,8 @@ CHANGES
 5.0
 ---
 
+* Version numbering is now derived from the code repository tags via `hgtools
+  <https://pypi.python.org/pypi/hgtools>`_.
 * Build and install now requires setuptools.
 
 -----

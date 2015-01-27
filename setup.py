@@ -64,7 +64,7 @@ pytest_runner = ['pytest-runner'] if 'ptr' in sys.argv else []
 
 setup_params = dict(
     name = 'keyring',
-    version = "4.2",
+    use_vcs_version=True,
     description = "Store and access your passwords safely.",
     url = "http://bitbucket.org/kang/python-keyring-lib",
     keywords = "keyring Keychain GnomeKeyring Kwallet password storage",
@@ -89,6 +89,7 @@ setup_params = dict(
     extras_require = {'test': test_requirements},
     tests_require = test_requirements,
     setup_requires = [
+        'hgtools',
     ] + pytest_runner,
     entry_points = {
         'console_scripts': [
