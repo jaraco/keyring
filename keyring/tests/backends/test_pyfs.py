@@ -36,6 +36,10 @@ class PyfilesystemKeyringTests(BackendBasicTests):
 
         self.assertEqual(password, self.keyring.decrypt(encrypted))
 
+
+issue156 = pytest.mark.xfail(reason="pyfs 0.5 breaks everything. Ref #156")
+
+@issue156
 @unittest.skipUnless(pyfs.BasicKeyring.viable, "Need Pyfilesystem")
 class UnencryptedMemoryPyfilesystemKeyringNoSubDirTestCase(
         PyfilesystemKeyringTests, unittest.TestCase):
@@ -47,6 +51,8 @@ class UnencryptedMemoryPyfilesystemKeyringNoSubDirTestCase(
         return keyring.backends.pyfs.PlaintextKeyring(
             filename=self.keyring_filename)
 
+
+@issue156
 @unittest.skipUnless(pyfs.BasicKeyring.viable, "Need Pyfilesystem")
 class UnencryptedMemoryPyfilesystemKeyringSubDirTestCase(
         PyfilesystemKeyringTests, unittest.TestCase):
@@ -59,7 +65,7 @@ class UnencryptedMemoryPyfilesystemKeyringSubDirTestCase(
             filename=self.keyring_filename)
 
 
-@pytest.mark.xfail(reason="pyfs 0.5 breaks everything. Ref #156")
+@issue156
 @unittest.skipUnless(pyfs.BasicKeyring.viable, "Need Pyfilesystem")
 class UnencryptedLocalPyfilesystemKeyringNoSubDirTestCase(
         PyfilesystemKeyringTests, unittest.TestCase):
