@@ -9,13 +9,8 @@ Setup the Keyring Lib for Python.
 import sys
 import codecs
 
-try:
-    import setuptools
-    setup_mod = setuptools
-    "where to find setup()"
-except ImportError:
-    import distutils.core
-    setup_mod = distutils.core
+import setuptools
+
 
 def load(filename):
     """
@@ -104,4 +99,4 @@ setup_params = dict(
 
 
 if __name__ == '__main__':
-    setup_mod.setup(**setup_params)
+    setuptools.setup(**setup_params)

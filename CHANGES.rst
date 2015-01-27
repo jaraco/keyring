@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+---
+5.0
+---
+
+* Build and install now requires setuptools.
+
 -----
 4.1.1
 -----
