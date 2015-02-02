@@ -63,18 +63,18 @@ if sys.version_info >= (3, 0):
 pytest_runner = ['pytest-runner'] if 'ptr' in sys.argv else []
 
 setup_params = dict(
-    name = 'keyring',
+    name='keyring',
     use_vcs_version=dict(increment='1.0'),
-    description = "Store and access your passwords safely.",
-    url = "http://bitbucket.org/kang/python-keyring-lib",
-    keywords = "keyring Keychain GnomeKeyring Kwallet password storage",
-    author = "Kang Zhang",
-    author_email = "jobo.zh@gmail.com",
-    maintainer = 'Jason R. Coombs',
-    maintainer_email = 'jaraco@jaraco.com',
-    license = "PSF and MIT",
-    long_description = load('README.rst') + load('CHANGES.rst'),
-    classifiers = [
+    description="Store and access your passwords safely.",
+    url="http://bitbucket.org/kang/python-keyring-lib",
+    keywords="keyring Keychain GnomeKeyring Kwallet password storage",
+    author="Kang Zhang",
+    author_email="jobo.zh@gmail.com",
+    maintainer='Jason R. Coombs',
+    maintainer_email='jaraco@jaraco.com',
+    license="PSF and MIT",
+    long_description=load('README.rst') + load('CHANGES.rst'),
+    classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 2.6",
@@ -83,15 +83,15 @@ setup_params = dict(
         "License :: OSI Approved :: Python Software Foundation License",
         "License :: OSI Approved :: MIT License",
     ],
-    platforms = ["Many"],
-    packages = ['keyring', 'keyring.tests', 'keyring.util',
+    platforms=["Many"],
+    packages=['keyring', 'keyring.tests', 'keyring.util',
                 'keyring.backends', 'keyring.tests.backends'],
-    extras_require = {'test': test_requirements},
-    tests_require = test_requirements,
-    setup_requires = [
+    extras_require={'test': test_requirements},
+    tests_require=test_requirements,
+    setup_requires=[
         'hgtools',
     ] + pytest_runner,
-    entry_points = {
+    entry_points={
         'console_scripts': [
             'keyring=keyring.cli:main',
         ],
