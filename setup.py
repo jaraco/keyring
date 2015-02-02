@@ -84,8 +84,7 @@ setup_params = dict(
         "License :: OSI Approved :: MIT License",
     ],
     platforms=["Many"],
-    packages=['keyring', 'keyring.tests', 'keyring.util',
-                'keyring.backends', 'keyring.tests.backends'],
+    packages=setuptools.find_packages(),
     extras_require={'test': test_requirements},
     tests_require=test_requirements,
     setup_requires=[
