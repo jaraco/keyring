@@ -180,6 +180,18 @@ contributors.
 * Bug Tracker: http://bitbucket.org/kang/python-keyring-lib/issues/
 * Mailing list: http://groups.google.com/group/python-keyring
 
+Making Releases
+===============
+
+Python keyring lib uses a simple tag and release process. The simplified
+workflow is first tag a release, then invoke ``setup.py release``.
+
+Other things to consider when making a release:
+
+ - first ensure that tests pass (preferably on Windows and Linux)
+ - check that the changelog is current for the intended release
+ - after tagging, but before releasing, push the changes to the repository
+
 Running Tests
 =============
 
