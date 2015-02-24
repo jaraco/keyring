@@ -3,6 +3,12 @@ CHANGES
 =======
 
 ---
+5.1
+---
+
+* Host project at Github (`repo <https://github.com/jaraco/keyring>`_).
+
+---
 5.0
 ---
 

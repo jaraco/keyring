@@ -176,8 +176,8 @@ Get involved
 Python keyring lib is an open community project and highly welcomes new
 contributors.
 
-* Repository: http://bitbucket.org/kang/python-keyring-lib/
-* Bug Tracker: http://bitbucket.org/kang/python-keyring-lib/issues/
+* Repository: https://github.com/jaraco/keyring/
+* Bug Tracker: https://github.com/jaraco/keyring/issues/
 * Mailing list: http://groups.google.com/group/python-keyring
 
 Making Releases
