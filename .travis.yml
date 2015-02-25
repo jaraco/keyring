@@ -11,4 +11,4 @@ python:
   - 3.4
 
 script:
-  - python setup.py ptr --addopts="-rs -v"
+  - python setup.py test --addopts="-rs -v"

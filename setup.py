@@ -60,7 +60,12 @@ if sys.version_info >= (3, 0):
     test_requirements.remove('python-keyczar')
 
 # only request pytest_runner when command-line indicates invocation
-pytest_runner = ['pytest-runner'] if 'ptr' in sys.argv else []
+pytest_cmds = set(['pytest', 'test', 'ptr'])
+pytest_runner = (
+    ['pytest-runner>=2.1']
+    if pytest_cmds.intersection(sys.argv) else
+    []
+)
 
 setup_params = dict(
     name='keyring',
