@@ -3,6 +3,13 @@ CHANGES
 =======
 
 ---
+5.3
+---
+
+* Prefer hgtools to setuptools_scm due to `setuptools_scm #21
+  <https://bitbucket.org/pypa/setuptools_scm/issue/21>`_.
+
+---
 5.2
 ---
 
