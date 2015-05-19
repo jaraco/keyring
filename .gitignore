@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+
+.py[co]
+build/
+bin/
+parts/
+tags
+keyring.egg-info
+develop-eggs
+.installed.cfg
+*.eggs/
+*.egg-info/
+*.egg
+dist/
+.idea
