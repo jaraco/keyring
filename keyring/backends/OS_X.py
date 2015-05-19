@@ -92,6 +92,7 @@ class Keyring(KeyringBackend):
             '-a', username,
             '-s', service,
             '-w', password,
+            '-T', '', #do NOT authorize any application by default (especially not security itself!)
             '-U',
         ]
         call = subprocess.Popen(
