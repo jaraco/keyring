@@ -43,18 +43,18 @@ class Keyring(KeyringBackend):
             username = ''
         set_error = PasswordSetError("Can't store password in keychain")
         try:
-            # set up the call for security.
+            # Use the interactive security prompt, so the password is not in
+            # the ps output
             cmd = [
                 'security',
-                SecurityCommand('add', self.store),
-                '-a', username,
-                '-s', service,
-                '-w', password,
-                '-U',
+                '-i'
             ]
-            call = subprocess.Popen(cmd, stderr=subprocess.PIPE,
-                stdout=subprocess.PIPE)
-            stdoutdata, stderrdata = call.communicate()
+            call = subprocess.Popen(cmd, stdin=subprocess.PIPE,
+                stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+            stdoutdata, stderrdata = call.communicate(
+                '{} -a {} -s {} -p {} -U\n'.format(
+                    SecurityCommand('add', self.store),
+                    username, service, password))
             code = call.returncode
             # check return code.
             if code is not 0:
