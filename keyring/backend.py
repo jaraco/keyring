@@ -147,7 +147,7 @@ def _load_plugins():
     following to their setup.py::
 
         entry_points = {
-            'keyring backends': [
+            'keyring.backends': [
                 'plugin_name = mylib.mymodule:initialize_func',
             ],
         },
