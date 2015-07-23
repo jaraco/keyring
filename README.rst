@@ -22,7 +22,7 @@ These primary keyring services are supported by the Python keyring lib:
 
 Other keyring implementations are provided as well. For more detail, `browse
 the source
-<https://bitbucket.org/kang/python-keyring-lib/src/default/keyring/backends/>`_.
+<https://github.com/jaraco/keyring/tree/master/keyring/backends>`_.
 
 -------------------------
 Installation Instructions
