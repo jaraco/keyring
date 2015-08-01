@@ -1,6 +1,10 @@
 # http://travis-ci.org/#!/jaraco/keyring
 #
 
+os:
+  - linux
+  - osx
+
 language: python
 
 python:
