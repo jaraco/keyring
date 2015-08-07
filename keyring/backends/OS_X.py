@@ -55,7 +55,7 @@ class Keyring(KeyringBackend):
                 'security',
                 '-i'
             ]
-            security_cmd = u"{} -a '{}' -s '{}' -p '{}' -U\n".format(
+            security_cmd = "{} -a '{}' -s '{}' -p '{}' -U\n".format(
                 SecurityCommand('add', self.store),
                 username, service, password)
             call = subprocess.Popen(
