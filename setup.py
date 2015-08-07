@@ -69,7 +69,7 @@ pytest_runner = (
 
 setup_params = dict(
     name='keyring',
-    use_vcs_version=True,
+    use_scm_version=True,
     description="Store and access your passwords safely.",
     url="http://bitbucket.org/kang/python-keyring-lib",
     keywords="keyring Keychain GnomeKeyring Kwallet password storage",
@@ -93,7 +93,7 @@ setup_params = dict(
     extras_require={'test': test_requirements},
     tests_require=test_requirements,
     setup_requires=[
-        'hgtools',
+        'setuptools_scm',
     ] + pytest_runner,
     entry_points={
         'console_scripts': [

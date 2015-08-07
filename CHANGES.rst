@@ -3,6 +3,12 @@ CHANGES
 =======
 
 ---
+5.4
+---
+
+* Prefer setuptools_scm to hgtools.
+
+---
 5.3
 ---
 
