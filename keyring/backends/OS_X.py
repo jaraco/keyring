@@ -43,22 +43,48 @@ class Keyring(KeyringBackend):
             username = ''
         set_error = PasswordSetError("Can't store password in keychain")
         try:
-            # Use the interactive security prompt, so the password is not in
-            # the ps output
+            # XXX - This two-step process is a stop-gap measure until a ctypes
+            #       implementation can be created. We have to fall back to the
+            #       command-line version when the username/service/password
+            #       strings contain characters (escapes, newlines, etc.) that
+            #       the interactive security session can't handle.
+
+            # Try to use the interactive security prompt, so the password is
+            # not in the ps output
             cmd = [
                 'security',
                 '-i'
             ]
-            call = subprocess.Popen(cmd, stdin=subprocess.PIPE,
-                stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+            security_cmd = u"{} -a '{}' -s '{}' -p '{}' -U\n".format(
+                SecurityCommand('add', self.store),
+                username, service, password)
+            call = subprocess.Popen(
+                cmd,
+                stdin=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                stdout=subprocess.PIPE)
             stdoutdata, stderrdata = call.communicate(
-                '{} -a {} -s {} -p {} -U\n'.format(
-                    SecurityCommand('add', self.store),
-                    username, service, password))
+                security_cmd.encode('utf-8'))
             code = call.returncode
             # check return code.
-            if code is not 0:
-                raise set_error
+            if code != 0:
+                # Fall back to calling the security command directly if an
+                # error occurred
+                cmd = [
+                    'security',
+                    SecurityCommand('add', self.store),
+                    '-a', username,
+                    '-s', service,
+                    '-w', password,
+                    '-U',
+                ]
+                call = subprocess.Popen(
+                    cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+                stdoutdata, stderrdata = call.communicate()
+                code = call.returncode
+                # check return code.
+                if code != 0:
+                    raise set_error
         except:
             raise set_error
 
@@ -74,7 +100,9 @@ class Keyring(KeyringBackend):
                 '-a', username,
                 '-s', service,
             ]
-            call = subprocess.Popen(cmd, stderr=subprocess.PIPE,
+            call = subprocess.Popen(
+                cmd,
+                stderr=subprocess.PIPE,
                 stdout=subprocess.PIPE)
             stdoutdata, stderrdata = call.communicate()
             code = call.returncode
@@ -112,7 +140,9 @@ class Keyring(KeyringBackend):
                 '-s', service,
             ]
             # set up the call for security.
-            call = subprocess.Popen(cmd, stderr=subprocess.PIPE,
+            call = subprocess.Popen(
+                cmd,
+                stderr=subprocess.PIPE,
                 stdout=subprocess.PIPE)
             stdoutdata, stderrdata = call.communicate()
             code = call.returncode
