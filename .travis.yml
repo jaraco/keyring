@@ -14,4 +14,5 @@ matrix:
           osx_image: beta-xcode6.3
 
 script:
+  - pip install -U --user pip setuptools
   - python setup.py test --addopts="-rs -v"
