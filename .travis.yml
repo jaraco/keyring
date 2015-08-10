@@ -5,16 +5,10 @@ sudo: required
 
 matrix:
     include:
-        - python: 2.6
-        - python: 2.7
-        - python: 3.2
-        - python: 3.3
-        - python: 3.4
-        - python: pypy
         - language: generic
           os: osx
           osx_image: beta-xcode6.3
 
 script:
-  - sudo pip install -U pip setuptools
+  - curl https://bootstrap.pypa.io/get-pip.py -o - | sudo python
   - python setup.py test --addopts="-rs -v"
