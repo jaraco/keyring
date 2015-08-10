@@ -11,4 +11,5 @@ matrix:
 
 script:
   - curl https://bootstrap.pypa.io/get-pip.py -o - | sudo python
+  - sudo pip install -U setuptools
   - python setup.py test --addopts="-rs -v"
