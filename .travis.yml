@@ -10,6 +10,6 @@ matrix:
           osx_image: beta-xcode6.3
 
 script:
-  - curl https://bootstrap.pypa.io/get-pip.py -o - | sudo python
-  - sudo pip install -U setuptools
-  - python setup.py test --addopts="-rs -v"
+  - sudo easy_install -U virtualenv
+  - virtualenv .env
+  - .env/bin/python setup.py test --addopts="-rs -v"
