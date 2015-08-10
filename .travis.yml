@@ -1,6 +1,8 @@
 # http://travis-ci.org/#!/jaraco/keyring
 #
 
+sudo: required
+
 matrix:
     include:
         - python: 2.6
@@ -14,5 +16,5 @@ matrix:
           osx_image: beta-xcode6.3
 
 script:
-  - pip install -U --user pip setuptools
+  - sudo pip install -U pip setuptools
   - python setup.py test --addopts="-rs -v"
