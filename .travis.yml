@@ -12,4 +12,5 @@ matrix:
 script:
   - sudo easy_install -U virtualenv
   - virtualenv .env
+  - .env/bin/pip install -U six
   - .env/bin/python setup.py test --addopts="-rs -v"
