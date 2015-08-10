@@ -14,5 +14,8 @@ python:
   - 3.3
   - 3.4
 
+install:
+  - echo Skipping install.
+
 script:
   - python setup.py test --addopts="-rs -v"
