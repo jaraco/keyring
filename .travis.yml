@@ -7,15 +7,17 @@ os:
 
 language: python
 
-python:
-  - 2.6
-  - 2.7
-  - 3.2
-  - 3.3
-  - 3.4
-
-install:
-  - echo Skipping install.
+matrix:
+    include:
+        - python: 2.6 # these are just to make travis's UI a bit prettier
+        - python: 2.7
+        - python: 3.2
+        - python: 3.3
+        - python: 3.4
+        - python: pypy
+        - language: generic
+          os: osx
+          osx_image: beta-xcode6.3
 
 script:
   - python setup.py test --addopts="-rs -v"
