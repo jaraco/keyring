@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import os
+import sys
 
 from ..py27compat import unicode_str
 from ..backend import KeyringBackend
@@ -9,11 +10,20 @@ from ..errors import PasswordSetError, ExceptionRaisedContext
 from ..util import properties
 from ..util import XDG
 
-try:
-    from PyKDE4.kdeui import KWallet
-    from PyQt4 import QtGui
-except ImportError:
-    pass
+# Testing for Qt5 environment assumes PyQt5 is imported before keyring
+# Relying on import order like this is not good
+if 'PyQt5' in sys.modules:
+    # can't mix Qt4 and Qt5 - KDE4 uses Qt4
+    try:
+        from PyQt5 import QtWidgets as QtGui
+    except ImportError:
+        pass
+else:
+    try:
+        from PyKDE4.kdeui import KWallet
+        from PyQt4 import QtGui
+    except ImportError:
+        pass
 
 kwallet = None
 
