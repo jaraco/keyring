@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from __future__ import with_statement
-
+import os
 import base64
 import abc
 import boto3
@@ -27,6 +26,7 @@ class S3Backed(object):
         """Creates a S3 bucket for the backend if one does not exist already"""
         self.__s3 = None
         self.__bucket = None
+        self.__namespace = None
 
     @property
     def bucket(self):
@@ -39,6 +39,18 @@ class S3Backed(object):
         if self.__s3 is None:
             self.__s3 = boto3.resource('s3')
         return self.__s3
+
+    @property
+    def namespace(self):
+        """Namespaces allow you to have multiple keyrings backed by the same
+        S3 bucket by separating them with different S3 prefixes. Different
+        access permissions can then be given to different prefixes so that
+        only the right IAM roles/users/groups have access to a keychain
+        namespace"""
+        if self.__namespace is None:
+            self.__namespace = escape_for_s3(
+                os.environ.get('S3_KEYRING_NAMESPACE', 'default'))
+        return self.__namespace
 
     def _find_bucket(self):
         """Finds the backend S3 bucket. The backend bucket must be called
@@ -81,6 +93,10 @@ class BaseKeyring(S3Backed, KeyringBackend):
         the original byte string.
         """
 
+    def _get_s3_key(self, service, username):
+        """The S3 key where the secret will be stored"""
+        return "{}/{}/{}/secret.b64".format(self.namespace, service, username)
+
     def get_password(self, service, username):
         """Read the password from the S3 bucket.
         """
@@ -88,7 +104,7 @@ class BaseKeyring(S3Backed, KeyringBackend):
         username = escape_for_s3(username)
 
         # Read the password from S3
-        prefix = "{}/{}/secret.b64".format(service, username)
+        prefix = self._get_s3_key(service, username)
         values = list(self.bucket.objects.filter(Prefix=prefix))
         if len(values) == 0:
             # service/username not found
@@ -112,7 +128,7 @@ class BaseKeyring(S3Backed, KeyringBackend):
         pwd_base64 = base64.encodestring(pwd_encrypted).decode()
 
         # Save in S3
-        keyname = "{}/{}/secret.b64".format(service, username)
+        keyname = self._get_s3_key(service, username)
         self.bucket.Object(keyname).put(ACL='private', Body=pwd_base64)
 
     def delete_password(self, service, username):
@@ -120,7 +136,7 @@ class BaseKeyring(S3Backed, KeyringBackend):
         """
         service = escape_for_s3(service)
         username = escape_for_s3(username)
-        prefix = "{}/{}/secret.b64".format(service, username)
+        prefix = self._get_s3_key(service, username)
         objects = list(self.bucket.objects.filter(Prefix=prefix))
         if len(objects) == 0:
             msg = ("Password for service {service} and username {username} "
