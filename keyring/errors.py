@@ -4,6 +4,10 @@ class PasswordSetError(Exception):
     """Raised when the password can't be set.
     """
 
+class PasswordGetError(Exception):
+    """Raised when there is an error retrieving a password.
+    """
+
 class PasswordDeleteError(Exception):
     """Raised when the password can't be deleted.
     """
