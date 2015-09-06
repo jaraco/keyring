@@ -26,6 +26,7 @@ def load(filename):
         raise ValueError("distutils requires ASCII")
     return result
 
+
 def encodes_as_ascii(string):
     try:
         string.encode('ascii')
@@ -41,6 +42,7 @@ test_requirements = [
     'fs>=0.5',
     'mock',
     'pycrypto',
+    'boto3>=1.1.3'
 ]
 "dependencies for running tests"
 
