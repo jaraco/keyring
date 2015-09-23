@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import os
+import sys
 
 from ..py27compat import unicode_str
 from ..backend import KeyringBackend
@@ -9,11 +10,13 @@ from ..errors import PasswordSetError, ExceptionRaisedContext
 from ..util import properties
 from ..util import XDG
 
-try:
-    from PyKDE4.kdeui import KWallet
-    from PyQt4 import QtGui
-except ImportError:
-    pass
+# mixing Qt4 & Qt5 causes errors and may segfault
+if 'PyQt5' not in sys.modules:
+    try:
+        from PyKDE4.kdeui import KWallet
+        from PyQt4 import QtGui
+    except ImportError:
+        pass
 
 kwallet = None
 
