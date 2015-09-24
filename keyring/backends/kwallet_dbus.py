@@ -23,6 +23,12 @@ class Keyring(KeyringBackend):
     def priority(cls):
         if not dbus:
             raise RuntimeError('python-dbus not installed')
+        # make sure kwalletd is accessible
+        bus = dbus.SessionBus()
+        try:
+            remote_obj = bus.get_object('org.kde.kwalletd', '/modules/kwalletd')
+        except dbus.DBusException:
+            raise RuntimeError('cannot connect to org.kde.kwalletd')
         return 5.1
 
     def __init__(self, *arg, **kw):
