@@ -1,10 +1,10 @@
 import os
 
 try:
-    from gi import Repository
-    if Repository.get_default().enumerate_versions('GnomeKeyring'):
-        from gi.repository import GnomeKeyring
-except ImportError:
+    import gi
+    gi.require_version('GnomeKeyring', '1.0')
+    from gi.repository import GnomeKeyring
+except (ImportError, ValueError):
     pass
 
 from ..backend import KeyringBackend
