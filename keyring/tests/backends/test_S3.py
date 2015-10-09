@@ -10,4 +10,4 @@ from keyring.backends import S3
                      "You need to configure the AWS credentials")
 class S3PlaintextKeychainTestCase(BackendBasicTests, unittest.TestCase):
     def init_keyring(self):
-        return S3.PlaintextKeyring()
+        return S3.S3Keyring()

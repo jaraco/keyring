@@ -3,13 +3,17 @@
 
 import os
 import base64
-import abc
 import boto3
 import uuid
+import configparser
 
-from ..errors import PasswordDeleteError, PasswordGetError, InitError
+from ..errors import (PasswordDeleteError, PasswordGetError, InitError,
+                      ConfigError)
 from ..backend import KeyringBackend
 from ..util.escape import escape as escape_for_s3
+
+
+AWS_CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.aws', 'config')
 
 
 def supported():
@@ -22,11 +26,21 @@ def supported():
 
 
 class S3Backed(object):
-    def __init__(self):
+    def __init__(self, kms_key_id=None, region=None, profile=None):
         """Creates a S3 bucket for the backend if one does not exist already"""
         self.__s3 = None
         self.__bucket = None
         self.__namespace = None
+        self.__region = region
+        self.__profile = profile
+        self.__kms_key_id = kms_key_id
+
+    @property
+    def kms_key_id(self):
+        if self.__kms_key_id is None:
+            self.__kms_key_id = os.environ.get('AWS_KMS_KEY_ID') or \
+                self._get_profile_default(self.profile, 'kms_key_id')
+        return self.__kms_key_id
 
     @property
     def bucket(self):
@@ -35,10 +49,33 @@ class S3Backed(object):
         return self.__bucket
 
     @property
+    def region(self):
+        if self.__region is None:
+            self.__region = os.environ.get('AWS_DEFAULT_REGION') or \
+                self._get_profile_default(self.profile, 'region')
+        return self.__region
+
+    @property
+    def profile(self):
+        if self.__profile is None:
+            self.__profile = os.environ.get('AWS_PROFILE') or 'default'
+        return self.__profile
+
+    @property
+    def name(self):
+        return self.bucket.name.split('keyring-')[1]
+
+    @property
     def s3(self):
         if self.__s3 is None:
             self.__s3 = boto3.resource('s3')
         return self.__s3
+
+    @property
+    def config(self):
+        cfg = configparser.ConfigParser()
+        cfg.read(AWS_CONFIG_FILE)
+        return cfg
 
     @property
     def namespace(self):
@@ -61,7 +98,9 @@ class S3Backed(object):
         if len(bucket) == 0:
             bucket_name = "keyring-{}".format(uuid.uuid4())
             bucket = self.s3.Bucket(bucket_name)
-            bucket.create(ACL='private')
+            bucket.create(ACL='private',
+                          CreateBucketConfiguration={
+                              'LocationConstraint': self.region})
         elif len(bucket) > 1:
             msg = ("Can't tell which of these buckets to use for the keyring: "
                    "{buckets}").format([b.name for b in bucket])
@@ -70,8 +109,19 @@ class S3Backed(object):
             bucket = bucket[0]
         return bucket
 
+    def _get_profile_default(self, profile, option):
+        """Gets a default option value for a given AWS profile"""
+        if profile not in self.config:
+            profile = 'default'
 
-class BaseKeyring(S3Backed, KeyringBackend):
+        if option not in self.config[profile]:
+            raise ConfigError("No default for option {} in profile {}".format(
+                option, profile))
+
+        return self.config[profile][option]
+
+
+class S3Keyring(S3Backed, KeyringBackend):
     """
     BaseS3Keyring is a S3-based implementation of keyring.
     This keyring stores the password directly in S3 and provides methods
@@ -79,19 +129,6 @@ class BaseKeyring(S3Backed, KeyringBackend):
     encryption and decryption. The encrypted payload is stored in base64
     format.
     """
-
-    @abc.abstractmethod
-    def encrypt(self, password):
-        """
-        Given a password (byte string), return an encrypted byte string.
-        """
-
-    @abc.abstractmethod
-    def decrypt(self, password_encrypted):
-        """
-        Given a password encrypted by a previous call to `encrypt`, return
-        the original byte string.
-        """
 
     def _get_s3_key(self, service, username):
         """The S3 key where the secret will be stored"""
@@ -114,8 +151,8 @@ class BaseKeyring(S3Backed, KeyringBackend):
                 prefix=prefix, bucket=self.bucket.name)
             raise PasswordGetError(msg)
         pwd_base64 = values[0].get()['Body'].read()
-        encrypted_pwd = base64.decodestring(pwd_base64)
-        return self.decrypt(encrypted_pwd).decode('utf-8')
+        pwd = base64.decodestring(pwd_base64)
+        return pwd.decode('utf-8')
 
     def set_password(self, service, username, password):
         """Write the password in the S3 bucket.
@@ -123,13 +160,13 @@ class BaseKeyring(S3Backed, KeyringBackend):
         service = escape_for_s3(service)
         username = escape_for_s3(username)
 
-        # encrypt and base64-encode the password
-        pwd_encrypted = self.encrypt(password.encode('utf-8'))
-        pwd_base64 = base64.encodestring(pwd_encrypted).decode()
+        pwd_base64 = base64.encodestring(password.encode('utf-8')).decode()
 
-        # Save in S3
+        # Save in S3 using both server and client side encryption
         keyname = self._get_s3_key(service, username)
-        self.bucket.Object(keyname).put(ACL='private', Body=pwd_base64)
+        self.bucket.Object(keyname).put(ACL='private', Body=pwd_base64,
+                                        ServerSideEncryption='aws:kms',
+                                        SSEKMSKeyId=self.kms_key_id)
 
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
@@ -148,20 +185,3 @@ class BaseKeyring(S3Backed, KeyringBackend):
                                        prefix=prefix)
         else:
             objects[0].delete()
-
-
-class PlaintextKeyring(BaseKeyring):
-    """Simple S3 Keyring with no encryption"""
-
-    priority = .5
-    "Applicable for all platforms, but not recommended"
-
-    def encrypt(self, password):
-        """Directly return the password itself.
-        """
-        return password
-
-    def decrypt(self, password_encrypted):
-        """Directly return encrypted password.
-        """
-        return password_encrypted

@@ -16,6 +16,10 @@ class InitError(Exception):
     """Raised when the keyring could not be initialised
     """
 
+class ConfigError(Exception):
+    """Raised when a keyring has not been properly configured
+    """
+
 class ExceptionRaisedContext(object):
     """
     An exception-trapping context that indicates whether an exception was
