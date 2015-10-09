@@ -103,6 +103,18 @@ directory in the project checkout::
     keyring-path=/home/kang/pyworkspace/python-keyring-lib/demo/
 
 
+S3 backend configuration
+------------------------
+
+The S3 backend needs to know what `KMS key <https://aws.amazon.com/kms/>`
+should be used for client-side encryption. The S3 backend tries reads that
+configuration option in the following order:
+
+* From environment variable `AWS_KMS_KEY_ID`
+* From key `kms_key_id` under the relevant profile section of the AWS CLI
+  configuration file.
+
+
 Write your own keyring backend
 ==============================
 
