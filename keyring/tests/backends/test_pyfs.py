@@ -1,11 +1,10 @@
+from __future__ import unicode_literals
+
 import os
 import tempfile
 import textwrap
-import sys
 
 from ..py30compat import unittest
-
-import pytest
 
 import keyring.backend
 from keyring.backends import pyfs
@@ -38,12 +37,6 @@ class PyfilesystemKeyringTests(BackendBasicTests):
         self.assertEqual(password, self.keyring.decrypt(encrypted))
 
 
-issue156 = pytest.mark.xfail(reason="pyfs 0.5 breaks everything. Ref #156")
-
-if sys.version_info > (3,):
-    issue156 = lambda x: x
-
-@issue156
 @unittest.skipUnless(pyfs.BasicKeyring.viable, "Need Pyfilesystem")
 class UnencryptedMemoryPyfilesystemKeyringNoSubDirTestCase(
         PyfilesystemKeyringTests, unittest.TestCase):
@@ -56,7 +49,6 @@ class UnencryptedMemoryPyfilesystemKeyringNoSubDirTestCase(
             filename=self.keyring_filename)
 
 
-@issue156
 @unittest.skipUnless(pyfs.BasicKeyring.viable, "Need Pyfilesystem")
 class UnencryptedMemoryPyfilesystemKeyringSubDirTestCase(
         PyfilesystemKeyringTests, unittest.TestCase):
@@ -69,7 +61,6 @@ class UnencryptedMemoryPyfilesystemKeyringSubDirTestCase(
             filename=self.keyring_filename)
 
 
-@issue156
 @unittest.skipUnless(pyfs.BasicKeyring.viable, "Need Pyfilesystem")
 class UnencryptedLocalPyfilesystemKeyringNoSubDirTestCase(
         PyfilesystemKeyringTests, unittest.TestCase):

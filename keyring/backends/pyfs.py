@@ -1,5 +1,6 @@
 import os
 import base64
+import sys
 
 from ..py27compat import configparser
 
@@ -197,7 +198,7 @@ class BasicKeyring(KeyringBackend):
         if not self.config.has_section(service):
             self.config.add_section(service)
         self.config.set(service, username, password_base64)
-        config_file = self._open('w')
+        config_file = UnicodeWriterAdapter(self._open('w'))
         self.config.write(config_file)
         config_file.close()
 
@@ -209,7 +210,7 @@ class BasicKeyring(KeyringBackend):
             self.config.remove_option(service, username)
         except configparser.NoSectionError:
             raise errors.PasswordDeleteError('Password not found')
-        config_file = self._open('w')
+        config_file = UnicodeWriterAdapter(self._open('w'))
         self.config.write(config_file)
         config_file.close()
 
@@ -219,6 +220,26 @@ class BasicKeyring(KeyringBackend):
         if not has_pyfs():
             raise RuntimeError("pyfs required")
         return 2
+
+class UnicodeWriterAdapter(object):
+    """
+    Wrap an object with a .write method to accept 'str' on Python 2
+    and make it a Unicode string.
+    """
+    def __init__(self, orig):
+        self._orig = orig
+
+    def __getattr__(self, *args, **kwargs):
+        return getattr(self._orig, *args, **kwargs)
+
+    def write(self, value):
+        if isinstance(value, str):
+            value = value.decode('ascii')
+        return self._orig.write(value)
+
+if sys.version_info > (3,):
+    UnicodeWriterAdapter = lambda x: x
+
 
 class PlaintextKeyring(BasicKeyring):
     """Unencrypted Pyfilesystem Keyring
