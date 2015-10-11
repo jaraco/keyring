@@ -79,7 +79,7 @@ class BasicKeyring(KeyringBackend):
             return password_encrypted or b''
         return self._crypter.decrypt(password_encrypted)
 
-    def _open(self, mode='rb'):
+    def _open(self, mode='r'):
         """Open the password file in the specified mode
         """
         open_file = None

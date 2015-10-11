@@ -1,6 +1,7 @@
 import os
 import tempfile
 import textwrap
+import sys
 
 from ..py30compat import unittest
 
@@ -38,6 +39,9 @@ class PyfilesystemKeyringTests(BackendBasicTests):
 
 
 issue156 = pytest.mark.xfail(reason="pyfs 0.5 breaks everything. Ref #156")
+
+if sys.version_info > (3,):
+    issue156 = lambda x: x
 
 @issue156
 @unittest.skipUnless(pyfs.BasicKeyring.viable, "Need Pyfilesystem")
