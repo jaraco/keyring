@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+-----
+5.5.1
+-----
+
+* Issue #156: Fixed test failures in ``pyfs`` keyring related to
+  0.5 release.
+
 ---
 5.5
 ---
