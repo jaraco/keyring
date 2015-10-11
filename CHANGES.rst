@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+---
+5.6
+---
+
+* Allow keyring to be invoked from command-line with
+  ``python -m keyring``.
+
 -----
 5.5.1
 -----
