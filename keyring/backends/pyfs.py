@@ -46,9 +46,8 @@ class BasicKeyring(KeyringBackend):
                  cache_timeout=None):
         super(BasicKeyring, self).__init__()
         self._crypter = crypter
-        self._filename = (filename or
-                          os.path.join(platform_.data_root(),
-                                       self.__class__._filename))
+        def_fn = os.path.join(platform_.data_root(), self.__class__._filename)
+        self._filename = filename or def_fn
         self._can_create = can_create
         self._cache_timeout = cache_timeout
 
