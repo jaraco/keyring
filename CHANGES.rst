@@ -3,6 +3,13 @@ CHANGES
 =======
 
 ---
+5.5
+---
+
+* Pull Request #176: Use recommended mechanism for checking
+  GnomeKeyring version.
+
+---
 5.4
 ---
 
