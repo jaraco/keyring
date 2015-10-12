@@ -259,9 +259,9 @@ For more information about the options that the script provides do execute::
 
     python bin/test --help
 
--------
-Credits
--------
+----------
+Background
+----------
 
 The project was based on Tarek Ziade's idea in `this post`_. Kang Zhang
 initially carried it out as a `Google Summer of Code`_ project, and Tarek
@@ -269,6 +269,3 @@ mentored Kang on this project.
 
 .. _this post: http://tarekziade.wordpress.com/2009/03/27/pycon-hallway-session-1-a-keyring-library-for-python/
 .. _Google Summer of Code: http://socghop.appspot.com/
-
-See CONTRIBUTORS.txt for a complete list of contributors.
-
