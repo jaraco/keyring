@@ -55,6 +55,30 @@ and `keyring.get_password`:
     >>> keyring.get_password("system", "username")
     'password'
 
+Command-line Utility
+====================
+
+Keyring supplies a ``keyring`` command which is installed with the
+package. After installing keyring in most environments, the
+command should be available for setting, getting, and deleting
+passwords. For more information on usage, invoke with no arguments
+or with ``--help`` as so::
+
+    $ keyring --help
+    $ keyring set system username
+    Password for 'username' in 'system':
+    $ keyring get system username
+    password
+
+The command-line functionality is also exposed as an executable
+package, suitable for invoking from Python like so::
+
+    $ python -m keyring --help
+    $ python -m keyring set system username
+    Password for 'username' in 'system':
+    $ python -m keyring get system username
+    password
+
 --------------------------
 Configure your keyring lib
 --------------------------
