@@ -57,7 +57,7 @@ class Keyring(KeyringBackend):
             # check return code
             if code != 0:
                 raise set_error
-        except:
+        except Exception:
             raise set_error
 
     def _interactive_set(self, service, username, password):
