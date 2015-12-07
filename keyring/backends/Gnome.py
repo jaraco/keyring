@@ -16,7 +16,7 @@ from ..py27compat import unicode_str
 class Keyring(KeyringBackend):
     """Gnome Keyring"""
 
-    KEYRING_NAME = GnomeKeyring.get_default_keyring_sync()[1]
+    KEYRING_NAME = None
     """
     Name of the keyring in which to store the passwords.
     Use None for the default keyring.
@@ -36,6 +36,11 @@ class Keyring(KeyringBackend):
         if not cls.has_requisite_vars():
             raise RuntimeError("Requisite environment vars are not present")
         return int(cls.has_requisite_vars())
+
+    @property
+    def keyring_name(self):
+        system_default = GnomeKeyring.get_default_keyring_sync()[1]
+        return self.KEYRING_NAME or system_default
 
     @classmethod
     def has_requisite_vars(cls):
@@ -88,7 +93,7 @@ class Keyring(KeyringBackend):
         GnomeKeyring.Attribute.list_append_string(attrs, 'service', service)
         GnomeKeyring.Attribute.list_append_string(attrs, 'application', 'python-keyring')
         result = GnomeKeyring.item_create_sync(
-            self.KEYRING_NAME, GnomeKeyring.ItemType.NETWORK_PASSWORD,
+            self.keyring_name, GnomeKeyring.ItemType.NETWORK_PASSWORD,
             "Password for '%s' on '%s'" % (username, service),
             attrs, password, True)[0]
         if result == GnomeKeyring.Result.CANCELLED:
