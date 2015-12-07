@@ -2,6 +2,7 @@ import platform
 import subprocess
 import re
 import binascii
+import functools
 
 from ..backend import KeyringBackend
 from ..errors import PasswordSetError
@@ -41,26 +42,62 @@ class Keyring(KeyringBackend):
     def set_password(self, service, username, password):
         if username is None:
             username = ''
-        set_error = PasswordSetError("Can't store password in keychain")
         try:
-            # set up the call for security.
-            cmd = [
-                'security',
-                SecurityCommand('add', self.store),
-                '-a', username,
-                '-s', service,
-                '-w', password,
-                '-U',
-            ]
-            call = subprocess.Popen(cmd, stderr=subprocess.PIPE,
-                stdout=subprocess.PIPE)
-            stdoutdata, stderrdata = call.communicate()
-            code = call.returncode
-            # check return code.
-            if code is not 0:
-                raise set_error
-        except:
-            raise set_error
+            # This two-step process is a stop-gap measure until a ctypes
+            # implementation can be created. Fall back to the
+            # command-line version when the username/service/password
+            # strings contain characters (escapes, newlines, etc.) that
+            # the interactive security session can't handle.
+            interactive_call = functools.partial(self._interactive_set,
+                service, username, password)
+            direct_call = functools.partial(self._direct_set,
+                service, username, password)
+            code = interactive_call() and direct_call()
+            # check return code
+            if code:
+                raise Exception()
+        except Exception:
+            raise PasswordSetError("Can't store password in keychain")
+
+    def _interactive_set(self, service, username, password):
+        """
+        Call the security command, supplying parameters through
+        the input stream to avoid revealing the password in the
+        process status.
+        """
+        cmd = [
+            'security',
+            '-i'
+        ]
+        security_cmd = "{} -a '{}' -s '{}' -p '{}' -U\n".format(
+            SecurityCommand('add', self.store),
+            username, service, password)
+        call = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE)
+        stdoutdata, stderrdata = call.communicate(
+            security_cmd.encode('utf-8'))
+        return call.returncode
+
+    def _direct_set(self, service, username, password):
+        """
+        Call the security command, supplying the parameters on
+        the command line.
+        """
+        cmd = [
+            'security',
+            SecurityCommand('add', self.store),
+            '-a', username,
+            '-s', service,
+            '-w', password,
+            '-U',
+        ]
+        call = subprocess.Popen(
+            cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        stdoutdata, stderrdata = call.communicate()
+        return call.returncode
 
     def get_password(self, service, username):
         if username is None:
@@ -74,7 +111,9 @@ class Keyring(KeyringBackend):
                 '-a', username,
                 '-s', service,
             ]
-            call = subprocess.Popen(cmd, stderr=subprocess.PIPE,
+            call = subprocess.Popen(
+                cmd,
+                stderr=subprocess.PIPE,
                 stdout=subprocess.PIPE)
             stdoutdata, stderrdata = call.communicate()
             code = call.returncode
@@ -112,7 +151,9 @@ class Keyring(KeyringBackend):
                 '-s', service,
             ]
             # set up the call for security.
-            call = subprocess.Popen(cmd, stderr=subprocess.PIPE,
+            call = subprocess.Popen(
+                cmd,
+                stderr=subprocess.PIPE,
                 stdout=subprocess.PIPE)
             stdoutdata, stderrdata = call.communicate()
             code = call.returncode

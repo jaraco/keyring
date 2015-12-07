@@ -1,9 +1,3 @@
-"""
-test_core.py
-
-Created by Kang Zhang on 2009-08-09
-"""
-
 from __future__ import with_statement
 
 import os
@@ -27,7 +21,7 @@ def config_filename(tmpdir):
         yield str(filename)
 
 
-class TestKeyring(keyring.backend.KeyringBackend):
+class ATestKeyring(keyring.backend.KeyringBackend):
     """A faked keyring for test.
     """
     def __init__(self):
@@ -50,7 +44,7 @@ class TestKeyring(keyring.backend.KeyringBackend):
             raise errors.PasswordDeleteError("not set")
 
 
-class TestKeyring2(TestKeyring):
+class AnotherTestKeyring(ATestKeyring):
     """Another faked keyring for test.
     """
     def get_password(self, service, username):
@@ -86,7 +80,7 @@ class TestCore:
     def test_set_keyring_in_runtime(self):
         """Test the function of set keyring in runtime.
         """
-        keyring.core.set_keyring(TestKeyring())
+        keyring.core.set_keyring(ATestKeyring())
 
         keyring.core.set_password("test", "user", "password")
         assert keyring.core.get_password("test", "user") == PASSWORD_TEXT
@@ -101,7 +95,7 @@ class TestCore:
                 # the path for the user created keyring
                 "keyring-path= %s\n" % os.path.dirname(os.path.abspath(__file__)),
                 # the name of the keyring class
-                "default-keyring=test_core.TestKeyring2\n",
+                "default-keyring=test_core.AnotherTestKeyring\n",
                 ])
 
         # init the keyring lib, the lib will automaticlly load the

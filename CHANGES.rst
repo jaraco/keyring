@@ -7,6 +7,9 @@ CHANGES
 ---
 
 * Issue #177: Resolve default keyring name on Gnome using the API.
+* Issue #145: Add workaround for password exposure through
+  process status for most passwords containing simple
+  characters.
 
 ---
 5.6
