@@ -2,6 +2,7 @@ import platform
 import subprocess
 import re
 import binascii
+import functools
 
 from ..backend import KeyringBackend
 from ..errors import PasswordSetError
@@ -43,12 +44,23 @@ class Keyring(KeyringBackend):
             username = ''
         set_error = PasswordSetError("Can't store password in keychain")
         try:
-            # XXX - This two-step process is a stop-gap measure until a ctypes
-            #       implementation can be created. We have to fall back to the
-            #       command-line version when the username/service/password
-            #       strings contain characters (escapes, newlines, etc.) that
-            #       the interactive security session can't handle.
+            # This two-step process is a stop-gap measure until a ctypes
+            # implementation can be created. Fall back to the
+            # command-line version when the username/service/password
+            # strings contain characters (escapes, newlines, etc.) that
+            # the interactive security session can't handle.
+            interactive_call = functools.partial(self._interactive_set,
+                service, username, password)
+            direct_call = functools.partial(self._direct_set,
+                service, username, password)
+            code = interactive_call() and direct_call()
+            # check return code
+            if code != 0:
+                raise set_error
+        except:
+            raise set_error
 
+    def _interactive_set(self, service, username, password):
             # Try to use the interactive security prompt, so the password is
             # not in the ps output
             cmd = [
@@ -65,9 +77,9 @@ class Keyring(KeyringBackend):
                 stdout=subprocess.PIPE)
             stdoutdata, stderrdata = call.communicate(
                 security_cmd.encode('utf-8'))
-            code = call.returncode
-            # check return code.
-            if code != 0:
+            return call.returncode
+
+    def _direct_set(self, service, username, password):
                 # Fall back to calling the security command directly if an
                 # error occurred
                 cmd = [
@@ -81,12 +93,7 @@ class Keyring(KeyringBackend):
                 call = subprocess.Popen(
                     cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
                 stdoutdata, stderrdata = call.communicate()
-                code = call.returncode
-                # check return code.
-                if code != 0:
-                    raise set_error
-        except:
-            raise set_error
+                return call.returncode
 
     def get_password(self, service, username):
         if username is None:
