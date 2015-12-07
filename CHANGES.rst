@@ -3,6 +3,12 @@ CHANGES
 =======
 
 ---
+5.7
+---
+
+* Issue #177: Resolve default keyring name on Gnome using the API.
+
+---
 5.6
 ---
 
