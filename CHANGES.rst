@@ -3,6 +3,33 @@ CHANGES
 =======
 
 ---
+5.6
+---
+
+* Allow keyring to be invoked from command-line with
+  ``python -m keyring``.
+
+-----
+5.5.1
+-----
+
+* Issue #156: Fixed test failures in ``pyfs`` keyring related to
+  0.5 release.
+
+---
+5.5
+---
+
+* Pull Request #176: Use recommended mechanism for checking
+  GnomeKeyring version.
+
+---
+5.4
+---
+
+* Prefer setuptools_scm to hgtools.
+
+---
 5.3
 ---
 

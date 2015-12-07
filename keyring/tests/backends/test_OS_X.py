@@ -14,11 +14,6 @@ class OSXKeychainTestCase(BackendBasicTests, unittest.TestCase):
     def init_keyring(self):
         return OS_X.Keyring()
 
-    @unittest.expectedFailure
-    def test_delete_present(self):
-        """Not implemented"""
-        super(OSXKeychainTestCase, self).test_delete_present()
-
 class SecurityCommandTestCase(unittest.TestCase):
     def test_SecurityCommand(self):
         self.assertEqual(OS_X.SecurityCommand('get'), 'get-generic-password')

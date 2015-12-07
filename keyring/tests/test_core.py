@@ -7,8 +7,6 @@ Created by Kang Zhang on 2009-08-09
 from __future__ import with_statement
 
 import os
-import tempfile
-import shutil
 
 import mock
 import pytest

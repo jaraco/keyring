@@ -1,5 +1,6 @@
 import os
 import base64
+import sys
 
 from ..py27compat import configparser
 
@@ -46,9 +47,8 @@ class BasicKeyring(KeyringBackend):
                  cache_timeout=None):
         super(BasicKeyring, self).__init__()
         self._crypter = crypter
-        self._filename = (filename or
-                          os.path.join(platform_.data_root(),
-                                       self.__class__._filename))
+        def_fn = os.path.join(platform_.data_root(), self.__class__._filename)
+        self._filename = filename or def_fn
         self._can_create = can_create
         self._cache_timeout = cache_timeout
 
@@ -80,7 +80,7 @@ class BasicKeyring(KeyringBackend):
             return password_encrypted or b''
         return self._crypter.decrypt(password_encrypted)
 
-    def _open(self, mode='rb'):
+    def _open(self, mode='r'):
         """Open the password file in the specified mode
         """
         open_file = None
@@ -198,7 +198,7 @@ class BasicKeyring(KeyringBackend):
         if not self.config.has_section(service):
             self.config.add_section(service)
         self.config.set(service, username, password_base64)
-        config_file = self._open('w')
+        config_file = UnicodeWriterAdapter(self._open('w'))
         self.config.write(config_file)
         config_file.close()
 
@@ -210,7 +210,7 @@ class BasicKeyring(KeyringBackend):
             self.config.remove_option(service, username)
         except configparser.NoSectionError:
             raise errors.PasswordDeleteError('Password not found')
-        config_file = self._open('w')
+        config_file = UnicodeWriterAdapter(self._open('w'))
         self.config.write(config_file)
         config_file.close()
 
@@ -220,6 +220,26 @@ class BasicKeyring(KeyringBackend):
         if not has_pyfs():
             raise RuntimeError("pyfs required")
         return 2
+
+class UnicodeWriterAdapter(object):
+    """
+    Wrap an object with a .write method to accept 'str' on Python 2
+    and make it a Unicode string.
+    """
+    def __init__(self, orig):
+        self._orig = orig
+
+    def __getattr__(self, *args, **kwargs):
+        return getattr(self._orig, *args, **kwargs)
+
+    def write(self, value):
+        if isinstance(value, str):
+            value = value.decode('ascii')
+        return self._orig.write(value)
+
+if sys.version_info > (3,):
+    UnicodeWriterAdapter = lambda x: x
+
 
 class PlaintextKeyring(BasicKeyring):
     """Unencrypted Pyfilesystem Keyring
