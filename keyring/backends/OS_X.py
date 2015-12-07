@@ -42,7 +42,6 @@ class Keyring(KeyringBackend):
     def set_password(self, service, username, password):
         if username is None:
             username = ''
-        set_error = PasswordSetError("Can't store password in keychain")
         try:
             # This two-step process is a stop-gap measure until a ctypes
             # implementation can be created. Fall back to the
@@ -55,10 +54,10 @@ class Keyring(KeyringBackend):
                 service, username, password)
             code = interactive_call() and direct_call()
             # check return code
-            if code != 0:
-                raise set_error
+            if code:
+                raise Exception()
         except Exception:
-            raise set_error
+            raise PasswordSetError("Can't store password in keychain")
 
     def _interactive_set(self, service, username, password):
         """
