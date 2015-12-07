@@ -3,6 +3,14 @@ CHANGES
 =======
 
 ---
+5.7
+---
+
+* #145: Add workaround for password exposure through
+  process status for most passwords containing simple
+  characters.
+
+---
 5.6
 ---
 
