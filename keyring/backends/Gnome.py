@@ -16,7 +16,7 @@ from ..py27compat import unicode_str
 class Keyring(KeyringBackend):
     """Gnome Keyring"""
 
-    KEYRING_NAME = None
+    KEYRING_NAME = GnomeKeyring.get_default_keyring_sync()[1]
     """
     Name of the keyring in which to store the passwords.
     Use None for the default keyring.
