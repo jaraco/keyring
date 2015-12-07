@@ -61,39 +61,44 @@ class Keyring(KeyringBackend):
             raise set_error
 
     def _interactive_set(self, service, username, password):
-            # Try to use the interactive security prompt, so the password is
-            # not in the ps output
-            cmd = [
-                'security',
-                '-i'
-            ]
-            security_cmd = "{} -a '{}' -s '{}' -p '{}' -U\n".format(
-                SecurityCommand('add', self.store),
-                username, service, password)
-            call = subprocess.Popen(
-                cmd,
-                stdin=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                stdout=subprocess.PIPE)
-            stdoutdata, stderrdata = call.communicate(
-                security_cmd.encode('utf-8'))
-            return call.returncode
+        """
+        Call the security command, supplying parameters through
+        the input stream to avoid revealing the password in the
+        process status.
+        """
+        cmd = [
+            'security',
+            '-i'
+        ]
+        security_cmd = "{} -a '{}' -s '{}' -p '{}' -U\n".format(
+            SecurityCommand('add', self.store),
+            username, service, password)
+        call = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE)
+        stdoutdata, stderrdata = call.communicate(
+            security_cmd.encode('utf-8'))
+        return call.returncode
 
     def _direct_set(self, service, username, password):
-                # Fall back to calling the security command directly if an
-                # error occurred
-                cmd = [
-                    'security',
-                    SecurityCommand('add', self.store),
-                    '-a', username,
-                    '-s', service,
-                    '-w', password,
-                    '-U',
-                ]
-                call = subprocess.Popen(
-                    cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-                stdoutdata, stderrdata = call.communicate()
-                return call.returncode
+        """
+        Call the security command, supplying the parameters on
+        the command line.
+        """
+        cmd = [
+            'security',
+            SecurityCommand('add', self.store),
+            '-a', username,
+            '-s', service,
+            '-w', password,
+            '-U',
+        ]
+        call = subprocess.Popen(
+            cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        stdoutdata, stderrdata = call.communicate()
+        return call.returncode
 
     def get_password(self, service, username):
         if username is None:
