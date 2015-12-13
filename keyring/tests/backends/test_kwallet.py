@@ -79,3 +79,10 @@ class KDEKWalletInQApplication(unittest.TestCase):
         wallet = kwallet.open_kwallet()
         self.assertIsInstance(wallet, KWallet.Wallet)
         app.exit()
+
+
+@unittest.skipUnless(kwallet.DBusKeyring.viable, "Need DBus")
+class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
+
+    def init_keyring(self):
+        return kwallet.DBusKeyring()
