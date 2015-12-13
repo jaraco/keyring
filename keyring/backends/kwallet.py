@@ -133,7 +133,7 @@ class DBusKeyring(KeyringBackend):
         # make sure kwalletd is accessible
         bus = dbus.SessionBus()
         try:
-            remote_obj = bus.get_object('org.kde.kwalletd', '/modules/kwalletd')
+            bus.get_object('org.kde.kwalletd', '/modules/kwalletd')
         except dbus.DBusException:
             raise RuntimeError('cannot connect to org.kde.kwalletd')
         return 5.1
