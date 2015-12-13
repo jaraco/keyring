@@ -228,7 +228,7 @@ Travis-CI.
 .. _BuildStatus: http://travis-ci.org/jaraco/keyring
 
 To run the tests yourself, you'll want keyring installed to some environment
-in which it can be tested. Three recommended techniques are described below.
+in which it can be tested. Recommended techniques are described below.
 
 Using pytest runner
 -------------------
@@ -272,19 +272,6 @@ Then, invoke your favorite test runner, e.g.::
 or::
 
     nosetests
-
-Using buildout
---------------
-
-Keyring supplies a buildout.cfg for use with buildout. If you have buildout
-installed, tests can be invoked as so::
-
-    1. bin/buildout  # prepare the buildout.
-    2. bin/test  # execute the test runner.
-
-For more information about the options that the script provides do execute::
-
-    python bin/test --help
 
 ----------
 Background
