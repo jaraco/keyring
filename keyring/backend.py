@@ -6,11 +6,7 @@ from __future__ import absolute_import
 
 import abc
 import logging
-
-try:
-    import importlib
-except ImportError:
-    pass
+import importlib
 
 try:
     import pkg_resources
@@ -119,15 +115,8 @@ class NullCrypter(Crypter):
 
 def _load_backend(name):
     "Load a backend by name"
-    if 'importlib' in globals():
-        package = backends.__package__ or backends.__name__
-        mod = importlib.import_module('.'+name, package)
-    else:
-        # Python 2.6 support
-        ns = {}
-        exec("from .backends import {name} as mod".format(name=name),
-            globals(), ns)
-        mod = ns['mod']
+    package = backends.__package__ or backends.__name__
+    mod = importlib.import_module('.'+name, package)
     # invoke __name__ on each module to ensure it's loaded in demand-import
     # environments
     mod.__name__

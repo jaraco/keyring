@@ -10,11 +10,11 @@ import setuptools
 with io.open('README.rst', encoding='utf-8') as readme:
     long_description = readme.read()
 
-needs_pytest = set(['pytest', 'test']).intersection(sys.argv)
+needs_pytest = {'pytest', 'test'}.intersection(sys.argv)
 pytest_runner = ['pytest_runner'] if needs_pytest else []
-needs_sphinx = set(['release', 'build_sphinx', 'upload_docs']).intersection(sys.argv)
+needs_sphinx = {'release', 'build_sphinx', 'upload_docs'}.intersection(sys.argv)
 sphinx = ['sphinx'] if needs_sphinx else []
-needs_wheel = set(['release', 'bdist_wheel']).intersection(sys.argv)
+needs_wheel = {'release', 'bdist_wheel'}.intersection(sys.argv)
 wheel = ['wheel'] if needs_wheel else []
 
 test_requirements = [
@@ -26,12 +26,6 @@ test_requirements = [
     'pycrypto',
 ]
 "dependencies for running tests"
-
-if sys.version_info < (2, 7) or (
-        sys.version_info >= (3, 0) and sys.version_info < (3, 1)):
-    # Require unittest2 for Python which doesn't contain the new unittest
-    # module (appears in Python 2.7 and Python 3.1)
-    test_requirements.append('unittest2')
 
 if sys.version_info >= (3, 0):
     # gdata doesn't currently install on Python 3. Omit it also.
@@ -69,9 +63,12 @@ setup_params = dict(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Python Software Foundation License",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
     ],
     entry_points={
         'console_scripts': [

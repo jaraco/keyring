@@ -1,8 +1,4 @@
-try:
-    import functools
-except ImportError:
-    # functools not available until Python 2.5
-    pass
+import functools
 
 def once(func):
     """
@@ -23,9 +19,7 @@ def once(func):
         if not hasattr(func, 'always_returns'):
             func.always_returns = func(*args, **kwargs)
         return func.always_returns
-    if 'functools' in globals():
-        wrapper = functools.wraps(func)(wrapper)
-    return wrapper
+    return functools.wraps(func)(wrapper)
 
 def suppress_exceptions(callables, exceptions=Exception):
     """
