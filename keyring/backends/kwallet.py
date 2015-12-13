@@ -148,7 +148,7 @@ class DBusKeyring(KeyringBackend):
         bus = dbus.SessionBus()
         wId = 0
         self.folder = 'Python'
-        self.appid = 'Python program ' + sys.argv[0]
+        self.appid = 'Python program'
         try:
             remote_obj = bus.get_object('org.kde.kwalletd', '/modules/kwalletd')
             self.iface = dbus.Interface(remote_obj, 'org.kde.KWallet')
