@@ -244,12 +244,11 @@ pytest runner will download any unmet dependencies and run the tests using
 
 This technique is the one used by the Travis-CI script.
 
-Using virtualenv and pytest/nose/unittest2
-------------------------------------------
+Using virtualenv and pytest/nose/unittest
+-----------------------------------------
 
 Pytest and Nose are two popular test runners that will discover tests and run
-them. Unittest (unittest2 under Python 2.6) also has a mode
-to discover tests.
+them. Unittest also has a mode to discover tests.
 
 First, however, these test runners typically need a test environment in which
 to run. It is recommended that you install keyring to a virtual environment
