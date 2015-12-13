@@ -2,6 +2,14 @@
 CHANGES
 =======
 
+-----
+5.7.1
+-----
+
+* Updated project metadata to match Github hosting and
+  generally refreshed the metadata structure to match
+  practices with other projects.
+
 ---
 5.7
 ---
