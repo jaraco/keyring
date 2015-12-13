@@ -10,11 +10,11 @@ def is_qt4_supported():
         return False
     return True
 
-@unittest.skipUnless(kwallet.Keyring.viable, "Need KWallet")
+@unittest.skipUnless(kwallet.QtKeyring.viable, "Need KWallet")
 class KDEKWalletTestCase(BackendBasicTests, unittest.TestCase):
 
     def init_keyring(self):
-        return kwallet.Keyring()
+        return kwallet.QtKeyring()
 
 
 class UnOpenableKWallet(object):
@@ -64,7 +64,7 @@ class KDEWalletCanceledTestCase(unittest.TestCase):
             None)
 
 
-@unittest.skipUnless(kwallet.Keyring.viable and
+@unittest.skipUnless(kwallet.QtKeyring.viable and
                      is_qt4_supported(),
                      "Need KWallet and Qt4")
 class KDEKWalletInQApplication(unittest.TestCase):
