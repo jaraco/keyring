@@ -235,9 +235,9 @@ Using pytest runner
 
 Keyring is instrumented with `pytest runner
 <https://bitbucket.org/jaraco/pytest-runner>`_. Thus, you may invoke the tests
-from any supported Python (with distribute installed) using this command::
+from any supported Python (with setuptools installed) using this command::
 
-    python setup.py ptr
+    python setup.py test
 
 pytest runner will download any unmet dependencies and run the tests using
 `pytest <https://bitbucket.org/hpk42/pytest>`_.
