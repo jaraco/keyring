@@ -21,7 +21,7 @@ if 'PyQt5' not in sys.modules:
 try:
     import dbus
 except ImportError:
-    dbus = None
+    pass
 
 kwallet = None
 
@@ -128,7 +128,7 @@ class DBusKeyring(KeyringBackend):
     @classmethod
     @XDG.Preference('KDE')
     def priority(cls):
-        if not dbus:
+        if 'dbus' not in globals():
             raise RuntimeError('python-dbus not installed')
         # make sure kwalletd is accessible
         bus = dbus.SessionBus()
