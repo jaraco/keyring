@@ -3,6 +3,14 @@ CHANGES
 =======
 
 ---
+6.1
+---
+
+* Pull Request #174: Add DBus backend for KWallet, preferred to Qt
+  backend. Theoretically, it should be auto-detected based on
+  available libraries and interchangeable with the Qt backend.
+
+---
 6.0
 ---
 
