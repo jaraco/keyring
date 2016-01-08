@@ -2,6 +2,17 @@
 CHANGES
 =======
 
+---
+7.0
+---
+
+* Issue #99: Keyring now expects the config file to be located
+  in the XDG_CONFIG_HOME rather than XDG_DATA_HOME and will
+  fail to start if the config is found in the old location but not
+  the new. On systems where the two locations are distinct,
+  simply copy or symlink the config to remain compatible with
+  older versions or move the file to work only with 7.0 and later.
+
 -----
 6.1.1
 -----
