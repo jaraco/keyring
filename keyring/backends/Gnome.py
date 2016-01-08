@@ -12,8 +12,10 @@ from ..errors import PasswordSetError, PasswordDeleteError
 from ..util import properties
 from ..util import XDG
 from ..py27compat import unicode_str
+from . import dbus
 
-class Keyring(KeyringBackend):
+
+class Keyring(dbus.DBus, KeyringBackend):
     """Gnome Keyring"""
 
     KEYRING_NAME = None
@@ -21,11 +23,6 @@ class Keyring(KeyringBackend):
     Name of the keyring in which to store the passwords.
     Use None for the default keyring.
     """
-
-    requisite_vars = [
-        'DISPLAY',
-        'DBUS_SESSION_BUS_ADDRESS',
-    ]
 
     @properties.ClassProperty
     @classmethod
@@ -41,14 +38,6 @@ class Keyring(KeyringBackend):
     def keyring_name(self):
         system_default = GnomeKeyring.get_default_keyring_sync()[1]
         return self.KEYRING_NAME or system_default
-
-    @classmethod
-    def has_requisite_vars(cls):
-        """
-        Return True if the requisite environment vars are present in the
-        environment.
-        """
-        return set(cls.requisite_vars).issubset(os.environ)
 
     def _find_passwords(self, service, username, deleting=False):
         """Get password of the username for the service
