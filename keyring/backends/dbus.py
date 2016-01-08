@@ -18,3 +18,11 @@ class DBus(object):
         environment.
         """
         return set(cls.requisite_vars).issubset(os.environ)
+
+    @classmethod
+    def check_requisite_vars(cls):
+        """
+        Raise RuntimeError if the requisite vars aren't present.
+        """
+        if not cls.has_requisite_vars():
+            raise RuntimeError("Requisite environment vars are not present")

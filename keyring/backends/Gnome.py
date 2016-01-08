@@ -30,8 +30,7 @@ class Keyring(dbus.DBus, KeyringBackend):
     def priority(cls):
         if 'GnomeKeyring' not in globals():
             raise RuntimeError("GnomeKeyring module required")
-        if not cls.has_requisite_vars():
-            raise RuntimeError("Requisite environment vars are not present")
+        cls.check_requisite_vars()
         return int(cls.has_requisite_vars())
 
     @property
