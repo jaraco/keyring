@@ -130,6 +130,8 @@ class DBusKeyring(KeyringBackend):
     def priority(cls):
         if 'dbus' not in globals():
             raise RuntimeError('python-dbus not installed')
+        if "DISPLAY" not in os.environ:
+            raise RuntimeError("cannot connect to X server")
         # make sure kwalletd is accessible
         bus = dbus.SessionBus()
         try:
