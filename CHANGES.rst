@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+-----
+6.1.1
+-----
+
+* Pull Request #182: Prevent DBus from indicating as a viable
+  backend when no viable X DISPLAY variable is present.
+
 ---
 6.1
 ---
