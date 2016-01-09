@@ -75,7 +75,8 @@ class Keyring(KeyringBackend):
             "-a '{username}' "
             "-s '{service}' "
             "-p '{password}' "
-            "-U"
+            "-U "
+            "-T ''"
             "\n"
         )
         invocation = tmpl.format(**locals())
