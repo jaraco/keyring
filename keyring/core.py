@@ -6,6 +6,7 @@ Created by Kang Zhang on 2009-07-09
 import os
 import sys
 import logging
+import operator
 
 from .py27compat import configparser
 
@@ -58,16 +59,30 @@ def init_backend():
     set_keyring(load_config() or _get_best_keyring())
 
 
+by_priority = operator.attrgetter('priority')
+
+
+def _get_recommended_keyring():
+    """
+    Get the highest priority recommended keyring or None if
+    no recommended keyring backend is viable.
+    """
+    keyrings = (
+        keyring
+        for keyring in backend.get_all_keyring()
+        if keyring.priority >= 1
+    )
+    return max(keyrings, None, key=by_priority)
+
+
 def _get_best_keyring():
     """
     Return the best keyring backend for the given environment based on
     priority.
     """
     keyrings = backend.get_all_keyring()
-    # rank by priority
-    keyrings.sort(key = lambda x: -x.priority)
     # get the most recommended one
-    return keyrings[0]
+    return max(keyrings, key=by_priority)
 
 
 def load_keyring(keyring_name):
