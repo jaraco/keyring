@@ -70,7 +70,14 @@ class Keyring(KeyringBackend):
             '-i'
         ]
         sec_cmd = SecurityCommand('add', self.store)
-        tmpl = "{sec_cmd} -a '{username}' -s '{service}' -p '{password}' -U\n"
+        tmpl = (
+            "{sec_cmd} "
+            "-a '{username}' "
+            "-s '{service}' "
+            "-p '{password}' "
+            "-U"
+            "\n"
+        )
         invocation = tmpl.format(**locals())
         call = subprocess.Popen(
             cmd,
