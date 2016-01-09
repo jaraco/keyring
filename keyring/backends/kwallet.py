@@ -9,7 +9,6 @@ from ..errors import PasswordDeleteError
 from ..errors import PasswordSetError, ExceptionRaisedContext
 from ..util import properties
 from ..util import XDG
-from .dbus import DBus
 
 # mixing Qt4 & Qt5 causes errors and may segfault
 if 'PyQt5' not in sys.modules:
@@ -122,7 +121,7 @@ class QtKeyring(KeyringBackend):
         wallet.removeEntry(key)
 
 
-class DBusKeyring(DBus, KeyringBackend):
+class DBusKeyring(KeyringBackend):
     """KDE KWallet via D-Bus"""
 
     @properties.ClassProperty
@@ -131,7 +130,8 @@ class DBusKeyring(DBus, KeyringBackend):
     def priority(cls):
         if 'dbus' not in globals():
             raise RuntimeError('python-dbus not installed')
-        cls.check_requisite_vars()
+        if "DISPLAY" not in os.environ:
+            raise RuntimeError("cannot connect to X server")
         # make sure kwalletd is accessible
         bus = dbus.SessionBus()
         try:
