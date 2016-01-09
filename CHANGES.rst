@@ -13,6 +13,9 @@ CHANGES
   simply copy or symlink the config to remain compatible with
   older versions or move the file to work only with 7.0 and later.
 
+* Replaced Pull Request #182 with a conditional SessionBus
+  construction, based on subsequent discussion.
+
 -----
 6.1.1
 -----
