@@ -1,5 +1,3 @@
-import os
-
 try:
     import gi
     gi.require_version('GnomeKeyring', '1.0')
@@ -12,10 +10,9 @@ from ..errors import PasswordSetError, PasswordDeleteError
 from ..util import properties
 from ..util import XDG
 from ..py27compat import unicode_str
-from . import dbus
 
 
-class Keyring(dbus.DBus, KeyringBackend):
+class Keyring(KeyringBackend):
     """Gnome Keyring"""
 
     KEYRING_NAME = None
@@ -30,8 +27,10 @@ class Keyring(dbus.DBus, KeyringBackend):
     def priority(cls):
         if 'GnomeKeyring' not in globals():
             raise RuntimeError("GnomeKeyring module required")
-        cls.check_requisite_vars()
-        return int(cls.has_requisite_vars())
+        result = GnomeKeyring.get_default_keyring_sync()[0]
+        if result != GnomeKeyring.Result.OK:
+            raise RuntimeError(result.value_name)
+        return 1
 
     @property
     def keyring_name(self):
