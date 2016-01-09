@@ -69,16 +69,16 @@ class Keyring(KeyringBackend):
             'security',
             '-i'
         ]
-        security_cmd = "{} -a '{}' -s '{}' -p '{}' -U\n".format(
-            SecurityCommand('add', self.store),
-            username, service, password)
+        sec_cmd = SecurityCommand('add', self.store)
+        tmpl = "{sec_cmd} -a '{username}' -s '{service}' -p '{password}' -U\n"
+        invocation = tmpl.format(**locals())
         call = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE)
-        stdoutdata, stderrdata = call.communicate(
-            security_cmd.encode('utf-8'))
+            stdout=subprocess.PIPE,
+        )
+        stdoutdata, stderrdata = call.communicate(invocation.encode('utf-8'))
         return call.returncode
 
     def _direct_set(self, service, username, password):
