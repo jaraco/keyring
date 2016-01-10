@@ -8,7 +8,6 @@ except (ImportError, ValueError):
 from ..backend import KeyringBackend
 from ..errors import PasswordSetError, PasswordDeleteError
 from ..util import properties
-from ..util import XDG
 from ..py27compat import unicode_str
 
 
@@ -23,7 +22,6 @@ class Keyring(KeyringBackend):
 
     @properties.ClassProperty
     @classmethod
-    @XDG.Preference('Gnome')
     def priority(cls):
         if 'GnomeKeyring' not in globals():
             raise RuntimeError("GnomeKeyring module required")

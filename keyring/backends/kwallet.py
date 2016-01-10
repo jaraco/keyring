@@ -8,7 +8,6 @@ from ..backend import KeyringBackend
 from ..errors import PasswordDeleteError
 from ..errors import PasswordSetError, ExceptionRaisedContext
 from ..util import properties
-from ..util import XDG
 
 # mixing Qt4 & Qt5 causes errors and may segfault
 if 'PyQt5' not in sys.modules:
@@ -64,7 +63,6 @@ class QtKeyring(KeyringBackend):
 
     @properties.ClassProperty
     @classmethod
-    @XDG.Preference('KDE')
     def priority(cls):
         with ExceptionRaisedContext() as exc:
             KWallet.__name__
@@ -126,7 +124,6 @@ class DBusKeyring(KeyringBackend):
 
     @properties.ClassProperty
     @classmethod
-    @XDG.Preference('KDE')
     def priority(cls):
         if 'dbus' not in globals():
             raise RuntimeError('python-dbus not installed')

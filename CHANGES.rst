@@ -2,6 +2,15 @@
 CHANGES
 =======
 
+---
+7.1
+---
+
+* Issue #186: Removed preference for keyrings based on
+  ``XDG_CURRENT_DESKTOP`` as these values are to varied
+  to be a reliable indicator of which keyring implementation
+  might be preferable.
+
 -----
 7.0.2
 -----
