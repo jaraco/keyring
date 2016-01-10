@@ -3,6 +3,14 @@ CHANGES
 =======
 
 -----
+7.0.2
+-----
+
+* Issue #187: Restore ``Keyring`` name in ``kwallet`` backend.
+  Users of keyring 6.1 or later should prefer an explicit reference
+  to DBusKeyring or QtKeyring instead.
+
+-----
 7.0.1
 -----
 

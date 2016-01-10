@@ -196,3 +196,7 @@ class DBusKeyring(KeyringBackend):
         if not self.iface.hasEntry(self.handle, self.folder, key, self.appid):
             raise PasswordDeleteError("Password not found")
         self.iface.removeEntry(self.handle, self.folder, key, self.appid)
+
+
+# for backward compatibility
+Keyring = QtKeyring
