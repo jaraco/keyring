@@ -85,15 +85,22 @@ def _get_best_keyring():
     return max(keyrings, key=by_priority)
 
 
+def _load_keyring_class(keyring_name):
+    """
+    Load the keyring class indicated by name.
+    """
+    module_name, sep, class_name = keyring_name.rpartition('.')
+    __import__(module_name)
+    module = sys.modules[module_name]
+    return getattr(module, class_name)
+
+
 def load_keyring(keyring_name):
     """
     Load the specified keyring by name (a fully-qualified name to the
     keyring, such as 'keyring.backends.file.PlaintextKeyring')
     """
-    module_name, sep, class_name = keyring_name.rpartition('.')
-    __import__(module_name)
-    module = sys.modules[module_name]
-    class_ = getattr(module, class_name)
+    class_ = _load_keyring_class(keyring_name)
     # invoke the priority to ensure it is viable, or raise a RuntimeError
     class_.priority
     return class_()
