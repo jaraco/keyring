@@ -2,6 +2,14 @@
 CHANGES
 =======
 
+-----
+7.0.1
+-----
+
+* Issue #183 and Issue #185: Gnome keyring no longer relies
+  on environment variables, but instead relies on the GnomeKeyring
+  library to determine viability.
+
 ---
 7.0
 ---
