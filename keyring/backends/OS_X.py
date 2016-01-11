@@ -99,7 +99,7 @@ class Keyring(KeyringBackend):
         stdoutdata, stderrdata = call.communicate()
         return call.returncode
 
-    def get_password(self, service, username):
+    def get_password(self, service, username, keychain=None):
         if username is None:
             username = ''
         try:
@@ -111,6 +111,8 @@ class Keyring(KeyringBackend):
                 '-a', username,
                 '-s', service,
             ]
+            if keychain:
+                cmd.append(keychain)
             call = subprocess.Popen(
                 cmd,
                 stderr=subprocess.PIPE,
