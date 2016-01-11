@@ -1,7 +1,7 @@
 import sys
+import unittest
 
 from ..test_backend import BackendBasicTests
-from ..py30compat import unittest
 from keyring.backends import OS_X
 
 def is_osx_keychain_supported():

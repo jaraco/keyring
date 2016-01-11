@@ -4,8 +4,7 @@
 Test for simple escape/unescape routine
 """
 
-
-from .py30compat import unittest
+import unittest
 
 from keyring.util import escape
 

@@ -1,7 +1,7 @@
 import types
 import sys
+import unittest
 
-from ..py30compat import unittest
 from ..test_backend import BackendBasicTests
 from ..util import NoNoneDictMutator
 from keyring.backends import Gnome

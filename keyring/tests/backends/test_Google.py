@@ -1,7 +1,7 @@
 import codecs
 import base64
+import unittest
 
-from ..py30compat import unittest
 from ..test_backend import BackendBasicTests
 from keyring.backends import Google
 from keyring.credentials import SimpleCredential

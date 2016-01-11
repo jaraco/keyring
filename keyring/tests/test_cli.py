@@ -3,8 +3,7 @@ Test case to access the keyring from the command line
 """
 
 import os.path
-
-from keyring.tests.py30compat import unittest
+import unittest
 
 import keyring.backend
 from keyring import cli

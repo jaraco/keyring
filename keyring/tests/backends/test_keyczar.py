@@ -1,6 +1,5 @@
 import os
-
-from ..py30compat import unittest
+import unittest
 
 from keyring.backends import keyczar
 from .. import mocks

@@ -3,8 +3,7 @@ from __future__ import unicode_literals
 import os
 import tempfile
 import textwrap
-
-from ..py30compat import unittest
+import unittest
 
 import keyring.backend
 from keyring.backends import pyfs

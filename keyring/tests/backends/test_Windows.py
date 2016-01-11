@@ -1,8 +1,7 @@
 from __future__ import print_function
 
 import sys
-
-from ..py30compat import unittest
+import unittest
 
 import keyring.backends.Windows
 from ..test_backend import BackendBasicTests

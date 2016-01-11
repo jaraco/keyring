@@ -1,4 +1,4 @@
-from ..py30compat import unittest
+import unittest
 
 from keyring.backends import kwallet
 from ..test_backend import BackendBasicTests

@@ -1,4 +1,5 @@
-from ..py30compat import unittest
+import unittest
+
 from ..test_backend import BackendBasicTests
 from keyring.backends import SecretService
 from .. import util

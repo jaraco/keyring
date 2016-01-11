@@ -1,6 +1,6 @@
+import unittest
 import mock
 
-from ..py30compat import unittest
 from .test_file import FileKeyringTests
 
 from keyring.backends import file

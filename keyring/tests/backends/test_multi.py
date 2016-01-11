@@ -1,4 +1,4 @@
-from ..py30compat import unittest
+import unittest
 
 from keyring.backend import KeyringBackend
 from keyring.backends import multi

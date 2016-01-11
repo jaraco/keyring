@@ -2,8 +2,7 @@ import os
 import tempfile
 import sys
 import errno
-
-from ..py30compat import unittest
+import unittest
 
 from ..test_backend import BackendBasicTests
 from ..util import random_string
