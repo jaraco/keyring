@@ -42,7 +42,9 @@ def _check_old_config_root():
 		msg = ("Keyring config exists only in the old location "
 			"{config_file_old} and should be moved to {config_file_new} "
 			"to work with this version of keyring.")
-		raise RuntimeError(msg)
+		formatted = msg.format(config_file_new=config_file_new,
+					config_file_old=config_file_old)
+		raise RuntimeError(formatted)
 
 def _config_root_Linux():
 	"""
