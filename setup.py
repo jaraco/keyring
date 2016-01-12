@@ -10,11 +10,11 @@ import setuptools
 with io.open('README.rst', encoding='utf-8') as readme:
     long_description = readme.read()
 
-needs_pytest = {'pytest', 'test'}.intersection(sys.argv)
+needs_pytest = set(('pytest', 'test')).intersection(sys.argv)
 pytest_runner = ['pytest_runner'] if needs_pytest else []
-needs_sphinx = {'release', 'build_sphinx', 'upload_docs'}.intersection(sys.argv)
+needs_sphinx = set(('release', 'build_sphinx', 'upload_docs')).intersection(sys.argv)
 sphinx = ['sphinx'] if needs_sphinx else []
-needs_wheel = {'release', 'bdist_wheel'}.intersection(sys.argv)
+needs_wheel = set(('release', 'bdist_wheel')).intersection(sys.argv)
 wheel = ['wheel'] if needs_wheel else []
 
 test_requirements = [
