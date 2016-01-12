@@ -33,10 +33,10 @@ def get_keyring():
     return _keyring_backend
 
 
-def get_password(service_name, username, **kwargs):
+def get_password(service_name, username):
     """Get password from the specified service.
     """
-    return _keyring_backend.get_password(service_name, username, **kwargs)
+    return _keyring_backend.get_password(service_name, username)
 
 
 def set_password(service_name, username, password):
