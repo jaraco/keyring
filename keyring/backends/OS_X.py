@@ -24,14 +24,13 @@ class SecurityCommand(unicode_str):
 class Keyring(KeyringBackend):
     """Mac OS X Keychain"""
 
-    def __init__(self):
-        self.keychain = None
-
-
     # regex for extracting password from security call
     password_regex = re.compile("""password:\s*(?:0x(?P<hex>[0-9A-F]+)\s*)?"""
                                 """(?:"(?P<pw>.*)")?""")
     store = 'generic'
+
+    keychain = None
+    "Pathname to keychain filename, overriding default keychain."
 
     @properties.ClassProperty
     @classmethod
@@ -168,17 +167,3 @@ class Keyring(KeyringBackend):
                 raise del_error
         except:
             raise del_error
-
-    def set_keychain(self, keychain):
-        """Allows use of non-default keychain.
-
-        args:
-        keychain -- Absolute path to preferred keychain
-
-        OS X backend uses the ``security`` command, which can accept an
-        argument to specify a non-default keychain (default is usually
-        ``~/Library/Keychains/login.keychain``). This method allows keyring to
-        take advantage of this to also use non-default keychains if needed.
-        """
-
-        self.keychain = keychain
