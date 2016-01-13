@@ -3,6 +3,19 @@ CHANGES
 =======
 
 ---
+7.2
+---
+
+* Pull Request #190: OS X backend now exposes a ``keychain``
+  attribute, which if set will be used by ``get_password`` when
+  retrieving passwords. Useful in environments such as when
+  running under cron where the default keychain is not the same
+  as the default keychain in a login session. Example usage::
+
+    keyring.get_keyring().keychain = '/path/to/login.keychain'
+    pw = keyring.get_password(...)
+
+---
 7.1
 ---
 
