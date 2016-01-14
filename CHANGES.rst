@@ -3,6 +3,22 @@ CHANGES
 =======
 
 ---
+7.3
+---
+
+* Issue #117: Added preliminary support for filtering which
+  backends are acceptable. To enable the future behavior
+  of only loading recommended keyrings, call::
+
+    keyring.core.init_backend(limit=keyring.core.recommended)
+
+  In the future, only recommended keyrings will be loaded by
+  default. To provide forward compatibility to retain the current
+  behavior of loading any viable keyring::
+
+    keyring.core.init_backend(limit=None)
+
+---
 7.2
 ---
 
