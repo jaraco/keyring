@@ -8,6 +8,7 @@ import logging
 import operator
 
 from .py27compat import configparser, filter
+from .py33compat import max
 
 from . import logger
 from . import backend
