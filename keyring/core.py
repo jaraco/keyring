@@ -13,6 +13,7 @@ from .py27compat import configparser
 from . import logger
 from . import backend
 from .util import platform_ as platform
+from .util import once
 from .backends import fail
 
 
@@ -165,6 +166,7 @@ def _load_keyring_path(config):
     except (configparser.NoOptionError, configparser.NoSectionError):
         pass
 
+@once
 def _load_library_extensions():
     """
     Locate all setuptools entry points by the name 'keyring backends'
