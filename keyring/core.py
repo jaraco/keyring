@@ -54,39 +54,21 @@ def delete_password(service_name, username):
     _keyring_backend.delete_password(service_name, username)
 
 
-def init_backend():
+recommended = lambda backend: backend.priority >= 1
+by_priority = operator.attrgetter('priority')
+
+
+def init_backend(limit=None):
     """
     Load a keyring specified in the config file or infer the best available.
     """
     _load_library_extensions()
-    set_keyring(load_config() or _get_best_keyring())
+    keyrings = filter(limit, backend.get_all_keyring())
 
-
-by_priority = operator.attrgetter('priority')
-
-
-def _get_recommended_keyring():
-    """
-    Get the highest priority recommended keyring or a
-    fail.Keyring if no recommended keyring backend is
-    viable.
-    """
-    keyrings = (
-        keyring
-        for keyring in backend.get_all_keyring()
-        if keyring.priority >= 1
+    set_keyring(load_config or
+        load_config()
+        or max(keyrings, fail.keyring, key=by_priority)
     )
-    return max(keyrings, fail.Keyring, key=by_priority)
-
-
-def _get_best_keyring():
-    """
-    Return the best keyring backend for the given environment based on
-    priority.
-    """
-    keyrings = backend.get_all_keyring()
-    # get the most recommended one
-    return max(keyrings, key=by_priority)
 
 
 def _load_keyring_class(keyring_name):
