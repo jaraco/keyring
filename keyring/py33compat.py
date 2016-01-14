@@ -3,7 +3,7 @@ Compatibility support for Python 3.3. Remove when Python 3.3 support is
 no longer required.
 """
 
-import builtins
+from .py27compat import builtins
 
 
 def max(*args, **kwargs):
