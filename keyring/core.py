@@ -1,8 +1,7 @@
 """
-core.py
-
-Created by Kang Zhang on 2009-07-09
+Core API functions and initialization routines.
 """
+
 import os
 import sys
 import logging
