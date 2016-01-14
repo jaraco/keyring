@@ -65,9 +65,9 @@ def init_backend(limit=None):
     _load_library_extensions()
     keyrings = filter(limit, backend.get_all_keyring())
 
-    set_keyring(load_config or
+    set_keyring(
         load_config()
-        or max(keyrings, fail.keyring, key=by_priority)
+        or max(keyrings, default=fail.Keyring, key=by_priority)
     )
 
 
