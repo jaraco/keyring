@@ -22,8 +22,6 @@ def max(*args, **kwargs):
     'b'
     """
     missing = object()
-    if not 'default' in kwargs:
-        return builtins.max(*args, **kwargs)
     default = kwargs.pop('default', missing)
     try:
         return builtins.max(*args, **kwargs)
