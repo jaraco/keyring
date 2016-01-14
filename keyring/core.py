@@ -13,6 +13,8 @@ from .py27compat import configparser
 from . import logger
 from . import backend
 from .util import platform_ as platform
+from .backends import fail
+
 
 log = logging.getLogger(__name__)
 
@@ -64,15 +66,16 @@ by_priority = operator.attrgetter('priority')
 
 def _get_recommended_keyring():
     """
-    Get the highest priority recommended keyring or None if
-    no recommended keyring backend is viable.
+    Get the highest priority recommended keyring or a
+    fail.Keyring if no recommended keyring backend is
+    viable.
     """
     keyrings = (
         keyring
         for keyring in backend.get_all_keyring()
         if keyring.priority >= 1
     )
-    return max(keyrings, None, key=by_priority)
+    return max(keyrings, fail.Keyring, key=by_priority)
 
 
 def _get_best_keyring():
