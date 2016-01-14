@@ -1,8 +1,7 @@
 # Used by pyinstaller to expose hidden imports
 
 # TODO: can this be loaded from keyring.backend directly?
-_backend_mod_names = ('file', 'Gnome', 'Google', 'keyczar', 'kwallet', 'multi',
-    'OS_X', 'pyfs', 'SecretService', 'Windows')
+_backend_mod_names = 'kwallet', 'OS_X', 'SecretService', 'Windows'
 
 hiddenimports = [
     'keyring.backends.' + mod_name
