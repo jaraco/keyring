@@ -2,6 +2,15 @@
 CHANGES
 =======
 
+-----
+7.3.1
+-----
+
+* Issue #194: Redirect away from docs until they have something
+  more than the changelog. Users seeking the changelog will
+  want to follow the `direct link
+  <https://pythonhosted.org/keyring/history.html>`_.
+
 ---
 7.3
 ---
