@@ -82,7 +82,6 @@ def _load_keyring_class(keyring_name):
     ...      'keyring.backends.OS_X.Keyring',
     ...      'keyring.backends.kwallet.DBusKeyring',
     ...      'keyring.backends.SecretService.Keyring',
-    ...      'keyring.backends.Gnome.Keyring',
     ...  ]
     >>> list(map(_load_keyring_class, popular_names))
     [...]
@@ -90,7 +89,6 @@ def _load_keyring_class(keyring_name):
     These legacy names are retained for compatibility.
 
     >>> legacy_names = [
-    ...      'keyring.backends.kwallet.Keyring',
     ...  ]
     >>> list(map(_load_keyring_class, legacy_names))
     [...]

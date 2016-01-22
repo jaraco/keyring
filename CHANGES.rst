@@ -2,6 +2,33 @@
 CHANGES
 =======
 
+---
+8.0
+---
+
+* Issue #117: Removed all but the preferred keyring backends
+  for each of the major desktop platforms:
+
+    - keyring.backends.kwallet.DBusKeyring
+    - keyring.backends.OS_X.Keyring
+    - keyring.backends.SecretService.Keyring
+    - keyring.backends.Windows.WinVaultKeyring
+
+  All other keyrings
+  have been moved to a new package, `keyrings.alt
+  <https://pypi.python.org/pypi/keyrings.alt>`_ and
+  backward-compatibility aliases removed.
+  To retain
+  availability of these less preferred keyrings, include
+  that package in your installation (install both keyring
+  and keyrings.alt).
+
+  As these keyrings have moved, any keyrings indicated
+  explicitly in configuration will need to be updated to
+  replace "keyring.backends." with "keyrings.alt.". For
+  example, "keyring.backends.file.PlaintextKeyring"
+  becomes "keyrings.alt.file.PlaintextKeyring".
+
 -----
 7.3.1
 -----
