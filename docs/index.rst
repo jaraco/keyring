@@ -1,6 +1,9 @@
 Welcome to keyring documentation!
 ========================================
 
+.. meta::
+   :http-equiv=refresh: 0;URL=https://pypi.python.org/pypi/keyring
+
 .. toctree::
    :maxdepth: 1
 
