@@ -1,8 +1,8 @@
+*********************************
 Welcome to keyring documentation!
-========================================
+*********************************
 
-.. meta::
-   :http-equiv=refresh: 0;URL=https://pypi.python.org/pypi/keyring
+.. include:: ../README.rst 
 
 .. toctree::
    :maxdepth: 1
@@ -16,8 +16,9 @@ Welcome to keyring documentation!
     :show-inheritance:
 
 
+******************
 Indices and tables
-==================
+******************
 
 * :ref:`genindex`
 * :ref:`modindex`
