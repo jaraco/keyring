@@ -6,3 +6,9 @@ logger = logging.getLogger('keyring')
 from .core import (set_keyring, get_keyring, set_password, get_password,
                   delete_password)
 from .getpassbackend import get_password as get_pass_get_password
+
+try:
+	import pkg_resources
+	__version__ = pkg_resources.require('keyring')[0].version
+except ImportError:
+	__version__ = 'unknown'

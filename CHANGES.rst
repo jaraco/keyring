@@ -3,6 +3,12 @@ CHANGES
 =======
 
 ---
+8.1
+---
+
+* Issue #197: Add ``__version__`` attribute to keyring module.
+
+---
 8.0
 ---
 
