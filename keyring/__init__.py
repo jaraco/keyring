@@ -10,5 +10,5 @@ from .getpassbackend import get_password as get_pass_get_password
 try:
 	import pkg_resources
 	__version__ = pkg_resources.require('keyring')[0].version
-except ImportError:
+except Exception:
 	__version__ = 'unknown'
