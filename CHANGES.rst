@@ -3,6 +3,13 @@ CHANGES
 =======
 
 ---
+8.2
+---
+
+* Update readme to include how-to use with Linux
+  non-graphical environments.
+
+---
 8.1
 ---
 
