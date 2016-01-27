@@ -175,6 +175,29 @@ Here's an example demonstrating how to invoke ``set_keyring``::
         print("failed to store password")
     print("password", keyring.get_password("demo-service", "tarek"))
 
+Using Keyring on headless Linux systems
+=======================================
+
+It is possible to use the SecretService backend on Linux systems without
+X11 server available (only D-Bus is required). To do that, you need the
+following:
+
+* Install the `GNOME Keyring`_ daemon.
+* Start a D-Bus session, e.g. run ``dbus-run-session -- sh`` and run
+  the following commands inside that shell.
+* Run ``gnome-keyring-daemon`` with ``--unlock`` option. The description of
+  that option says:
+
+      Read a password from stdin, and use it to unlock the login keyring
+      or create it if the login keyring does not exist.
+
+  When that command is started, enter your password into stdin and
+  press Ctrl+D (end of data). After that the daemon will fork into
+  background (use ``--foreground`` option to prevent that).
+* Now you can use the SecretService backend of Keyring. Remember to
+  run your application in the same D-Bus session as the daemon.
+
+.. _GNOME Keyring: https://wiki.gnome.org/Projects/GnomeKeyring
 
 -----------------------------------------------
 Integrate the keyring lib with your application
