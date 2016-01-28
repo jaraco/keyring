@@ -284,9 +284,9 @@ the environment by running::
 
     python setup.py develop
 
-You then need to install the test requirements with something like:
+You then need to install the test requirements with something like::
 
-    pip install `python -c "import setup, subprocess; print(subprocess.list2cmdline(setup.test_requirements))"`
+    pip install $( python -c "import setup, subprocess; print(subprocess.list2cmdline(setup.test_requirements))" )
 
 Then, invoke your favorite test runner, e.g.::
 
