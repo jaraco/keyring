@@ -19,7 +19,6 @@ wheel = ['wheel'] if needs_wheel else []
 
 test_requirements = [
     'pytest>=2.8',
-    'mock',
 ]
 
 setup_params = dict(
