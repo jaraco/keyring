@@ -9,6 +9,8 @@ CHANGES
 * Issue #207: Library now requires win32ctypes on Windows
   systems, which will be installed automatically by
   Setuptools 0.7 or Pip 6 (or later).
+* Actually removed QtKwallet, which was meant to be dropped in
+  8.0 but somehow remained.
 
 ---
 8.2
