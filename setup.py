@@ -38,6 +38,7 @@ setup_params = dict(
     ],
     extras_require={
         'test': test_requirements,
+        ':sys_platform=="win32"': ['win32ctypes'],
     },
     setup_requires=[
         'setuptools_scm>=1.9',

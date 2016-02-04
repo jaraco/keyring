@@ -3,6 +3,14 @@ CHANGES
 =======
 
 ---
+8.3
+---
+
+* Issue #207: Library now requires win32ctypes on Windows
+  systems, which will be installed automatically by
+  Setuptools 0.7 or Pip 6 (or later).
+
+---
 8.2
 ---
 
