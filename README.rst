@@ -14,15 +14,19 @@ from python. It can be used in any application that needs safe password storage.
 The keyring library is licensed under both the `MIT license
 <http://opensource.org/licenses/MIT>`_ and the PSF license.
 
-These primary keyring services are supported by the Python keyring lib:
+These recommended keyring backends are supported by the Python keyring lib:
 
-* Mac OS X Keychain
-* Linux Secret Service
-* Windows Credential Vault
+* Mac OS X `Keychain
+  <https://en.wikipedia.org/wiki/Keychain_%28software%29>`_
+* Linux Secret Service (requires `secretstorage
+  <https://pypi.python.org/pypi/secretstorage>`_)
+* `KWallet <https://en.wikipedia.org/wiki/KWallet>`_
+  (requires `dbus <https://pypi.python.org/pypi/dbus-python>`_)
+* `Windows Credential Vault
+  <http://windows.microsoft.com/en-us/windows7/what-is-credential-manager>`_
 
-Other keyring implementations are provided as well. For more detail, `browse
-the source
-<https://github.com/jaraco/keyring/tree/master/keyring/backends>`_.
+Other keyring implementations are provided in the `keyrings.alt
+package <https://pypi.python.org/pypi/keyrings.alt>`_.
 
 -------------------------
 Installation Instructions
