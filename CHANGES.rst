@@ -3,6 +3,15 @@ CHANGES
 =======
 
 ---
+8.4
+---
+
+* Pull Request #209: Better error message when no backend is
+  available (indicating keyrings.alt as a quick workaround).
+* Pull Request #208: Fix pywin32-ctypes package name in
+  requirements.
+
+---
 8.3
 ---
 
