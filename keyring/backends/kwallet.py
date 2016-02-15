@@ -14,6 +14,9 @@ except ImportError:
 class DBusKeyring(KeyringBackend):
     """KDE KWallet via D-Bus"""
 
+    folder = 'Python'
+    appid = 'Python program'
+
     @properties.ClassProperty
     @classmethod
     def priority(cls):
@@ -38,8 +41,6 @@ class DBusKeyring(KeyringBackend):
             return True
         bus = dbus.SessionBus()
         wId = 0
-        self.folder = 'Python'
-        self.appid = 'Python program'
         try:
             remote_obj = bus.get_object('org.kde.kwalletd', '/modules/kwalletd')
             self.iface = dbus.Interface(remote_obj, 'org.kde.KWallet')
