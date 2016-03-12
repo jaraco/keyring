@@ -167,3 +167,96 @@ class Keyring(KeyringBackend):
                 raise del_error
         except:
             raise del_error
+
+
+from . import _OS_X_API as api
+
+
+def password_set(realmstring, username, password):
+    if username is None:
+        username = ''
+
+    username = username.encode('utf-8')
+    realmstring = realmstring.encode('utf-8')
+    password = password.encode('utf-8')
+    with api.open('login.keychain') as keychain:
+        item = api.sec_keychain_item_ref()
+        status = api.SecKeychainFindGenericPassword(
+            keychain,
+            len(realmstring), realmstring,
+            len(username), username, None,
+            None, item)
+        if status:
+            if status == api.aerror.item_not_found:
+                status = api.SecKeychainAddGenericPassword(
+                    keychain,
+                    len(realmstring), realmstring,
+                    len(username), username,
+                    len(password), password, None)
+        else:
+            status = api.SecKeychainItemModifyAttributesAndData(
+                item, None, len(password), password)
+            api._core.CFRelease(item)
+
+        if status:
+            raise OSError("Can't store password in keychain")
+
+
+def password_get(realmstring, username):
+    if username is None:
+        username = ''
+
+    username = username.encode('utf-8')
+    realmstring = realmstring.encode('utf-8')
+    with api.open('login.keychain') as keychain:
+        length = api.c_uint32()
+        data = api.c_void_p()
+        status = api.SecKeychainFindGenericPassword(
+            keychain,
+            len(realmstring),
+            realmstring,
+            len(username),
+            username,
+            length,
+            data,
+            None,
+        )
+        if status == 0:
+            password = api.create_string_buffer(length.value)
+            api.memmove(password, data.value, length.value)
+            password = password.raw.decode('utf-8')
+            api.SecKeychainItemFreeContent(None, data)
+        elif status == api.error.item_not_found:
+            password = None
+        else:
+            raise OSError("Can't fetch password from system")
+        return password
+
+
+def password_delete(realmstring, username):
+    if username is None:
+        username = ''
+
+    username = username.encode('utf-8')
+    realmstring = realmstring.encode('utf-8')
+    with open('login.keychain') as keychain:
+        length = api.c_uint32()
+        data = api.c_void_p()
+        item = api.sec_keychain_item_ref()
+        status = api.SecKeychainFindGenericPassword(
+            keychain,
+            len(realmstring),
+            realmstring,
+            len(username),
+            username,
+            length,
+            data,
+            item,
+        )
+        if status == 0:
+            api.SecKeychainItemDelete(item)
+            api._core.CFRelease(item)
+        elif status == api.error.item_not_found:
+            pass
+        else:
+            raise OSError("Can't delete password from system")
