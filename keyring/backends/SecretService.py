@@ -1,7 +1,6 @@
 import logging
 
 from ..util import properties
-from ..util import XDG
 from ..backend import KeyringBackend
 from ..errors import (InitError, PasswordDeleteError,
     ExceptionRaisedContext)
@@ -19,7 +18,6 @@ class Keyring(KeyringBackend):
 
     @properties.ClassProperty
     @classmethod
-    @XDG.Preference('Gnome')
     def priority(cls):
         with ExceptionRaisedContext() as exc:
             secretstorage.__name__

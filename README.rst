@@ -14,15 +14,19 @@ from python. It can be used in any application that needs safe password storage.
 The keyring library is licensed under both the `MIT license
 <http://opensource.org/licenses/MIT>`_ and the PSF license.
 
-These primary keyring services are supported by the Python keyring lib:
+These recommended keyring backends are supported by the Python keyring lib:
 
-* Mac OS X Keychain
-* Linux Secret Service
-* Windows Credential Vault
+* Mac OS X `Keychain
+  <https://en.wikipedia.org/wiki/Keychain_%28software%29>`_
+* Linux Secret Service (requires `secretstorage
+  <https://pypi.python.org/pypi/secretstorage>`_)
+* `KWallet <https://en.wikipedia.org/wiki/KWallet>`_
+  (requires `dbus <https://pypi.python.org/pypi/dbus-python>`_)
+* `Windows Credential Vault
+  <http://windows.microsoft.com/en-us/windows7/what-is-credential-manager>`_
 
-Other keyring implementations are provided as well. For more detail, `browse
-the source
-<https://github.com/jaraco/keyring/tree/master/keyring/backends>`_.
+Other keyring implementations are provided in the `keyrings.alt
+package <https://pypi.python.org/pypi/keyrings.alt>`_.
 
 -------------------------
 Installation Instructions
@@ -54,6 +58,30 @@ and `keyring.get_password`:
     >>> keyring.set_password("system", "username", "password")
     >>> keyring.get_password("system", "username")
     'password'
+
+Command-line Utility
+====================
+
+Keyring supplies a ``keyring`` command which is installed with the
+package. After installing keyring in most environments, the
+command should be available for setting, getting, and deleting
+passwords. For more information on usage, invoke with no arguments
+or with ``--help`` as so::
+
+    $ keyring --help
+    $ keyring set system username
+    Password for 'username' in 'system':
+    $ keyring get system username
+    password
+
+The command-line functionality is also exposed as an executable
+package, suitable for invoking from Python like so::
+
+    $ python -m keyring --help
+    $ python -m keyring set system username
+    Password for 'username' in 'system':
+    $ python -m keyring get system username
+    password
 
 --------------------------
 Configure your keyring lib
@@ -151,6 +179,29 @@ Here's an example demonstrating how to invoke ``set_keyring``::
         print("failed to store password")
     print("password", keyring.get_password("demo-service", "tarek"))
 
+Using Keyring on headless Linux systems
+=======================================
+
+It is possible to use the SecretService backend on Linux systems without
+X11 server available (only D-Bus is required). To do that, you need the
+following:
+
+* Install the `GNOME Keyring`_ daemon.
+* Start a D-Bus session, e.g. run ``dbus-run-session -- sh`` and run
+  the following commands inside that shell.
+* Run ``gnome-keyring-daemon`` with ``--unlock`` option. The description of
+  that option says:
+
+      Read a password from stdin, and use it to unlock the login keyring
+      or create it if the login keyring does not exist.
+
+  When that command is started, enter your password into stdin and
+  press Ctrl+D (end of data). After that the daemon will fork into
+  background (use ``--foreground`` option to prevent that).
+* Now you can use the SecretService backend of Keyring. Remember to
+  run your application in the same D-Bus session as the daemon.
+
+.. _GNOME Keyring: https://wiki.gnome.org/Projects/GnomeKeyring
 
 -----------------------------------------------
 Integrate the keyring lib with your application
@@ -204,28 +255,27 @@ Travis-CI.
 .. _BuildStatus: http://travis-ci.org/jaraco/keyring
 
 To run the tests yourself, you'll want keyring installed to some environment
-in which it can be tested. Three recommended techniques are described below.
+in which it can be tested. Recommended techniques are described below.
 
 Using pytest runner
 -------------------
 
 Keyring is instrumented with `pytest runner
 <https://bitbucket.org/jaraco/pytest-runner>`_. Thus, you may invoke the tests
-from any supported Python (with distribute installed) using this command::
+from any supported Python (with setuptools installed) using this command::
 
-    python setup.py ptr
+    python setup.py test
 
 pytest runner will download any unmet dependencies and run the tests using
 `pytest <https://bitbucket.org/hpk42/pytest>`_.
 
 This technique is the one used by the Travis-CI script.
 
-Using virtualenv and pytest/nose/unittest2
-------------------------------------------
+Using virtualenv and pytest/nose/unittest
+-----------------------------------------
 
 Pytest and Nose are two popular test runners that will discover tests and run
-them. Unittest (unittest2 under Python 2.6) also has a mode
-to discover tests.
+them. Unittest also has a mode to discover tests.
 
 First, however, these test runners typically need a test environment in which
 to run. It is recommended that you install keyring to a virtual environment
@@ -238,6 +288,10 @@ the environment by running::
 
     python setup.py develop
 
+You then need to install the test requirements with something like::
+
+    pip install $( python -c "import setup, subprocess; print(subprocess.list2cmdline(setup.test_requirements))" )
+
 Then, invoke your favorite test runner, e.g.::
 
     py.test
@@ -246,22 +300,9 @@ or::
 
     nosetests
 
-Using buildout
---------------
-
-Keyring supplies a buildout.cfg for use with buildout. If you have buildout
-installed, tests can be invoked as so::
-
-    1. bin/buildout  # prepare the buildout.
-    2. bin/test  # execute the test runner.
-
-For more information about the options that the script provides do execute::
-
-    python bin/test --help
-
--------
-Credits
--------
+----------
+Background
+----------
 
 The project was based on Tarek Ziade's idea in `this post`_. Kang Zhang
 initially carried it out as a `Google Summer of Code`_ project, and Tarek
@@ -269,6 +310,3 @@ mentored Kang on this project.
 
 .. _this post: http://tarekziade.wordpress.com/2009/03/27/pycon-hallway-session-1-a-keyring-library-for-python/
 .. _Google Summer of Code: http://socghop.appspot.com/
-
-See CONTRIBUTORS.txt for a complete list of contributors.
-

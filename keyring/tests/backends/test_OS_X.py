@@ -1,7 +1,7 @@
 import sys
+import unittest
 
 from ..test_backend import BackendBasicTests
-from ..py30compat import unittest
 from keyring.backends import OS_X
 
 def is_osx_keychain_supported():
@@ -13,11 +13,6 @@ class OSXKeychainTestCase(BackendBasicTests, unittest.TestCase):
 
     def init_keyring(self):
         return OS_X.Keyring()
-
-    @unittest.expectedFailure
-    def test_delete_present(self):
-        """Not implemented"""
-        super(OSXKeychainTestCase, self).test_delete_present()
 
 class SecurityCommandTestCase(unittest.TestCase):
     def test_SecurityCommand(self):

@@ -1,17 +1,21 @@
 """
-core.py
-
-Created by Kang Zhang on 2009-07-09
+Core API functions and initialization routines.
 """
+
 import os
 import sys
 import logging
+import operator
 
-from .py27compat import configparser
+from .py27compat import configparser, filter
+from .py33compat import max
 
 from . import logger
 from . import backend
 from .util import platform_ as platform
+from .util import once
+from .backends import fail
+
 
 log = logging.getLogger(__name__)
 
@@ -50,24 +54,49 @@ def delete_password(service_name, username):
     _keyring_backend.delete_password(service_name, username)
 
 
-def init_backend():
+recommended = lambda backend: backend.priority >= 1
+by_priority = operator.attrgetter('priority')
+
+
+def init_backend(limit=None):
     """
     Load a keyring specified in the config file or infer the best available.
     """
     _load_library_extensions()
-    set_keyring(load_config() or _get_best_keyring())
+    keyrings = filter(limit, backend.get_all_keyring())
+
+    set_keyring(
+        load_config()
+        or max(keyrings, default=fail.Keyring, key=by_priority)
+    )
 
 
-def _get_best_keyring():
+def _load_keyring_class(keyring_name):
     """
-    Return the best keyring backend for the given environment based on
-    priority.
+    Load the keyring class indicated by name.
+
+    These popular names are tested to ensure their presence.
+
+    >>> popular_names = [
+    ...      'keyring.backends.Windows.WinVaultKeyring',
+    ...      'keyring.backends.OS_X.Keyring',
+    ...      'keyring.backends.kwallet.DBusKeyring',
+    ...      'keyring.backends.SecretService.Keyring',
+    ...  ]
+    >>> list(map(_load_keyring_class, popular_names))
+    [...]
+
+    These legacy names are retained for compatibility.
+
+    >>> legacy_names = [
+    ...  ]
+    >>> list(map(_load_keyring_class, legacy_names))
+    [...]
     """
-    keyrings = backend.get_all_keyring()
-    # rank by priority
-    keyrings.sort(key = lambda x: -x.priority)
-    # get the most recommended one
-    return keyrings[0]
+    module_name, sep, class_name = keyring_name.rpartition('.')
+    __import__(module_name)
+    module = sys.modules[module_name]
+    return getattr(module, class_name)
 
 
 def load_keyring(keyring_name):
@@ -75,10 +104,7 @@ def load_keyring(keyring_name):
     Load the specified keyring by name (a fully-qualified name to the
     keyring, such as 'keyring.backends.file.PlaintextKeyring')
     """
-    module_name, sep, class_name = keyring_name.rpartition('.')
-    __import__(module_name)
-    module = sys.modules[module_name]
-    class_ = getattr(module, class_name)
+    class_ = _load_keyring_class(keyring_name)
     # invoke the priority to ensure it is viable, or raise a RuntimeError
     class_.priority
     return class_()
@@ -120,6 +146,7 @@ def _load_keyring_path(config):
     except (configparser.NoOptionError, configparser.NoSectionError):
         pass
 
+@once
 def _load_library_extensions():
     """
     Locate all setuptools entry points by the name 'keyring backends'

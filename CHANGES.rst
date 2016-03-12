@@ -3,6 +3,195 @@ CHANGES
 =======
 
 ---
+8.4
+---
+
+* Pull Request #209: Better error message when no backend is
+  available (indicating keyrings.alt as a quick workaround).
+* Pull Request #208: Fix pywin32-ctypes package name in
+  requirements.
+
+---
+8.3
+---
+
+* Issue #207: Library now requires win32ctypes on Windows
+  systems, which will be installed automatically by
+  Setuptools 0.7 or Pip 6 (or later).
+* Actually removed QtKwallet, which was meant to be dropped in
+  8.0 but somehow remained.
+
+---
+8.2
+---
+
+* Update readme to include how-to use with Linux
+  non-graphical environments.
+
+---
+8.1
+---
+
+* Issue #197: Add ``__version__`` attribute to keyring module.
+
+---
+8.0
+---
+
+* Issue #117: Removed all but the preferred keyring backends
+  for each of the major desktop platforms:
+
+    - keyring.backends.kwallet.DBusKeyring
+    - keyring.backends.OS_X.Keyring
+    - keyring.backends.SecretService.Keyring
+    - keyring.backends.Windows.WinVaultKeyring
+
+  All other keyrings
+  have been moved to a new package, `keyrings.alt
+  <https://pypi.python.org/pypi/keyrings.alt>`_ and
+  backward-compatibility aliases removed.
+  To retain
+  availability of these less preferred keyrings, include
+  that package in your installation (install both keyring
+  and keyrings.alt).
+
+  As these keyrings have moved, any keyrings indicated
+  explicitly in configuration will need to be updated to
+  replace "keyring.backends." with "keyrings.alt.". For
+  example, "keyring.backends.file.PlaintextKeyring"
+  becomes "keyrings.alt.file.PlaintextKeyring".
+
+-----
+7.3.1
+-----
+
+* Issue #194: Redirect away from docs until they have something
+  more than the changelog. Users seeking the changelog will
+  want to follow the `direct link
+  <https://pythonhosted.org/keyring/history.html>`_.
+
+---
+7.3
+---
+
+* Issue #117: Added support for filtering which
+  backends are acceptable. To limit to only loading recommended
+  keyrings (those with priority >= 1), call::
+
+    keyring.core.init_backend(limit=keyring.core.recommended)
+
+---
+7.2
+---
+
+* Pull Request #190: OS X backend now exposes a ``keychain``
+  attribute, which if set will be used by ``get_password`` when
+  retrieving passwords. Useful in environments such as when
+  running under cron where the default keychain is not the same
+  as the default keychain in a login session. Example usage::
+
+    keyring.get_keyring().keychain = '/path/to/login.keychain'
+    pw = keyring.get_password(...)
+
+---
+7.1
+---
+
+* Issue #186: Removed preference for keyrings based on
+  ``XDG_CURRENT_DESKTOP`` as these values are to varied
+  to be a reliable indicator of which keyring implementation
+  might be preferable.
+
+-----
+7.0.2
+-----
+
+* Issue #187: Restore ``Keyring`` name in ``kwallet`` backend.
+  Users of keyring 6.1 or later should prefer an explicit reference
+  to DBusKeyring or QtKeyring instead.
+
+-----
+7.0.1
+-----
+
+* Issue #183 and Issue #185: Gnome keyring no longer relies
+  on environment variables, but instead relies on the GnomeKeyring
+  library to determine viability.
+
+---
+7.0
+---
+
+* Issue #99: Keyring now expects the config file to be located
+  in the XDG_CONFIG_HOME rather than XDG_DATA_HOME and will
+  fail to start if the config is found in the old location but not
+  the new. On systems where the two locations are distinct,
+  simply copy or symlink the config to remain compatible with
+  older versions or move the file to work only with 7.0 and later.
+
+* Replaced Pull Request #182 with a conditional SessionBus
+  construction, based on subsequent discussion.
+
+-----
+6.1.1
+-----
+
+* Pull Request #182: Prevent DBus from indicating as a viable
+  backend when no viable X DISPLAY variable is present.
+
+---
+6.1
+---
+
+* Pull Request #174: Add DBus backend for KWallet, preferred to Qt
+  backend. Theoretically, it should be auto-detected based on
+  available libraries and interchangeable with the Qt backend.
+
+---
+6.0
+---
+
+* Drop support for Python 2.6.
+
+-----
+5.7.1
+-----
+
+* Updated project metadata to match Github hosting and
+  generally refreshed the metadata structure to match
+  practices with other projects.
+
+---
+5.7
+---
+
+* Issue #177: Resolve default keyring name on Gnome using the API.
+* Issue #145: Add workaround for password exposure through
+  process status for most passwords containing simple
+  characters.
+
+---
+5.6
+---
+
+* Allow keyring to be invoked from command-line with
+  ``python -m keyring``.
+
+-----
+5.5.1
+-----
+
+* Issue #156: Fixed test failures in ``pyfs`` keyring related to
+  0.5 release.
+
+---
+5.5
+---
+
+* Pull Request #176: Use recommended mechanism for checking
+  GnomeKeyring version.
+
+---
 5.4
 ---
 
