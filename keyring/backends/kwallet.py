@@ -27,9 +27,9 @@ class DBusKeyring(KeyringBackend):
         except dbus.DBusException as exc:
             raise RuntimeError(exc.get_dbus_message())
         try:
-            bus.get_object('org.kde.kwalletd', '/modules/kwalletd')
+            bus.get_object('org.kde.kwalletd5', '/modules/kwalletd5')
         except dbus.DBusException:
-            raise RuntimeError('cannot connect to org.kde.kwalletd')
+            raise RuntimeError('cannot connect to org.kde.kwalletd5')
         return 5.1
 
     def __init__(self, *arg, **kw):
@@ -42,7 +42,7 @@ class DBusKeyring(KeyringBackend):
         bus = dbus.SessionBus()
         wId = 0
         try:
-            remote_obj = bus.get_object('org.kde.kwalletd', '/modules/kwalletd')
+            remote_obj = bus.get_object('org.kde.kwalletd5', '/modules/kwalletd5')
             self.iface = dbus.Interface(remote_obj, 'org.kde.KWallet')
             self.handle = self.iface.open(
                         self.iface.networkWallet(), wId, self.appid)

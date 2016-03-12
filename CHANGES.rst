@@ -3,6 +3,13 @@ CHANGES
 =======
 
 ---
+8.5
+---
+
+* Issue #168: Now prefer KF5 Kwallet to KF4. Users relying
+  on KF4 must use prior releases.
+
+---
 8.4
 ---
 
