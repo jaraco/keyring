@@ -122,7 +122,7 @@ class Keyring(KeyringBackend):
                 stdout=subprocess.PIPE)
             stdoutdata, stderrdata = call.communicate()
             code = call.returncode
-            if code is not 0:
+            if code != 0:
                 raise OSError("Can't fetch password from system")
             output = stderrdata.decode()
             # check for empty password.
@@ -163,7 +163,7 @@ class Keyring(KeyringBackend):
             stdoutdata, stderrdata = call.communicate()
             code = call.returncode
             # check return code.
-            if code is not 0:
+            if code != 0:
                 raise del_error
         except:
             raise del_error
