@@ -100,8 +100,6 @@ class Keyring(KeyringBackend):
             return password
 
     def delete_password(self, service, username):
-        del_error = PasswordDeleteError("Can't delete password in keychain")
-
         if username is None:
             username = ''
 
@@ -121,10 +119,8 @@ class Keyring(KeyringBackend):
                 data,
                 item,
             )
-            if status == 0:
-                api.SecKeychainItemDelete(item)
-                api._core.CFRelease(item)
-            elif status == api.error.item_not_found:
-                raise del_error
-            else:
-                raise del_error
+            if status != 0:
+                raise PasswordDeleteError("Can't delete password in keychain")
+
+            api.SecKeychainItemDelete(item)
+            api._core.CFRelease(item)
