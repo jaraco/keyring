@@ -2,6 +2,14 @@
 CHANGES
 =======
 
+-----
+8.5.1
+-----
+
+* Pull Request #216: Kwallet backend now has lower
+  priority than the preferred SecretService backend,
+  now that the desktop check is no longer in place.
+
 ---
 8.5
 ---
