@@ -1,12 +1,10 @@
 import platform
-import re
 import ctypes
 
 from ..backend import KeyringBackend
 from ..errors import PasswordSetError
 from ..errors import PasswordDeleteError
 from ..util import properties
-from ..py27compat import unicode_str
 
 try:
     from . import _OS_X_API as api
@@ -14,23 +12,8 @@ except Exception:
     pass
 
 
-class SecurityCommand(unicode_str):
-    """
-    A string suitable for passing as the 'command' parameter to the
-    OS X 'security' command.
-    """
-    def __new__(cls, cmd, store='generic'):
-        cmd = '%(cmd)s-%(store)s-password' % vars()
-        return super(SecurityCommand, cls).__new__(cls, cmd)
-
-
 class Keyring(KeyringBackend):
     """Mac OS X Keychain"""
-
-    # regex for extracting password from security call
-    password_regex = re.compile("""password:\s*(?:0x(?P<hex>[0-9A-F]+)\s*)?"""
-                                """(?:"(?P<pw>.*)")?""")
-    store = 'generic'
 
     keychain = None
     "Pathname to keychain filename, overriding default keychain."
