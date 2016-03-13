@@ -1,6 +1,6 @@
 import contextlib
 import ctypes
-from ctypes import c_void_p, c_uint32, c_int32, c_char_p, POINTER
+from ctypes import c_void_p, c_uint16, c_uint32, c_int32, c_char_p, POINTER
 
 sec_keychain_ref = sec_keychain_item_ref = c_void_p
 OS_status = c_int32
@@ -38,11 +38,31 @@ SecKeychainFindGenericPassword.argtypes = (
     c_char_p,
     c_uint32,
     c_char_p,
-    POINTER(c_uint32),
-    POINTER(c_void_p),
-    POINTER(sec_keychain_item_ref),
+    POINTER(c_uint32),  # passwordLength
+    POINTER(c_void_p),  # passwordData
+    POINTER(sec_keychain_item_ref),  # itemRef
 )
 SecKeychainFindGenericPassword.restype = OS_status
+
+SecKeychainFindInternetPassword = _sec.SecKeychainFindInternetPassword
+SecKeychainFindInternetPassword.argtypes = (
+    sec_keychain_ref, # keychainOrArray
+    c_uint32,  # serverNameLength
+    c_char_p,  # serverName
+    c_uint32,  # securityDomainLength
+    c_char_p,  # securityDomain
+    c_uint32,  # accountNameLength
+    c_char_p,  # accountName
+    c_uint32,  # pathLength
+    c_char_p,  # path
+    c_uint16,  # port
+    c_void_p,  # SecProtocolType protocol,
+    c_void_p,  # SecAuthenticationType authenticationType,
+    POINTER(c_uint32),  # passwordLength
+    POINTER(c_void_p),  # passwordData
+    POINTER(sec_keychain_item_ref),  # itemRef
+)
+SecKeychainFindInternetPassword.restype = OS_status
 
 SecKeychainAddGenericPassword = _sec.SecKeychainAddGenericPassword
 SecKeychainAddGenericPassword.argtypes = (
