@@ -1,9 +1,6 @@
 import contextlib
 import ctypes
-from ctypes import (
-    c_void_p, c_uint32,
-    c_int32, c_char_p, POINTER,
-)
+from ctypes import c_void_p, c_uint32, c_int32, c_char_p, POINTER
 
 sec_keychain_ref = sec_keychain_item_ref = c_void_p
 OS_status = c_int32
