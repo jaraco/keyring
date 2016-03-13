@@ -15,7 +15,7 @@ except Exception:
 class Keyring(KeyringBackend):
     """Mac OS X Keychain"""
 
-    keychain = None
+    keychain = 'login.keychain'
     "Pathname to keychain filename, overriding default keychain."
 
     @properties.ClassProperty
@@ -35,7 +35,7 @@ class Keyring(KeyringBackend):
         username = username.encode('utf-8')
         service = service.encode('utf-8')
         password = password.encode('utf-8')
-        with api.open('login.keychain') as keychain:
+        with api.open(self.keychain) as keychain:
             item = api.sec_keychain_item_ref()
             status = api.SecKeychainFindGenericPassword(
                 keychain,
@@ -63,7 +63,7 @@ class Keyring(KeyringBackend):
 
         username = username.encode('utf-8')
         service = service.encode('utf-8')
-        with api.open('login.keychain') as keychain:
+        with api.open(self.keychain) as keychain:
             length = api.c_uint32()
             data = api.c_void_p()
             status = api.SecKeychainFindGenericPassword(
@@ -93,7 +93,7 @@ class Keyring(KeyringBackend):
 
         username = username.encode('utf-8')
         service = service.encode('utf-8')
-        with api.open('login.keychain') as keychain:
+        with api.open(self.keychain) as keychain:
             length = api.c_uint32()
             data = api.c_void_p()
             item = api.sec_keychain_item_ref()
