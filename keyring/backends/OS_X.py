@@ -7,7 +7,11 @@ from ..errors import PasswordSetError
 from ..errors import PasswordDeleteError
 from ..util import properties
 from ..py27compat import unicode_str
-from . import _OS_X_API as api
+
+try:
+    from . import _OS_X_API as api
+except Exception:
+    pass
 
 
 class SecurityCommand(unicode_str):
