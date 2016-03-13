@@ -1,5 +1,6 @@
 import platform
 import re
+import ctypes
 
 from ..backend import KeyringBackend
 from ..errors import PasswordSetError
@@ -89,8 +90,8 @@ class Keyring(KeyringBackend):
                 None,
             )
             if status == 0:
-                password = api.create_string_buffer(length.value)
-                api.memmove(password, data.value, length.value)
+                password = ctypes.create_string_buffer(length.value)
+                ctypes.memmove(password, data.value, length.value)
                 password = password.raw.decode('utf-8')
                 api.SecKeychainItemFreeContent(None, data)
             elif status == api.error.item_not_found:
