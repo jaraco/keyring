@@ -49,24 +49,7 @@ class Keyring(KeyringBackend):
         if username is None:
             username = ''
 
-        username = username.encode('utf-8')
-        service = service.encode('utf-8')
-        with api.open(self.keychain) as keychain:
-            length = api.c_uint32()
-            data = api.c_void_p()
-            item = api.sec_keychain_item_ref()
-            status = api.SecKeychainFindGenericPassword(
-                keychain,
-                len(service),
-                service,
-                len(username),
-                username,
-                length,
-                data,
-                item,
-            )
-            if status != 0:
-                raise PasswordDeleteError("Can't delete password in keychain")
-
-            api.SecKeychainItemDelete(item)
-            api._core.CFRelease(item)
+        try:
+            return api.delete_generic_password(self.keychain, service, username)
+        except api.Error:
+            raise PasswordDeleteError("Can't delete password in keychain")

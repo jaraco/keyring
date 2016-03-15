@@ -162,3 +162,27 @@ SecKeychainItemFreeContent.restype = OS_status
 SecKeychainItemDelete = _sec.SecKeychainItemDelete
 SecKeychainItemDelete.argtypes = sec_keychain_item_ref,
 SecKeychainItemDelete.restype = OS_status
+
+
+def delete_generic_password(name, service, username):
+    username = username.encode('utf-8')
+    service = service.encode('utf-8')
+    with open(name) as keychain:
+        length = c_uint32()
+        data = c_void_p()
+        item = sec_keychain_item_ref()
+        status = SecKeychainFindGenericPassword(
+            keychain,
+            len(service),
+            service,
+            len(username),
+            username,
+            length,
+            data,
+            item,
+        )
+
+    Error.raise_for_status(status, "Unable to delete password")
+
+    SecKeychainItemDelete(item)
+    _core.CFRelease(item)
