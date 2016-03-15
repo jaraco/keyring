@@ -20,12 +20,29 @@ SecKeychainOpen.argtypes = (
 )
 SecKeychainOpen.restype = OS_status
 
+class Error(Exception):
+    @classmethod
+    def raise_for_status(cls, status, msg):
+        if status == 0:
+            return
+        raise cls(status, msg)
+
+
+class NotFound(Error):
+    @classmethod
+    def raise_for_status(cls, status, msg):
+        if status == error.item_not_found:
+            raise cls(status, msg)
+        Error.raise_for_status(status, msg)
+
+
 @contextlib.contextmanager
 def open(name):
     ref = sec_keychain_ref()
-    res = SecKeychainOpen(name.encode('utf-8'), ref)
-    if res:
-        raise OSError("Unable to open keychain {name}".format(**locals()))
+    name = name.encode('utf-8') if name is not None else name
+    status = SecKeychainOpen(name, ref)
+    msg = "Error opening keyring {name}".format(**locals())
+    Error.raise_for_status(status, msg)
     try:
         yield ref
     finally:
