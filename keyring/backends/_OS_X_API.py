@@ -27,7 +27,7 @@ def open(name):
     if res:
         raise OSError("Unable to open keychain {name}".format(**locals()))
     try:
-        yield res
+        yield ref
     finally:
         _core.CFRelease(ref)
 
