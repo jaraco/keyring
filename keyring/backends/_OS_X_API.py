@@ -61,6 +61,33 @@ SecKeychainFindGenericPassword.argtypes = (
 )
 SecKeychainFindGenericPassword.restype = OS_status
 
+def find_generic_password(kc_name, service, username):
+        username = username.encode('utf-8')
+        service = service.encode('utf-8')
+        with open(kc_name) as keychain:
+            length = c_uint32()
+            data = c_void_p()
+            status = SecKeychainFindGenericPassword(
+                keychain,
+                len(service),
+                service,
+                len(username),
+                username,
+                length,
+                data,
+                None,
+            )
+
+        msg = "Can't fetch password from system"
+        NotFound.raise_for_status(status, msg)
+
+        password = ctypes.create_string_buffer(length.value)
+        ctypes.memmove(password, data.value, length.value)
+        password = password.raw.decode('utf-8')
+        SecKeychainItemFreeContent(None, data)
+
+        return password
+
 SecKeychainFindInternetPassword = _sec.SecKeychainFindInternetPassword
 SecKeychainFindInternetPassword.argtypes = (
     sec_keychain_ref, # keychainOrArray

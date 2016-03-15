@@ -1,5 +1,4 @@
 import platform
-import ctypes
 
 from ..backend import KeyringBackend
 from ..errors import PasswordSetError
@@ -61,32 +60,10 @@ class Keyring(KeyringBackend):
         if username is None:
             username = ''
 
-        username = username.encode('utf-8')
-        service = service.encode('utf-8')
-        with api.open(self.keychain) as keychain:
-            length = api.c_uint32()
-            data = api.c_void_p()
-            status = api.SecKeychainFindGenericPassword(
-                keychain,
-                len(service),
-                service,
-                len(username),
-                username,
-                length,
-                data,
-                None,
-            )
-            if status == api.error.item_not_found:
-                return None
-
-            api.Error.raise_for_status(status, "Can't fetch password from system")
-
-            password = ctypes.create_string_buffer(length.value)
-            ctypes.memmove(password, data.value, length.value)
-            password = password.raw.decode('utf-8')
-            api.SecKeychainItemFreeContent(None, data)
-
-            return password
+        try:
+            return api.find_generic_password(self.keychain, service, username)
+        except api.NotFound:
+            pass
 
     def delete_password(self, service, username):
         if username is None:
