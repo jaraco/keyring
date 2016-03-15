@@ -120,6 +120,33 @@ SecKeychainAddGenericPassword.argtypes = (
 )
 SecKeychainAddGenericPassword.restype = OS_status
 
+
+def set_generic_password(name, service, username, password):
+    username = username.encode('utf-8')
+    service = service.encode('utf-8')
+    password = password.encode('utf-8')
+    with open(name) as keychain:
+        item = sec_keychain_item_ref()
+        status = SecKeychainFindGenericPassword(
+            keychain,
+            len(service), service,
+            len(username), username, None,
+            None, item)
+        if status:
+            if status == error.item_not_found:
+                status = SecKeychainAddGenericPassword(
+                    keychain,
+                    len(service), service,
+                    len(username), username,
+                    len(password), password, None)
+        else:
+            status = SecKeychainItemModifyAttributesAndData(
+                item, None, len(password), password)
+            _core.CFRelease(item)
+
+        NotFound.raise_for_status(status, "Unable to set password")
+
+
 SecKeychainItemModifyAttributesAndData = _sec.SecKeychainItemModifyAttributesAndData
 SecKeychainItemModifyAttributesAndData.argtypes = (
     sec_keychain_item_ref, c_void_p, c_uint32, c_void_p,

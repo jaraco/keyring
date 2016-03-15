@@ -31,30 +31,10 @@ class Keyring(KeyringBackend):
         if username is None:
             username = ''
 
-        username = username.encode('utf-8')
-        service = service.encode('utf-8')
-        password = password.encode('utf-8')
-        with api.open(self.keychain) as keychain:
-            item = api.sec_keychain_item_ref()
-            status = api.SecKeychainFindGenericPassword(
-                keychain,
-                len(service), service,
-                len(username), username, None,
-                None, item)
-            if status:
-                if status == api.error.item_not_found:
-                    status = api.SecKeychainAddGenericPassword(
-                        keychain,
-                        len(service), service,
-                        len(username), username,
-                        len(password), password, None)
-            else:
-                status = api.SecKeychainItemModifyAttributesAndData(
-                    item, None, len(password), password)
-                api._core.CFRelease(item)
-
-            if status:
-                raise PasswordSetError("Can't store password in keychain")
+        try:
+            api.set_generic_password(self.keychain, service, username, password)
+        except api.Error:
+            raise PasswordSetError("Can't store password on keychain")
 
     def get_password(self, service, username):
         if username is None:
