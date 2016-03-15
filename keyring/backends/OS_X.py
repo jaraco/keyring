@@ -76,15 +76,16 @@ class Keyring(KeyringBackend):
                 data,
                 None,
             )
-            if status == 0:
-                password = ctypes.create_string_buffer(length.value)
-                ctypes.memmove(password, data.value, length.value)
-                password = password.raw.decode('utf-8')
-                api.SecKeychainItemFreeContent(None, data)
-            elif status == api.error.item_not_found:
-                password = None
-            else:
-                raise OSError("Can't fetch password from system")
+            if status == api.error.item_not_found:
+                return None
+
+            api.Error.raise_for_status(status, "Can't fetch password from system")
+
+            password = ctypes.create_string_buffer(length.value)
+            ctypes.memmove(password, data.value, length.value)
+            password = password.raw.decode('utf-8')
+            api.SecKeychainItemFreeContent(None, data)
+
             return password
 
     def delete_password(self, service, username):
