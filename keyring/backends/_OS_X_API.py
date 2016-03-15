@@ -83,10 +83,9 @@ def find_generic_password(kc_name, service, username):
 
         password = ctypes.create_string_buffer(length.value)
         ctypes.memmove(password, data.value, length.value)
-        password = password.raw.decode('utf-8')
         SecKeychainItemFreeContent(None, data)
+        return password.raw.decode('utf-8')
 
-        return password
 
 SecKeychainFindInternetPassword = _sec.SecKeychainFindInternetPassword
 SecKeychainFindInternetPassword.argtypes = (
