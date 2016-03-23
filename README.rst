@@ -219,6 +219,10 @@ The keyring lib has a few functions:
   keyring.
 * ``delete_password(service, username)``: Delete the password stored in
   keyring. If the password does not exist, it will raise an exception.
+* ``set_dbus_mainloop(mainloop)``: Sets the DBus event loop for backends that
+  use DBus (like kwallet). The provided ``mainloop`` should be the function
+  that returns the mainloop instance, such as
+  ``dbus.mainloop.glib.DBusGMainLoop``.
 
 ------------
 Get involved
