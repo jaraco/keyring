@@ -20,6 +20,7 @@ from .backends import fail
 log = logging.getLogger(__name__)
 
 _keyring_backend = None
+_dbus_mainloop = None
 
 def set_keyring(keyring):
     """Set current keyring backend.
@@ -180,6 +181,21 @@ def _load_library_extensions():
                 init_func()
         except Exception as exc:
             log.exception("Error initializing plugin %s (%s).", ep, exc)
+
+def set_dbus_mainloop(mainloop):
+    """
+    Set the DBus event loop for keyring backends that use DBus (kwallet for
+    example). An example of using this in your glib app:
+        import keyring
+        from dbus.mainloop.glib import DBusGMainLoop
+        keyring.set_dbus_mainloop(DBusGMainLoop)
+    Other mainloops:
+        dbus.mainloop.qt.DBusQtMainLoop (PyQT4)
+        dbus.mainloop.qt5.DBusQtMainLoop (PyQT5)
+    """
+    global _dbus_mainloop
+    _dbus_mainloop = mainloop
+    init_backend()
 
 # init the _keyring_backend
 init_backend()

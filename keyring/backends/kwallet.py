@@ -30,6 +30,8 @@ class DBusKeyring(KeyringBackend):
             bus.get_object('org.kde.kwalletd5', '/modules/kwalletd5')
         except dbus.DBusException:
             raise RuntimeError('cannot connect to org.kde.kwalletd5')
+        finally:
+            bus.close()
         return 4.9
 
     def __init__(self, *arg, **kw):
@@ -39,6 +41,10 @@ class DBusKeyring(KeyringBackend):
     def connected(self):
         if self.handle >= 0:
             return True
+        # Set the DBus event loop to use if specified
+        from ..core import _dbus_mainloop
+        if _dbus_mainloop:
+            _dbus_mainloop(set_as_default=True)
         bus = dbus.SessionBus()
         wId = 0
         try:
