@@ -711,9 +711,6 @@ will be removed.
 * Gnome keyring should not be used if there is no DISPLAY or if the dbus is
   not around (https://bugs.launchpad.net/launchpadlib/+bug/752282).
 
-0.6
----
-
 * Added `keyring.http` for facilitating HTTP Auth using keyring.
 
 * Add a utility to access the keyring from the command line.
