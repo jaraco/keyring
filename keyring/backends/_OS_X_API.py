@@ -20,12 +20,23 @@ SecKeychainOpen.argtypes = (
 )
 SecKeychainOpen.restype = OS_status
 
+
+SecKeychainCopyDefault = _sec.SecKeychainCopyDefault
+SecKeychainCopyDefault.argtypes = POINTER(sec_keychain_ref),
+SecKeychainCopyDefault.restype = OS_status
+
+
 @contextlib.contextmanager
 def open(name):
     ref = sec_keychain_ref()
-    res = SecKeychainOpen(name.encode('utf-8'), ref)
+    if name is None:
+        res = SecKeychainCopyDefault(ref)
+        msg = "Unable to open default keychain"
+    else:
+        res = SecKeychainOpen(name.encode('utf-8'), ref)
+        msg = "Unable to open keychain {name}".format(**locals())
     if res:
-        raise OSError("Unable to open keychain {name}".format(**locals()))
+        raise OSError(msg)
     try:
         yield ref
     finally:

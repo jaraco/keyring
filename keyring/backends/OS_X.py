@@ -15,7 +15,7 @@ except Exception:
 class Keyring(KeyringBackend):
     """Mac OS X Keychain"""
 
-    keychain = 'login.keychain'
+    keychain = None
     "Pathname to keychain filename, overriding default keychain."
 
     @properties.ClassProperty
