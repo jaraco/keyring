@@ -1,4 +1,3 @@
-=======
 CHANGES
 =======
 
@@ -9,7 +8,6 @@ CHANGES
   is set to 'internet' to determine if this feature is
   used in the wild.
 
------
 8.5.1
 -----
 
@@ -17,14 +15,12 @@ CHANGES
   priority than the preferred SecretService backend,
   now that the desktop check is no longer in place.
 
----
 8.5
 ---
 
 * Issue #168: Now prefer KF5 Kwallet to KF4. Users relying
   on KF4 must use prior releases.
 
----
 8.4
 ---
 
@@ -33,7 +29,6 @@ CHANGES
 * Pull Request #208: Fix pywin32-ctypes package name in
   requirements.
 
----
 8.3
 ---
 
@@ -43,20 +38,17 @@ CHANGES
 * Actually removed QtKwallet, which was meant to be dropped in
   8.0 but somehow remained.
 
----
 8.2
 ---
 
 * Update readme to include how-to use with Linux
   non-graphical environments.
 
----
 8.1
 ---
 
 * Issue #197: Add ``__version__`` attribute to keyring module.
 
----
 8.0
 ---
 
@@ -83,7 +75,6 @@ CHANGES
   example, "keyring.backends.file.PlaintextKeyring"
   becomes "keyrings.alt.file.PlaintextKeyring".
 
------
 7.3.1
 -----
 
@@ -92,7 +83,6 @@ CHANGES
   want to follow the `direct link
   <https://pythonhosted.org/keyring/history.html>`_.
 
----
 7.3
 ---
 
@@ -102,7 +92,6 @@ CHANGES
 
     keyring.core.init_backend(limit=keyring.core.recommended)
 
----
 7.2
 ---
 
@@ -115,7 +104,6 @@ CHANGES
     keyring.get_keyring().keychain = '/path/to/login.keychain'
     pw = keyring.get_password(...)
 
----
 7.1
 ---
 
@@ -124,7 +112,6 @@ CHANGES
   to be a reliable indicator of which keyring implementation
   might be preferable.
 
------
 7.0.2
 -----
 
@@ -132,7 +119,6 @@ CHANGES
   Users of keyring 6.1 or later should prefer an explicit reference
   to DBusKeyring or QtKeyring instead.
 
------
 7.0.1
 -----
 
@@ -140,7 +126,6 @@ CHANGES
   on environment variables, but instead relies on the GnomeKeyring
   library to determine viability.
 
----
 7.0
 ---
 
@@ -154,14 +139,12 @@ CHANGES
 * Replaced Pull Request #182 with a conditional SessionBus
   construction, based on subsequent discussion.
 
------
 6.1.1
 -----
 
 * Pull Request #182: Prevent DBus from indicating as a viable
   backend when no viable X DISPLAY variable is present.
 
----
 6.1
 ---
 
@@ -169,13 +152,11 @@ CHANGES
   backend. Theoretically, it should be auto-detected based on
   available libraries and interchangeable with the Qt backend.
 
----
 6.0
 ---
 
 * Drop support for Python 2.6.
 
------
 5.7.1
 -----
 
@@ -183,7 +164,6 @@ CHANGES
   generally refreshed the metadata structure to match
   practices with other projects.
 
----
 5.7
 ---
 
@@ -192,53 +172,45 @@ CHANGES
   process status for most passwords containing simple
   characters.
 
----
 5.6
 ---
 
 * Allow keyring to be invoked from command-line with
   ``python -m keyring``.
 
------
 5.5.1
 -----
 
 * Issue #156: Fixed test failures in ``pyfs`` keyring related to
   0.5 release.
 
----
 5.5
 ---
 
 * Pull Request #176: Use recommended mechanism for checking
   GnomeKeyring version.
 
----
 5.4
 ---
 
 * Prefer setuptools_scm to hgtools.
 
----
 5.3
 ---
 
 * Prefer hgtools to setuptools_scm due to `setuptools_scm #21
   <https://bitbucket.org/pypa/setuptools_scm/issue/21>`_.
 
----
 5.2
 ---
 
 * Prefer setuptools_scm to hgtools.
 
----
 5.1
 ---
 
 * Host project at Github (`repo <https://github.com/jaraco/keyring>`_).
 
----
 5.0
 ---
 
@@ -246,21 +218,18 @@ CHANGES
   <https://pypi.python.org/pypi/hgtools>`_.
 * Build and install now requires setuptools.
 
------
 4.1.1
 -----
 
 * The entry point group must look like a module name, so the group is now
   "keyring.backends".
 
----
 4.1
 ---
 
 * Added preliminary support for loading keyring backends through ``setuptools
   entry points``, specifically "keyring backends".
 
----
 4.0
 ---
 
@@ -270,7 +239,6 @@ CHANGES
   directory. The config file must now be located in the platform-specific
   config location.
 
----
 3.8
 ---
 
@@ -279,7 +247,6 @@ CHANGES
 * Issue #131: Keyring now will prefer `pywin32-ctypes
   <https://pypi.python.org/pypi/pywin32-ctypes>`_ to pywin32 if available.
 
----
 3.7
 ---
 
@@ -287,7 +254,6 @@ CHANGES
   variable.
 * Issue #140: Restore compatibility for older versions of PyWin32.
 
----
 3.6
 ---
 
@@ -295,7 +261,6 @@ CHANGES
   Add support for packages that wish to bundle keyring by using relative
   imports throughout.
 
----
 3.5
 ---
 
@@ -306,7 +271,6 @@ CHANGES
   Prepared the code base to treat the two differently on Unix-based systems.
   For now, the behavior is unchanged.
 
----
 3.4
 ---
 
@@ -316,14 +280,12 @@ CHANGES
 * SecretService backend: correctly handle cases when user dismissed
   the collection creation or unlock prompt.
 
----
 3.3
 ---
 
 * Pull request #40: KWallet backend will now honor the ``KDE_FULL_SESSION``
   environment variable as found on openSUSE.
 
------
 3.2.1
 -----
 
@@ -335,7 +297,6 @@ CHANGES
 
   Resolves https://bugs.launchpad.net/bugs/1242412.
 
----
 3.2
 ---
 
@@ -355,7 +316,6 @@ CHANGES
   `keyring.core._load_library_extensions` for information on supplying
   a third-party backend.
 
----
 3.1
 ---
 
@@ -363,19 +323,16 @@ CHANGES
   is required.
 * Testsuite: clean up, and make more use of unittest2 methods.
 
------
 3.0.5
 -----
 
 * Issue #114: Fix logic in pyfs detection.
 
------
 3.0.4
 -----
 
 * Issue #114: Fix detection of pyfs under Mercurial Demand Import.
 
------
 3.0.3
 -----
 
@@ -387,7 +344,6 @@ CHANGES
   Issue #113 in which the explicit module loading of keyring modules was
   breaking package-relative imports.
 
------
 3.0.2
 -----
 
@@ -400,14 +356,12 @@ CHANGES
   in place to fix this issue upstream, but to support older Mercurial
   versions, this patch will remain for some time.
 
------
 3.0.1
 -----
 
 * Ensure that modules are actually imported even in Mercurial's Demand Import
   environment.
 
----
 3.0
 ---
 
@@ -415,13 +369,11 @@ CHANGES
 * Removed names in ``keyring.backend`` moved in 1.1 and previously retained
   for compatibilty.
 
------
 2.1.1
 -----
 
 * Restored Python 2.5 compatibility (lost in 2.0).
 
----
 2.1
 ---
 
@@ -443,7 +395,6 @@ CHANGES
 
 *  Fixes to GnomeKeyring and SecretService tests.
 
------
 2.0.3
 -----
 
@@ -451,19 +402,16 @@ CHANGES
    module presence checking, requesting ``__name__`` from imported modules to
    force the demand importer to actually attempt the import.
 
------
 2.0.2
 -----
 
 *  Issue #111: Windows backend isn't viable on non-Windows platforms.
 
------
 2.0.1
 -----
 
 *  Issue #110: Fix issues with ``Windows.RegistryKeyring``.
 
----
 2.0
 ---
 
@@ -475,14 +423,12 @@ CHANGES
    backend in configuration, but the default behavior should now be to select
    the most appropriate backend by default.
 
------
 1.6.1
 -----
 
 * Only include pytest-runner in 'setup requirements' when ptr invocation is
   indicated in the command-line (Issue #105).
 
----
 1.6
 ---
 
@@ -498,7 +444,6 @@ CHANGES
 
    - Use a better label for passwords, the same as GNOME Keyring backend uses.
 
----
 1.5
 ---
 
@@ -516,14 +461,12 @@ CHANGES
 
 *  Improvements for tests, including fix for Issue #102.
 
----
 1.4
 ---
 
 * Switch GnomeKeyring backend to use native libgnome-keyring via
   GObject Introspection, not the obsolete python-gnomekeyring module.
 
----
 1.3
 ---
 
@@ -535,21 +478,18 @@ CHANGES
   <https://bugs.launchpad.net/python-novaclient/+bug/1116302>`_.
 * Issue #92 Added support for delete_password on Mac OS X Keychain.
 
------
 1.2.3
 -----
 
 * Fix for Encrypted File backend on Python 3.
 * Issue #97 Improved support for PyPy.
 
------
 1.2.2
 -----
 
 * Fixed handling situations when user cancels kwallet dialog or denies access
   for the app.
 
------
 1.2.1
 -----
 
@@ -558,26 +498,22 @@ CHANGES
 * Issue #84: Fix for Google backend on Python 3 (use of raw_input not caught
   by 2to3).
 
----
 1.2
 ---
 
 * Implemented delete_password on most keyrings. Keyring 2.0 will require
   delete_password to implement a Keyring. Fixes #79.
 
------
 1.1.2
 -----
 
 * Issue #78: pyfilesystem backend now works on Windows.
 
------
 1.1.1
 -----
 
 * Fixed MANIFEST.in so .rst files are included.
 
----
 1.1
 ---
 
@@ -630,7 +566,6 @@ and updated module structure.
 * Officially require Python 2.5 or greater (although unofficially, this
   requirement has been in place since 0.10).
 
----
 1.0
 ---
 
@@ -648,13 +583,11 @@ codebase that's accumulated over the versions.
 * File System backends now create files without group and world permissions.
   Fixes #67.
 
-------
 0.10.1
 ------
 
 * Merged 0.9.3 to include fix for #75.
 
-----
 0.10
 ----
 
@@ -672,14 +605,12 @@ codebase that's accumulated over the versions.
 * Unencrypted keyring file will be saved with user read/write (and not group
   or world read/write).
 
------
 0.9.3
 -----
 
 * Ensure migration is run when get_password is called. Fixes #75. Thanks to
   Marc Deslauriers for reporting the bug and supplying the patch.
 
------
 0.9.2
 -----
 
@@ -691,7 +622,6 @@ codebase that's accumulated over the versions.
   keyring to implement a whole-file encrypted version. Fixes #64.
 * The CryptedFileKeyring now requires simplejson for Python 2.5 clients.
 
------
 0.9.1
 -----
 
@@ -705,21 +635,18 @@ codebase that's accumulated over the versions.
   compatible with 0.9 and earlier). The user's password is no longer limited
   to 32 characters. PyCrypto 2.5 or greater is now required for this keyring.
 
----
 0.9
 ---
 
 * Add support for GTK 3 and secret service D-Bus. Fixes #52.
 * Issue #60 - Use correct method for decoding.
 
------
 0.8.1
 -----
 
 * Fix regression in keyring lib on Windows XP where the LOCALAPPDATA
   environment variable is not present.
 
----
 0.8
 ---
 
@@ -745,14 +672,12 @@ it is not possible to downgrade to 0.7 without manually moving
 configuration files. In 1.0, the backward compatibilty
 will be removed.
 
------
 0.7.1
 -----
 
 * Removed non-ASCII characters from README and CHANGES docs (required by
   distutils if we're to include them in the long_description). Fixes #55.
 
----
 0.7
 ---
 
@@ -769,20 +694,17 @@ will be removed.
 * `keyring.util.escape` now accepts only unicode strings. Don't try to encode
   strings passed to it.
 
------
 0.6.2
 -----
 
 * fix compiling on OSX with XCode 4.0
 
------
 0.6.1
 -----
 
 * Gnome keyring should not be used if there is no DISPLAY or if the dbus is
   not around (https://bugs.launchpad.net/launchpadlib/+bug/752282).
 
----
 0.6
 ---
 
@@ -790,7 +712,6 @@ will be removed.
 
 * Add a utility to access the keyring from the command line.
 
------
 0.5.1
 -----
 
@@ -799,7 +720,6 @@ will be removed.
 * Fix a bug that caused an exception if the user canceled the KWallet dialog
   (https://bitbucket.org/kang/python-keyring-lib/issue/37/user-canceling-of-kde-wallet-dialogs).
 
----
 0.5
 ---
 
@@ -808,13 +728,11 @@ will be removed.
 
 * Using the getpass module instead of custom code
 
----
 0.4
 ---
 
 * Fixed the setup script (some subdirs were not included in the release.)
 
----
 0.3
 ---
 
@@ -823,7 +741,6 @@ will be removed.
 
 * Fixed escaping issues for usernames with non-ascii characters
 
----
 0.2
 ---
 
