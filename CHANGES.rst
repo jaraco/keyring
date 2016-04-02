@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+8.7
+---
+
+* Changelog now links to issues and provides dates of
+  releases.
+
 8.6
 ---
 
