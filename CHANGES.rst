@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+8.6
+---
+
+* Issue #217: Add warning in OS Keyring when 'store'
+  is set to 'internet' to determine if this feature is
+  used in the wild.
+
 -----
 8.5.1
 -----

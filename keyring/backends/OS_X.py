@@ -3,6 +3,8 @@ import subprocess
 import re
 import binascii
 import functools
+import warnings
+import textwrap
 
 from ..backend import KeyringBackend
 from ..errors import PasswordSetError
@@ -17,8 +19,28 @@ class SecurityCommand(unicode_str):
     OS X 'security' command.
     """
     def __new__(cls, cmd, store='generic'):
+        cls._warn_not_generic(store)
         cmd = '%(cmd)s-%(store)s-password' % vars()
         return super(SecurityCommand, cls).__new__(cls, cmd)
+
+    @staticmethod
+    def _warn_not_generic(store):
+        """
+        In https://github.com/jaraco/keyring/issues/217#issuecomment-204756523,
+        Jason observes that the 'internet' store may not be in use at all,
+        so this warning serves as a notice that the functionality will
+        go away unless users respond that this functionality is in use.
+        """
+        if store == 'generic':
+            return
+
+        msg = textwrap.dedent("""
+            {store} password support is being dropped.
+            If you rely on this behavior, please report your use
+            case at https://github.com/jaraco/keyring/issues/217
+            to avoid losing this feature.
+            """).lstrip().format(**locals())
+        warnings.warn(msg)
 
 
 class Keyring(KeyringBackend):
