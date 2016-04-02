@@ -30,7 +30,7 @@ class DBusKeyring(KeyringBackend):
             bus.get_object('org.kde.kwalletd5', '/modules/kwalletd5')
         except dbus.DBusException:
             raise RuntimeError('cannot connect to org.kde.kwalletd5')
-        return 5.1
+        return 4.9
 
     def __init__(self, *arg, **kw):
         super(DBusKeyring, self).__init__(*arg, **kw)
