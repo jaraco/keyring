@@ -13,8 +13,3 @@ class OSXKeychainTestCase(BackendBasicTests, unittest.TestCase):
 
     def init_keyring(self):
         return OS_X.Keyring()
-
-class SecurityCommandTestCase(unittest.TestCase):
-    def test_SecurityCommand(self):
-        self.assertEqual(OS_X.SecurityCommand('get'), 'get-generic-password')
-        self.assertEqual(OS_X.SecurityCommand('set', 'internet'), 'set-internet-password')

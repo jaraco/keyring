@@ -1,6 +1,18 @@
 CHANGES
 =======
 
+9.0
+---
+
+* Issue #217: Once again, the OS X backend uses the
+  Framework API for invoking the Keychain service.
+  As a result, applications utilizing this API will be
+  authorized per application, rather than relying on the
+  authorization of the 'security' application. Consequently,
+  users will be prompted to authorize the system Python
+  executable and also new Python executables, such as
+  those created by virtualenv.
+
 8.7
 ---
 
