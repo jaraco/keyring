@@ -31,6 +31,7 @@ setup_params = dict(
     description="Store and access your passwords safely.",
     long_description=long_description,
     url="https://github.com/jaraco/keyring",
+    license = "MIT",
     packages=setuptools.find_packages(),
     include_package_data=True,
     install_requires=[
