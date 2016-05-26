@@ -18,8 +18,9 @@ These recommended keyring backends are supported by the Python keyring lib:
 
 * Mac OS X `Keychain
   <https://en.wikipedia.org/wiki/Keychain_%28software%29>`_
-* Linux Secret Service (requires `secretstorage
-  <https://pypi.python.org/pypi/secretstorage>`_)
+* Freedesktop `Secret Service
+  <http://standards.freedesktop.org/secret-service/>`_ (requires
+  `secretstorage <https://pypi.python.org/pypi/secretstorage>`_)
 * `KWallet <https://en.wikipedia.org/wiki/KWallet>`_
   (requires `dbus <https://pypi.python.org/pypi/dbus-python>`_)
 * `Windows Credential Vault
@@ -39,6 +40,16 @@ Run easy_install or pip::
 
     $ easy_install keyring
     $ pip install keyring
+
+
+On Linux (Ubuntu 16.04 and Fedora), keyring uses secretstorage, which
+in turn uses dbus.  The following steps are likely required to enable
+the default secretstorage backend.  (See below for details on Ubuntu
+16.04 installation.)::
+
+    $ sudo apt install libdbus-glib-1-dev
+    $ pip install secretstorage dbus-python
+
 
 Source installation
 ===================
@@ -178,6 +189,30 @@ Here's an example demonstrating how to invoke ``set_keyring``::
     except keyring.errors.PasswordSetError:
         print("failed to store password")
     print("password", keyring.get_password("demo-service", "tarek"))
+
+
+Using Keyring on Ubuntu 16.04
+=============================
+
+The following is a complete transcript for installing keyring in a
+virtual environment on Ubuntu 16.04.  No config file was used.::
+
+  $ sudo apt install python3-venv libdbus-glib-1-dev
+  $ cd /tmp
+  $ pyvenv py3
+  $ source py3/bin/activate
+  $ pip install -U pip
+  $ pip install secretstorage dbus-python
+  $ pip install keyring
+  $ python
+  >>> import keyring
+  >>> keyring.get_keyring()
+  <keyring.backends.SecretService.Keyring object at 0x7f9b9c971ba8>
+  >>> keyring.set_password("system", "username", "password")
+  >>> keyring.get_password("system", "username")
+  'password'
+
+
 
 Using Keyring on headless Linux systems
 =======================================
