@@ -62,7 +62,6 @@ def init_backend(limit=None):
     """
     Load a keyring specified in the config file or infer the best available.
     """
-    _load_library_extensions()
     keyrings = filter(limit, backend.get_all_keyring())
 
     set_keyring(
@@ -145,41 +144,6 @@ def _load_keyring_path(config):
         sys.path.insert(0, path)
     except (configparser.NoOptionError, configparser.NoSectionError):
         pass
-
-@once
-def _load_library_extensions():
-    """
-    Locate all setuptools entry points by the name 'keyring backends'
-    and initialize them.
-
-    Any third-party library may register an entry point by adding the
-    following to their setup.py::
-
-        entry_points = {
-            'keyring backends': [
-                'plugin name = mylib.mymodule:initialize_func',
-            ],
-        },
-
-    `plugin name` can be anything.
-    `initialize_func` is optional and will be invoked by keyring on startup.
-
-    Most plugins will simply provide or import a KeyringBackend in `mymodule`.
-    """
-    group = 'keyring backends'
-    try:
-        pkg_resources = __import__('pkg_resources')
-    except ImportError:
-        return
-    entry_points = pkg_resources.iter_entry_points(group=group)
-    for ep in entry_points:
-        try:
-            log.info('Loading keyring backends from %s', ep.name)
-            init_func = ep.load()
-            if callable(init_func):
-                init_func()
-        except Exception as exc:
-            log.exception("Error initializing plugin %s (%s).", ep, exc)
 
 # init the _keyring_backend
 init_backend()
