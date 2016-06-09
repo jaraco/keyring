@@ -7,3 +7,10 @@ hiddenimports = [
     'keyring.backends.' + mod_name
     for mod_name in _backend_mod_names
 ]
+
+import pkg_resources
+
+hiddenimports.extend(
+	ep.module_name
+	for ep in pkg_resources.iter_entry_points('keyring.backends')
+)
