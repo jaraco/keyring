@@ -41,6 +41,7 @@ setup_params = dict(
     },
     setup_requires=[
         'setuptools_scm>=1.9',
+        'setuptools_scm_git_archive',
     ] + pytest_runner + sphinx + wheel,
     tests_require=[
     ] + test_requirements,
