@@ -14,7 +14,6 @@ except ImportError:
 class DBusKeyring(KeyringBackend):
     """KDE KWallet via D-Bus"""
 
-    folder = 'Python'
     appid = 'Python program'
 
     @properties.ClassProperty
@@ -50,39 +49,34 @@ class DBusKeyring(KeyringBackend):
             self.handle = -1
         if self.handle < 0:
             return False
-        if not self.iface.hasFolder(self.handle, self.folder, self.appid):
-            self.iface.createFolder(self.handle, self.folder, self.appid)
         return True
 
     def get_password(self, service, username):
         """Get password of the username for the service
         """
-        key = username + '@' + service
         if not self.connected():
             # the user pressed "cancel" when prompted to unlock their keyring.
             return None
-        if not self.iface.hasEntry(self.handle, self.folder, key, self.appid):
+        if not self.iface.hasEntry(self.handle, service, username, self.appid):
             return None
         return self.iface.readPassword(
-            self.handle, self.folder, key, self.appid)
+            self.handle, service, username, self.appid)
 
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        key = username + '@' + service
         if not self.connected():
             # the user pressed "cancel" when prompted to unlock their keyring.
             raise PasswordSetError("Cancelled by user")
         self.iface.writePassword(
-            self.handle, self.folder, key, password, self.appid)
+            self.handle, service, username, password, self.appid)
 
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
         """
-        key = username + '@' + service
         if not self.connected():
             # the user pressed "cancel" when prompted to unlock their keyring.
             raise PasswordDeleteError("Cancelled by user")
-        if not self.iface.hasEntry(self.handle, self.folder, key, self.appid):
+        if not self.iface.hasEntry(self.handle, service, username, self.appid):
             raise PasswordDeleteError("Password not found")
-        self.iface.removeEntry(self.handle, self.folder, key, self.appid)
+        self.iface.removeEntry(self.handle, service, username, self.appid)
