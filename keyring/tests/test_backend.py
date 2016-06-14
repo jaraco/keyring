@@ -14,7 +14,9 @@ from keyring.util import escape
 from .util import random_string
 from keyring import errors
 
-DIFFICULT_CHARS = string.whitespace + string.punctuation
+# Remove '@' from service name as this is not supported in service names
+# '@' will cause troubles during migration of kwallet entries
+DIFFICULT_CHARS = string.whitespace + string.punctuation.replace('@', '')
 # unicode only characters
 # Sourced from The Quick Brown Fox... Pangrams
 # http://www.columbia.edu/~fdc/utf8/
