@@ -5,9 +5,12 @@ from keyring.backends import kwallet
 from ..util import random_string
 from ..test_backend import BackendBasicTests
 
-
 @unittest.skipUnless(kwallet.DBusKeyring.viable, "Need DBus")
 class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
+
+    # Remove '@' from service name as this is not supported in service names
+    # '@' will cause troubles during migration of kwallet entries
+    DIFFICULT_CHARS = BackendBasicTests.DIFFICULT_CHARS.replace('@', '')
 
     def init_keyring(self):
         return kwallet.DBusKeyring()
