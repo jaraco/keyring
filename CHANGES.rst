@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+9.1
+---
+
+* Issue #83 via #229: ``kwallet`` backend now stores
+  the service name as a folder name in the backend rather
+  than storing all passwords in a Python folder.
+
 9.0
 ---
 
