@@ -14,7 +14,6 @@ from keyring.util import escape
 from .util import random_string
 from keyring import errors
 
-DIFFICULT_CHARS = string.whitespace + string.punctuation
 # unicode only characters
 # Sourced from The Quick Brown Fox... Pangrams
 # http://www.columbia.edu/~fdc/utf8/
@@ -31,6 +30,8 @@ assert min(ord(char) for char in UNICODE_CHARS) > 127
 class BackendBasicTests(object):
     """Test for the keyring's basic functions. password_set and password_get
     """
+
+    DIFFICULT_CHARS = string.whitespace + string.punctuation
 
     def setUp(self):
         self.keyring = self.init_keyring()
@@ -67,30 +68,30 @@ class BackendBasicTests(object):
         self.check_set_get(service, username, password)
 
     def test_difficult_chars(self):
-        password = random_string(20, DIFFICULT_CHARS)
-        username = random_string(20, DIFFICULT_CHARS)
-        service = random_string(20, DIFFICULT_CHARS)
+        password = random_string(20, self.DIFFICULT_CHARS)
+        username = random_string(20, self.DIFFICULT_CHARS)
+        service = random_string(20, self.DIFFICULT_CHARS)
         self.check_set_get(service, username, password)
 
     def test_delete_present(self):
-        password = random_string(20, DIFFICULT_CHARS)
-        username = random_string(20, DIFFICULT_CHARS)
-        service = random_string(20, DIFFICULT_CHARS)
+        password = random_string(20, self.DIFFICULT_CHARS)
+        username = random_string(20, self.DIFFICULT_CHARS)
+        service = random_string(20, self.DIFFICULT_CHARS)
         self.keyring.set_password(service, username, password)
         self.keyring.delete_password(service, username)
         self.assertIsNone(self.keyring.get_password(service, username))
 
     def test_delete_not_present(self):
-        username = random_string(20, DIFFICULT_CHARS)
-        service = random_string(20, DIFFICULT_CHARS)
+        username = random_string(20, self.DIFFICULT_CHARS)
+        service = random_string(20, self.DIFFICULT_CHARS)
         self.assertRaises(errors.PasswordDeleteError,
             self.keyring.delete_password, service, username)
 
     def test_delete_one_in_group(self):
-        username1 = random_string(20, DIFFICULT_CHARS)
-        username2 = random_string(20, DIFFICULT_CHARS)
-        password  = random_string(20, DIFFICULT_CHARS)
-        service   = random_string(20, DIFFICULT_CHARS)
+        username1 = random_string(20, self.DIFFICULT_CHARS)
+        username2 = random_string(20, self.DIFFICULT_CHARS)
+        password  = random_string(20, self.DIFFICULT_CHARS)
+        service   = random_string(20, self.DIFFICULT_CHARS)
         self.keyring.set_password(service, username1, password)
         self.set_password(service, username2, password)
         self.keyring.delete_password(service, username1)
@@ -105,7 +106,7 @@ class BackendBasicTests(object):
 
     def test_unicode_and_ascii_chars(self):
         source = (random_string(10, UNICODE_CHARS) + random_string(10) +
-                 random_string(10, DIFFICULT_CHARS))
+                 random_string(10, self.DIFFICULT_CHARS))
         password = random_string(20, source)
         username = random_string(20, source)
         service = random_string(20, source)
