@@ -21,12 +21,6 @@ test_requirements = [
     'pytest>=2.8',
 ]
 
-linux_requirements = [
-    # dbus-python is a declared req only by some versions of secretstorage
-    "dbus-python",
-    "secretstorage"
-]
-
 setup_params = dict(
     name='keyring',
     use_scm_version=True,
@@ -44,8 +38,11 @@ setup_params = dict(
     extras_require={
         'test': test_requirements,
         ':sys_platform=="win32"': ['pywin32-ctypes'],
-        ':sys_platform=="linux2"': linux_requirements,  # python 2
-        ':sys_platform=="linux"': linux_requirements,   # python 3
+        ':sys_platform=="linux2" or sys_platform=="linux"': [
+            "secretstorage",
+            # older secretstorage doesn't declare this dependency
+            "dbus-python",
+        ],
     },
     setup_requires=[
         'setuptools_scm>=1.9',
