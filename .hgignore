@@ -1,2 +1,11 @@
+syntax: glob
+
+*.bak
+*.egg-info
+*.orgin
+*~
+.eggs
+__pycache__
 build
 dist
+ve
