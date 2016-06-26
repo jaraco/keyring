@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+9.2
+---
+
+* Issue #231 via #233: On Linux, ``secretstorage``
+  is now a declared dependency, allowing recommended
+  keyring to work simply after installation.
+
 9.1
 ---
 

@@ -41,16 +41,6 @@ Run easy_install or pip::
     $ easy_install keyring
     $ pip install keyring
 
-
-On Linux (Ubuntu 16.04 and Fedora), keyring uses secretstorage, which
-in turn uses dbus.  The following steps are likely required to enable
-the default secretstorage backend.  (See below for details on Ubuntu
-16.04 installation.)::
-
-    $ sudo apt install libdbus-glib-1-dev
-    $ pip install secretstorage dbus-python
-
-
 Source installation
 ===================
 
