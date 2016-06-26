@@ -40,8 +40,6 @@ setup_params = dict(
         ':sys_platform=="win32"': ['pywin32-ctypes'],
         ':sys_platform=="linux2" or sys_platform=="linux"': [
             "secretstorage",
-            # older secretstorage doesn't declare this dependency
-            "dbus-python",
         ],
     },
     setup_requires=[

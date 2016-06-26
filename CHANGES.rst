@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+9.2.1
+-----
+
+* Issue #230: Don't rely on dbus-python and instead
+  defer to SecretStorage to describe the installation
+  requirements.
+
 9.2
 ---
 

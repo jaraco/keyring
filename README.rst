@@ -40,6 +40,15 @@ Install using your favorite installer. For example:
 
     $ pip install keyring
 
+Linux
+-----
+
+On Linux, the recommended keyring relies on SecretStorage, which in
+turn relies on dbus-python, but dbus-python does not install correctly
+when using the Python installers, so dbus-python must be installed
+as a system package. See `SecretStorage
+<https://github.com/mitya57/secretstorage>`_ for details.
+
 -------------
 Using Keyring
 -------------
