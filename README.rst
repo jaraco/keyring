@@ -33,20 +33,12 @@ package <https://pypi.python.org/pypi/keyrings.alt>`_.
 Installation Instructions
 -------------------------
 
-easy_install or pip
-===================
+Install from Index
+==================
 
-Run easy_install or pip::
+Install using your favorite installer. For example:
 
-    $ easy_install keyring
     $ pip install keyring
-
-Source installation
-===================
-
-Download the source tarball from https://pypi.python.org/pypi/keyring,
-uncompress it, and then run "setup.py install".
-
 
 -------------
 Using Keyring
