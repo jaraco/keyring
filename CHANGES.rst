@@ -4,7 +4,7 @@ CHANGES
 9.3
 ---
 
-* Pull Request #226: In SecretService backend, unlock
+* Issue #161: In SecretService backend, unlock
   individual entries.
 
 9.2.1
