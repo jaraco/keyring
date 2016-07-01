@@ -336,3 +336,8 @@ mentored Kang on this project.
 
 .. _this post: http://tarekziade.wordpress.com/2009/03/27/pycon-hallway-session-1-a-keyring-library-for-python/
 .. _Google Summer of Code: http://socghop.appspot.com/
+
+
+.. image:: https://badges.gitter.im/jaraco/keyring.svg
+   :alt: Join the chat at https://gitter.im/jaraco/keyring
+   :target: https://gitter.im/jaraco/keyring?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
