@@ -287,7 +287,7 @@ Using pytest runner
 -------------------
 
 Keyring is instrumented with `pytest runner
-<https://bitbucket.org/jaraco/pytest-runner>`_. Thus, you may invoke the tests
+<https://github.com/pytest-dev/pytest-runner>`_. Thus, you may invoke the tests
 from any supported Python (with setuptools installed) using this command::
 
     python setup.py test
