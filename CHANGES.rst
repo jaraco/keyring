@@ -1,6 +1,16 @@
 CHANGES
 =======
 
+9.3.1
+-----
+
+* Link to the new Gitter chat room is now in the
+  readme.
+* Issue #235: ``kwallet`` backend now returns
+  string objects instead of ``dbus.String`` objects,
+  for less surprising reprs.
+* Minor doc fixes.
+
 9.3
 ---
 
