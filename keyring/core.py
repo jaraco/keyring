@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 """
 Core API functions and initialization routines.
 """
