@@ -1,0 +1,5 @@
+# Perform the manual steps on osx to install python3 and activate an environment
+brew update
+brew install python3
+brew link python3
+which python
