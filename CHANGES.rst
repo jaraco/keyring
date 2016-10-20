@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+9.4
+---
+
+* Test suite now uses tox instead of pytest-runner.
+
 9.3.1
 -----
 
