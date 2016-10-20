@@ -20,20 +20,20 @@ release = version
 master_doc = 'index'
 
 link_files = {
-	'CHANGES.rst': dict(
-		using=dict(
-			GH='https://github.com',
-			project=project,
-		),
-		replace=[
-			dict(
-				pattern=r"(Issue )?#(?P<issue>\d+)",
-				url='{GH}/jaraco/{project}/issues/{issue}',
-			),
-			dict(
-				pattern=r"^(?m)((?P<scm_version>v?\d+(\.\d+){1,2}))\n[-=]+\n",
-				with_scm="{text}\n{rev[timestamp]:%d %b %Y}\n",
-			),
-		],
-	),
+    'CHANGES.rst': dict(
+        using=dict(
+            GH='https://github.com',
+            project=project,
+        ),
+        replace=[
+            dict(
+                pattern=r"(Issue )?#(?P<issue>\d+)",
+                url='{GH}/jaraco/{project}/issues/{issue}',
+            ),
+            dict(
+                pattern=r"^(?m)((?P<scm_version>v?\d+(\.\d+){1,2}))\n[-=]+\n",
+                with_scm="{text}\n{rev[timestamp]:%d %b %Y}\n",
+            ),
+        ],
+    ),
 }
