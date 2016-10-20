@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+10.0.2
+-----
+
+* #247: Restored console script.
+
 10.0.1
 ------
 
