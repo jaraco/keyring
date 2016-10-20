@@ -52,6 +52,9 @@ setup_params = dict(
         "Programming Language :: Python :: 3.5",
 	],
 	entry_points={
+        'console_scripts': [
+            'keyring=keyring.cli:main',
+        ],
 	},
 )
 if __name__ == '__main__':
