@@ -6,6 +6,7 @@ CHANGES
 
 * Drop support for Python 3.2.
 * Test suite now uses tox instead of pytest-runner.
+  Test requirements are now defined in tests/requirements.txt.
 
 9.3.1
 -----
