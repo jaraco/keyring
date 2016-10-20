@@ -270,14 +270,15 @@ contributors.
 Making Releases
 ===============
 
-Python keyring lib uses a simple tag and release process. The simplified
-workflow is first tag a release, then invoke ``setup.py release``.
+This project makes use of automated releases via Travis-CI. The
+simple workflow is to tag a commit and push it to Github. If it
+passes tests on a late Python version, it will be automatically
+deployed to PyPI.
 
 Other things to consider when making a release:
 
  - first ensure that tests pass (preferably on Windows and Linux)
  - check that the changelog is current for the intended release
- - after tagging, but before releasing, push the changes to the repository
 
 Running Tests
 =============
@@ -285,56 +286,16 @@ Running Tests
 Tests are `continuously run <https://travis-ci.org/#!/jaraco/keyring>`_ using
 Travis-CI.
 
-|BuildStatus|_
-
-.. |BuildStatus| image:: https://secure.travis-ci.org/jaraco/keyring.png
-.. _BuildStatus: http://travis-ci.org/jaraco/keyring
-
 To run the tests yourself, you'll want keyring installed to some environment
-in which it can be tested. Recommended techniques are described below.
+in which it can be tested. Recommended technique is described below.
 
-Using pytest runner
--------------------
+Using tox
+---------
 
-Keyring is instrumented with `pytest runner
-<https://github.com/pytest-dev/pytest-runner>`_. Thus, you may invoke the tests
-from any supported Python (with setuptools installed) using this command::
-
-    python setup.py test
-
-pytest runner will download any unmet dependencies and run the tests using
-`pytest <https://bitbucket.org/hpk42/pytest>`_.
+Keyring prefers use of `tox <https://pypi.org/project/tox>` to run tests.
+Simply install and invoke ``tox``.
 
 This technique is the one used by the Travis-CI script.
-
-Using virtualenv and pytest/nose/unittest
------------------------------------------
-
-Pytest and Nose are two popular test runners that will discover tests and run
-them. Unittest also has a mode to discover tests.
-
-First, however, these test runners typically need a test environment in which
-to run. It is recommended that you install keyring to a virtual environment
-to avoid interfering with your system environment. For more information, see
-the `venv documentation <https://docs.python.org/dev/library/venv.html>`_ or
-the `virtualenv homepage <http://www.virtualenv.org>`_.
-
-After you've created (or designated) your environment, install keyring into
-the environment by running::
-
-    python setup.py develop
-
-You then need to install the test requirements with something like::
-
-    pip install $( python -c "import setup, subprocess; print(subprocess.list2cmdline(setup.test_requirements))" )
-
-Then, invoke your favorite test runner, e.g.::
-
-    py.test
-
-or::
-
-    nosetests
 
 ----------
 Background

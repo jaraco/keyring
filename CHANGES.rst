@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+10.0.1
+------
+
+* Update readme to reflect test recommendations.
+
 10.0
 ----
 
