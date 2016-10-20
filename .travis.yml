@@ -16,7 +16,7 @@ before_install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source .travis-osx; fi
 
 install:
-- pip install tox "setuptools>=28.2"
+- python -m pip install tox "setuptools>=28.2"
 script:
 - tox -- -rs -v
 branches:
