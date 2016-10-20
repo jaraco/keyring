@@ -1,9 +1,10 @@
 CHANGES
 =======
 
-9.4
----
+10.0
+----
 
+* Drop support for Python 3.2.
 * Test suite now uses tox instead of pytest-runner.
 
 9.3.1
