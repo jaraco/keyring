@@ -1,41 +1,43 @@
-# https://travis-ci.org/#!/jaraco/keyring
-#
-
 language: python
-
 matrix:
-    include:
-        - os: linux
-          python: 2.7
-        - os: linux
-          python: 3.2
-        - os: linux
-          python: 3.3
-        - os: linux
-          python: 3.4
-        - os: linux
-          python: 3.5
-        - os: osx
-          language: generic
+  include:
+  - os: linux
+    python: 2.7
+  - os: linux
+    python: 3.2
+  - os: linux
+    python: 3.3
+  - os: linux
+    python: 3.4
+  - os: linux
+    python: 3.5
+  - os: osx
+    language: generic
 
 # Perform the manual steps on osx to install python3 and activate venv
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install python3; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then python3 -m venv /tmp/.env; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source /tmp/.env/bin/activate; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install python3; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then python3 -m venv /tmp/.env; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source /tmp/.env/bin/activate; fi
 
+install:
+- pip install tox "setuptools>=28.2"
 script:
-  - pip install -U pytest
-  - python setup.py test --addopts="-rs -v"
-
+- tox -- -rs -v
+branches:
+  except:
+  - skeleton
+before_deploy:
+- pip install https://dl.dropboxusercontent.com/u/54081/cheeseshop/setuptools_scm-1.14.1b1.tar.gz
 deploy:
   provider: pypi
+  server: https://upload.pypi.org/legacy/
   on:
     tags: true
     all_branches: true
+    python: 3.5
   user: jaraco
   password:
     secure: aDqlVdm6FZ8pqLkoDRR2LH3TEz7pBvKH2HhOlSy7OEmopN/36ncql/KvfE0ccpaOES9Xm31a51bUfNjcwb1HVKjfW544C+IoSHctkG1rI5bp3q4rW+4RbQcBZVHUUKR9yQf9ZyikEmoYXi3g+JKcOf9rj+v/32PAfUDzSpFbWik=
-  distributions: release
-  python: 3.5
+  distributions: dists

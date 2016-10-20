@@ -1,3 +1,13 @@
+.. image:: https://img.shields.io/pypi/v/keyring.svg
+   :target: https://pypi.org/project/keyring
+
+.. image:: https://img.shields.io/pypi/pyversions/keyring.svg
+
+.. image:: https://img.shields.io/pypi/dm/keyring.svg
+
+.. image:: https://img.shields.io/travis/jaraco/keyring/master.svg
+   :target: http://travis-ci.org/jaraco/keyring
+
 =======================================
 Installing and Using Python Keyring Lib
 =======================================

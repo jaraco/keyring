@@ -1,6 +1,5 @@
-*********************************
 Welcome to keyring documentation!
-*********************************
+=================================
 
 .. include:: ../README.rst 
 
@@ -16,9 +15,8 @@ Welcome to keyring documentation!
     :show-inheritance:
 
 
-******************
 Indices and tables
-******************
+==================
 
 * :ref:`genindex`
 * :ref:`modindex`
