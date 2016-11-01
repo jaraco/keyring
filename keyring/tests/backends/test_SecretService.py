@@ -12,7 +12,9 @@ class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
     def init_keyring(self):
         print("Testing SecretServiceKeyring; the following "
             "password prompts are for this keyring")
-        return SecretService.Keyring()
+        keyring = SecretService.Keyring()
+        keyring.preferred_collection = '/org/freedesktop/secrets/collection/session'
+        return keyring
 
 class SecretServiceKeyringUnitTests(unittest.TestCase):
     def test_supported_no_secretstorage(self):
