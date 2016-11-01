@@ -33,10 +33,16 @@ class Keyring(KeyringBackend):
                 "Unable to initialize SecretService: %s" % e)
         return 5
 
-    def get_default_collection(self):
+    def get_preferred_collection(self):
+        """If self.preferred_collection contains a D-Bus path, the collection
+        at that address is returned. Otherwise, the default collection is returned.
+        """
         bus = secretstorage.dbus_init()
         try:
-            collection = secretstorage.get_default_collection(bus)
+            if hasattr(self, 'preferred_collection'):
+                collection = secretstorage.Collection(bus, self.preferred_collection)
+            else:
+                collection = secretstorage.get_default_collection(bus)
         except exceptions.SecretStorageException as e:
             raise InitError("Failed to create the collection: %s." % e)
         if collection.is_locked():
@@ -48,7 +54,7 @@ class Keyring(KeyringBackend):
     def get_password(self, service, username):
         """Get password of the username for the service
         """
-        collection = self.get_default_collection()
+        collection = self.get_preferred_collection()
         items = collection.search_items(
             {"username": username, "service": service})
         for item in items:
@@ -60,7 +66,7 @@ class Keyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        collection = self.get_default_collection()
+        collection = self.get_preferred_collection()
         attributes = {
             "application": "python-keyring",
             "service": service,
@@ -72,7 +78,7 @@ class Keyring(KeyringBackend):
     def delete_password(self, service, username):
         """Delete the stored password (only the first one)
         """
-        collection = self.get_default_collection()
+        collection = self.get_preferred_collection()
         items = collection.search_items(
             {"username": username, "service": service})
         for item in items:
