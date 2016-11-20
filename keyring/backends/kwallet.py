@@ -12,25 +12,26 @@ except ImportError:
 
 
 class DBusKeyring(KeyringBackend):
-    """KDE KWallet via D-Bus
-       find out, which kwallet is in use with the wallet class attribute:
+    """
+    KDE KWallet via D-Bus
+    find out, which kwallet is in use with the wallet class attribute:
 
-       --> import keyring
-       --> kr = keyring.get_keyring()
-       --> kr
-       <keyring.backends.kwallet.DBusKeyring object at 0x7fac597492b0>
+    --> import keyring
+    --> kr = keyring.get_keyring()
+    --> kr
+    <keyring.backends.kwallet.DBusKeyring object at 0x7fac597492b0>
 
-       kwallet
-       --> kr.wallet.requested_bus_name
-       'org.kde.kwalletd'
-       --> kr.wallet.object_path
-       '/modules/kwalletd'
+    kwallet
+    --> kr.wallet.requested_bus_name
+    'org.kde.kwalletd'
+    --> kr.wallet.object_path
+    '/modules/kwalletd'
 
-       kwallet5
-       --> kr.wallet.requested_bus_name
-       'org.kde.kwalletd5'
-       --> kr.wallet.object_path
-       '/modules/kwalletd5'
+    kwallet5
+    --> kr.wallet.requested_bus_name
+    'org.kde.kwalletd5'
+    --> kr.wallet.object_path
+    '/modules/kwalletd5'
     """
 
     appid = 'Python program'
