@@ -4,7 +4,7 @@ from keyring.backends import kwallet
 from ..test_backend import BackendBasicTests
 
 
-@unittest.skipUnless(kwallet.DBusKeyring.viable, "Need DBus")
+@unittest.skipUnless(kwallet.DBusKeyring.viable, "KWallet5 unavailable")
 class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
 
     # Remove '@' from service name as this is not supported in service names
@@ -65,3 +65,10 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
                 ret_password, None,
                 "Not 'None' password returned for username: '%s' on service: '%s'. '%s' != '%s'. Passwords from old folder should be deleted during migration."
                 % (service, username, ret_password, None))
+
+
+@unittest.skipUnless(kwallet.DBusKeyringKWallet4.viable,
+    "KWallet4 unavailable")
+class DBusKWallet4TestCase(DBusKWalletTestCase):
+    def init_keyring(self):
+        return kwallet.DBusKeyringKWallet4()
