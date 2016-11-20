@@ -12,9 +12,51 @@ except ImportError:
 
 
 class DBusKeyring(KeyringBackend):
-    """KDE KWallet via D-Bus"""
+    """KDE KWallet via D-Bus
+       find out, which kwallet is in use with the wallet class attribute:
+
+       --> import keyring
+       --> kr = keyring.get_keyring()
+       --> kr
+       <keyring.backends.kwallet.DBusKeyring object at 0x7fac597492b0>
+
+       kwallet
+       --> kr.wallet.requested_bus_name
+       'org.kde.kwalletd'
+       --> kr.wallet.object_path
+       '/modules/kwalletd'
+
+       kwallet5
+       --> kr.wallet.requested_bus_name
+       'org.kde.kwalletd5'
+       --> kr.wallet.object_path
+       '/modules/kwalletd5'
+    """
 
     appid = 'Python program'
+    wallet = None
+
+    # wallet objects, ordered by internal priority
+    _wallet_objects = [
+        # KWallet5
+        ('org.kde.kwalletd5', '/modules/kwalletd5'),
+        # KWallet
+        ('org.kde.kwalletd', '/modules/kwalletd'),
+    ]
+
+    @classmethod
+    def _select_wallet(cls, bus):
+        if cls.wallet is not None:
+            return cls.wallet
+
+        for bus_name, object_path in cls._wallet_objects:
+            try:
+                proxy = bus.get_object(bus_name, object_path)
+            except dbus.DBusException:
+                pass
+            else:
+                cls.wallet = proxy
+                return proxy
 
     @properties.ClassProperty
     @classmethod
@@ -25,10 +67,8 @@ class DBusKeyring(KeyringBackend):
             bus = dbus.SessionBus()
         except dbus.DBusException as exc:
             raise RuntimeError(exc.get_dbus_message())
-        try:
-            bus.get_object('org.kde.kwalletd5', '/modules/kwalletd5')
-        except dbus.DBusException:
-            raise RuntimeError('cannot connect to org.kde.kwalletd5')
+        if cls._select_wallet(bus) is None:
+            raise RuntimeError('cannot connect to org.kde.kwalletd{4,5}')
         return 4.9
 
     def __init__(self, *arg, **kw):
@@ -63,8 +103,16 @@ class DBusKeyring(KeyringBackend):
         bus = dbus.SessionBus()
         wId = 0
         try:
-            remote_obj = bus.get_object('org.kde.kwalletd5', '/modules/kwalletd5')
-            self.iface = dbus.Interface(remote_obj, 'org.kde.KWallet')
+            self.iface = dbus.Interface(self.wallet, 'org.kde.KWallet')
+        except dbus.DBusException:
+            # oops, invalid dbus session, try to reconnect
+            DBusKeyring._select_wallet(bus)
+            try:
+                self.iface = dbus.Interface(self.wallet, 'org.kde.KWallet')
+            except dbus.DBusException:
+                # we're in serious touble now, give up
+                return False
+        try:
             self.handle = self.iface.open(
                         self.iface.networkWallet(), wId, self.appid)
         except dbus.DBusException:
