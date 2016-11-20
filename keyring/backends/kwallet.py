@@ -104,6 +104,15 @@ class DBusKeyring(KeyringBackend):
         wId = 0
         try:
             self.iface = dbus.Interface(self.wallet, 'org.kde.KWallet')
+        except dbus.DBusException:
+            # oops, invalid dbus session, try to reconnect
+            DBusKeyring._select_wallet(bus)
+            try:
+                self.iface = dbus.Interface(self.wallet, 'org.kde.KWallet')
+            except dbus.DBusException:
+                # we're in serious touble now, give up
+                return False
+        try:
             self.handle = self.iface.open(
                         self.iface.networkWallet(), wId, self.appid)
         except dbus.DBusException:
