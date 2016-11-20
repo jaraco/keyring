@@ -21,20 +21,6 @@ class DBusKeyring(KeyringBackend):
     bus_name = 'org.kde.kwalletd5'
     object_path = '/modules/kwalletd5'
 
-    @classmethod
-    def _select_wallet(cls, bus):
-        if cls.wallet is not None:
-            return cls.wallet
-
-        for bus_name, object_path in cls._wallet_objects:
-            try:
-                proxy = bus.get_object(bus_name, object_path)
-            except dbus.DBusException:
-                pass
-            else:
-                cls.wallet = proxy
-                return proxy
-
     @properties.ClassProperty
     @classmethod
     def priority(cls):
