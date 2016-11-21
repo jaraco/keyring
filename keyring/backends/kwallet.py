@@ -70,7 +70,7 @@ class DBusKeyring(KeyringBackend):
         bus = dbus.SessionBus()
         wId = 0
         try:
-            remote_obj = bus.get_object(self.bus_name, self.module_path)
+            remote_obj = bus.get_object(self.bus_name, self.object_path)
             self.iface = dbus.Interface(remote_obj, 'org.kde.KWallet')
             self.handle = self.iface.open(
                         self.iface.networkWallet(), wId, self.appid)
