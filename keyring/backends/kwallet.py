@@ -13,12 +13,27 @@ except ImportError:
 
 class DBusKeyring(KeyringBackend):
     """
-    KDE KWallet 4 via D-Bus
+    KDE KWallet 5 via D-Bus
     """
 
     appid = 'Python program'
-    bus_name = 'org.kde.kwalletd'
-    object_path = '/modules/kwalletd'
+    wallet = None
+    bus_name = 'org.kde.kwalletd5'
+    object_path = '/modules/kwalletd5'
+
+    @classmethod
+    def _select_wallet(cls, bus):
+        if cls.wallet is not None:
+            return cls.wallet
+
+        for bus_name, object_path in cls._wallet_objects:
+            try:
+                proxy = bus.get_object(bus_name, object_path)
+            except dbus.DBusException:
+                pass
+            else:
+                cls.wallet = proxy
+                return proxy
 
     @properties.ClassProperty
     @classmethod
@@ -35,7 +50,7 @@ class DBusKeyring(KeyringBackend):
             tmpl = 'cannot connect to {bus_name}'
             msg = tmpl.format(bus_name=cls.bus_name)
             raise RuntimeError(msg)
-        return 3.9
+        return 4.9
 
     def __init__(self, *arg, **kw):
         super(DBusKeyring, self).__init__(*arg, **kw)
@@ -112,16 +127,15 @@ class DBusKeyring(KeyringBackend):
         self.iface.removeEntry(self.handle, service, username, self.appid)
 
 
-class DBusKeyringKWallet5(DBusKeyring):
+class DBusKeyringKWallet4(DBusKeyring):
     """
-    KDE KWallet 5 via D-Bus
+    KDE KWallet 4 via D-Bus
     """
 
-    bus_name = 'org.kde.kwalletd5'
-    object_path = '/modules/kwalletd5'
+    bus_name = 'org.kde.kwalletd'
+    object_path = '/modules/kwalletd'
 
     @properties.ClassProperty
     @classmethod
     def priority(cls):
-        # prefer KWallet5 over KWallet4
-        return super(DBusKeyringKWallet5, cls).priority + 1
+        return super(DBusKeyringKWallet4, cls).priority - 1
