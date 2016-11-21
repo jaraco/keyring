@@ -4,7 +4,7 @@ from keyring.backends import kwallet
 from ..test_backend import BackendBasicTests
 
 
-@unittest.skipUnless(kwallet.DBusKeyring.viable, "KWallet4 unavailable")
+@unittest.skipUnless(kwallet.DBusKeyring.viable, "KWallet5 unavailable")
 class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
 
     # Remove '@' from service name as this is not supported in service names
@@ -67,8 +67,8 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
                 % (service, username, ret_password, None))
 
 
-@unittest.skipUnless(kwallet.DBusKeyringKWallet5.viable,
-    "KWallet5 unavailable")
-class DBusKWallet5TestCase(DBusKWalletTestCase):
+@unittest.skipUnless(kwallet.DBusKeyringKWallet4.viable,
+    "KWallet4 unavailable")
+class DBusKWallet4TestCase(DBusKWalletTestCase):
     def init_keyring(self):
-        return kwallet.DBusKeyringKWallet5()
+        return kwallet.DBusKeyringKWallet4()
