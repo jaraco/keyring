@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+10.1
+----
+
+* #253: Backends now expose a '.name' attribute suitable
+  for identifying each backend to users.
+
 10.0.2
 -----
 
