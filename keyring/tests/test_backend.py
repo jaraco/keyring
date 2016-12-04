@@ -1,12 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-test_backend.py
+# coding: utf-8
 
-Test case for keyring basic function
-
-created by Kang Zhang 2009-07-14
 """
-from __future__ import with_statement
+Common test functionality for backends.
+"""
 
 import string
 
