@@ -6,20 +6,9 @@ import unittest
 import keyring.backends.Windows
 from ..test_backend import BackendBasicTests
 
-def is_winvault_supported():
-    try:
-        __import__('win32cred')
-        has_pywin32 = True
-    except ImportError:
-        has_pywin32 = False
-    return (
-        sys.platform in ['win32'] and sys.getwindowsversion().major >= 6
-        and has_pywin32
-    )
 
-
-@unittest.skipUnless(is_winvault_supported(),
-                     "Need WinVault")
+@unittest.skipUnless(keyring.backends.Windows.WinVaultKeyring.viable,
+    "Needs Windows")
 class WinVaultKeyringTestCase(BackendBasicTests, unittest.TestCase):
     def tearDown(self):
         # clean up any credentials created
