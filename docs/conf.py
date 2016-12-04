@@ -20,7 +20,7 @@ release = version
 master_doc = 'index'
 
 link_files = {
-    'CHANGES.rst': dict(
+    '../CHANGES.rst': dict(
         using=dict(
             GH='https://github.com',
             project=project,

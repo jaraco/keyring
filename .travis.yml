@@ -22,8 +22,6 @@ script:
 branches:
   except:
   - skeleton
-before_deploy:
-- pip install https://dl.dropboxusercontent.com/u/54081/cheeseshop/setuptools_scm-1.14.1b1.tar.gz
 deploy:
   provider: pypi
   server: https://upload.pypi.org/legacy/

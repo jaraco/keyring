@@ -8,6 +8,7 @@
 .. image:: https://img.shields.io/travis/jaraco/keyring/master.svg
    :target: http://travis-ci.org/jaraco/keyring
 
+
 =======================================
 Installing and Using Python Keyring Lib
 =======================================
