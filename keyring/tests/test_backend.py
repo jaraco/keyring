@@ -27,6 +27,9 @@ UNICODE_CHARS = escape.u(
 # ensure no-ascii chars slip by - watch your editor!
 assert min(ord(char) for char in UNICODE_CHARS) > 127
 
+# testing backend name suitability
+is_ascii_printable = lambda s: all(32 <= ord(c) < 127 for c in s)
+
 class BackendBasicTests(object):
     """Test for the keyring's basic functions. password_set and password_get
     """
@@ -97,6 +100,9 @@ class BackendBasicTests(object):
         self.keyring.delete_password(service, username1)
         self.assertEqual(self.keyring.get_password(
            service, username2), password)
+
+    def test_name_property(self):
+        self.assertFalse(is_ascii_printable(self.keyring.name))
 
     def test_unicode_chars(self):
         password = random_string(20, UNICODE_CHARS)
