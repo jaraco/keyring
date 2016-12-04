@@ -1,7 +1,9 @@
+from __future__ import unicode_literals
+
 import functools
 
 from ..py27compat import unicode_str
-from ..util import escape, properties
+from ..util import properties
 from ..backend import KeyringBackend
 from ..errors import PasswordDeleteError, ExceptionRaisedContext
 
@@ -60,7 +62,7 @@ class WinVaultKeyring(KeyringBackend):
 
     @staticmethod
     def _compound_name(username, service):
-        return escape.u('%(username)s@%(service)s') % vars()
+        return '%(username)s@%(service)s' % vars()
 
     def get_password(self, service, username):
         # first attempt to get the password under the service name
