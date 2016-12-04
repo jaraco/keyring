@@ -102,7 +102,7 @@ class BackendBasicTests(object):
            service, username2), password)
 
     def test_name_property(self):
-        self.assertFalse(is_ascii_printable(self.keyring.name))
+        assert is_ascii_printable(self.keyring.name)
 
     def test_unicode_chars(self):
         password = random_string(20, UNICODE_CHARS)
