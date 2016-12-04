@@ -6,6 +6,8 @@ Common test functionality for backends.
 
 import string
 
+import pytest
+
 from keyring.util import escape
 from .util import random_string
 from keyring import errors
@@ -50,15 +52,15 @@ class BackendBasicTests(object):
         keyring = self.keyring
 
         # for the non-existent password
-        self.assertEqual(keyring.get_password(service, username), None)
+        assert keyring.get_password(service, username) is None
 
         # common usage
         self.set_password(service, username, password)
-        self.assertEqual(keyring.get_password(service, username), password)
+        assert keyring.get_password(service, username) == password
 
         # for the empty password
         self.set_password(service, username, "")
-        self.assertEqual(keyring.get_password(service, username), "")
+        assert keyring.get_password(service, username) == ""
 
     def test_password_set_get(self):
         password = random_string(20)
@@ -78,13 +80,13 @@ class BackendBasicTests(object):
         service = random_string(20, self.DIFFICULT_CHARS)
         self.keyring.set_password(service, username, password)
         self.keyring.delete_password(service, username)
-        self.assertIsNone(self.keyring.get_password(service, username))
+        assert self.keyring.get_password(service, username) is None
 
     def test_delete_not_present(self):
         username = random_string(20, self.DIFFICULT_CHARS)
         service = random_string(20, self.DIFFICULT_CHARS)
-        self.assertRaises(errors.PasswordDeleteError,
-            self.keyring.delete_password, service, username)
+        with pytest.raises(errors.PasswordDeleteError):
+            self.keyring.delete_password(service, username)
 
     def test_delete_one_in_group(self):
         username1 = random_string(20, self.DIFFICULT_CHARS)
@@ -94,8 +96,7 @@ class BackendBasicTests(object):
         self.keyring.set_password(service, username1, password)
         self.set_password(service, username2, password)
         self.keyring.delete_password(service, username1)
-        self.assertEqual(self.keyring.get_password(
-           service, username2), password)
+        assert self.keyring.get_password(service, username2) == password
 
     def test_name_property(self):
         assert is_ascii_printable(self.keyring.name)
@@ -124,10 +125,7 @@ class BackendBasicTests(object):
         keyring = self.keyring
         self.set_password('service1', 'user1', 'password1')
         self.set_password('service1', 'user2', 'password2')
-        self.assertEqual(keyring.get_password('service1', 'user1'),
-            'password1')
-        self.assertEqual(keyring.get_password('service1', 'user2'),
-            'password2')
+        assert keyring.get_password('service1', 'user1') == 'password1'
+        assert keyring.get_password('service1', 'user2') == 'password2'
         self.set_password('service2', 'user3', 'password3')
-        self.assertEqual(keyring.get_password('service1', 'user1'),
-            'password1')
+        assert keyring.get_password('service1', 'user1') == 'password1'
