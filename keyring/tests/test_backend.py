@@ -4,18 +4,19 @@
 Common test functionality for backends.
 """
 
+from __future__ import unicode_literals
+
 import string
 
 import pytest
 
-from keyring.util import escape
 from .util import random_string
 from keyring import errors
 
 # unicode only characters
 # Sourced from The Quick Brown Fox... Pangrams
 # http://www.columbia.edu/~fdc/utf8/
-UNICODE_CHARS = escape.u(
+UNICODE_CHARS = (
     "זהכיףסתםלשמועאיךתנצחקרפדעץטובבגן"
     "ξεσκεπάζωτηνψυχοφθόραβδελυγμία"
     "Съешьжеещёэтихмягкихфранцузскихбулокдавыпейчаю"
