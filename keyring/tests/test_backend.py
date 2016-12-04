@@ -23,8 +23,8 @@ UNICODE_CHARS = escape.u(
 # ensure no-ascii chars slip by - watch your editor!
 assert min(ord(char) for char in UNICODE_CHARS) > 127
 
-# testing backend name suitability
-is_ascii_printable = lambda s: all(32 <= ord(c) < 127 for c in s)
+def is_ascii_printable(s):
+    return all(32 <= ord(c) < 127 for c in s)
 
 class BackendBasicTests(object):
     """Test for the keyring's basic functions. password_set and password_get
