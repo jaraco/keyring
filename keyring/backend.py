@@ -66,6 +66,18 @@ class KeyringBackend(object):
             cls.priority
         return not bool(exc)
 
+    @properties.ClassProperty
+    @classmethod
+    def name(cls):
+        """
+        The keyring name, suitable for display.
+
+        The name is derived from module and class name.
+        """
+        parent, sep, mod_name = cls.__module__.rpartition('.')
+        mod_name = mod_name.replace('_', ' ')
+        return ' '.join([mod_name, cls.__name__])
+
     @abc.abstractmethod
     def get_password(self, service, username):
         """Get password of the username for the service
