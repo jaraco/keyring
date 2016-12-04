@@ -19,7 +19,7 @@ if PY3:
         return chr(c)
 else:
     def u(s):
-        return unicode(s, "unicode_escape")
+        return s.decode('utf-8')
     def _unichr(c):
         return unichr(c)
 
