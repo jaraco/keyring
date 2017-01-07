@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
 
 class Keyring(KeyringBackend):
     """Secret Service Keyring"""
+    appid = "python-keyring"
 
     @properties.ClassProperty
     @classmethod
@@ -68,7 +69,7 @@ class Keyring(KeyringBackend):
         """
         collection = self.get_preferred_collection()
         attributes = {
-            "application": "python-keyring",
+            "application": self.appid,
             "service": service,
             "username": username
             }
