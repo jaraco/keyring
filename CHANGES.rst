@@ -1,3 +1,9 @@
+10.2
+----
+
+* #259: Allow to set a custom application attribute for
+  SecretService backend.
+
 10.1
 ----
 
