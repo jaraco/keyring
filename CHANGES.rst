@@ -75,6 +75,9 @@
   users will be prompted to authorize the system Python
   executable and also new Python executables, such as
   those created by virtualenv.
+  #260: No longer does the keyring honor the ``store``
+  attribute on the keyring. Only application passwords
+  are accessible.
 
 8.7
 ---
