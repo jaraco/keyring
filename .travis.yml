@@ -4,6 +4,7 @@ python:
   - 3.3
   - 3.4
   - 3.5
+  - 3.6
 matrix:
   include:
   - os: osx
@@ -25,8 +26,9 @@ deploy:
   on:
     tags: true
     all_branches: true
-    python: 3.5
+    python: 3.6
   user: jaraco
   password:
     secure: aDqlVdm6FZ8pqLkoDRR2LH3TEz7pBvKH2HhOlSy7OEmopN/36ncql/KvfE0ccpaOES9Xm31a51bUfNjcwb1HVKjfW544C+IoSHctkG1rI5bp3q4rW+4RbQcBZVHUUKR9yQf9ZyikEmoYXi3g+JKcOf9rj+v/32PAfUDzSpFbWik=
   distributions: dists
+  skip_upload_docs: true

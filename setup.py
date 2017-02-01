@@ -3,20 +3,16 @@
 # Project skeleton maintained at https://github.com/jaraco/skeleton
 
 import io
-import sys
 
 import setuptools
 
 with io.open('README.rst', encoding='utf-8') as readme:
     long_description = readme.read()
 
-needs_wheel = {'release', 'bdist_wheel', 'dists'}.intersection(sys.argv)
-wheel = ['wheel'] if needs_wheel else []
-
 name = 'keyring'
 description = 'Store and access your passwords safely.'
 
-setup_params = dict(
+params = dict(
     name=name,
     use_scm_version=True,
     author="Kang Zhang",
@@ -39,7 +35,7 @@ setup_params = dict(
     },
     setup_requires=[
         'setuptools_scm>=1.15.0',
-    ] + wheel,
+    ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
@@ -49,6 +45,7 @@ setup_params = dict(
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
     ],
     entry_points={
         'console_scripts': [
@@ -57,4 +54,4 @@ setup_params = dict(
     },
 )
 if __name__ == '__main__':
-    setuptools.setup(**setup_params)
+	setuptools.setup(**params)
