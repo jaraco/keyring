@@ -1,6 +1,9 @@
 import contextlib
 import ctypes
+import struct
 from ctypes import c_void_p, c_uint16, c_uint32, c_int32, c_char_p, POINTER
+
+import six
 
 sec_keychain_ref = sec_keychain_item_ref = c_void_p
 OS_status = c_int32
@@ -109,13 +112,94 @@ SecKeychainFindInternetPassword.argtypes = (
     c_uint32,  # pathLength
     c_char_p,  # path
     c_uint16,  # port
-    c_void_p,  # SecProtocolType protocol,
-    c_void_p,  # SecAuthenticationType authenticationType,
+    c_uint32,  # SecProtocolType protocol,
+    c_uint32,  # SecAuthenticationType authenticationType,
     POINTER(c_uint32),  # passwordLength
     POINTER(c_void_p),  # passwordData
     POINTER(sec_keychain_item_ref),  # itemRef
 )
 SecKeychainFindInternetPassword.restype = OS_status
+
+
+class PackedAttributes(type):
+    """
+    Take the attributes which use magic words
+    to represent enumerated constants and generate
+    the constants.
+    """
+    def __new__(cls, name, bases, dict):
+        dict.update(
+            (key, cls.unpack(val))
+            for key, val in dict.items()
+            if not key.startswith('_')
+        )
+        return super(PackedAttributes, cls).__new__(cls, name, bases, dict)
+
+    @staticmethod
+    def unpack(word):
+        r"""
+        >>> PackedAttributes.unpack(0)
+        0
+        >>> PackedAttributes.unpack('\x00\x00\x00\x01')
+        1
+        >>> PackedAttributes.unpack('abcd')
+        1633837924
+        """
+        if not isinstance(word, six.string_types):
+            return word
+        val, = struct.unpack('!I', word.encode('ascii'))
+        return val
+
+
+@six.add_metaclass(PackedAttributes)
+class SecProtocolType(object):
+    kSecProtocolTypeHTTP = 'http'
+    kSecProtocolTypeHTTPS = 'htps'
+    kSecProtocolTypeFTP = 'ftp '
+
+
+@six.add_metaclass(PackedAttributes)
+class SecAuthenticationType(object):
+    """
+    >>> SecAuthenticationType.kSecAuthenticationTypeDefault
+    1684434036
+    """
+    kSecAuthenticationTypeDefault = 'dflt'
+    kSecAuthenticationTypeAny = 0
+
+
+def find_internet_password(kc_name, service, username):
+        username = username.encode('utf-8')
+        domain = None
+        service = service.encode('utf-8')
+        path = None
+        port = 0
+
+        with open(kc_name) as keychain:
+            length = c_uint32()
+            data = c_void_p()
+            status = SecKeychainFindInternetPassword(
+                keychain,
+                len(service), service,
+                0, domain,
+                len(username), username,
+                0, path,
+                port,
+                SecProtocolType.kSecProtocolTypeHTTPS,
+                SecAuthenticationType.kSecAuthenticationTypeAny,
+                length,
+                data,
+                None,
+            )
+
+        msg = "Can't fetch password from system"
+        NotFound.raise_for_status(status, msg)
+
+        password = ctypes.create_string_buffer(length.value)
+        ctypes.memmove(password, data.value, length.value)
+        SecKeychainItemFreeContent(None, data)
+        return password.raw.decode('utf-8')
+
 
 SecKeychainAddGenericPassword = _sec.SecKeychainAddGenericPassword
 SecKeychainAddGenericPassword.argtypes = (
@@ -153,6 +237,52 @@ def set_generic_password(name, service, username, password):
             status = SecKeychainItemModifyAttributesAndData(
                 item, None, len(password), password)
             _core.CFRelease(item)
+
+        NotFound.raise_for_status(status, "Unable to set password")
+
+
+SecKeychainAddInternetPassword = _sec.SecKeychainAddInternetPassword
+SecKeychainAddInternetPassword.argtypes = (
+    sec_keychain_ref, # keychainOrArray
+    c_uint32,  # serverNameLength
+    c_char_p,  # serverName
+    c_uint32,  # securityDomainLength
+    c_char_p,  # securityDomain
+    c_uint32,  # accountNameLength
+    c_char_p,  # accountName
+    c_uint32,  # pathLength
+    c_char_p,  # path
+    c_uint16,  # port
+    c_uint32,  # SecProtocolType protocol,
+    c_uint32,  # SecAuthenticationType authenticationType,
+    c_uint32,  # passwordLength
+    c_void_p,  # passwordData
+    POINTER(sec_keychain_item_ref),  # itemRef
+)
+SecKeychainAddInternetPassword.restype = OS_status
+
+
+def set_internet_password(name, service, username, password):
+    username = username.encode('utf-8')
+    domain = None
+    service = service.encode('utf-8')
+    password = password.encode('utf-8')
+    path = None
+    port = 0
+    with open(name) as keychain:
+        # TODO: Use update or set technique as seen in set_generic_password
+        status = SecKeychainAddInternetPassword(
+            keychain,
+            len(service), service,
+            0, domain,
+            len(username), username,
+            0, path,
+            port,
+            SecProtocolType.kSecProtocolTypeHTTPS,
+            SecAuthenticationType.kSecAuthenticationTypeAny,
+            len(password), password,
+            None,
+        )
 
         NotFound.raise_for_status(status, "Unable to set password")
 
