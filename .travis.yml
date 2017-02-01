@@ -1,14 +1,11 @@
 language: python
+python:
+  - 2.7
+  - 3.3
+  - 3.4
+  - 3.5
 matrix:
   include:
-  - os: linux
-    python: 2.7
-  - os: linux
-    python: 3.3
-  - os: linux
-    python: 3.4
-  - os: linux
-    python: 3.5
   - os: osx
     language: generic
 
