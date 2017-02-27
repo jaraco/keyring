@@ -51,6 +51,9 @@ params = dict(
         'console_scripts': [
             'keyring=keyring.cli:main',
         ],
+        'devpi_client': [
+            'keyring = keyring.devpi_client',
+        ],
     },
 )
 if __name__ == '__main__':
