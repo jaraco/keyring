@@ -5,6 +5,9 @@
   logging in with `devpi <https://pypi.org/project/devpi>`_
   client.
 
+* #260: For macOS, added initial API support for internet
+  passwords.
+
 10.2
 ----
 
