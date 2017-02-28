@@ -1,3 +1,10 @@
+10.3
+----
+
+* #264: Implement devpi hook for supplying a password when
+  logging in with `devpi <https://pypi.org/project/devpi>`_
+  client.
+
 10.2
 ----
 
