@@ -17,6 +17,8 @@ try:
 except NameError:
     text_type = str
 
+string_types = tuple(set(str, text_type))
+
 try:
     import cPickle as pickle
 except ImportError:
