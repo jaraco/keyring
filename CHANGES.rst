@@ -1,3 +1,9 @@
+10.3.1
+------
+
+* #266: Use private compatibity model rather than six to
+  avoid the dependency.
+
 10.3
 ----
 
