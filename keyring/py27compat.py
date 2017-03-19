@@ -13,9 +13,9 @@ except NameError:
     input = input
 
 try:
-    unicode_str = unicode
+    text_type = unicode
 except NameError:
-    unicode_str = str
+    text_type = str
 
 try:
     import cPickle as pickle

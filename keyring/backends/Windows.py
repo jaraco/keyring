@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import functools
 
-from ..py27compat import unicode_str
+from ..py27compat import text_type
 from ..util import properties
 from ..backend import KeyringBackend
 from ..errors import PasswordDeleteError, ExceptionRaisedContext
@@ -96,7 +96,7 @@ class WinVaultKeyring(KeyringBackend):
             target = self._compound_name(existing_username, service)
             self._set_password(target, existing_username,
                 existing_pw['CredentialBlob'].decode('utf-16'))
-        self._set_password(service, username, unicode_str(password))
+        self._set_password(service, username, text_type(password))
 
     def _set_password(self, target, username, password):
         credential = dict(Type=win32cred.CRED_TYPE_GENERIC,
