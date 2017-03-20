@@ -14,10 +14,10 @@ except NameError:
 
 try:
     text_type = unicode
+    string_types = unicode, str
 except NameError:
     text_type = str
-
-string_types = tuple(set(str, text_type))
+    string_types = str,
 
 try:
     import cPickle as pickle
