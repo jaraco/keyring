@@ -1,8 +1,14 @@
-10.3.1
+10.3.2
 ------
 
 * #267: More leniently unescape lowercased characters as
   they get re-cased by ConfigParser.
+
+10.3.1
+------
+
+* #266: Use private compatibity model rather than six to
+  avoid the dependency.
 
 10.3
 ----

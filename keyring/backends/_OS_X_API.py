@@ -3,7 +3,8 @@ import ctypes
 import struct
 from ctypes import c_void_p, c_uint16, c_uint32, c_int32, c_char_p, POINTER
 
-import six
+from keyring.py27compat import string_types, add_metaclass
+
 
 sec_keychain_ref = sec_keychain_item_ref = c_void_p
 OS_status = c_int32
@@ -145,20 +146,20 @@ class PackedAttributes(type):
         >>> PackedAttributes.unpack('abcd')
         1633837924
         """
-        if not isinstance(word, six.string_types):
+        if not isinstance(word, string_types):
             return word
         val, = struct.unpack('!I', word.encode('ascii'))
         return val
 
 
-@six.add_metaclass(PackedAttributes)
+@add_metaclass(PackedAttributes)
 class SecProtocolType(object):
     kSecProtocolTypeHTTP = 'http'
     kSecProtocolTypeHTTPS = 'htps'
     kSecProtocolTypeFTP = 'ftp '
 
 
-@six.add_metaclass(PackedAttributes)
+@add_metaclass(PackedAttributes)
 class SecAuthenticationType(object):
     """
     >>> SecAuthenticationType.kSecAuthenticationTypeDefault
