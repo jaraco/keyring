@@ -143,6 +143,17 @@ directory in the project checkout::
     default-keyring=simplekeyring.SimpleKeyring
     keyring-path=/home/kang/pyworkspace/python-keyring-lib/demo/
 
+Third-Party Backends
+====================
+
+In addition to the backends provided by the core keyring package for
+the most common and secure use cases, there
+are additional keyring backend implementations available for other
+use-cases. Simply install them to make them available:
+
+- `keyrings.alt <https://pypi.org/project/keyrings.alt>`_ - "alternate",
+  less common backends, originally part of the core package, but now
+  available for opt-in.
 
 Write your own keyring backend
 ==============================
@@ -154,6 +165,18 @@ attribute and three functions: ``get_password()``, ``set_password()``, and
 
 See the ``backend`` module for more detail on the interface of this class.
 
+Keyring employs entry points to allow any third-party package to implement
+backends without any modification to the keyring itself. Those interested in
+creating new backends are encouraged to create new, third-party packages
+in the ``keyrings`` namespace, in a manner modeled by the `keyrings.alt
+package <https://github.com/jaraco/keyrings.alt>`_. See the ``setup.py`` file
+in that project for a hint on how to create the requisite entry points.
+Backends that prove essential may be considered for inclusion in the core
+library, although the ease of installing these third-party packages should
+mean that extensions may be readily available.
+
+If you've created an extension for Keyring, please submit a pull request to
+have your extension mentioned as an available extension.
 
 Set the keyring in runtime
 ==========================
