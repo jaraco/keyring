@@ -238,7 +238,6 @@ virtual environment on Ubuntu 16.04.  No config file was used.::
   'password'
 
 
-
 Using Keyring on headless Linux systems
 =======================================
 
@@ -279,6 +278,12 @@ The keyring lib has a few functions:
   keyring.
 * ``delete_password(service, username)``: Delete the password stored in
   keyring. If the password does not exist, it will raise an exception.
+
+In all cases, the parameters (``service``, ``username``, ``password``)
+should be Unicode text. On Python 2, these parameters are accepted as
+simple ``str`` in the default encoding as they will be implicitly
+decoded to text. Some backends may accept ``bytes`` for these parameters,
+but such usage is discouraged.
 
 ------------
 Get involved
