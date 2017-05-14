@@ -13,7 +13,6 @@ from .py33compat import max
 from . import logger
 from . import backend
 from .util import platform_ as platform
-from .util import once
 from .backends import fail
 
 
