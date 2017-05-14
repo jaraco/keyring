@@ -1,2 +1,0 @@
-pytest >= 2.8
-subprocess32; python_version=="2.6"

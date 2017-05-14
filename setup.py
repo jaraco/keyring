@@ -32,6 +32,15 @@ params = dict(
         ':sys_platform=="linux2" or sys_platform=="linux"': [
             "secretstorage",
         ],
+        'testing': [
+            'pytest>=2.8',
+            'pytest-sugar',
+        ],
+        'docs': [
+            'sphinx',
+            'jaraco.packaging>=3.2',
+            'rst.linker>=1.9',
+        ],
     },
     setup_requires=[
         'setuptools_scm>=1.15.0',
