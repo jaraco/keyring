@@ -154,6 +154,9 @@ use-cases. Simply install them to make them available:
 - `keyrings.alt <https://pypi.org/project/keyrings.alt>`_ - "alternate",
   less common backends, originally part of the core package, but now
   available for opt-in.
+- `keyring_jeepney <https://pypi.python.org/pypi/keyring_jeepney>`__ - a
+  pure Python backend using the secret service DBus API for desktop
+  Linux.
 
 Write your own keyring backend
 ==============================
