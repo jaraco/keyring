@@ -37,8 +37,7 @@ These recommended keyring backends are supported by the Python keyring lib:
 * `Windows Credential Vault
   <http://windows.microsoft.com/en-us/windows7/what-is-credential-manager>`_
 
-Other keyring implementations are provided in the `keyrings.alt
-package <https://pypi.python.org/pypi/keyrings.alt>`_.
+Other keyring implementations are provided in the `keyrings.alt package`_.
 
 -------------------------
 Installation Instructions
@@ -321,7 +320,7 @@ in which it can be tested. Recommended technique is described below.
 Using tox
 ---------
 
-Keyring prefers use of `tox <https://pypi.org/project/tox>` to run tests.
+Keyring prefers use of `tox <https://pypi.org/project/tox>`_ to run tests.
 Simply install and invoke ``tox``.
 
 This technique is the one used by the Travis-CI script.
