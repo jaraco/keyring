@@ -3,6 +3,8 @@ from __future__ import print_function
 import sys
 import unittest
 
+import pytest
+
 import keyring.backends.Windows
 from ..test_backend import BackendBasicTests
 
@@ -20,3 +22,11 @@ class WinVaultKeyringTestCase(BackendBasicTests, unittest.TestCase):
 
     def init_keyring(self):
         return keyring.backends.Windows.WinVaultKeyring()
+
+
+@pytest.mark.skipif('sys.platform != "win32"')
+def test_winvault_always_viable():
+    """
+    The WinVault backend should always be viable on Windows.
+    """
+    assert keyring.backends.Windows.WinVaultKeyring.viable
