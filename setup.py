@@ -28,7 +28,7 @@ params = dict(
     install_requires=[
     ],
     extras_require={
-        ':sys_platform=="win32"': ['pywin32-ctypes'],
+        ':sys_platform=="win32"': ['pywin32-ctypes==0.0.1'],
         ':sys_platform=="linux2" or sys_platform=="linux"': [
             "secretstorage",
         ],
