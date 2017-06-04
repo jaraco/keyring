@@ -1,3 +1,9 @@
+10.3.3
+------
+
+* #278: Pin to pywin32-ctypes 0.0.1 to avoid apparent
+  breakage introduced in 0.1.0.
+
 10.3.2
 ------
 
