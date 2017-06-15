@@ -7,6 +7,7 @@ from ..util import properties
 
 try:
     import dbus
+    from dbus.mainloop.glib import DBusGMainLoop
 except ImportError:
     pass
 
@@ -27,7 +28,7 @@ class DBusKeyring(KeyringBackend):
         if 'dbus' not in globals():
             raise RuntimeError('python-dbus not installed')
         try:
-            bus = dbus.SessionBus()
+            bus = dbus.SessionBus(mainloop=DBusGMainLoop())
         except dbus.DBusException as exc:
             raise RuntimeError(exc.get_dbus_message())
         try:
@@ -67,7 +68,7 @@ class DBusKeyring(KeyringBackend):
     def connected(self, service):
         if self.handle >= 0:
             return True
-        bus = dbus.SessionBus()
+        bus = dbus.SessionBus(mainloop=DBusGMainLoop())
         wId = 0
         try:
             remote_obj = bus.get_object(self.bus_name, self.object_path)
