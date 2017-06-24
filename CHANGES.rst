@@ -1,3 +1,11 @@
+10.4.0
+------
+
+* #279: In Kwallet, pass mainloop to SessionBus.
+
+* #278: Unpin pywin32-ctypes, but blacklist known
+  incompatible versions.
+
 10.3.3
 ------
 
