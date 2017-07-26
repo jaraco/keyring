@@ -34,8 +34,8 @@ These recommended keyring backends are supported by the Python keyring lib:
   `secretstorage <https://pypi.python.org/pypi/secretstorage>`_)
 * `KWallet <https://en.wikipedia.org/wiki/KWallet>`_
   (requires `dbus <https://pypi.python.org/pypi/dbus-python>`_)
-* `Windows Credential Vault
-  <http://windows.microsoft.com/en-us/windows7/what-is-credential-manager>`_
+* `Windows Credential Locker
+  <https://docs.microsoft.com/en-us/windows/uwp/security/credential-locker>`_
 
 Other keyring implementations are provided in the `keyrings.alt package`_.
 
