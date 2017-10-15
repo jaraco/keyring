@@ -487,7 +487,7 @@
 
 * Removed support for Python 2.5.
 * Removed names in ``keyring.backend`` moved in 1.1 and previously retained
-  for compatibilty.
+  for compatibility.
 
 2.1.1
 -----
@@ -789,7 +789,7 @@ continue to operate normally. Any applications that customize the storage
 location or make assumptions about the storage location will need to take
 this change into consideration. Additionally, after upgrading to 0.8,
 it is not possible to downgrade to 0.7 without manually moving
-configuration files. In 1.0, the backward compatibilty
+configuration files. In 1.0, the backward compatibility
 will be removed.
 
 0.7.1
