@@ -19,7 +19,7 @@ Installing and Using Python Keyring Lib
 What is Python keyring lib?
 ---------------------------
 
-The Python keyring lib provides a easy way to access the system keyring service
+The Python keyring lib provides an easy way to access the system keyring service
 from python. It can be used in any application that needs safe password storage.
 
 The keyring library is licensed under both the `MIT license
@@ -212,7 +212,7 @@ Here's an example demonstrating how to invoke ``set_keyring``::
     # invoke the keyring lib
     try:
         keyring.set_password("demo-service", "tarek", "passexample")
-        print("password stored sucessfully")
+        print("password stored successfully")
     except keyring.errors.PasswordSetError:
         print("failed to store password")
     print("password", keyring.get_password("demo-service", "tarek"))
