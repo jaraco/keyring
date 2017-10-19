@@ -21,6 +21,9 @@ class CommandLineTool(object):
         self.parser.add_option("-b", "--keyring-backend",
                                dest="keyring_backend", default=None,
                                help="Name of the keyring backend")
+        self.parser.add_option("-l", "--list-backends",
+                               dest="list_backends", action="store_true",
+                               help="Name of the keyring backend")
 
     def run(self, argv):
         opts, args = self.parser.parse_args(argv)
@@ -34,6 +37,10 @@ class CommandLineTool(object):
                 return 1
             else:
                 self.parser.error("Wrong number of arguments")
+
+        if opts.list_backends:
+            for k in keyring.get_all_keyring():
+                print(k, file=sys.stdout)
 
         if opts.keyring_backend is not None:
             try:
