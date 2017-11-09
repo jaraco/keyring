@@ -1,5 +1,8 @@
 import logging
 
+import sys
+import os
+
 from ..util import properties
 from ..backend import KeyringBackend
 from ..errors import (InitError, PasswordDeleteError,
@@ -15,7 +18,7 @@ log = logging.getLogger(__name__)
 
 class Keyring(KeyringBackend):
     """Secret Service Keyring"""
-    appid = "python-keyring"
+    appid = os.path.basename(sys.argv[0]) or 'Python keyring library'
 
     @properties.ClassProperty
     @classmethod

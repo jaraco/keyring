@@ -1,5 +1,8 @@
 from __future__ import absolute_import
 
+import sys
+import os
+
 from ..backend import KeyringBackend
 from ..errors import PasswordDeleteError
 from ..errors import PasswordSetError
@@ -17,7 +20,7 @@ class DBusKeyring(KeyringBackend):
     KDE KWallet 5 via D-Bus
     """
 
-    appid = 'Python program'
+    appid = os.path.basename(sys.argv[0]) or 'Python keyring library'
     wallet = None
     bus_name = 'org.kde.kwalletd5'
     object_path = '/modules/kwalletd5'
