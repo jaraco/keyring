@@ -12,3 +12,8 @@ try:
     __version__ = pkg_resources.require('keyring')[0].version
 except Exception:
     __version__ = 'unknown'
+
+__all__ = (
+    'set_keyring', 'get_keyring', 'set_password', 'get_password',
+    'delete_password', 'get_pass_get_password',
+)
