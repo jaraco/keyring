@@ -15,11 +15,13 @@ PY3 = sys.version_info[0] == 3
 if PY3:
     def u(s):
         return s
+
     def _unichr(c):
         return chr(c)
 else:
     def u(s):
         return s.decode('utf-8')
+
     def _unichr(c):
         return unichr(c)
 
@@ -30,11 +32,13 @@ LEGAL_CHARS = (
 
 ESCAPE_FMT = "_%02X"
 
+
 def _escape_char(c):
     "Single char escape. Return the char, escaped if not already legal"
     if isinstance(c, int):
         c = _unichr(c)
     return c if c in LEGAL_CHARS else ESCAPE_FMT % ord(c)
+
 
 def escape(value):
     """
@@ -43,11 +47,13 @@ def escape(value):
     """
     return "".join(_escape_char(c) for c in value.encode('utf-8'))
 
+
 def _unescape_code(regex_match):
     ordinal = int(regex_match.group('code'), 16)
     if sys.version_info >= (3,):
         return bytes([ordinal])
     return chr(ordinal)
+
 
 def unescape(value):
     """

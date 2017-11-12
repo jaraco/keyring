@@ -11,6 +11,6 @@ hiddenimports = [
 import pkg_resources
 
 hiddenimports.extend(
-	ep.module_name
-	for ep in pkg_resources.iter_entry_points('keyring.backends')
+    ep.module_name
+    for ep in pkg_resources.iter_entry_points('keyring.backends')
 )

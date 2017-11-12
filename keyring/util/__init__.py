@@ -1,5 +1,6 @@
 import functools
 
+
 def once(func):
     """
     Decorate func so it's only ever called the first time.
@@ -20,6 +21,7 @@ def once(func):
             func.always_returns = func(*args, **kwargs)
         return func.always_returns
     return functools.wraps(func)(wrapper)
+
 
 def suppress_exceptions(callables, exceptions=Exception):
     """

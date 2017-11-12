@@ -30,6 +30,8 @@ except ImportError:
     filter = filter
 
 # Taken from six.py
+
+
 def add_metaclass(metaclass):
     """Class decorator for creating a class with a metaclass."""
     def wrapper(cls):
@@ -40,6 +42,7 @@ def add_metaclass(metaclass):
             orig_vars.pop(slots_var)
         return metaclass(cls.__name__, cls.__bases__, orig_vars)
     return wrapper
+
 
 try:
     import builtins

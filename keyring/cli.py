@@ -14,7 +14,7 @@ from . import core
 class CommandLineTool(object):
     def __init__(self):
         self.parser = OptionParser(
-                        usage="%prog [get|set|del] SERVICE USERNAME")
+            usage="%prog [get|set|del] SERVICE USERNAME")
         self.parser.add_option("-p", "--keyring-path",
                                dest="keyring_path", default=None,
                                help="Path to the keyring backend")
@@ -66,7 +66,7 @@ class CommandLineTool(object):
 
         elif kind == 'del':
             password = self.input_password("Deleting password for '%s' in '%s': " %
-                                      (username, service))
+                                           (username, service))
             delete_password(service, username)
             return 0
 

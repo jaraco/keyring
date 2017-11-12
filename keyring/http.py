@@ -16,6 +16,7 @@ import getpass
 
 from . import get_password, delete_password, set_password
 
+
 class PasswordMgr(object):
     def get_username(self, realm, authuri):
         return getpass.getuser()

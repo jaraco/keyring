@@ -16,10 +16,11 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
 
     def tearDown(self):
         for item in self.credentials_created:
-            # Suppress errors, as only one pre/post migration item will be present
+            # Suppress errors, as only one pre/post migration item will be
+            # present
             try:
                 self.keyring.delete_password(*item)
-            except:
+            except BaseException:
                 pass
 
         # TODO Remove empty folders created during tests
@@ -30,10 +31,15 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
         self.credentials_created.add((service, username))
 
         if old_format:
-            username = username+'@'+service
+            username = username + '@' + service
             service = 'Python'
 
-        super(DBusKWalletTestCase, self).set_password(service, username, password)
+        super(
+            DBusKWalletTestCase,
+            self).set_password(
+            service,
+            username,
+            password)
 
     def check_set_get(self, service, username, password):
         keyring = self.keyring
@@ -47,9 +53,9 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
         self.keyring = keyring = self.init_keyring()
         ret_password = keyring.get_password(service, username)
         self.assertEqual(
-                ret_password, password,
-                "Incorrect password for username: '%s' on service: '%s'. '%s' != '%s'"
-                % (service, username, ret_password, password))
+            ret_password, password,
+            "Incorrect password for username: '%s' on service: '%s'. '%s' != '%s'"
+            % (service, username, ret_password, password))
 
         # for the empty password
         self.set_password(service, username, "", True)
@@ -57,18 +63,18 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
         self.keyring = keyring = self.init_keyring()
         ret_password = keyring.get_password(service, username)
         self.assertEqual(
-                ret_password, "",
-                "Incorrect password for username: '%s' on service: '%s'. '%s' != '%s'"
-                % (service, username, ret_password, ""))
-        ret_password = keyring.get_password('Python', username+'@'+service)
+            ret_password, "",
+            "Incorrect password for username: '%s' on service: '%s'. '%s' != '%s'"
+            % (service, username, ret_password, ""))
+        ret_password = keyring.get_password('Python', username + '@' + service)
         self.assertEqual(
-                ret_password, None,
-                "Not 'None' password returned for username: '%s' on service: '%s'. '%s' != '%s'. Passwords from old folder should be deleted during migration."
-                % (service, username, ret_password, None))
+            ret_password, None,
+            "Not 'None' password returned for username: '%s' on service: '%s'. '%s' != '%s'. Passwords from old folder should be deleted during migration."
+            % (service, username, ret_password, None))
 
 
 @unittest.skipUnless(kwallet.DBusKeyringKWallet4.viable,
-    "KWallet4 unavailable")
+                     "KWallet4 unavailable")
 class DBusKWallet4TestCase(DBusKWalletTestCase):
     def init_keyring(self):
         return kwallet.DBusKeyringKWallet4()

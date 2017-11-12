@@ -98,6 +98,7 @@ class KeyringBackend(object):
         """
         raise errors.PasswordDeleteError("reason")
 
+
 class Crypter(object):
     """Base class providing encryption and decryption
     """
@@ -114,6 +115,7 @@ class Crypter(object):
         """
         pass
 
+
 class NullCrypter(Crypter):
     """A crypter that does nothing
     """
@@ -128,16 +130,18 @@ class NullCrypter(Crypter):
 def _load_backend(name):
     "Load a backend by name"
     package = backends.__package__ or backends.__name__
-    mod = importlib.import_module('.'+name, package)
+    mod = importlib.import_module('.' + name, package)
     # invoke __name__ on each module to ensure it's loaded in demand-import
     # environments
     mod.__name__
+
 
 def _load_backends():
     "ensure that native keyring backends are loaded"
     backends = 'kwallet', 'OS_X', 'SecretService', 'Windows'
     list(map(_load_backend, backends))
     _load_plugins()
+
 
 def _load_plugins():
     """
@@ -170,6 +174,7 @@ def _load_plugins():
         except Exception:
             log.exception("Error initializing plugin %s." % ep)
 
+
 @util.once
 def get_all_keyring():
     """
@@ -188,4 +193,4 @@ def get_all_keyring():
     all_classes = KeyringBackend._classes
     viable_classes = filter(is_class_viable, all_classes)
     return list(util.suppress_exceptions(viable_classes,
-        exceptions=TypeError))
+                                         exceptions=TypeError))
