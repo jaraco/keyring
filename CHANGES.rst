@@ -7,6 +7,9 @@
 * Removed ``logger`` from ``keyring``. See #291 for related
   request.
 
+* #292: Set the appid for SecretService & KWallet to
+  something meaningful.
+
 10.4.0
 ------
 
