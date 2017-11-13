@@ -6,8 +6,8 @@
 .. image:: https://img.shields.io/travis/jaraco/keyring/master.svg
    :target: http://travis-ci.org/jaraco/keyring
 
-.. image:: https://readthedocs.org/projects/python-keyring/badge/?version=latest
-   :target: http://python-keyring.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/keyring/badge/?version=latest
+   :target: http://keyring.readthedocs.io/en/latest/?badge=latest
 
 =======================================
 Installing and Using Python Keyring Lib
