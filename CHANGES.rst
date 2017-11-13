@@ -1,3 +1,9 @@
+10.5.0
+------
+
+* #289: Added ``--list-backends`` option to
+  command-line interface.
+
 10.4.0
 ------
 
