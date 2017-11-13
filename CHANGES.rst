@@ -4,6 +4,9 @@
 * #289: Added ``--list-backends`` option to
   command-line interface.
 
+* Removed ``logger`` from ``keyring``. See #291 for related
+  request.
+
 10.4.0
 ------
 

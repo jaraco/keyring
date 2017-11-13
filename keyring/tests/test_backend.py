@@ -26,8 +26,10 @@ UNICODE_CHARS = (
 # ensure no-ascii chars slip by - watch your editor!
 assert min(ord(char) for char in UNICODE_CHARS) > 127
 
+
 def is_ascii_printable(s):
     return all(32 <= ord(c) < 127 for c in s)
+
 
 class BackendBasicTests(object):
     """Test for the keyring's basic functions. password_set and password_get
@@ -92,8 +94,8 @@ class BackendBasicTests(object):
     def test_delete_one_in_group(self):
         username1 = random_string(20, self.DIFFICULT_CHARS)
         username2 = random_string(20, self.DIFFICULT_CHARS)
-        password  = random_string(20, self.DIFFICULT_CHARS)
-        service   = random_string(20, self.DIFFICULT_CHARS)
+        password = random_string(20, self.DIFFICULT_CHARS)
+        service = random_string(20, self.DIFFICULT_CHARS)
         self.keyring.set_password(service, username1, password)
         self.set_password(service, username2, password)
         self.keyring.delete_password(service, username1)
@@ -110,7 +112,7 @@ class BackendBasicTests(object):
 
     def test_unicode_and_ascii_chars(self):
         source = (random_string(10, UNICODE_CHARS) + random_string(10) +
-                 random_string(10, self.DIFFICULT_CHARS))
+                  random_string(10, self.DIFFICULT_CHARS))
         password = random_string(20, source)
         username = random_string(20, source)
         service = random_string(20, source)

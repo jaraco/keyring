@@ -3,6 +3,7 @@ import abc
 
 from .py27compat import add_metaclass
 
+
 @add_metaclass(abc.ABCMeta)
 class Credential(object):
     """Abstract class to manage credentials
@@ -15,6 +16,7 @@ class Credential(object):
     @abc.abstractproperty
     def password(self):
         return None
+
 
 class SimpleCredential(Credential):
     """Simple credentials implementation
@@ -32,6 +34,7 @@ class SimpleCredential(Credential):
     def password(self):
         return self._password
 
+
 class EnvironCredential(Credential):
     """Source credentials from environment variables.
        Actual sourcing is deferred until requested.
@@ -46,7 +49,7 @@ class EnvironCredential(Credential):
         """
         value = os.environ.get(env_var)
         if not value:
-            raise ValueError('Missing environment variable:%s' %env_var)
+            raise ValueError('Missing environment variable:%s' % env_var)
         return value
 
     @property

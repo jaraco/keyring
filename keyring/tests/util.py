@@ -4,26 +4,33 @@ import sys
 import random
 import string
 
+
 class ImportKiller(object):
     "Context manager to make an import of a given name or names fail."
+
     def __init__(self, *names):
         self.names = names
+
     def find_module(self, fullname, path=None):
         if fullname in self.names:
             return self
+
     def load_module(self, fullname):
         assert fullname in self.names
         raise ImportError(fullname)
+
     def __enter__(self):
         self.original = {}
         for name in self.names:
             self.original[name] = sys.modules.pop(name, None)
         sys.meta_path.insert(0, self)
+
     def __exit__(self, *args):
         sys.meta_path.remove(self)
         for key, value in self.original.items():
             if value is not None:
                 sys.modules[key] = value
+
 
 @contextlib.contextmanager
 def NoNoneDictMutator(destination, **changes):
@@ -52,9 +59,11 @@ def Environ(**changes):
     """A context manager to temporarily change the os.environ"""
     return NoNoneDictMutator(os.environ, **changes)
 
+
 ALPHABET = string.ascii_letters + string.digits
 
-def random_string(k, source = ALPHABET):
+
+def random_string(k, source=ALPHABET):
     """Generate a random string with length <i>k</i>
     """
     result = ''

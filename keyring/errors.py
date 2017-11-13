@@ -1,22 +1,27 @@
 import sys
 
+
 class PasswordSetError(Exception):
     """Raised when the password can't be set.
     """
+
 
 class PasswordDeleteError(Exception):
     """Raised when the password can't be deleted.
     """
 
+
 class InitError(Exception):
     """Raised when the keyring could not be initialised
     """
+
 
 class ExceptionRaisedContext(object):
     """
     An exception-trapping context that indicates whether an exception was
     raised.
     """
+
     def __init__(self, ExpectedException=Exception):
         self.ExpectedException = ExpectedException
         self.exc_info = None
@@ -29,6 +34,7 @@ class ExceptionRaisedContext(object):
         self.exc_info.__init__(*exc_info)
         return self.exc_info.type and issubclass(
             self.exc_info.type, self.ExpectedException)
+
 
 class ExceptionInfo(object):
     def __init__(self, *info):

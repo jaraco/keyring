@@ -10,7 +10,6 @@ import operator
 from .py27compat import configparser, filter
 from .py33compat import max
 
-from . import logger
 from . import backend
 from .util import platform_ as platform
 from .backends import fail
@@ -19,6 +18,7 @@ from .backends import fail
 log = logging.getLogger(__name__)
 
 _keyring_backend = None
+
 
 def set_keyring(keyring):
     """Set current keyring backend.
@@ -53,7 +53,9 @@ def delete_password(service_name, username):
     _keyring_backend.delete_password(service_name, username)
 
 
-recommended = lambda backend: backend.priority >= 1
+def recommended(backend): return backend.priority >= 1
+
+
 by_priority = operator.attrgetter('priority')
 
 
@@ -130,11 +132,13 @@ def load_config():
             raise configparser.NoOptionError('backend', 'default-keyring')
 
     except (configparser.NoOptionError, ImportError):
+        logger = logging.getLogger('keyring')
         logger.warning("Keyring config file contains incorrect values.\n" +
                        "Config file: %s" % keyring_cfg)
         return
 
     return load_keyring(keyring_name)
+
 
 def _load_keyring_path(config):
     "load the keyring-path option (if present)"
@@ -143,6 +147,7 @@ def _load_keyring_path(config):
         sys.path.insert(0, path)
     except (configparser.NoOptionError, configparser.NoSectionError):
         pass
+
 
 # init the _keyring_backend
 init_backend()

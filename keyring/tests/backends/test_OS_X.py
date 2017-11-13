@@ -4,8 +4,10 @@ import unittest
 from ..test_backend import BackendBasicTests
 from keyring.backends import OS_X
 
+
 def is_osx_keychain_supported():
-    return sys.platform in ('mac','darwin')
+    return sys.platform in ('mac', 'darwin')
+
 
 @unittest.skipUnless(is_osx_keychain_supported(),
                      "Need OS X")

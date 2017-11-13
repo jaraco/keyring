@@ -32,7 +32,8 @@ class Keyring(KeyringBackend):
             username = ''
 
         try:
-            api.set_generic_password(self.keychain, service, username, password)
+            api.set_generic_password(
+                self.keychain, service, username, password)
         except api.Error:
             raise PasswordSetError("Can't store password on keychain")
 
@@ -50,6 +51,7 @@ class Keyring(KeyringBackend):
             username = ''
 
         try:
-            return api.delete_generic_password(self.keychain, service, username)
+            return api.delete_generic_password(
+                self.keychain, service, username)
         except api.Error:
             raise PasswordDeleteError("Can't delete password in keychain")

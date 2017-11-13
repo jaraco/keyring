@@ -1,5 +1,6 @@
 import pkg_resources
 
+
 def test_entry_point():
     """
     Keyring provides exactly one 'keyring' console script

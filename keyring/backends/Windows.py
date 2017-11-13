@@ -21,6 +21,7 @@ except ImportError:
     except ImportError:
         pass
 
+
 def has_pywin32():
     """
     Does this environment have pywin32?
@@ -83,7 +84,7 @@ class WinVaultKeyring(KeyringBackend):
             )
         except pywintypes.error as e:
             e = OldPywinError.wrap(e)
-            if e.winerror == 1168 and e.funcname == 'CredRead': # not found
+            if e.winerror == 1168 and e.funcname == 'CredRead':  # not found
                 return None
             raise
         return res
@@ -95,7 +96,7 @@ class WinVaultKeyring(KeyringBackend):
             existing_username = existing_pw['UserName']
             target = self._compound_name(existing_username, service)
             self._set_password(target, existing_username,
-                existing_pw['CredentialBlob'].decode('utf-16'))
+                               existing_pw['CredentialBlob'].decode('utf-16'))
         self._set_password(service, username, text_type(password))
 
     def _set_password(self, target, username, password):
@@ -130,6 +131,7 @@ class OldPywinError(object):
     A compatibility wrapper for old PyWin32 errors, such as reported in
     https://bitbucket.org/kang/python-keyring-lib/issue/140/
     """
+
     def __init__(self, orig):
         self.orig = orig
 
