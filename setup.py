@@ -11,6 +11,11 @@ with io.open('README.rst', encoding='utf-8') as readme:
 
 name = 'keyring'
 description = 'Store and access your passwords safely.'
+nspkg_technique = 'native'
+"""
+Does this package use "native" namespace packages or
+pkg_resources "managed" namespace packages?
+"""
 
 params = dict(
     name=name,
@@ -24,7 +29,11 @@ params = dict(
     url="https://github.com/jaraco/" + name,
     packages=setuptools.find_packages(),
     include_package_data=True,
-    namespace_packages=name.split('.')[:-1],
+    namespace_packages=(
+        name.split('.')[:-1] if nspkg_technique == 'managed'
+        else []
+    ),
+    python_requires='>=2.7',
     install_requires=[
     ],
     extras_require={
@@ -37,6 +46,7 @@ params = dict(
         'testing': [
             'pytest>=2.8',
             'pytest-sugar',
+            'collective.checkdocs',
         ],
         'docs': [
             'sphinx',

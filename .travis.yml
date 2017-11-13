@@ -1,34 +1,36 @@
 language: python
-python:
-  - 2.7
-  - 3.3
-  - 3.4
-  - 3.5
-  - 3.6
-matrix:
+
+jobs:
+  fast_finish: true
   include:
+  - python: 2.7
+  - python: 3.3
+  - python: &latest_py3 3.6
   - os: osx
     language: generic
+  - stage: deploy
+    if: tag IS present
+    python: *latest_py3
+    install: skip
+    script: skip
+    deploy:
+      provider: pypi
+      on:
+        tags: true
+        all_branches: true
+      user: jaraco
+      password:
+        secure: aDqlVdm6FZ8pqLkoDRR2LH3TEz7pBvKH2HhOlSy7OEmopN/36ncql/KvfE0ccpaOES9Xm31a51bUfNjcwb1HVKjfW544C+IoSHctkG1rI5bp3q4rW+4RbQcBZVHUUKR9yQf9ZyikEmoYXi3g+JKcOf9rj+v/32PAfUDzSpFbWik=
+      distributions: dists
+      skip_cleanup: true
+      skip_upload_docs: true
+
+cache: pip
 
 before_install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source .travis-osx; fi
 
 install:
-- python -m pip install tox "setuptools>=28.2"
-script:
-- tox -- -rs -v
-branches:
-  except:
-  - skeleton
-deploy:
-  provider: pypi
-  server: https://upload.pypi.org/legacy/
-  on:
-    tags: true
-    all_branches: true
-    python: 3.6
-  user: jaraco
-  password:
-    secure: aDqlVdm6FZ8pqLkoDRR2LH3TEz7pBvKH2HhOlSy7OEmopN/36ncql/KvfE0ccpaOES9Xm31a51bUfNjcwb1HVKjfW544C+IoSHctkG1rI5bp3q4rW+4RbQcBZVHUUKR9yQf9ZyikEmoYXi3g+JKcOf9rj+v/32PAfUDzSpFbWik=
-  distributions: dists
-  skip_upload_docs: true
+- pip install tox
+
+script: tox
