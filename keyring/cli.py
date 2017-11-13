@@ -7,8 +7,9 @@ import getpass
 from optparse import OptionParser
 import sys
 
-from . import get_keyring, set_keyring, get_password, set_password, delete_password
 from . import core
+from . import backend
+from . import get_keyring, set_keyring, get_password, set_password, delete_password
 
 
 class CommandLineTool(object):
@@ -21,12 +22,17 @@ class CommandLineTool(object):
         self.parser.add_option("-b", "--keyring-backend",
                                dest="keyring_backend", default=None,
                                help="Name of the keyring backend")
-        self.parser.add_option("-l", "--list-backends",
-                               dest="list_backends", action="store_true",
-                               help="Name of the keyring backend")
+        self.parser.add_option("--list-backends",
+                               action="store_true",
+                               help="List keyring backends and exit")
 
     def run(self, argv):
         opts, args = self.parser.parse_args(argv)
+
+        if opts.list_backends:
+            for k in backend.get_all_keyring():
+                print(k)
+            return
 
         try:
             kind, service, username = args
@@ -38,16 +44,11 @@ class CommandLineTool(object):
             else:
                 self.parser.error("Wrong number of arguments")
 
-        if opts.list_backends:
-            for k in keyring.get_all_keyring():
-                print(k, file=sys.stdout)
-
         if opts.keyring_backend is not None:
             try:
                 if opts.keyring_path:
                     sys.path.insert(0, opts.keyring_path)
-                backend = core.load_keyring(opts.keyring_backend)
-                set_keyring(backend)
+                set_keyring(core.load_keyring(opts.keyring_backend))
             except (Exception,):
                 # Tons of things can go wrong here:
                 #   ImportError when using "fjkljfljkl"
