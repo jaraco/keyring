@@ -10,7 +10,6 @@ import operator
 from .py27compat import configparser, filter
 from .py33compat import max
 
-from . import logger
 from . import backend
 from .util import platform_ as platform
 from .backends import fail
@@ -133,6 +132,7 @@ def load_config():
             raise configparser.NoOptionError('backend', 'default-keyring')
 
     except (configparser.NoOptionError, ImportError):
+        logger = logging.getLogger('keyring')
         logger.warning("Keyring config file contains incorrect values.\n" +
                        "Config file: %s" % keyring_cfg)
         return

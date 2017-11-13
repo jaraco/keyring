@@ -1,3 +1,9 @@
+10.5.0
+------
+
+* Removed ``logger`` from ``keyring``. See #291 for related
+  request.
+
 10.4.0
 ------
 
