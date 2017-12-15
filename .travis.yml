@@ -9,6 +9,7 @@ jobs:
   include:
   - os: osx
     language: generic
+    python: *latest_py3
   - stage: deploy
     if: tag IS present
     python: *latest_py3
