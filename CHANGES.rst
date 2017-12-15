@@ -1,3 +1,9 @@
+10.5.1
+------
+
+* #296: Prevent AttributeError on import when Debian has
+  created broken dbus installs.
+
 10.5.0
 ------
 

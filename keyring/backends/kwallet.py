@@ -13,6 +13,9 @@ try:
     from dbus.mainloop.glib import DBusGMainLoop
 except ImportError:
     pass
+except AttributeError:
+    # See https://github.com/jaraco/keyring/issues/296
+    pass
 
 
 class DBusKeyring(KeyringBackend):

@@ -13,6 +13,9 @@ try:
     import secretstorage.exceptions as exceptions
 except ImportError:
     pass
+except AttributeError:
+    # See https://github.com/jaraco/keyring/issues/296
+    pass
 
 log = logging.getLogger(__name__)
 
