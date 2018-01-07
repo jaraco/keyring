@@ -1,17 +1,22 @@
 import sys
 
 
-class PasswordSetError(Exception):
+class KeyringError(Exception):
+    """Base class for exceptions in keyring
+    """
+
+
+class PasswordSetError(KeyringError):
     """Raised when the password can't be set.
     """
 
 
-class PasswordDeleteError(Exception):
+class PasswordDeleteError(KeyringError):
     """Raised when the password can't be deleted.
     """
 
 
-class InitError(Exception):
+class InitError(KeyringError):
     """Raised when the keyring could not be initialised
     """
 
