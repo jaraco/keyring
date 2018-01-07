@@ -1,3 +1,9 @@
+10.6.0
+------
+
+* #299: Keyring exceptions are now derived from a base
+  ``keyring.errors.KeyringError``.
+
 10.5.1
 ------
 
