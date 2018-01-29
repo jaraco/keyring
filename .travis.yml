@@ -31,6 +31,6 @@ before_install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source .travis-osx; fi
 
 install:
-- pip install tox
+- pip install tox tox-venv
 
 script: tox
