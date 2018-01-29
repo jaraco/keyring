@@ -1,3 +1,9 @@
+11.0.0
+------
+
+* #294: No longer expose ``keyring.__version__`` (added
+  in 8.1) to avoid performance hit loading pkg_resources.
+
 10.6.0
 ------
 
