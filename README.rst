@@ -150,12 +150,14 @@ the most common and secure use cases, there
 are additional keyring backend implementations available for other
 use-cases. Simply install them to make them available:
 
-- `keyrings.alt <https://pypi.org/project/keyrings.alt>`_ - "alternate",
-  less common backends, originally part of the core package, but now
-  available for opt-in.
-- `keyring_jeepney <https://pypi.python.org/pypi/keyring_jeepney>`__ - a
+- `keyrings.cryptfile <https://pypi.org/project/keyrings.cryptfile>`_
+  - Encrypted text file storage.
+- `keyring_jeepney <https://pypi.org/project/keyring_jeepney>`__ - a
   pure Python backend using the secret service DBus API for desktop
   Linux.
+- `keyrings.alt <https://pypi.org/project/keyrings.alt>`_ - "alternate",
+  possibly-insecure backends, originally part of the core package, but
+  available for opt-in.
 
 Write your own keyring backend
 ==============================
