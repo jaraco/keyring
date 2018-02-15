@@ -30,9 +30,9 @@ These recommended keyring backends are supported by the Python keyring lib:
 * Mac OS X `Keychain
   <https://en.wikipedia.org/wiki/Keychain_%28software%29>`_
 * Freedesktop `Secret Service
-  <http://standards.freedesktop.org/secret-service/>`_ (requires
-  `secretstorage <https://pypi.python.org/pypi/secretstorage>`_)
-* `KWallet <https://en.wikipedia.org/wiki/KWallet>`_
+  <http://standards.freedesktop.org/secret-service/>`_ supports many DE including 
+  GNOME (requires `secretstorage <https://pypi.python.org/pypi/secretstorage>`_)
+* KDE4 & KDE5 `KWallet <https://en.wikipedia.org/wiki/KWallet>`_
   (requires `dbus <https://pypi.python.org/pypi/dbus-python>`_)
 * `Windows Credential Vault
   <http://windows.microsoft.com/en-us/windows7/what-is-credential-manager>`_
