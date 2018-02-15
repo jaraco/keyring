@@ -37,7 +37,7 @@ These recommended keyring backends are supported by the Python keyring lib:
 * `Windows Credential Locker
   <https://docs.microsoft.com/en-us/windows/uwp/security/credential-locker>`_
 
-Other keyring implementations are provided in the `keyrings.alt package`_.
+Other keyring implementations are available through `Third-Party Backends`_.
 
 -------------------------
 Installation Instructions
