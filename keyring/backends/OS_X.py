@@ -12,7 +12,7 @@ except Exception:
 
 
 class Keyring(KeyringBackend):
-    """Mac OS X Keychain"""
+    """macOS Keychain"""
 
     keychain = None
     "Pathname to keychain filename, overriding default keychain."
@@ -21,10 +21,10 @@ class Keyring(KeyringBackend):
     @classmethod
     def priority(cls):
         """
-        Preferred for all OS X environments.
+        Preferred for all macOS environments.
         """
         if platform.system() != 'Darwin':
-            raise RuntimeError("OS X required")
+            raise RuntimeError("macOS required")
         return 5
 
     def set_password(self, service, username, password):

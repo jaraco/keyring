@@ -27,7 +27,7 @@ The keyring library is licensed under both the `MIT license
 
 These recommended keyring backends are supported by the Python keyring lib:
 
-* Mac OS X `Keychain
+* macOS `Keychain
   <https://en.wikipedia.org/wiki/Keychain_%28software%29>`_
 * Freedesktop `Secret Service
   <http://standards.freedesktop.org/secret-service/>`_ (requires

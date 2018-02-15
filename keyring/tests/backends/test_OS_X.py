@@ -10,7 +10,7 @@ def is_osx_keychain_supported():
 
 
 @unittest.skipUnless(is_osx_keychain_supported(),
-                     "Need OS X")
+                     "Need macOS")
 class OSXKeychainTestCase(BackendBasicTests, unittest.TestCase):
 
     def init_keyring(self):
