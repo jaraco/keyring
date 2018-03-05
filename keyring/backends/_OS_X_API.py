@@ -291,7 +291,8 @@ def set_internet_password(name, service, username, password):
         NotFound.raise_for_status(status, "Unable to set password")
 
 
-SecKeychainItemModifyAttributesAndData = _sec.SecKeychainItemModifyAttributesAndData
+SecKeychainItemModifyAttributesAndData = (
+    _sec.SecKeychainItemModifyAttributesAndData)
 SecKeychainItemModifyAttributesAndData.argtypes = (
     sec_keychain_item_ref, c_void_p, c_uint32, c_void_p,
 )

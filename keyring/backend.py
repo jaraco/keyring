@@ -42,7 +42,7 @@ class KeyringBackend(object):
     this interface.
     """
 
-    #@abc.abstractproperty
+    # @abc.abstractproperty
     def priority(cls):
         """
         Each backend class must supply a priority, a number (float or integer)
@@ -92,7 +92,7 @@ class KeyringBackend(object):
 
     # for backward-compatibility, don't require a backend to implement
     #  delete_password
-    #@abc.abstractmethod
+    # @abc.abstractmethod
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
         """

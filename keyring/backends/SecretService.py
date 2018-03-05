@@ -42,8 +42,9 @@ class Keyring(KeyringBackend):
         return 5
 
     def get_preferred_collection(self):
-        """If self.preferred_collection contains a D-Bus path, the collection
-        at that address is returned. Otherwise, the default collection is returned.
+        """If self.preferred_collection contains a D-Bus path,
+        the collection at that address is returned. Otherwise,
+        the default collection is returned.
         """
         bus = secretstorage.dbus_init()
         try:

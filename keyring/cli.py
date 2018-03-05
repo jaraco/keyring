@@ -9,7 +9,7 @@ import sys
 
 from . import core
 from . import backend
-from . import get_keyring, set_keyring, get_password, set_password, delete_password
+from . import set_keyring, get_password, set_password, delete_password
 
 
 class CommandLineTool(object):
@@ -73,8 +73,10 @@ class CommandLineTool(object):
             return 0
 
         elif kind == 'del':
-            password = self.input_password("Deleting password for '%s' in '%s': " %
-                                           (username, service))
+            password = self.input_password(
+                "Deleting password for '%s' in '%s': " %
+                (username, service),
+            )
             delete_password(service, username)
             return 0
 

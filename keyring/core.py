@@ -53,7 +53,8 @@ def delete_password(service_name, username):
     _keyring_backend.delete_password(service_name, username)
 
 
-def recommended(backend): return backend.priority >= 1
+def recommended(backend):
+    return backend.priority >= 1
 
 
 by_priority = operator.attrgetter('priority')

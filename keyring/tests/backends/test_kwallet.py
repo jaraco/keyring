@@ -54,7 +54,8 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
         ret_password = keyring.get_password(service, username)
         self.assertEqual(
             ret_password, password,
-            "Incorrect password for username: '%s' on service: '%s'. '%s' != '%s'"
+            "Incorrect password for username: '%s' "
+            "on service: '%s'. '%s' != '%s'"
             % (service, username, ret_password, password))
 
         # for the empty password
@@ -64,12 +65,15 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
         ret_password = keyring.get_password(service, username)
         self.assertEqual(
             ret_password, "",
-            "Incorrect password for username: '%s' on service: '%s'. '%s' != '%s'"
+            "Incorrect password for username: '%s' "
+            "on service: '%s'. '%s' != '%s'"
             % (service, username, ret_password, ""))
         ret_password = keyring.get_password('Python', username + '@' + service)
         self.assertEqual(
             ret_password, None,
-            "Not 'None' password returned for username: '%s' on service: '%s'. '%s' != '%s'. Passwords from old folder should be deleted during migration."
+            "Not 'None' password returned for username: '%s' "
+            "on service: '%s'. '%s' != '%s'. Passwords from old "
+            "folder should be deleted during migration."
             % (service, username, ret_password, None))
 
 
