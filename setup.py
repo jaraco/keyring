@@ -35,6 +35,7 @@ params = dict(
     ),
     python_requires='>=2.7',
     install_requires=[
+        'setuptools',
     ],
     extras_require={
         'testing': [
@@ -81,6 +82,12 @@ params = dict(
         ],
         'devpi_client': [
             'keyring = keyring.devpi_client',
+        ],
+        'keyring_backends': [
+            'windows = keyring.backends.Windows',
+            'macOS = keyring.backends.OS_X',
+            'SecretService = keyring.backends.SecretService',
+            'kwallet = keyring.backends.kwallet',
         ],
     },
 )

@@ -7,6 +7,7 @@ from __future__ import absolute_import
 import abc
 import logging
 import importlib
+import warnings
 
 try:
     import pkg_resources
@@ -136,11 +137,19 @@ def _load_backend(name):
     mod.__name__
 
 
-def _load_backends():
+def _load_local_backends_legacy():
     "ensure that native keyring backends are loaded"
+    if pkg_resources in globals():
+        # rely on entry points
+        return
+    warnings.warn(
+        "Unable to load backends via entry points. Falling back "
+        "to legacy behavior (for now). Your environment will fail "
+        "to load backends in a future version. Contact the keyring "
+        "project at https://github.com/jaraco/keyring/issues/310 "
+        "and report your use-case.")
     backends = 'kwallet', 'OS_X', 'SecretService', 'Windows'
     list(map(_load_backend, backends))
-    _load_plugins()
 
 
 def _load_plugins():
@@ -161,8 +170,6 @@ def _load_plugins():
 
     `initialize_func` is optional, but will be invoked if callable.
     """
-    if 'pkg_resources' not in globals():
-        return
     group = 'keyring.backends'
     entry_points = pkg_resources.iter_entry_points(group=group)
     for ep in entry_points:
@@ -181,7 +188,8 @@ def get_all_keyring():
     Return a list of all implemented keyrings that can be constructed without
     parameters.
     """
-    _load_backends()
+    _load_plugins()
+    _load_local_backends_legacy()
 
     def is_class_viable(keyring_cls):
         try:

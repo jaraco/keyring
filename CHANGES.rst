@@ -1,3 +1,12 @@
+11.1.0
+------
+
+* #310: Keyring now loads all backends through entry
+  points (if available). Future versions of keyring will
+  rely on pkg_resources and entry points for loading all
+  keyrings. Adds a dependency on setuptools
+  (pkg_resources).
+
 11.0.0
 ------
 
