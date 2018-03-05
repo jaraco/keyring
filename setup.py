@@ -37,21 +37,28 @@ params = dict(
     install_requires=[
     ],
     extras_require={
+        'testing': [
+            # upstream
+            'pytest>=2.8',
+            'pytest-sugar>=0.9.1',
+            'collective.checkdocs',
+            'pytest-flake8',
+
+            # local
+        ],
+        'docs': [
+            # upstream
+            'sphinx',
+            'jaraco.packaging>=3.2',
+            'rst.linker>=1.9',
+
+            # local
+        ],
         ':sys_platform=="win32"': [
             'pywin32-ctypes!=0.1.0,!=0.1.1',
         ],
         ':sys_platform=="linux2" or sys_platform=="linux"': [
             "secretstorage",
-        ],
-        'testing': [
-            'pytest>=2.8',
-            'pytest-sugar',
-            'collective.checkdocs',
-        ],
-        'docs': [
-            'sphinx',
-            'jaraco.packaging>=3.2',
-            'rst.linker>=1.9',
         ],
     },
     setup_requires=[
