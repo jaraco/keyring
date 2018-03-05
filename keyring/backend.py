@@ -127,19 +127,12 @@ class NullCrypter(Crypter):
         return value
 
 
-def _load_backend(name):
-    "Load a backend by name"
-    package = backends.__package__ or backends.__name__
-    mod = importlib.import_module('.' + name, package)
-    # invoke __name__ on each module to ensure it's loaded in demand-import
-    # environments
-    mod.__name__
-
-
 def _load_backends():
     "ensure that native keyring backends are loaded"
-    backends = 'kwallet', 'OS_X', 'SecretService', 'Windows'
-    list(map(_load_backend, backends))
+    import keyring.backends.OS_X
+    import keyring.backends.Windows
+    import keyring.backends.kwallet
+    import keyring.backends.SecretService
     _load_plugins()
 
 
