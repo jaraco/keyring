@@ -1,4 +1,4 @@
 # Perform the manual steps on osx to install python and activate an environment
 brew update
 brew upgrade python
-brew link python
+export PATH=/usr/local/opt/python/libexec/bin:$PATH
