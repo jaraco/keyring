@@ -28,7 +28,7 @@ jobs:
 cache: pip
 
 before_install:
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source .travis-osx; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source .travis-macos; fi
 
 install:
 - pip install tox tox-venv
