@@ -83,6 +83,12 @@ params = dict(
         'devpi_client': [
             'keyring = keyring.devpi_client',
         ],
+        'keyring.backends': [
+            'windows = keyring.backends.Windows',
+            'macOS = keyring.backends.OS_X',
+            'SecretService = keyring.backends.SecretService',
+            'kwallet = keyring.backends.kwallet',
+        ],
     },
 )
 if __name__ == '__main__':

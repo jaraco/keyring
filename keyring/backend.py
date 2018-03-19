@@ -6,15 +6,10 @@ from __future__ import absolute_import
 
 import abc
 import logging
-import importlib
 
-try:
-    import entrypoints
-except ImportError:
-    pass
+import entrypoints
 
 from . import errors, util
-from . import backends
 from .util import properties
 from .py27compat import add_metaclass, filter
 
@@ -127,22 +122,6 @@ class NullCrypter(Crypter):
         return value
 
 
-def _load_backend(name):
-    "Load a backend by name"
-    package = backends.__package__ or backends.__name__
-    mod = importlib.import_module('.' + name, package)
-    # invoke __name__ on each module to ensure it's loaded in demand-import
-    # environments
-    mod.__name__
-
-
-def _load_backends():
-    "ensure that native keyring backends are loaded"
-    backends = 'kwallet', 'OS_X', 'SecretService', 'Windows'
-    list(map(_load_backend, backends))
-    _load_plugins()
-
-
 def _load_plugins():
     """
     Locate all setuptools entry points by the name 'keyring backends'
@@ -161,8 +140,6 @@ def _load_plugins():
 
     `initialize_func` is optional, but will be invoked if callable.
     """
-    if 'entrypoints' not in globals():
-        return
     group = 'keyring.backends'
     entry_points = entrypoints.get_group_all(group=group)
     for ep in entry_points:
@@ -181,7 +158,7 @@ def get_all_keyring():
     Return a list of all implemented keyrings that can be constructed without
     parameters.
     """
-    _load_backends()
+    _load_plugins()
 
     def is_class_viable(keyring_cls):
         try:
