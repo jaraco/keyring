@@ -9,7 +9,7 @@ import logging
 import importlib
 
 try:
-    import pkg_resources
+    import entrypoints
 except ImportError:
     pass
 
@@ -161,10 +161,10 @@ def _load_plugins():
 
     `initialize_func` is optional, but will be invoked if callable.
     """
-    if 'pkg_resources' not in globals():
+    if 'entrypoints' not in globals():
         return
     group = 'keyring.backends'
-    entry_points = pkg_resources.iter_entry_points(group=group)
+    entry_points = entrypoints.get_group_all(group=group)
     for ep in entry_points:
         try:
             log.info('Loading %s', ep.name)
