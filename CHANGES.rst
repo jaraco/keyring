@@ -1,4 +1,4 @@
-11.1.0
+12.0.0
 ------
 
 * #312: Use ``entrypoints`` instead of pkg_resources to
@@ -7,6 +7,12 @@
 
 * #310: Keyring now loads all backends through entry
   points.
+
+For most users, this release will be fully compatible. Some
+users may experience compatibility issues if entrypoints is
+not installed (as declared) or the metadata on which entrypoints
+relies is unavailable. For that reason, the package is released
+with a major version bump.
 
 11.0.0
 ------
