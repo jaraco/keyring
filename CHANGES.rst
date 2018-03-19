@@ -1,11 +1,12 @@
 11.1.0
 ------
 
+* #312: Use ``entrypoints`` instead of pkg_resources to
+  avoid performance hit loading pkg_resources. Adds
+  a dependency on ``entrypoints``.
+
 * #310: Keyring now loads all backends through entry
-  points (if available). Future versions of keyring will
-  rely on pkg_resources and entry points for loading all
-  keyrings. Adds a dependency on setuptools
-  (pkg_resources).
+  points.
 
 11.0.0
 ------
