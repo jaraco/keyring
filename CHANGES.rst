@@ -1,3 +1,10 @@
+11.1.0
+------
+
+* #312: Use ``entrypoints`` instead of pkg_resources to
+  avoid performance hit loading pkg_resources. Adds
+  a dependency on ``entrypoints``.
+
 11.0.0
 ------
 
