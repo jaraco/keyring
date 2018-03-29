@@ -292,6 +292,17 @@ simple ``str`` in the default encoding as they will be implicitly
 decoded to text. Some backends may accept ``bytes`` for these parameters,
 but such usage is discouraged.
 
+
+Exceptions
+==========
+
+The keyring lib raises following exceptions:
+
+* ``keyring.errors.KeyringError``: Base Error class for all exceptions in keyring lib.
+* ``keyring.errors.InitError``: Raised when the keyring can't be initialized.
+* ``keyring.errors.PasswordSetError``: Raise when password can't be set in the keyring.
+* ``keyring.errors.PasswordDeleteError``: Raised when the password can't be deleted in the keyring.
+
 ------------
 Get involved
 ------------
