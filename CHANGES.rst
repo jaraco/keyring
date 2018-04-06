@@ -1,3 +1,8 @@
+12.0.1
+------
+
+* #314: No changes except to rebuild.
+
 12.0.0
 ------
 
