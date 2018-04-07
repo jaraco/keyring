@@ -43,6 +43,8 @@ class DBusKeyring(KeyringBackend):
             tmpl = 'cannot connect to {bus_name}'
             msg = tmpl.format(bus_name=cls.bus_name)
             raise RuntimeError(msg)
+        if "KDE" in os.getenv("XDG_CURRENT_DESKTOP", "").split(":"):
+            return 5.1
         return 4.9
 
     def __init__(self, *arg, **kw):
