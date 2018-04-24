@@ -59,7 +59,7 @@ params = dict(
             'pywin32-ctypes!=0.1.0,!=0.1.1',
         ],
         ':sys_platform=="linux2" or sys_platform=="linux"': [
-            "secretstorage",
+            "secretstorage<3",
         ],
     },
     setup_requires=[
