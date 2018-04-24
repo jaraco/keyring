@@ -5,7 +5,7 @@
   Setuptools 17.1 be used. Note that the special
   handling will be unnecessary once Pip 9 can be
   assumed (as it will exclude SecretStorage 3 in
-  non-viable environments.
+  non-viable environments).
 
 12.0.2
 ------
