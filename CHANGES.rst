@@ -1,3 +1,12 @@
+12.1.0
+------
+
+* Unpin SecretStorage on Python 3.5+. Requires that
+  Setuptools 17.1 be used. Note that the special
+  handling will be unnecessary once Pip 9 can be
+  assumed (as it will exclude SecretStorage 3 in
+  non-viable environments.
+
 12.0.2
 ------
 
