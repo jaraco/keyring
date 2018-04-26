@@ -1,3 +1,9 @@
+12.1.1
+------
+
+* #322: Fix AttributeError when ``escape.__builtins__``
+  is a dict.
+
 12.1.0
 ------
 
