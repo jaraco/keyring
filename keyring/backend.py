@@ -163,7 +163,7 @@ def get_all_keyring():
     def is_class_viable(keyring_cls):
         try:
             keyring_cls.priority
-        except RuntimeError:
+        except Exception:
             return False
         return True
 
