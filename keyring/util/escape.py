@@ -46,9 +46,7 @@ def escape(value):
 
 def _unescape_code(regex_match):
     ordinal = int(regex_match.group('code'), 16)
-    if sys.version_info >= (3,):
-        return bytes([ordinal])
-    return chr(ordinal)
+    return bytes([ordinal]) if PY3 else chr(ordinal)
 
 
 def unescape(value):
