@@ -23,7 +23,7 @@ else:
         return s.decode('utf-8')
 
     def _unichr(c):
-        return unichr(c)
+        return unichr(c)  # noqa: F821
 
 LEGAL_CHARS = (
     getattr(string, 'letters', None)  # Python 2
