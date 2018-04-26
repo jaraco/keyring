@@ -15,15 +15,11 @@ PY3 = sys.version_info[0] == 3
 if PY3:
     def u(s):
         return s
-
-    def _unichr(c):
-        return chr(c)
 else:
     def u(s):
         return s.decode('utf-8')
 
-    def _unichr(c):
-        return unichr(c)  # noqa: F821
+_unichr = chr if PY3 else unichr  # noqa: F821
 
 LEGAL_CHARS = (
     getattr(string, 'letters', None)  # Python 2
