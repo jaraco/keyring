@@ -1,8 +1,13 @@
-12.1.1
+12.2.0
 ------
 
 * #322: Fix AttributeError when ``escape.__builtins__``
   is a dict.
+
+* Deprecated ``keyring.util.escape`` module. If you use
+  this module or encounter the warning (on the latest
+  release of your packages), please `file a ticket
+  <https://github.com/jaraco/keyring/issues/new>`_.
 
 12.1.0
 ------

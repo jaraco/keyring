@@ -6,6 +6,12 @@ alphanumeric usernames, services, or other values
 import re
 import string
 import sys
+import warnings
+
+warnings.warn(
+    "escape is deprecated and will be removed",
+    DeprecationWarning,
+)
 
 # True if we are running on Python 3.
 # taken from six.py
