@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import functools
 
-from ..py27compat import text_type
+from ..py27compat import text_type, map
 from ..util import properties
 from ..backend import KeyringBackend
 from ..errors import PasswordDeleteError, ExceptionRaisedContext
@@ -110,20 +110,19 @@ class WinVaultKeyring(KeyringBackend):
 
     def delete_password(self, service, username):
         compound = self._compound_name(username, service)
-        deleted = False
-        for target in service, compound:
-            existing_pw = self._get_password(target)
-            if existing_pw and existing_pw['UserName'] == username:
-                deleted = True
-                self._delete_password(target)
-        if not deleted:
+        if not any(map(self._delete_if_exists, [service, compound])):
             raise PasswordDeleteError(service)
 
-    def _delete_password(self, target):
-        win32cred.CredDelete(
-            Type=win32cred.CRED_TYPE_GENERIC,
-            TargetName=target,
-        )
+    def _delete_if_exists(self, target):
+        try:
+            return win32cred.CredDelete(
+                Type=win32cred.CRED_TYPE_GENERIC,
+                TargetName=target,
+            )
+        except pywintypes.error as exc:
+            ElementNotFound = 1168
+            if exc.winerror != ElementNotFound:
+                raise
 
 
 class OldPywinError(object):

@@ -29,6 +29,11 @@ try:
 except ImportError:
     filter = filter
 
+try:
+    from itertools import imap as map
+except ImportError:
+    map = map
+
 # Taken from six.py
 
 
