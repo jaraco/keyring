@@ -5,7 +5,7 @@ import os
 
 from ..backend import KeyringBackend
 from ..errors import PasswordDeleteError
-from ..errors import PasswordSetError
+from ..errors import PasswordSetError, InitError
 from ..util import properties
 
 try:
@@ -84,8 +84,9 @@ class DBusKeyring(KeyringBackend):
             self.iface = dbus.Interface(remote_obj, 'org.kde.KWallet')
             self.handle = self.iface.open(
                 self.iface.networkWallet(), wId, self.appid)
-        except dbus.DBusException:
-            self.handle = -1
+        except dbus.DBusException as e:
+            raise InitError('Failed to open keyring: %s.' % e)
+
         if self.handle < 0:
             return False
         self._migrate(service)
