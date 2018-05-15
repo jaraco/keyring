@@ -1,3 +1,8 @@
+12.2.1
+------
+
+* Fixed issue in SecretService. Ref #226.
+
 12.2.0
 ------
 
