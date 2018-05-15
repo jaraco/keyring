@@ -69,8 +69,9 @@ class Keyring(KeyringBackend):
             {"username": username, "service": service})
         for item in items:
             if hasattr(item, 'unlock'):
-                if item.is_locked() and item.unlock()[0]:
-                    raise InitError('failed to unlock item')
+                item.unlock()
+            if item.is_locked():  # User dismissed the prompt
+                raise InitError('Failed to unlock the item!')
             return item.get_secret().decode('utf-8')
 
     def set_password(self, service, username, password):
