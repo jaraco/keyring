@@ -5,7 +5,7 @@ import os
 
 from ..backend import KeyringBackend
 from ..errors import PasswordDeleteError
-from ..errors import PasswordSetError, InitError
+from ..errors import PasswordSetError, InitError, KeyringLocked
 from ..util import properties
 
 try:
@@ -99,7 +99,7 @@ class DBusKeyring(KeyringBackend):
         """
         if not self.connected(service):
             # the user pressed "cancel" when prompted to unlock their keyring.
-            return None
+            raise KeyringLocked("Failed to unlock the keyring!")
         if not self.iface.hasEntry(self.handle, service, username, self.appid):
             return None
         password = self.iface.readPassword(

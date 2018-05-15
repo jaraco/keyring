@@ -6,7 +6,7 @@ import os
 from ..util import properties
 from ..backend import KeyringBackend
 from ..errors import (InitError, PasswordDeleteError,
-                      ExceptionRaisedContext)
+                      ExceptionRaisedContext, KeyringLocked)
 
 try:
     import secretstorage
@@ -58,7 +58,7 @@ class Keyring(KeyringBackend):
         if collection.is_locked():
             collection.unlock()
             if collection.is_locked():  # User dismissed the prompt
-                raise InitError("Failed to unlock the collection!")
+                raise KeyringLocked("Failed to unlock the collection!")
         return collection
 
     def get_password(self, service, username):
@@ -71,7 +71,7 @@ class Keyring(KeyringBackend):
             if hasattr(item, 'unlock'):
                 item.unlock()
             if item.is_locked():  # User dismissed the prompt
-                raise InitError('Failed to unlock the item!')
+                raise KeyringLocked('Failed to unlock the item!')
             return item.get_secret().decode('utf-8')
 
     def set_password(self, service, username, password):
