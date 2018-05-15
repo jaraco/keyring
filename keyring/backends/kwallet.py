@@ -76,7 +76,9 @@ class DBusKeyring(KeyringBackend):
 
     def connected(self, service):
         if self.handle >= 0:
-            return True
+            if self.iface.isOpen(self.handle):
+                return True
+
         bus = dbus.SessionBus(mainloop=DBusGMainLoop())
         wId = 0
         try:
