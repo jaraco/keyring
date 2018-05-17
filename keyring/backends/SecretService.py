@@ -36,7 +36,7 @@ class Keyring(KeyringBackend):
         try:
             bus = secretstorage.dbus_init()
             list(secretstorage.get_all_collections(bus))
-        except exceptions.SecretServiceNotAvailableException as e:
+        except exceptions.SecretStorageException as e:
             raise RuntimeError(
                 "Unable to initialize SecretService: %s" % e)
         return 5
