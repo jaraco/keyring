@@ -161,6 +161,9 @@ use-cases. Simply install them to make them available:
 - `keyrings.alt <https://pypi.org/project/keyrings.alt>`_ - "alternate",
   possibly-insecure backends, originally part of the core package, but
   available for opt-in.
+- `gsheet-keyring <https://pypi.org/project/gsheet-keyring>`_
+  - a backend that stores secrets in a Google Sheet. For use with
+  `ipython-secrets <https://pypi.org/project/ipython-secrets>`_.
 
 Write your own keyring backend
 ==============================
