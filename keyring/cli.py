@@ -89,8 +89,10 @@ class CommandLineTool(object):
 
         This mostly exists to ease the testing process.
         """
-
-        return getpass.getpass(prompt)
+        if sys.stdin.isatty():
+            return getpass.getpass(prompt)
+        else:
+            return sys.stdin.readline().rstrip()
 
     def output_password(self, password):
         """Output the password to the user.
