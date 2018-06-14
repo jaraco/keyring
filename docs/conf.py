@@ -17,7 +17,7 @@ link_files = {
 		),
 		replace=[
 			dict(
-				pattern=r'(Issue )?#(?P<issue>\d+)',
+				pattern=r'(Issue #|\B#)(?P<issue>\d+)',
 				url='{package_url}/issues/{issue}',
 			),
 			dict(
