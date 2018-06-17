@@ -5,7 +5,7 @@ import os
 
 from ..backend import KeyringBackend
 from ..errors import PasswordDeleteError
-from ..errors import PasswordSetError
+from ..errors import PasswordSetError, InitError, KeyringLocked
 from ..util import properties
 
 try:
@@ -76,7 +76,9 @@ class DBusKeyring(KeyringBackend):
 
     def connected(self, service):
         if self.handle >= 0:
-            return True
+            if self.iface.isOpen(self.handle):
+                return True
+
         bus = dbus.SessionBus(mainloop=DBusGMainLoop())
         wId = 0
         try:
@@ -84,8 +86,9 @@ class DBusKeyring(KeyringBackend):
             self.iface = dbus.Interface(remote_obj, 'org.kde.KWallet')
             self.handle = self.iface.open(
                 self.iface.networkWallet(), wId, self.appid)
-        except dbus.DBusException:
-            self.handle = -1
+        except dbus.DBusException as e:
+            raise InitError('Failed to open keyring: %s.' % e)
+
         if self.handle < 0:
             return False
         self._migrate(service)
@@ -96,7 +99,7 @@ class DBusKeyring(KeyringBackend):
         """
         if not self.connected(service):
             # the user pressed "cancel" when prompted to unlock their keyring.
-            return None
+            raise KeyringLocked("Failed to unlock the keyring!")
         if not self.iface.hasEntry(self.handle, service, username, self.appid):
             return None
         password = self.iface.readPassword(
