@@ -1,3 +1,8 @@
+13.1.0
+------
+
+* #329: Improve output of ``keyring --list-backends``.
+
 13.0.0
 ------
 
