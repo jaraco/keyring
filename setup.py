@@ -2,12 +2,7 @@
 
 # Project skeleton maintained at https://github.com/jaraco/skeleton
 
-import io
-
 import setuptools
-
-with io.open('README.rst', encoding='utf-8') as readme:
-    long_description = readme.read()
 
 name = 'keyring'
 description = 'Store and access your passwords safely.'
@@ -25,7 +20,6 @@ params = dict(
     maintainer='Jason R. Coombs',
     maintainer_email='jaraco@jaraco.com',
     description=description or name,
-    long_description=long_description,
     url="https://github.com/jaraco/" + name,
     packages=setuptools.find_packages(),
     include_package_data=True,
@@ -79,6 +73,7 @@ params = dict(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
     ],
     entry_points={
         'console_scripts': [
