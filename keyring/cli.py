@@ -92,7 +92,7 @@ class CommandLineTool(object):
         if sys.stdin.isatty():
             return getpass.getpass(prompt)
         else:
-            return sys.stdin.readline().rstrip()
+            return sys.stdin.readline().rstrip('\n')
 
     def output_password(self, password):
         """Output the password to the user.
