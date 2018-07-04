@@ -87,10 +87,13 @@ class CommandLineTool(object):
     def input_password(self, prompt):
         """Retrieve password from input.
         """
-        if sys.stdin.isatty():
-            return getpass.getpass(prompt)
-        else:
-            return sys.stdin.readline().rstrip('\n')
+        return self.pass_from_pipe() or getpass.getpass(prompt)
+
+    @staticmethod
+    def pass_from_pipe():
+        """Return password from pipe if not on TTY, else False.
+        """
+        return not sys.stdin.isatty() and sys.stdin.readline().rstrip('\n')
 
     def output_password(self, password):
         """Output the password to the user.
