@@ -4,6 +4,25 @@
 * Keyring command-line interface now reads the password
   directly from stdin if stdin is connected to a pipe.
 
+13.1.0
+------
+
+* #329: Improve output of ``keyring --list-backends``.
+
+13.0.0
+------
+
+* #327: In kwallet backend, if the collection or item is
+  locked, a ``KeyringLocked`` exception is raised. Clients
+  expecting a None response from ``get_password`` under
+  this condition will need to catch this exception.
+  Additionally, an ``InitError`` is now raised if the
+  connection cannot be established to the DBus.
+
+* #298: In kwallet backend, when checking an existing
+  handle, verify that it is still valid or create a new
+  connection.
+
 12.2.1
 ------
 

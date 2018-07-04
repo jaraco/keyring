@@ -23,7 +23,6 @@ jobs:
         secure: aDqlVdm6FZ8pqLkoDRR2LH3TEz7pBvKH2HhOlSy7OEmopN/36ncql/KvfE0ccpaOES9Xm31a51bUfNjcwb1HVKjfW544C+IoSHctkG1rI5bp3q4rW+4RbQcBZVHUUKR9yQf9ZyikEmoYXi3g+JKcOf9rj+v/32PAfUDzSpFbWik=
       distributions: dists
       skip_cleanup: true
-      skip_upload_docs: true
 
 cache: pip
 
@@ -33,4 +32,9 @@ before_install:
 install:
 - pip install tox tox-venv
 
+before_script:
+  # Disable IPv6. Ref travis-ci/travis-ci#8361
+  - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
+      sudo sh -c 'echo 0 > /proc/sys/net/ipv6/conf/all/disable_ipv6';
+    fi
 script: tox

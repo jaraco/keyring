@@ -73,6 +73,12 @@ class KeyringBackend(object):
         mod_name = mod_name.replace('_', ' ')
         return ' '.join([mod_name, cls.__name__])
 
+    def __str__(self):
+        keyring_class = type(self)
+        return ("%s.%s (priority: %g)" % (keyring_class.__module__,
+                                          keyring_class.__name__,
+                                          keyring_class.priority))
+
     @abc.abstractmethod
     def get_password(self, service, username):
         """Get password of the username for the service
