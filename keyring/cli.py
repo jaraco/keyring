@@ -90,10 +90,15 @@ class CommandLineTool(object):
         return self.pass_from_pipe() or getpass.getpass(prompt)
 
     @staticmethod
-    def pass_from_pipe():
+    def pass_from_pipe(cls):
         """Return password from pipe if not on TTY, else False.
         """
-        return not sys.stdin.isatty() and sys.stdin.readline().rstrip('\n')
+        return not sys.stdin.isatty() and cls.strip_last_newline(sys.stdin.read())
+
+    @staticmethod
+    def strip_last_newline(str):
+        """Strip one last newline, if present."""
+        return str[:-str.endswith('\n')]
 
     def output_password(self, password):
         """Output the password to the user.
