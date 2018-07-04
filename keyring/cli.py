@@ -85,9 +85,7 @@ class CommandLineTool(object):
             pass
 
     def input_password(self, prompt):
-        """Ask for a password to the user.
-
-        This mostly exists to ease the testing process.
+        """Retrieve password from input.
         """
         if sys.stdin.isatty():
             return getpass.getpass(prompt)
