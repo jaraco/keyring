@@ -93,7 +93,8 @@ class CommandLineTool(object):
     def pass_from_pipe(cls):
         """Return password from pipe if not on TTY, else False.
         """
-        return not sys.stdin.isatty() and cls.strip_last_newline(sys.stdin.read())
+        is_pipe = not sys.stdin.isatty()
+        return is_pipe and cls.strip_last_newline(sys.stdin.read())
 
     @staticmethod
     def strip_last_newline(str):
