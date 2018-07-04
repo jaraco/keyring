@@ -1,3 +1,9 @@
+13.2.0
+------
+
+* Keyring command-line interface now reads the password
+  directly from stdin if stdin is connected to a pipe.
+
 12.2.1
 ------
 
