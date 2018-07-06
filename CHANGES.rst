@@ -1,3 +1,8 @@
+13.2.1
+------
+
+* #335: Fix regression in command line client.
+
 13.2.0
 ------
 

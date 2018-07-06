@@ -89,7 +89,7 @@ class CommandLineTool(object):
         """
         return self.pass_from_pipe() or getpass.getpass(prompt)
 
-    @staticmethod
+    @classmethod
     def pass_from_pipe(cls):
         """Return password from pipe if not on TTY, else False.
         """
