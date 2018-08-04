@@ -6,6 +6,7 @@ from __future__ import absolute_import
 
 import abc
 import logging
+import operator
 
 import entrypoints
 
@@ -165,15 +166,7 @@ def get_all_keyring():
     parameters.
     """
     _load_plugins()
-
-    def is_class_viable(keyring_cls):
-        try:
-            keyring_cls.priority
-        except RuntimeError:
-            return False
-        return True
-
-    all_classes = KeyringBackend._classes
-    viable_classes = filter(is_class_viable, all_classes)
+    viable = operator.attrgetter('viable')
+    viable_classes = filter(viable, KeyringBackend._classes)
     rings = util.suppress_exceptions(viable_classes, exceptions=TypeError)
     return list(rings)
