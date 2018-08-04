@@ -62,6 +62,13 @@ class KeyringBackend(object):
             cls.priority
         return not bool(exc)
 
+    @classmethod
+    def get_viable_backends(cls):
+        """
+        Return all subclasses deemed viable.
+        """
+        return filter(operator.attrgetter('viable'), cls._classes)
+
     @properties.ClassProperty
     @classmethod
     def name(cls):
@@ -166,7 +173,6 @@ def get_all_keyring():
     parameters.
     """
     _load_plugins()
-    viable = operator.attrgetter('viable')
-    viable_classes = filter(viable, KeyringBackend._classes)
+    viable_classes = KeyringBackend.get_viable_backends()
     rings = util.suppress_exceptions(viable_classes, exceptions=TypeError)
     return list(rings)
