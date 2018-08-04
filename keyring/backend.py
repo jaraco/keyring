@@ -175,5 +175,5 @@ def get_all_keyring():
 
     all_classes = KeyringBackend._classes
     viable_classes = filter(is_class_viable, all_classes)
-    return list(util.suppress_exceptions(viable_classes,
-                                         exceptions=TypeError))
+    rings = util.suppress_exceptions(viable_classes, exceptions=TypeError)
+    return list(rings)
