@@ -83,7 +83,7 @@ params = dict(
             'keyring = keyring.devpi_client',
         ],
         'keyring.backends': [
-            'windows = keyring.backends.Windows',
+            'Windows = keyring.backends.Windows',
             'macOS = keyring.backends.OS_X',
             'SecretService = keyring.backends.SecretService',
             'kwallet = keyring.backends.kwallet',
