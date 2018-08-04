@@ -4,8 +4,10 @@ import sys
 import random
 import string
 
+__metaclass__ = type
 
-class ImportKiller(object):
+
+class ImportKiller:
     "Context manager to make an import of a given name or names fail."
 
     def __init__(self, *names):

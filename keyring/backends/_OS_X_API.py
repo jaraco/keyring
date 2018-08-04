@@ -5,6 +5,8 @@ from ctypes import c_void_p, c_uint16, c_uint32, c_int32, c_char_p, POINTER
 
 from keyring.py27compat import string_types, add_metaclass
 
+__metaclass__ = type
+
 
 sec_keychain_ref = sec_keychain_item_ref = c_void_p
 OS_status = c_int32
@@ -156,14 +158,14 @@ class PackedAttributes(type):
 
 
 @add_metaclass(PackedAttributes)
-class SecProtocolType(object):
+class SecProtocolType:
     kSecProtocolTypeHTTP = 'http'
     kSecProtocolTypeHTTPS = 'htps'
     kSecProtocolTypeFTP = 'ftp '
 
 
 @add_metaclass(PackedAttributes)
-class SecAuthenticationType(object):
+class SecAuthenticationType:
     """
     >>> SecAuthenticationType.kSecAuthenticationTypeDefault
     1684434036

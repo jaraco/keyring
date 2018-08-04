@@ -14,6 +14,7 @@ from . import errors, util
 from .util import properties
 from .py27compat import add_metaclass, filter
 
+__metaclass__ = type
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class KeyringBackendMeta(abc.ABCMeta):
 
 
 @add_metaclass(KeyringBackendMeta)
-class KeyringBackend(object):
+class KeyringBackend:
     """The abstract base class of the keyring, every backend must implement
     this interface.
     """
@@ -108,7 +109,7 @@ class KeyringBackend(object):
         raise errors.PasswordDeleteError("reason")
 
 
-class Crypter(object):
+class Crypter:
     """Base class providing encryption and decryption
     """
 

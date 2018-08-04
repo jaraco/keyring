@@ -21,6 +21,8 @@ except ImportError:
     except ImportError:
         pass
 
+__metaclass__ = type
+
 
 def has_pywin32():
     """
@@ -126,7 +128,7 @@ class WinVaultKeyring(KeyringBackend):
         )
 
 
-class OldPywinError(object):
+class OldPywinError:
     """
     A compatibility wrapper for old PyWin32 errors, such as reported in
     https://bitbucket.org/kang/python-keyring-lib/issue/140/

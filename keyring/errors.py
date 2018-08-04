@@ -1,6 +1,9 @@
 import sys
 
 
+__metaclass__ = type
+
+
 class KeyringError(Exception):
     """Base class for exceptions in keyring
     """
@@ -26,7 +29,7 @@ class KeyringLocked(KeyringError):
     """
 
 
-class ExceptionRaisedContext(object):
+class ExceptionRaisedContext:
     """
     An exception-trapping context that indicates whether an exception was
     raised.
@@ -46,7 +49,7 @@ class ExceptionRaisedContext(object):
             self.exc_info.type, self.ExpectedException)
 
 
-class ExceptionInfo(object):
+class ExceptionInfo:
     def __init__(self, *info):
         if not info:
             info = sys.exc_info()

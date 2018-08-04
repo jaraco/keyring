@@ -11,8 +11,10 @@ from . import core
 from . import backend
 from . import set_keyring, get_password, set_password, delete_password
 
+__metaclass__ = type
 
-class CommandLineTool(object):
+
+class CommandLineTool:
     def __init__(self):
         self.parser = OptionParser(
             usage="%prog [get|set|del] SERVICE USERNAME")

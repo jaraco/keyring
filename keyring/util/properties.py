@@ -1,5 +1,7 @@
 from collections import Callable
 
+__metaclass__ = type
+
 
 class ClassProperty(property):
     """
@@ -26,14 +28,14 @@ class ClassProperty(property):
 # borrowed from jaraco.util.dictlib
 
 
-class NonDataProperty(object):
+class NonDataProperty:
     """Much like the property builtin, but only implements __get__,
     making it a non-data property, and can be subsequently reset.
 
     See http://users.rcn.com/python/download/Descriptor.htm for more
     information.
 
-    >>> class X(object):
+    >>> class X:
     ...   @NonDataProperty
     ...   def foo(self):
     ...     return 3
