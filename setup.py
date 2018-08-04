@@ -86,7 +86,7 @@ params = dict(
             'Windows = keyring.backends.Windows',
             'macOS = keyring.backends.OS_X',
             'SecretService = keyring.backends.SecretService',
-            'kwallet = keyring.backends.kwallet',
+            'KWallet = keyring.backends.kwallet',
         ],
     },
 )
