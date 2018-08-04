@@ -1,3 +1,11 @@
+14.0.0
+------
+
+Removed ``getpassbackend`` module and alias in
+``keyring.get_pass_get_password``. Instead, just use::
+
+    keyring.get_password(getpass.getuser(), 'Python')
+
 13.2.1
 ------
 
