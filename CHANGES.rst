@@ -1,5 +1,7 @@
-14.0.1
+15.0.0
 ------
+
+Removed deprecated ``keyring.util.escape`` module.
 
 Fixed warning about using deprecated Abstract Base Classes
 from collections module.
