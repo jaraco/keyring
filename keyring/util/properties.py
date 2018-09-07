@@ -1,4 +1,4 @@
-from collections import Callable
+from ..py32compat import abc
 
 __metaclass__ = type
 
@@ -49,7 +49,7 @@ class NonDataProperty:
 
     def __init__(self, fget):
         assert fget is not None, "fget cannot be none"
-        assert isinstance(fget, Callable), "fget must be callable"
+        assert isinstance(fget, abc.Callable), "fget must be callable"
         self.fget = fget
 
     def __get__(self, obj, objtype=None):

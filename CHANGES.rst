@@ -1,3 +1,9 @@
+14.0.1
+------
+
+Fixed warning about using deprecated Abstract Base Classes
+from collections module.
+
 14.0.0
 ------
 
