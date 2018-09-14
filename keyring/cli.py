@@ -17,7 +17,8 @@ __metaclass__ = type
 class CommandLineTool:
     def __init__(self):
         self.parser = OptionParser(
-            usage="%prog [get|set|del] SERVICE USERNAME")
+            usage="%prog [get|set|del] SERVICE USERNAME",
+        )
         self.parser.add_option("-p", "--keyring-path",
                                dest="keyring_path", default=None,
                                help="Path to the keyring backend")
@@ -27,6 +28,9 @@ class CommandLineTool:
         self.parser.add_option("--list-backends",
                                action="store_true",
                                help="List keyring backends and exit")
+        self.parser.add_option("--disable",
+                               action="store_true",
+                               help="Disable keyring and exit")
 
     def run(self, argv):
         opts, args = self.parser.parse_args(argv)
@@ -34,6 +38,10 @@ class CommandLineTool:
         if opts.list_backends:
             for k in backend.get_all_keyring():
                 print(k)
+            return
+
+        if opts.disable:
+            core.disable()
             return
 
         try:

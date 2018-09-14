@@ -2,6 +2,8 @@
 ------
 
 * #340: Add the Null keyring, disabled by default.
+* #340: Added ``--disable`` option to command-line
+  interface.
 
 15.0.0
 ------
