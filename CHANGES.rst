@@ -1,3 +1,8 @@
+15.1.0
+------
+
+* #340: Add the Null keyring, disabled by default.
+
 15.0.0
 ------
 
