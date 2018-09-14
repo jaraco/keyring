@@ -1,10 +1,15 @@
+dist: xenial
+sudo: false
 language: python
+
+python:
+- 2.7
+- 3.6
+- &latest_py3 3.7
 
 jobs:
   fast_finish: true
   include:
-  - python: 2.7
-  - python: &latest_py3 3.6
   - os: osx
     language: generic
     python: *latest_py3
