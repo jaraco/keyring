@@ -84,7 +84,8 @@ def init_backend(limit=None):
     keyrings = filter(limit, backend.get_all_keyring())
 
     set_keyring(
-        load_config()
+        load_env()
+        or load_config()
         or max(keyrings, default=fail.Keyring, key=by_priority)
     )
 
@@ -126,6 +127,14 @@ def load_keyring(keyring_name):
     # invoke the priority to ensure it is viable, or raise a RuntimeError
     class_.priority
     return class_()
+
+
+def load_env():
+    """Load a keyring configured in the environment variable."""
+    try:
+        return load_keyring(os.environ['PYTHON_KEYRING_BACKEND'])
+    except KeyError:
+        pass
 
 
 def load_config():

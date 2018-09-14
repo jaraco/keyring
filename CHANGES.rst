@@ -4,6 +4,10 @@
 * #340: Add the Null keyring, disabled by default.
 * #340: Added ``--disable`` option to command-line
   interface.
+* #340: Now honor a ``PYTHON_KEYRING_BACKEND``
+  environment variable to select a backend. Environments
+  may set to ``keyring.backends.null.Keyring`` to disable
+  keyring.
 
 15.0.0
 ------
