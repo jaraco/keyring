@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 class Keyring(KeyringBackend):
     """Secret Service Keyring"""
-    appid = os.path.basename(sys.argv[0]) or 'Python keyring library'
+    appid = 'Python keyring library'
 
     @properties.ClassProperty
     @classmethod
