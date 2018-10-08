@@ -1,8 +1,5 @@
 import logging
 
-import sys
-import os
-
 from ..util import properties
 from ..backend import KeyringBackend
 from ..errors import (InitError, PasswordDeleteError,
