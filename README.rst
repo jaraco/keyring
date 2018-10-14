@@ -164,6 +164,10 @@ use-cases. Simply install them to make them available:
 - `gsheet-keyring <https://pypi.org/project/gsheet-keyring>`_
   - a backend that stores secrets in a Google Sheet. For use with
   `ipython-secrets <https://pypi.org/project/ipython-secrets>`_.
+- `bitwarden-keyring <https://pypi.org/project/bitwarden-keyring/0.1.0/>`_
+  - a backend that stores secrets in the `BitWarden <https://bitwarden.com/>`_
+  password manager.
+  
 
 Write your own keyring backend
 ==============================
