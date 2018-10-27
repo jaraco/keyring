@@ -145,11 +145,9 @@ class BackendBasicTests:
         self.set_password('service1', 'user2', 'password2')
 
         cred = keyring.get_credential('service1', None)
-        assert cred is not None
-        assert (cred.username, cred.password) in (
+        assert cred is None or (cred.username, cred.password) in (
             ('user1', 'password1'),
             ('user2', 'password2'),
-            (None, None),
         )
 
         cred = keyring.get_credential('service1', 'user2')
