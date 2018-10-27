@@ -126,6 +126,7 @@ class KeyringBackend:
                 return username, password
         return None, None
 
+
 class Crypter:
     """Base class providing encryption and decryption
     """
