@@ -142,10 +142,14 @@ class BackendBasicTests:
         assert get('service1', None) == (None, None)
         self.set_password('service1', 'user1', 'password1')
         self.set_password('service1', 'user2', 'password2')
+
         # Using get_username_and_password may produce any of these results
-        candidates = frozenset((
+        valid = set((
             ('user1', 'password1'),
             ('user2', 'password2'),
         ))
-        assert get('service1', None) in candidates
-        assert get('service1', 'user2') in candidates
+        # Passing None for username may result in no password
+        valid_or_none = valid | set(((None, None),))
+
+        assert get('service1', None) in valid_or_none
+        assert get('service1', 'user2') in valid
