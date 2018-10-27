@@ -127,6 +127,20 @@ class WinVaultKeyring(KeyringBackend):
             TargetName=target,
         )
 
+    def get_username_and_password(self, service, username):
+        res = None
+        # get the credentials associated with the provided username
+        if username:
+            res = self._get_password(self._compound_name(username, service))
+        # get any first password under the service name
+        if not res:
+            res = self._get_password(service)
+            if not res:
+                return None, None
+        username = res['UserName']
+        blob = res['CredentialBlob']
+        return username, blob.decode('utf-16')
+
 
 class OldPywinError:
     """

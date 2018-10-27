@@ -134,3 +134,16 @@ class BackendBasicTests:
         assert keyring.get_password('service1', 'user2') == 'password2'
         self.set_password('service2', 'user3', 'password3')
         assert keyring.get_password('service1', 'user1') == 'password1'
+
+    def test_username_and_password(self):
+        keyring = self.keyring
+        assert keyring.get_username_and_password('service1', None) == (None, None)
+        self.set_password('service1', 'user1', 'password1')
+        self.set_password('service1', 'user2', 'password2')
+        # Using get_username_and_password may produce any of these results
+        candidates = frozenset((
+            ('user1', 'password1'),
+            ('user2', 'password2'),
+        ))
+        assert keyring.get_username_and_password('service1', None) in candidates
+        assert keyring.get_username_and_password('service1', 'user2') in candidates
