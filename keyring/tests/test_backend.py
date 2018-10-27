@@ -137,7 +137,9 @@ class BackendBasicTests:
 
     def test_username_and_password(self):
         keyring = self.keyring
-        assert keyring.get_username_and_password('service1', None) == (None, None)
+        get = keyring.get_username_and_password
+
+        assert get('service1', None) == (None, None)
         self.set_password('service1', 'user1', 'password1')
         self.set_password('service1', 'user2', 'password2')
         # Using get_username_and_password may produce any of these results
@@ -145,5 +147,5 @@ class BackendBasicTests:
             ('user1', 'password1'),
             ('user2', 'password2'),
         ))
-        assert keyring.get_username_and_password('service1', None) in candidates
-        assert keyring.get_username_and_password('service1', 'user2') in candidates
+        assert get('service1', None) in candidates
+        assert get('service1', 'user2') in candidates
