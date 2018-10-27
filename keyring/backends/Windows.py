@@ -5,6 +5,7 @@ import functools
 from ..py27compat import text_type
 from ..util import properties
 from ..backend import KeyringBackend
+from ..credentials import SimpleCredential
 from ..errors import PasswordDeleteError, ExceptionRaisedContext
 
 try:
@@ -125,6 +126,21 @@ class WinVaultKeyring(KeyringBackend):
         win32cred.CredDelete(
             Type=win32cred.CRED_TYPE_GENERIC,
             TargetName=target,
+        )
+
+    def get_credential(self, service, username):
+        res = None
+        # get the credentials associated with the provided username
+        if username:
+            res = self._get_password(self._compound_name(username, service))
+        # get any first password under the service name
+        if not res:
+            res = self._get_password(service)
+            if not res:
+                return None
+        return SimpleCredential(
+            res['UserName'],
+            res['CredentialBlob'].decode('utf-16'),
         )
 
 

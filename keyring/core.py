@@ -70,6 +70,12 @@ def delete_password(service_name, username):
     _keyring_backend.delete_password(service_name, username)
 
 
+def get_credential(service_name, username):
+    """Get a Credential for the specified service.
+    """
+    return _keyring_backend.get_credential(service_name, username)
+
+
 def recommended(backend):
     return backend.priority >= 1
 
