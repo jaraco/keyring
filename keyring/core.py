@@ -70,22 +70,10 @@ def delete_password(service_name, username):
     _keyring_backend.delete_password(service_name, username)
 
 
-def get_username_and_password(service_name, username):
+def get_credential(service_name, username=None):
     """Get username and password from the specified service.
     """
-    try:
-        call = _keyring_backend.get_username_and_password
-    except AttributeError:
-        pass
-    else:
-        return call(service_name, username)
-
-    # The fallback behavior requires a username.
-    if username is not None:
-        password = _keyring_backend.get_password(service_name, username)
-        if password is not None:
-            return username, password
-    return None, None
+    return _keyring_backend.get_credential(service_name, username)
 
 
 def recommended(backend):

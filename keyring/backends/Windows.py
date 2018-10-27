@@ -6,6 +6,7 @@ from ..py27compat import text_type
 from ..util import properties
 from ..backend import KeyringBackend
 from ..errors import PasswordDeleteError, ExceptionRaisedContext
+from .. import credentials
 
 try:
     # prefer pywin32-ctypes
@@ -127,7 +128,7 @@ class WinVaultKeyring(KeyringBackend):
             TargetName=target,
         )
 
-    def get_username_and_password(self, service, username):
+    def get_credential(self, service, username):
         res = None
         # get the credentials associated with the provided username
         if username:
@@ -136,10 +137,10 @@ class WinVaultKeyring(KeyringBackend):
         if not res:
             res = self._get_password(service)
             if not res:
-                return None, None
+                return None
         username = res['UserName']
         blob = res['CredentialBlob']
-        return username, blob.decode('utf-16')
+        return credentials.SimpleCredential(username, blob.decode('utf-16'))
 
 
 class OldPywinError:

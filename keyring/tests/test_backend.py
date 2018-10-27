@@ -12,6 +12,7 @@ import pytest
 
 from .util import random_string
 from keyring import errors
+from keyring import credentials
 
 __metaclass__ = type
 
@@ -135,21 +136,21 @@ class BackendBasicTests:
         self.set_password('service2', 'user3', 'password3')
         assert keyring.get_password('service1', 'user1') == 'password1'
 
-    def test_username_and_password(self):
+    def test_get_credential(self):
         keyring = self.keyring
-        get = keyring.get_username_and_password
+        get = keyring.get_credential
 
-        assert get('service1', None) == (None, None)
+        assert get('service1', None) is None
         self.set_password('service1', 'user1', 'password1')
         self.set_password('service1', 'user2', 'password2')
 
-        # Using get_username_and_password may produce any of these results
-        valid = set((
-            ('user1', 'password1'),
-            ('user2', 'password2'),
-        ))
+        # Using get_credential may produce any of these results
+        valid = {
+            credentials.SimpleCredential('user1', 'password1'),
+            credentials.SimpleCredential('user2', 'password2'),
+        }
         # Passing None for username may result in no password
-        valid_or_none = valid | set(((None, None),))
+        valid_or_none = valid | {None}
 
         assert get('service1', None) in valid_or_none
         assert get('service1', 'user2') in valid

@@ -11,6 +11,7 @@ import operator
 import entrypoints
 
 from . import errors, util
+from . import credentials
 from .util import properties
 from .py27compat import add_metaclass, filter
 
@@ -109,11 +110,11 @@ class KeyringBackend:
         raise errors.PasswordDeleteError("reason")
 
     # for backward-compatibility, don't require a backend to implement
-    #  get_username_and_password
+    #  get_credential
     # @abc.abstractmethod
-    def get_username_and_password(self, service, username):
+    def get_credential(self, service, username):
         """Gets the username and password for the service.
-        Returns (username, password)
+        Returns a Credential or None
 
         The *username* argument is optional and may be omitted by
         the caller or ignored by the backend. Callers must use the
@@ -123,8 +124,7 @@ class KeyringBackend:
         if username is not None:
             password = self.get_password(service, username)
             if password is not None:
-                return username, password
-        return None, None
+                return credentials.SimpleCredential(username, password)
 
 
 class Crypter:

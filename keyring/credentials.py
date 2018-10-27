@@ -1,5 +1,6 @@
 import os
 import abc
+import collections
 
 from .py27compat import add_metaclass
 
@@ -20,21 +21,11 @@ class Credential:
         return None
 
 
-class SimpleCredential(Credential):
+class SimpleCredential(
+        collections.namedtuple('Credential', 'username password'),
+        Credential):
     """Simple credentials implementation
     """
-
-    def __init__(self, username, password):
-        self._username = username
-        self._password = password
-
-    @property
-    def username(self):
-        return self._username
-
-    @property
-    def password(self):
-        return self._password
 
 
 class EnvironCredential(Credential):
