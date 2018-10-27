@@ -56,11 +56,13 @@ Install using your favorite installer. For example:
 Linux
 -----
 
-On Linux, the recommended keyring relies on SecretStorage, which in
-turn relies on dbus-python, but dbus-python does not install correctly
-when using the Python installers, so dbus-python must be installed
-as a system package. See `the SecretStorage GitHub repo
-<https://github.com/mitya57/secretstorage>`_ for details.
+On Linux, the KWallet backend relies on dbus-python_, which does not always
+install correctly when using pip (compilation is needed). So we recommend
+that dbus-python is installed as a system package. The same also applies to
+the Secret Storage backend under Python 2 (under Python 3 a different D-Bus
+implementation is used).
+
+.. _dbus-python: https://gitlab.freedesktop.org/dbus/dbus-python
 
 -------------
 Using Keyring
@@ -164,6 +166,10 @@ use-cases. Simply install them to make them available:
 - `gsheet-keyring <https://pypi.org/project/gsheet-keyring>`_
   - a backend that stores secrets in a Google Sheet. For use with
   `ipython-secrets <https://pypi.org/project/ipython-secrets>`_.
+- `bitwarden-keyring <https://pypi.org/project/bitwarden-keyring/0.1.0/>`_
+  - a backend that stores secrets in the `BitWarden <https://bitwarden.com/>`_
+  password manager.
+  
 
 Write your own keyring backend
 ==============================
