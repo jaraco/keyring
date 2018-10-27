@@ -1,3 +1,9 @@
+15.2.0
+------
+
+* #350: Added new API for ``get_credentials``, for backends
+  that can resolve both a username and password for a service.
+
 15.1.0
 ------
 
