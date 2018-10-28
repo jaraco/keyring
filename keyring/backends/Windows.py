@@ -134,7 +134,6 @@ class WinVaultKeyring(KeyringBackend):
                 return
             raise
 
-
     def get_credential(self, service, username):
         res = None
         # get the credentials associated with the provided username
