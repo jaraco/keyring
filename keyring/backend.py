@@ -96,7 +96,10 @@ class KeyringBackend:
 
     @abc.abstractmethod
     def set_password(self, service, username, password):
-        """Set password for the username of the service
+        """Set password for the username of the service.
+
+        If the backend cannot store passwords, raise
+        NotImplementedError.
         """
         raise errors.PasswordSetError("reason")
 
@@ -105,6 +108,9 @@ class KeyringBackend:
     # @abc.abstractmethod
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
+
+        If the backend cannot store passwords, raise
+        NotImplementedError.
         """
         raise errors.PasswordDeleteError("reason")
 

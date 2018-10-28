@@ -8,11 +8,11 @@ import logging
 import operator
 
 from .py27compat import configparser, filter
-from .py33compat import max
 
 from . import backend
 from .util import platform_ as platform
 from .backends import fail
+from .backends.chainer import ChainerBackend
 
 
 log = logging.getLogger(__name__)
@@ -83,6 +83,19 @@ def recommended(backend):
 by_priority = operator.attrgetter('priority')
 
 
+def _create_chained_backend(keyrings):
+    """
+    If one keyring is available, returns it. If more than one, returns a
+    single keyring that chains them. If no keyrings, returns None.
+    """
+    keyrings = sorted((k for k in keyrings if k.priority >= 1),
+                      key=by_priority, reverse=True)
+    if keyrings:
+        if len(keyrings) == 1:
+            return keyrings[0]
+        return ChainerBackend(keyrings)
+
+
 def init_backend(limit=None):
     """
     Load a keyring specified in the config file or infer the best available.
@@ -92,7 +105,8 @@ def init_backend(limit=None):
     set_keyring(
         load_env()
         or load_config()
-        or max(keyrings, default=fail.Keyring, key=by_priority)
+        or _create_chained_backend(keyrings)
+        or fail.Keyring()
     )
 
 
