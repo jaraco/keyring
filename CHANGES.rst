@@ -1,3 +1,10 @@
+16.0.0
+------
+
+* #323: Fix race condition in delete_password on Windows.
+* #352: All suitable backends (priority 1 and greater) are
+  allowed to participate.
+
 15.2.0
 ------
 
