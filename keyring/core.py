@@ -88,8 +88,7 @@ def _create_chained_backend(keyrings):
     If one keyring is available, returns it. If more than one, returns a
     single keyring that chains them. If no keyrings, returns None.
     """
-    keyrings = sorted((k for k in keyrings if k.priority >= 1),
-                      key=by_priority, reverse=True)
+    keyrings = sorted(keyrings, key=by_priority, reverse=True)
     if keyrings:
         if len(keyrings) == 1:
             return keyrings[0]
