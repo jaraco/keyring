@@ -1,3 +1,9 @@
+16.0.1
+------
+
+* #357: Once again allow all positive, non-zero priority
+  keyrings to participate.
+
 16.0.0
 ------
 
