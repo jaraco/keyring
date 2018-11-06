@@ -11,6 +11,14 @@ from ..backend import KeyringBackend
 
 
 class ChainerBackend(KeyringBackend):
+    """
+    >>> ChainerBackend(())
+    <keyring.backends.chainer.ChainerBackend object at ...>
+    """
+
+    priority = 0
+    viable = False
+
     def __init__(self, backends):
         self.backends = list(backends)
 
