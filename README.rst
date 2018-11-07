@@ -6,8 +6,8 @@
 .. image:: https://img.shields.io/travis/jaraco/keyring/master.svg
    :target: https://travis-ci.org/jaraco/keyring
 
-.. .. image:: https://img.shields.io/appveyor/ci/jaraco/keyring/master.svg
-..    :target: https://ci.appveyor.com/project/jaraco/keyring/branch/master
+.. image:: https://img.shields.io/appveyor/ci/jaraco/keyring/master.svg
+   :target: https://ci.appveyor.com/project/jaraco/keyring/branch/master
 
 .. image:: https://readthedocs.org/projects/keyring/badge/?version=latest
    :target: https://keyring.readthedocs.io/en/latest/?badge=latest
@@ -33,7 +33,7 @@ These recommended keyring backends are supported by the Python keyring lib:
 * macOS `Keychain
   <https://en.wikipedia.org/wiki/Keychain_%28software%29>`_
 * Freedesktop `Secret Service
-  <http://standards.freedesktop.org/secret-service/>`_ supports many DE including 
+  <http://standards.freedesktop.org/secret-service/>`_ supports many DE including
   GNOME (requires `secretstorage <https://pypi.python.org/pypi/secretstorage>`_)
 * KDE4 & KDE5 `KWallet <https://en.wikipedia.org/wiki/KWallet>`_
   (requires `dbus <https://pypi.python.org/pypi/dbus-python>`_)
@@ -169,7 +169,7 @@ use-cases. Simply install them to make them available:
 - `bitwarden-keyring <https://pypi.org/project/bitwarden-keyring/0.1.0/>`_
   - a backend that stores secrets in the `BitWarden <https://bitwarden.com/>`_
   password manager.
-  
+
 
 Write your own keyring backend
 ==============================
