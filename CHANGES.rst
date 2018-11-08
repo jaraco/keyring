@@ -1,3 +1,9 @@
+16.0.2
+------
+
+* #319: In Windows backend, trap all exceptions when
+  attempting to import pywin32.
+
 16.0.1
 ------
 

@@ -8,32 +8,23 @@ from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
 from ..errors import PasswordDeleteError, ExceptionRaisedContext
 
-try:
-    # prefer pywin32-ctypes
-    from win32ctypes.pywin32 import pywintypes
-    from win32ctypes.pywin32 import win32cred
-    # force demand import to raise ImportError
-    win32cred.__name__
-except ImportError:
-    # fallback to pywin32
+
+with ExceptionRaisedContext() as missing_deps:
     try:
+        # prefer pywin32-ctypes
+        from win32ctypes.pywin32 import pywintypes
+        from win32ctypes.pywin32 import win32cred
+        # force demand import to raise ImportError
+        win32cred.__name__
+    except ImportError:
+        # fallback to pywin32
         import pywintypes
         import win32cred
-    except ImportError:
-        pass
+        # force demand import to raise ImportError
+        win32cred.__name__
+
 
 __metaclass__ = type
-
-
-def has_pywin32():
-    """
-    Does this environment have pywin32?
-    Should return False even when Mercurial's Demand Import allowed import of
-    win32cred.
-    """
-    with ExceptionRaisedContext() as exc:
-        win32cred.__name__
-    return not bool(exc)
 
 
 class WinVaultKeyring(KeyringBackend):
@@ -60,7 +51,7 @@ class WinVaultKeyring(KeyringBackend):
         """
         If available, the preferred backend on Windows.
         """
-        if not has_pywin32():
+        if missing_deps:
             raise RuntimeError("Requires Windows and pywin32")
         return 5
 
