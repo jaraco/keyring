@@ -1,49 +1,56 @@
 """
-Implementation of a keyring backend chainer.
-
-This is specifically not a viable backend, and must be
-instantiated directly with a list of ordered backends.
+Keyring Chainer - iterates over other viable backends to
+discover passwords in each.
 """
 
 from __future__ import absolute_import
 
-from ..backend import KeyringBackend
+from .. import backend
+from .. import core
 
 
-class ChainerBackend(KeyringBackend):
+class ChainerBackend(backend.KeyringBackend):
     """
-    >>> ChainerBackend(())
+    >>> ChainerBackend()
     <keyring.backends.chainer.ChainerBackend object at ...>
     """
 
-    priority = 0
-    viable = False
+    priority = 10
 
-    def __init__(self, backends):
-        self.backends = list(backends)
+    @property
+    def backends(self):
+        """
+        Discover all keyrings for chaining.
+        """
+        allowed = (
+            keyring for keyring in backend.get_all_keyring()
+            if keyring.priority > 0
+            if not isinstance(keyring, ChainerBackend)
+        )
+        return sorted(allowed, key=core.by_priority, reverse=True)
 
     def get_password(self, service, username):
-        for backend in self.backends:
-            password = backend.get_password(service, username)
+        for keyring in self.backends:
+            password = keyring.get_password(service, username)
             if password is not None:
                 return password
 
     def set_password(self, service, username, password):
-        for backend in self.backends:
+        for keyring in self.backends:
             try:
-                return backend.set_password(service, username, password)
+                return keyring.set_password(service, username, password)
             except NotImplementedError:
                 pass
 
     def delete_password(self, service, username):
-        for backend in self.backends:
+        for keyring in self.backends:
             try:
-                return backend.delete_password(service, username)
+                return keyring.delete_password(service, username)
             except NotImplementedError:
                 pass
 
     def get_credential(self, service, username):
-        for backend in self.backends:
-            credential = backend.get_credential(service, username)
+        for keyring in self.backends:
+            credential = keyring.get_credential(service, username)
             if credential is not None:
                 return credential
