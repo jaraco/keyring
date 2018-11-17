@@ -1,3 +1,9 @@
+16.1.0
+------
+
+* Refactor ChainerBackend, introduced in 16.0 to function
+  as any other backend, activating when relevant.
+
 16.0.2
 ------
 
