@@ -1,3 +1,9 @@
+16.1.1
+------
+
+* #362: Fix error on import due to circular imports
+  on Python 3.4.
+
 16.1.0
 ------
 
