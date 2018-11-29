@@ -177,7 +177,8 @@ Write your own keyring backend
 The interface for the backend is defined by ``keyring.backend.KeyringBackend``.
 Every backend should derive from that base class and define a ``priority``
 attribute and three functions: ``get_password()``, ``set_password()``, and
-``delete_password()``.
+``delete_password()``. The ``get_credential()`` function may be defined if
+desired.
 
 See the ``backend`` module for more detail on the interface of this class.
 
@@ -290,6 +291,10 @@ The keyring lib has a few functions:
 * ``get_keyring()``: Return the currently-loaded keyring implementation.
 * ``get_password(service, username)``: Returns the password stored in the
   active keyring. If the password does not exist, it will return None.
+* ``get_credential(service, username)``: Return a credential object stored
+  in the active keyring. This object contains at least `username` and
+  `password` attributes for the specified service, where the returned
+  `username` may be different from the argument.
 * ``set_password(service, username, password)``: Store the password in the
   keyring.
 * ``delete_password(service, username)``: Delete the password stored in
