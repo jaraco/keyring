@@ -292,9 +292,9 @@ The keyring lib has a few functions:
 * ``get_password(service, username)``: Returns the password stored in the
   active keyring. If the password does not exist, it will return None.
 * ``get_credential(service, username)``: Return a credential object stored
-  in the active keyring. This object contains at least `username` and
-  `password` attributes for the specified service, where the returned
-  `username` may be different from the argument.
+  in the active keyring. This object contains at least ``username`` and
+  ``password`` attributes for the specified service, where the returned
+  ``username`` may be different from the argument.
 * ``set_password(service, username, password)``: Store the password in the
   keyring.
 * ``delete_password(service, username)``: Delete the password stored in
