@@ -1,3 +1,11 @@
+17.0.0
+------
+
+* #345: Remove application attribute from stored passwords
+  using SecretService, addressing regression introduced in
+  10.5.0 (#292). Impacted Linux keyrings will once again
+  prompt for a password for "Python program".
+
 16.1.1
 ------
 
