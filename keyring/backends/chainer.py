@@ -5,8 +5,6 @@ discover passwords in each.
 
 from __future__ import absolute_import
 
-import operator
-
 from .. import backend
 from ..util import properties
 
@@ -35,17 +33,14 @@ class ChainerBackend(backend.KeyringBackend):
         """
         Discover all keyrings for chaining.
         """
-        # copy of keyring.core.by_priority, avoiding circular import
-        # on Python 3.4
-        # https://github.com/jaraco/keyring/issues/362
-        by_priority = operator.attrgetter('priority')
+        from .. import core
         allowed = (
             keyring
-            for keyring in backend.get_all_keyring()
+            for keyring in filter(core._limit, backend.get_all_keyring())
             if not isinstance(keyring, ChainerBackend)
             and keyring.priority > 0
         )
-        return sorted(allowed, key=by_priority, reverse=True)
+        return sorted(allowed, key=core.by_priority, reverse=True)
 
     def get_password(self, service, username):
         for keyring in self.backends:
