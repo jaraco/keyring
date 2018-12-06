@@ -33,14 +33,13 @@ class ChainerBackend(backend.KeyringBackend):
         """
         Discover all keyrings for chaining.
         """
-        from .. import core
         allowed = (
             keyring
-            for keyring in filter(core._limit, backend.get_all_keyring())
+            for keyring in filter(backend._limit, backend.get_all_keyring())
             if not isinstance(keyring, ChainerBackend)
             and keyring.priority > 0
         )
-        return sorted(allowed, key=core.by_priority, reverse=True)
+        return sorted(allowed, key=backend.by_priority, reverse=True)
 
     def get_password(self, service, username):
         for keyring in self.backends:

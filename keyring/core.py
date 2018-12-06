@@ -5,7 +5,6 @@ Core API functions and initialization routines.
 import os
 import sys
 import logging
-import operator
 
 from .py27compat import configparser, filter
 from .py33compat import max
@@ -18,7 +17,6 @@ from .backends import fail
 log = logging.getLogger(__name__)
 
 _keyring_backend = None
-_limit = None
 
 
 def set_keyring(keyring):
@@ -81,9 +79,6 @@ def recommended(backend):
     return backend.priority >= 1
 
 
-by_priority = operator.attrgetter('priority')
-
-
 def init_backend(limit=None):
     """
     Load a keyring specified in the config file or infer the best available.
@@ -92,7 +87,7 @@ def init_backend(limit=None):
     True if that backend should be included for consideration.
     """
     # save the limit for the chainer to honor
-    globals().update(_limit=limit)
+    backend._limit = limit
 
     # get all keyrings passing the limit filter
     keyrings = filter(limit, backend.get_all_keyring())
@@ -100,7 +95,7 @@ def init_backend(limit=None):
     set_keyring(
         load_env()
         or load_config()
-        or max(keyrings, default=fail.Keyring(), key=by_priority)
+        or max(keyrings, default=fail.Keyring(), key=backend.by_priority)
     )
 
 

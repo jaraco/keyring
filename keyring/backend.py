@@ -19,6 +19,10 @@ __metaclass__ = type
 log = logging.getLogger(__name__)
 
 
+by_priority = operator.attrgetter('priority')
+_limit = None
+
+
 class KeyringBackendMeta(abc.ABCMeta):
     """
     A metaclass that's both an ABCMeta and a type that keeps a registry of
