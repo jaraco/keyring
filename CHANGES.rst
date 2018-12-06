@@ -1,3 +1,10 @@
+17.1.0
+------
+
+* #366: When calling ``keyring.core.init_backend``, if any
+  limit function is supplied, it is saved and later honored by
+  the ``ChainerBackend`` as well.
+
 17.0.0
 ------
 
