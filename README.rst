@@ -140,12 +140,13 @@ full path of the class for that backend, such as
 If **keyring-path** is indicated, keyring will add that path to the Python
 module search path before loading the backend.
 
-For example, this config might be used to load the SimpleKeyring from the demo
-directory in the project checkout::
+For example, this config might be used to load the
+``SimpleKeyring`` from the ``simplekeyring`` module in
+the ``./demo`` directory (not implemented)::
 
     [backend]
     default-keyring=simplekeyring.SimpleKeyring
-    keyring-path=/home/kang/pyworkspace/python-keyring-lib/demo/
+    keyring-path=demo
 
 Third-Party Backends
 ====================
