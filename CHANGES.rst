@@ -1,3 +1,8 @@
+17.1.1
+------
+
+* #368: Update packaging technique to avoid 0.0.0 releases.
+
 17.1.0
 ------
 
