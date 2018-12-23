@@ -16,18 +16,13 @@ jobs:
   - stage: deploy
     if: tag IS present
     python: *latest_py3
-    install: skip
-    script: skip
-    deploy:
-      provider: pypi
-      on:
-        tags: true
-        all_branches: true
-      user: jaraco
-      password:
-        secure: aDqlVdm6FZ8pqLkoDRR2LH3TEz7pBvKH2HhOlSy7OEmopN/36ncql/KvfE0ccpaOES9Xm31a51bUfNjcwb1HVKjfW544C+IoSHctkG1rI5bp3q4rW+4RbQcBZVHUUKR9yQf9ZyikEmoYXi3g+JKcOf9rj+v/32PAfUDzSpFbWik=
-      distributions: dists
-      skip_cleanup: true
+    before_script: skip
+    env:
+    - TWINE_USERNAME=jaraco
+    # TWINE_PASSWORD
+    - secure: VXM9F3HLDPprEY3JRlX6eH+yngucMHrqpUMeo4zgnFOc5yJUs7RP3uJ87O9IHllOUc7VR+nu/ye7HJk9y8Ux8X53S5UiH/s3/7rHPWP5IyCZBuDMZ3ouSxYKCWyMd6h/tkmVjNJIkV/0ZUhTJlwaODKwqegZ0twEIoRQnVIDTcs=
+    - TOX_TESTENV_PASSENV="TWINE_USERNAME TWINE_PASSWORD"
+    script: tox -e release
 
 cache: pip
 
