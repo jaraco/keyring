@@ -6,7 +6,7 @@ from ..py27compat import text_type
 from ..util import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
-from ..errors import PasswordDeleteError, ExceptionRaisedContext
+from ..errors import PasswordSetError,PasswordDeleteError,ExceptionRaisedContext
 
 
 with ExceptionRaisedContext() as missing_deps:
@@ -100,7 +100,12 @@ class WinVaultKeyring(KeyringBackend):
                           CredentialBlob=password,
                           Comment="Stored using python-keyring",
                           Persist=win32cred.CRED_PERSIST_ENTERPRISE)
-        win32cred.CredWrite(credential, 0)
+        try:
+            win32cred.CredWrite(credential, 0)
+        except pywintypes.error as e:
+            import sys
+            type, exc, tb = sys.exc_info()
+            raise PasswordSetError,("Max password length exceeded",type,exc),tb
 
     def delete_password(self, service, username):
         compound = self._compound_name(username, service)
