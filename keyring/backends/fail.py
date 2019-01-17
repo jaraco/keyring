@@ -16,11 +16,10 @@ class Keyring(KeyringBackend):
 
     def get_password(self, service, username, password=None):
         msg = (
-            "No recommended backend was available.  Install a recommended 3rd "
+            "No recommended backend was available. Install a recommended 3rd "
             "party backend package; or, install the keyrings.alt package if "
-            "you want to use the non-recommended backends. See README.rst "
-            "( https://github.com/jaraco/keyring/blob/master/README.rst ) "
-            "for details."
+            "you want to use the non-recommended backends. See "
+            "https://pypi.org/project/keyring for details."
         )
         raise RuntimeError(msg)
 
