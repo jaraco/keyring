@@ -14,6 +14,9 @@ OS_status = c_int32
 
 class error:
     item_not_found = -25300
+    keychain_denied = -128
+    sec_auth_failed = -25293
+    plist_missing = -67030
 
 
 fw = '/System/Library/Frameworks/{name}.framework/Versions/A/{name}'.format
@@ -36,18 +39,29 @@ SecKeychainCopyDefault.restype = OS_status
 
 class Error(Exception):
     @classmethod
-    def raise_for_status(cls, status, msg):
+    def raise_for_status(cls, status):
         if status == 0:
             return
-        raise cls(status, msg)
+        if status == error.item_not_found:
+            raise NotFound(status, "Item not found")
+        if status == error.keychain_denied:
+            raise KeychainDenied(status, "Keychain Access Denied")
+        if status == error.sec_auth_failed or status == error.plist_missing:
+            raise SecAuthFailure(status, "Security Auth Failure: make sure "
+                                         "python is signed with codesign util")
+        raise cls(status, "Unknown Error")
 
 
 class NotFound(Error):
-    @classmethod
-    def raise_for_status(cls, status, msg):
-        if status == error.item_not_found:
-            raise cls(status, msg)
-        Error.raise_for_status(status, msg)
+    pass
+
+
+class KeychainDenied(Error):
+    pass
+
+
+class SecAuthFailure(Error):
+    pass
 
 
 @contextlib.contextmanager
@@ -55,11 +69,9 @@ def open(name):
     ref = sec_keychain_ref()
     if name is None:
         status = SecKeychainCopyDefault(ref)
-        msg = "Unable to open default keychain"
     else:
         status = SecKeychainOpen(name.encode('utf-8'), ref)
-        msg = "Unable to open keychain {name}".format(**locals())
-    Error.raise_for_status(status, msg)
+    Error.raise_for_status(status)
     try:
         yield ref
     finally:
@@ -97,8 +109,7 @@ def find_generic_password(kc_name, service, username):
             None,
         )
 
-    msg = "Can't fetch password from system"
-    NotFound.raise_for_status(status, msg)
+    Error.raise_for_status(status)
 
     password = ctypes.create_string_buffer(length.value)
     ctypes.memmove(password, data.value, length.value)
@@ -198,8 +209,7 @@ def find_internet_password(kc_name, service, username):
             None,
         )
 
-    msg = "Can't fetch password from system"
-    NotFound.raise_for_status(status, msg)
+    Error.raise_for_status(status)
 
     password = ctypes.create_string_buffer(length.value)
     ctypes.memmove(password, data.value, length.value)
@@ -244,7 +254,7 @@ def set_generic_password(name, service, username, password):
                 item, None, len(password), password)
             _core.CFRelease(item)
 
-        NotFound.raise_for_status(status, "Unable to set password")
+        Error.raise_for_status(status)
 
 
 SecKeychainAddInternetPassword = _sec.SecKeychainAddInternetPassword
@@ -290,7 +300,7 @@ def set_internet_password(name, service, username, password):
             None,
         )
 
-        NotFound.raise_for_status(status, "Unable to set password")
+        Error.raise_for_status(status)
 
 
 SecKeychainItemModifyAttributesAndData = (
@@ -329,7 +339,7 @@ def delete_generic_password(name, service, username):
             item,
         )
 
-    Error.raise_for_status(status, "Unable to delete password")
+    Error.raise_for_status(status)
 
     SecKeychainItemDelete(item)
     _core.CFRelease(item)
