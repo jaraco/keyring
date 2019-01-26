@@ -12,6 +12,9 @@
 .. image:: https://readthedocs.org/projects/keyring/badge/?version=latest
    :target: https://keyring.readthedocs.io/en/latest/?badge=latest
 
+.. image:: https://tidelift.com/badges/github/jaraco/keyring
+   :target: https://tidelift.com/subscription/pkg/pypi-keyring?utm_source=pypi-keyring&utm_medium=readme
+
 =======================================
 Installing and Using Python Keyring Lib
 =======================================
@@ -328,6 +331,14 @@ contributors.
 * Repository: https://github.com/jaraco/keyring/
 * Bug Tracker: https://github.com/jaraco/keyring/issues/
 * Mailing list: http://groups.google.com/group/python-keyring
+
+Security Contact
+================
+
+If you wish to report a security vulnerability, the public disclosure
+of which may exacerbate the risk, please
+`Contact Tidelift security <https://tidelift.com/security>`_,
+which will coordinate the fix and disclosure privately.
 
 Making Releases
 ===============
