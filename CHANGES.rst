@@ -1,3 +1,14 @@
+18.0.0
+------
+
+* #375: On macOS, the backend now raises a ``KeyringLocked``
+  when access to the keyring is denied (on get or set) instead
+  of ``PasswordSetError`` or ``KeyringError``. Any API users
+  may need to account for this change, probably by catching
+  the parent ``KeyringError``.
+  Additionally, the error message from the underying error is
+  now included in any errors that occur.
+
 17.1.1
 ------
 
