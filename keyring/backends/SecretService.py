@@ -1,4 +1,5 @@
 import logging
+from contextlib import contextmanager
 
 from ..util import properties
 from ..backend import KeyringBackend
@@ -33,11 +34,13 @@ class Keyring(KeyringBackend):
         try:
             bus = secretstorage.dbus_init()
             list(secretstorage.get_all_collections(bus))
+            bus.sock.close()
         except exceptions.SecretStorageException as e:
             raise RuntimeError(
                 "Unable to initialize SecretService: %s" % e)
         return 5
 
+    @contextmanager
     def get_preferred_collection(self):
         """If self.preferred_collection contains a D-Bus path,
         the collection at that address is returned. Otherwise,
@@ -56,39 +59,42 @@ class Keyring(KeyringBackend):
             collection.unlock()
             if collection.is_locked():  # User dismissed the prompt
                 raise KeyringLocked("Failed to unlock the collection!")
-        return collection
+        try:
+            yield collection
+        finally:
+            collection.connection.sock.close()
 
     def get_password(self, service, username):
         """Get password of the username for the service
         """
-        collection = self.get_preferred_collection()
-        items = collection.search_items(
-            {"username": username, "service": service})
-        for item in items:
-            if hasattr(item, 'unlock'):
-                item.unlock()
-            if item.is_locked():  # User dismissed the prompt
-                raise KeyringLocked('Failed to unlock the item!')
-            return item.get_secret().decode('utf-8')
+        with self.get_preferred_collection() as collection:
+            items = collection.search_items(
+                {"username": username, "service": service})
+            for item in items:
+                if hasattr(item, 'unlock'):
+                    item.unlock()
+                if item.is_locked():  # User dismissed the prompt
+                    raise KeyringLocked('Failed to unlock the item!')
+                return item.get_secret().decode('utf-8')
 
     def set_password(self, service, username, password):
         """Set password for the username of the service
         """
-        collection = self.get_preferred_collection()
-        attributes = {
-            "application": self.appid,
-            "service": service,
-            "username": username
-        }
-        label = "Password for '%s' on '%s'" % (username, service)
-        collection.create_item(label, attributes, password, replace=True)
+        with self.get_preferred_collection() as collection:
+            attributes = {
+                "application": self.appid,
+                "service": service,
+                "username": username
+            }
+            label = "Password for '%s' on '%s'" % (username, service)
+            collection.create_item(label, attributes, password, replace=True)
 
     def delete_password(self, service, username):
         """Delete the stored password (only the first one)
         """
-        collection = self.get_preferred_collection()
-        items = collection.search_items(
-            {"username": username, "service": service})
-        for item in items:
-            return item.delete()
-        raise PasswordDeleteError("No such password!")
+        with self.get_preferred_collection() as collection:
+            items = collection.search_items(
+                {"username": username, "service": service})
+            for item in items:
+                return item.delete()
+            raise PasswordDeleteError("No such password!")
