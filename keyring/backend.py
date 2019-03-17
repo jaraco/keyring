@@ -2,8 +2,6 @@
 Keyring implementation support
 """
 
-from __future__ import absolute_import
-
 import abc
 import logging
 import operator

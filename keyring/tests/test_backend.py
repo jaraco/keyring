@@ -4,8 +4,6 @@
 Common test functionality for backends.
 """
 
-from __future__ import unicode_literals
-
 import string
 
 import pytest

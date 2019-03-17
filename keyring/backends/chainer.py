@@ -3,8 +3,6 @@ Keyring Chainer - iterates over other viable backends to
 discover passwords in each.
 """
 
-from __future__ import absolute_import
-
 from .. import backend
 from ..util import properties
 
