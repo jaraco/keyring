@@ -1,4 +1,4 @@
-from ..py32compat import abc
+from collections import abc
 
 __metaclass__ = type
 

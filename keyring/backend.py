@@ -12,7 +12,6 @@ import entrypoints
 
 from . import credentials, errors, util
 from .util import properties
-from .py27compat import add_metaclass, filter
 
 __metaclass__ = type
 
@@ -37,8 +36,7 @@ class KeyringBackendMeta(abc.ABCMeta):
             classes.add(cls)
 
 
-@add_metaclass(KeyringBackendMeta)
-class KeyringBackend:
+class KeyringBackend(metaclass=KeyringBackendMeta):
     """The abstract base class of the keyring, every backend must implement
     this interface.
     """
