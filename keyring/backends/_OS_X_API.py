@@ -148,7 +148,7 @@ class PackedAttributes(type):
             for key, val in dict.items()
             if not key.startswith('_')
         )
-        return super(PackedAttributes, cls).__new__(cls, name, bases, dict)
+        return super().__new__(cls, name, bases, dict)
 
     @staticmethod
     def unpack(word):

@@ -80,7 +80,7 @@ class Keyring(KeyringBackend):
             "service": service,
             "username": username
         }
-        label = "Password for '%s' on '%s'" % (username, service)
+        label = "Password for '{}' on '{}'".format(username, service)
         collection.create_item(label, attributes, password, replace=True)
 
     def delete_password(self, service, username):

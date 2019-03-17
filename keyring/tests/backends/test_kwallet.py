@@ -34,9 +34,7 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
             username = username + '@' + service
             service = 'Python'
 
-        super(
-            DBusKWalletTestCase,
-            self).set_password(
+        super().set_password(
             service,
             username,
             password)
