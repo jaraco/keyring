@@ -57,10 +57,10 @@ def get_password(service_name, username):
     return _keyring_backend.get_password(service_name, username)
 
 
-def set_password(service_name, username, password):
+def set_password(service_name, username, password, **backend_opts):
     """Set password for the user in the specified service.
     """
-    _keyring_backend.set_password(service_name, username, password)
+    _keyring_backend.set_password(service_name, username, password, **backend_opts)
 
 
 def delete_password(service_name, username):

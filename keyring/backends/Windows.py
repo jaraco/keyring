@@ -83,23 +83,23 @@ class WinVaultKeyring(KeyringBackend):
             raise
         return res
 
-    def set_password(self, service, username, password):
+    def set_password(self, service, username, password, persist_type=win32cred.CRED_PERSIST_ENTERPRISE):
         existing_pw = self._get_password(service)
         if existing_pw:
             # resave the existing password using a compound target
             existing_username = existing_pw['UserName']
             target = self._compound_name(existing_username, service)
             self._set_password(target, existing_username,
-                               existing_pw['CredentialBlob'].decode('utf-16'))
-        self._set_password(service, username, text_type(password))
+                               existing_pw['CredentialBlob'].decode('utf-16'), persist_type)
+        self._set_password(service, username, text_type(password), persist_type)
 
-    def _set_password(self, target, username, password):
+    def _set_password(self, target, username, password, persist_type):
         credential = dict(Type=win32cred.CRED_TYPE_GENERIC,
                           TargetName=target,
                           UserName=username,
                           CredentialBlob=password,
                           Comment="Stored using python-keyring",
-                          Persist=win32cred.CRED_PERSIST_ENTERPRISE)
+                          Persist=persist_type)
         win32cred.CredWrite(credential, 0)
 
     def delete_password(self, service, username):
