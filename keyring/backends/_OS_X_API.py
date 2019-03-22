@@ -3,8 +3,6 @@ import ctypes
 import struct
 from ctypes import c_void_p, c_uint16, c_uint32, c_int32, c_char_p, POINTER
 
-from keyring.py27compat import string_types, add_metaclass
-
 __metaclass__ = type
 
 
@@ -150,7 +148,7 @@ class PackedAttributes(type):
             for key, val in dict.items()
             if not key.startswith('_')
         )
-        return super(PackedAttributes, cls).__new__(cls, name, bases, dict)
+        return super().__new__(cls, name, bases, dict)
 
     @staticmethod
     def unpack(word):
@@ -162,21 +160,19 @@ class PackedAttributes(type):
         >>> PackedAttributes.unpack('abcd')
         1633837924
         """
-        if not isinstance(word, string_types):
+        if not isinstance(word, str):
             return word
         val, = struct.unpack('!I', word.encode('ascii'))
         return val
 
 
-@add_metaclass(PackedAttributes)
-class SecProtocolType:
+class SecProtocolType(metaclass=PackedAttributes):
     kSecProtocolTypeHTTP = 'http'
     kSecProtocolTypeHTTPS = 'htps'
     kSecProtocolTypeFTP = 'ftp '
 
 
-@add_metaclass(PackedAttributes)
-class SecAuthenticationType:
+class SecAuthenticationType(metaclass=PackedAttributes):
     """
     >>> SecAuthenticationType.kSecAuthenticationTypeDefault
     1684434036

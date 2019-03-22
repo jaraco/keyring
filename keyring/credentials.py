@@ -1,13 +1,10 @@
 import os
 import abc
 
-from .py27compat import add_metaclass
-
 __metaclass__ = type
 
 
-@add_metaclass(abc.ABCMeta)
-class Credential:
+class Credential(metaclass=abc.ABCMeta):
     """Abstract class to manage credentials
     """
 

@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import sys
 import os
 
@@ -48,7 +46,7 @@ class DBusKeyring(KeyringBackend):
         return 4.9
 
     def __init__(self, *arg, **kw):
-        super(DBusKeyring, self).__init__(*arg, **kw)
+        super().__init__(*arg, **kw)
         self.handle = -1
 
     def _migrate(self, service):
@@ -137,4 +135,4 @@ class DBusKeyringKWallet4(DBusKeyring):
     @properties.ClassProperty
     @classmethod
     def priority(cls):
-        return super(DBusKeyringKWallet4, cls).priority - 1
+        return super().priority - 1

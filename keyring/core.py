@@ -2,12 +2,10 @@
 Core API functions and initialization routines.
 """
 
+import configparser
 import os
 import sys
 import logging
-
-from .py27compat import configparser, filter
-from .py33compat import max
 
 from . import backend
 from .util import platform_ as platform

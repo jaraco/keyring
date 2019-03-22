@@ -2,8 +2,6 @@
 Keyring implementation support
 """
 
-from __future__ import absolute_import
-
 import abc
 import logging
 import operator
@@ -12,7 +10,6 @@ import entrypoints
 
 from . import credentials, errors, util
 from .util import properties
-from .py27compat import add_metaclass, filter
 
 __metaclass__ = type
 
@@ -29,7 +26,7 @@ class KeyringBackendMeta(abc.ABCMeta):
     all (non-abstract) types.
     """
     def __init__(cls, name, bases, dict):
-        super(KeyringBackendMeta, cls).__init__(name, bases, dict)
+        super().__init__(name, bases, dict)
         if not hasattr(cls, '_classes'):
             cls._classes = set()
         classes = cls._classes
@@ -37,8 +34,7 @@ class KeyringBackendMeta(abc.ABCMeta):
             classes.add(cls)
 
 
-@add_metaclass(KeyringBackendMeta)
-class KeyringBackend:
+class KeyringBackend(metaclass=KeyringBackendMeta):
     """The abstract base class of the keyring, every backend must implement
     this interface.
     """
@@ -88,9 +84,9 @@ class KeyringBackend:
 
     def __str__(self):
         keyring_class = type(self)
-        return ("%s.%s (priority: %g)" % (keyring_class.__module__,
-                                          keyring_class.__name__,
-                                          keyring_class.priority))
+        return ("{}.{} (priority: {:g})".format(keyring_class.__module__,
+                                                keyring_class.__name__,
+                                                keyring_class.priority))
 
     @abc.abstractmethod
     def get_password(self, service, username):
