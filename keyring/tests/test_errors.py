@@ -15,7 +15,7 @@ class DeletionDetector:
 class TestExceptionInfo:
     def test_traceback_not_referenced(self):
         """
-        Ensure that an ExceptionInfo doesn't keep a reference
+        Ensure that an ExceptionInfo does not keep a reference
         to the traceback, as doing so can create unintended
         side effects. See #386 for more info.
         """
