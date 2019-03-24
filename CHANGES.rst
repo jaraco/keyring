@@ -1,3 +1,9 @@
+18.0.1
+------
+
+* #386: ExceptionInfo no longer retains a reference to the
+  traceback.
+
 19.0.0
 ------
 
