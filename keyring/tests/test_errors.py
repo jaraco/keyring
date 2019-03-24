@@ -20,5 +20,5 @@ class TestExceptionInfo:
         side effects. See #386 for more info.
         """
         state = mock.MagicMock()
-        exc = errors.ExceptionInfo(None, None, DeletionDetector(state))  # noqa
+        _ = errors.ExceptionInfo(None, None, DeletionDetector(state))
         assert state.deleted
