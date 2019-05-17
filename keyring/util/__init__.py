@@ -16,10 +16,12 @@ def once(func):
     >>> func('12')
     6
     """
+
     def wrapper(*args, **kwargs):
         if not hasattr(func, 'always_returns'):
             func.always_returns = func(*args, **kwargs)
         return func.always_returns
+
     return functools.wraps(func)(wrapper)
 
 

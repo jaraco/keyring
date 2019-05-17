@@ -11,12 +11,14 @@ with ExceptionRaisedContext() as missing_deps:
         # prefer pywin32-ctypes
         from win32ctypes.pywin32 import pywintypes
         from win32ctypes.pywin32 import win32cred
+
         # force demand import to raise ImportError
         win32cred.__name__
     except ImportError:
         # fallback to pywin32
         import pywintypes
         import win32cred
+
         # force demand import to raise ImportError
         win32cred.__name__
 
@@ -70,8 +72,7 @@ class WinVaultKeyring(KeyringBackend):
     def _get_password(self, target):
         try:
             res = win32cred.CredRead(
-                Type=win32cred.CRED_TYPE_GENERIC,
-                TargetName=target,
+                Type=win32cred.CRED_TYPE_GENERIC, TargetName=target
             )
         except pywintypes.error as e:
             e = OldPywinError.wrap(e)
@@ -86,17 +87,22 @@ class WinVaultKeyring(KeyringBackend):
             # resave the existing password using a compound target
             existing_username = existing_pw['UserName']
             target = self._compound_name(existing_username, service)
-            self._set_password(target, existing_username,
-                               existing_pw['CredentialBlob'].decode('utf-16'))
+            self._set_password(
+                target,
+                existing_username,
+                existing_pw['CredentialBlob'].decode('utf-16'),
+            )
         self._set_password(service, username, str(password))
 
     def _set_password(self, target, username, password):
-        credential = dict(Type=win32cred.CRED_TYPE_GENERIC,
-                          TargetName=target,
-                          UserName=username,
-                          CredentialBlob=password,
-                          Comment="Stored using python-keyring",
-                          Persist=win32cred.CRED_PERSIST_ENTERPRISE)
+        credential = dict(
+            Type=win32cred.CRED_TYPE_GENERIC,
+            TargetName=target,
+            UserName=username,
+            CredentialBlob=password,
+            Comment="Stored using python-keyring",
+            Persist=win32cred.CRED_PERSIST_ENTERPRISE,
+        )
         win32cred.CredWrite(credential, 0)
 
     def delete_password(self, service, username):
@@ -112,10 +118,7 @@ class WinVaultKeyring(KeyringBackend):
 
     def _delete_password(self, target):
         try:
-            win32cred.CredDelete(
-                Type=win32cred.CRED_TYPE_GENERIC,
-                TargetName=target,
-            )
+            win32cred.CredDelete(Type=win32cred.CRED_TYPE_GENERIC, TargetName=target)
         except pywintypes.error as e:
             e = OldPywinError.wrap(e)
             if e.winerror == 1168 and e.funcname == 'CredDelete':  # not found
@@ -132,10 +135,7 @@ class WinVaultKeyring(KeyringBackend):
             res = self._get_password(service)
             if not res:
                 return None
-        return SimpleCredential(
-            res['UserName'],
-            res['CredentialBlob'].decode('utf-16'),
-        )
+        return SimpleCredential(res['UserName'], res['CredentialBlob'].decode('utf-16'))
 
 
 class OldPywinError:

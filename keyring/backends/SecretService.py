@@ -2,8 +2,12 @@ import logging
 
 from ..util import properties
 from ..backend import KeyringBackend
-from ..errors import (InitError, PasswordDeleteError,
-                      ExceptionRaisedContext, KeyringLocked)
+from ..errors import (
+    InitError,
+    PasswordDeleteError,
+    ExceptionRaisedContext,
+    KeyringLocked,
+)
 
 try:
     import secretstorage
@@ -19,6 +23,7 @@ log = logging.getLogger(__name__)
 
 class Keyring(KeyringBackend):
     """Secret Service Keyring"""
+
     appid = 'Python keyring library'
 
     @properties.ClassProperty
@@ -34,8 +39,7 @@ class Keyring(KeyringBackend):
             bus = secretstorage.dbus_init()
             list(secretstorage.get_all_collections(bus))
         except exceptions.SecretStorageException as e:
-            raise RuntimeError(
-                "Unable to initialize SecretService: %s" % e)
+            raise RuntimeError("Unable to initialize SecretService: %s" % e)
         return 5
 
     def get_preferred_collection(self):
@@ -46,8 +50,7 @@ class Keyring(KeyringBackend):
         bus = secretstorage.dbus_init()
         try:
             if hasattr(self, 'preferred_collection'):
-                collection = secretstorage.Collection(
-                    bus, self.preferred_collection)
+                collection = secretstorage.Collection(bus, self.preferred_collection)
             else:
                 collection = secretstorage.get_default_collection(bus)
         except exceptions.SecretStorageException as e:
@@ -62,8 +65,7 @@ class Keyring(KeyringBackend):
         """Get password of the username for the service
         """
         collection = self.get_preferred_collection()
-        items = collection.search_items(
-            {"username": username, "service": service})
+        items = collection.search_items({"username": username, "service": service})
         for item in items:
             if hasattr(item, 'unlock'):
                 item.unlock()
@@ -78,7 +80,7 @@ class Keyring(KeyringBackend):
         attributes = {
             "application": self.appid,
             "service": service,
-            "username": username
+            "username": username,
         }
         label = "Password for '{}' on '{}'".format(username, service)
         collection.create_item(label, attributes, password, replace=True)
@@ -87,8 +89,7 @@ class Keyring(KeyringBackend):
         """Delete the stored password (only the first one)
         """
         collection = self.get_preferred_collection()
-        items = collection.search_items(
-            {"username": username, "service": service})
+        items = collection.search_items({"username": username, "service": service})
         for item in items:
             return item.delete()
         raise PasswordDeleteError("No such password!")

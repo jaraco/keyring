@@ -34,10 +34,7 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
             username = username + '@' + service
             service = 'Python'
 
-        super().set_password(
-            service,
-            username,
-            password)
+        super().set_password(service, username, password)
 
     def check_set_get(self, service, username, password):
         keyring = self.keyring
@@ -51,10 +48,12 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
         self.keyring = keyring = self.init_keyring()
         ret_password = keyring.get_password(service, username)
         self.assertEqual(
-            ret_password, password,
+            ret_password,
+            password,
             "Incorrect password for username: '%s' "
             "on service: '%s'. '%s' != '%s'"
-            % (service, username, ret_password, password))
+            % (service, username, ret_password, password),
+        )
 
         # for the empty password
         self.set_password(service, username, "", True)
@@ -62,21 +61,23 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
         self.keyring = keyring = self.init_keyring()
         ret_password = keyring.get_password(service, username)
         self.assertEqual(
-            ret_password, "",
+            ret_password,
+            "",
             "Incorrect password for username: '%s' "
-            "on service: '%s'. '%s' != '%s'"
-            % (service, username, ret_password, ""))
+            "on service: '%s'. '%s' != '%s'" % (service, username, ret_password, ""),
+        )
         ret_password = keyring.get_password('Python', username + '@' + service)
         self.assertEqual(
-            ret_password, None,
+            ret_password,
+            None,
             "Not 'None' password returned for username: '%s' "
             "on service: '%s'. '%s' != '%s'. Passwords from old "
             "folder should be deleted during migration."
-            % (service, username, ret_password, None))
+            % (service, username, ret_password, None),
+        )
 
 
-@unittest.skipUnless(kwallet.DBusKeyringKWallet4.viable,
-                     "KWallet4 unavailable")
+@unittest.skipUnless(kwallet.DBusKeyringKWallet4.viable, "KWallet4 unavailable")
 class DBusKWallet4TestCase(DBusKWalletTestCase):
     def init_keyring(self):
         return kwallet.DBusKeyringKWallet4()

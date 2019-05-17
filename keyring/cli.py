@@ -14,21 +14,29 @@ __metaclass__ = type
 
 class CommandLineTool:
     def __init__(self):
-        self.parser = OptionParser(
-            usage="%prog [get|set|del] SERVICE USERNAME",
+        self.parser = OptionParser(usage="%prog [get|set|del] SERVICE USERNAME")
+        self.parser.add_option(
+            "-p",
+            "--keyring-path",
+            dest="keyring_path",
+            default=None,
+            help="Path to the keyring backend",
         )
-        self.parser.add_option("-p", "--keyring-path",
-                               dest="keyring_path", default=None,
-                               help="Path to the keyring backend")
-        self.parser.add_option("-b", "--keyring-backend",
-                               dest="keyring_backend", default=None,
-                               help="Name of the keyring backend")
-        self.parser.add_option("--list-backends",
-                               action="store_true",
-                               help="List keyring backends and exit")
-        self.parser.add_option("--disable",
-                               action="store_true",
-                               help="Disable keyring and exit")
+        self.parser.add_option(
+            "-b",
+            "--keyring-backend",
+            dest="keyring_backend",
+            default=None,
+            help="Name of the keyring backend",
+        )
+        self.parser.add_option(
+            "--list-backends",
+            action="store_true",
+            help="List keyring backends and exit",
+        )
+        self.parser.add_option(
+            "--disable", action="store_true", help="Disable keyring and exit"
+        )
 
     def run(self, argv):
         opts, args = self.parser.parse_args(argv)
@@ -75,15 +83,15 @@ class CommandLineTool:
             return 0
 
         elif kind == 'set':
-            password = self.input_password("Password for '%s' in '%s': " %
-                                           (username, service))
+            password = self.input_password(
+                "Password for '%s' in '%s': " % (username, service)
+            )
             set_password(service, username, password)
             return 0
 
         elif kind == 'del':
             password = self.input_password(
-                "Deleting password for '%s' in '%s': " %
-                (username, service),
+                "Deleting password for '%s' in '%s': " % (username, service)
             )
             delete_password(service, username)
             return 0
@@ -107,7 +115,7 @@ class CommandLineTool:
     @staticmethod
     def strip_last_newline(str):
         """Strip one last newline, if present."""
-        return str[:-str.endswith('\n')]
+        return str[: -str.endswith('\n')]
 
     def output_password(self, password):
         """Output the password to the user.

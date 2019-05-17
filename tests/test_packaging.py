@@ -7,9 +7,5 @@ def test_entry_point():
     that's a callable.
     """
     eps = pkg_resources.iter_entry_points('console_scripts')
-    ep, = (
-        ep
-        for ep in eps
-        if ep.name == 'keyring'
-    )
+    ep, = (ep for ep in eps if ep.name == 'keyring')
     assert callable(ep.resolve())

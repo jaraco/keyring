@@ -54,7 +54,8 @@ class DBusKeyring(KeyringBackend):
         entry_list = []
         if self.iface.hasFolder(self.handle, old_folder, self.appid):
             entry_list = self.iface.readPasswordList(
-                self.handle, old_folder, '*@*', self.appid)
+                self.handle, old_folder, '*@*', self.appid
+            )
 
             for entry in entry_list.items():
                 key = entry[0]
@@ -62,13 +63,14 @@ class DBusKeyring(KeyringBackend):
 
                 username, service = key.rsplit('@', 1)
                 ret = self.iface.writePassword(
-                    self.handle, service, username, password, self.appid)
+                    self.handle, service, username, password, self.appid
+                )
                 if ret == 0:
-                    self.iface.removeEntry(
-                        self.handle, old_folder, key, self.appid)
+                    self.iface.removeEntry(self.handle, old_folder, key, self.appid)
 
             entry_list = self.iface.readPasswordList(
-                self.handle, old_folder, '*', self.appid)
+                self.handle, old_folder, '*', self.appid
+            )
             if not entry_list:
                 self.iface.removeFolder(self.handle, old_folder, self.appid)
 
@@ -82,8 +84,7 @@ class DBusKeyring(KeyringBackend):
         try:
             remote_obj = bus.get_object(self.bus_name, self.object_path)
             self.iface = dbus.Interface(remote_obj, 'org.kde.KWallet')
-            self.handle = self.iface.open(
-                self.iface.networkWallet(), wId, self.appid)
+            self.handle = self.iface.open(self.iface.networkWallet(), wId, self.appid)
         except dbus.DBusException as e:
             raise InitError('Failed to open keyring: %s.' % e)
 
@@ -100,8 +101,7 @@ class DBusKeyring(KeyringBackend):
             raise KeyringLocked("Failed to unlock the keyring!")
         if not self.iface.hasEntry(self.handle, service, username, self.appid):
             return None
-        password = self.iface.readPassword(
-            self.handle, service, username, self.appid)
+        password = self.iface.readPassword(self.handle, service, username, self.appid)
         return str(password)
 
     def set_password(self, service, username, password):
@@ -110,8 +110,7 @@ class DBusKeyring(KeyringBackend):
         if not self.connected(service):
             # the user pressed "cancel" when prompted to unlock their keyring.
             raise PasswordSetError("Cancelled by user")
-        self.iface.writePassword(
-            self.handle, service, username, password, self.appid)
+        self.iface.writePassword(self.handle, service, username, password, self.appid)
 
     def delete_password(self, service, username):
         """Delete the password for the username of the service.

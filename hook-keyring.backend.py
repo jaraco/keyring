@@ -3,7 +3,4 @@
 import entrypoints
 
 
-hiddenimports = [
-    ep.module_name
-    for ep in entrypoints.get_group_all('keyring.backends')
-]
+hiddenimports = [ep.module_name for ep in entrypoints.get_group_all('keyring.backends')]

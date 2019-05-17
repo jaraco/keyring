@@ -23,15 +23,12 @@ _core = ctypes.CDLL(fw(name='CoreServices'))
 
 
 SecKeychainOpen = _sec.SecKeychainOpen
-SecKeychainOpen.argtypes = (
-    c_char_p,
-    POINTER(sec_keychain_ref),
-)
+SecKeychainOpen.argtypes = (c_char_p, POINTER(sec_keychain_ref))
 SecKeychainOpen.restype = OS_status
 
 
 SecKeychainCopyDefault = _sec.SecKeychainCopyDefault
-SecKeychainCopyDefault.argtypes = POINTER(sec_keychain_ref),
+SecKeychainCopyDefault.argtypes = (POINTER(sec_keychain_ref),)
 SecKeychainCopyDefault.restype = OS_status
 
 
@@ -45,8 +42,11 @@ class Error(Exception):
         if status == error.keychain_denied:
             raise KeychainDenied(status, "Keychain Access Denied")
         if status == error.sec_auth_failed or status == error.plist_missing:
-            raise SecAuthFailure(status, "Security Auth Failure: make sure "
-                                         "python is signed with codesign util")
+            raise SecAuthFailure(
+                status,
+                "Security Auth Failure: make sure "
+                "python is signed with codesign util",
+            )
         raise cls(status, "Unknown Error")
 
 
@@ -97,14 +97,7 @@ def find_generic_password(kc_name, service, username):
         length = c_uint32()
         data = c_void_p()
         status = SecKeychainFindGenericPassword(
-            keychain,
-            len(service),
-            service,
-            len(username),
-            username,
-            length,
-            data,
-            None,
+            keychain, len(service), service, len(username), username, length, data, None
         )
 
     Error.raise_for_status(status)
@@ -142,6 +135,7 @@ class PackedAttributes(type):
     to represent enumerated constants and generate
     the constants.
     """
+
     def __new__(cls, name, bases, dict):
         dict.update(
             (key, cls.unpack(val))
@@ -177,6 +171,7 @@ class SecAuthenticationType(metaclass=PackedAttributes):
     >>> SecAuthenticationType.kSecAuthenticationTypeDefault
     1684434036
     """
+
     kSecAuthenticationTypeDefault = 'dflt'
     kSecAuthenticationTypeAny = 0
 
@@ -193,10 +188,14 @@ def find_internet_password(kc_name, service, username):
         data = c_void_p()
         status = SecKeychainFindInternetPassword(
             keychain,
-            len(service), service,
-            0, domain,
-            len(username), username,
-            0, path,
+            len(service),
+            service,
+            0,
+            domain,
+            len(username),
+            username,
+            0,
+            path,
             port,
             SecProtocolType.kSecProtocolTypeHTTPS,
             SecAuthenticationType.kSecAuthenticationTypeAny,
@@ -234,20 +233,24 @@ def set_generic_password(name, service, username, password):
     with open(name) as keychain:
         item = sec_keychain_item_ref()
         status = SecKeychainFindGenericPassword(
-            keychain,
-            len(service), service,
-            len(username), username, None,
-            None, item)
+            keychain, len(service), service, len(username), username, None, None, item
+        )
         if status:
             if status == error.item_not_found:
                 status = SecKeychainAddGenericPassword(
                     keychain,
-                    len(service), service,
-                    len(username), username,
-                    len(password), password, None)
+                    len(service),
+                    service,
+                    len(username),
+                    username,
+                    len(password),
+                    password,
+                    None,
+                )
         else:
             status = SecKeychainItemModifyAttributesAndData(
-                item, None, len(password), password)
+                item, None, len(password), password
+            )
             _core.CFRelease(item)
 
         Error.raise_for_status(status)
@@ -285,35 +288,40 @@ def set_internet_password(name, service, username, password):
         # TODO: Use update or set technique as seen in set_generic_password
         status = SecKeychainAddInternetPassword(
             keychain,
-            len(service), service,
-            0, domain,
-            len(username), username,
-            0, path,
+            len(service),
+            service,
+            0,
+            domain,
+            len(username),
+            username,
+            0,
+            path,
             port,
             SecProtocolType.kSecProtocolTypeHTTPS,
             SecAuthenticationType.kSecAuthenticationTypeAny,
-            len(password), password,
+            len(password),
+            password,
             None,
         )
 
         Error.raise_for_status(status)
 
 
-SecKeychainItemModifyAttributesAndData = (
-    _sec.SecKeychainItemModifyAttributesAndData)
+SecKeychainItemModifyAttributesAndData = _sec.SecKeychainItemModifyAttributesAndData
 SecKeychainItemModifyAttributesAndData.argtypes = (
-    sec_keychain_item_ref, c_void_p, c_uint32, c_void_p,
+    sec_keychain_item_ref,
+    c_void_p,
+    c_uint32,
+    c_void_p,
 )
 SecKeychainItemModifyAttributesAndData.restype = OS_status
 
 SecKeychainItemFreeContent = _sec.SecKeychainItemFreeContent
-SecKeychainItemFreeContent.argtypes = (
-    c_void_p, c_void_p,
-)
+SecKeychainItemFreeContent.argtypes = (c_void_p, c_void_p)
 SecKeychainItemFreeContent.restype = OS_status
 
 SecKeychainItemDelete = _sec.SecKeychainItemDelete
-SecKeychainItemDelete.argtypes = sec_keychain_item_ref,
+SecKeychainItemDelete.argtypes = (sec_keychain_item_ref,)
 SecKeychainItemDelete.restype = OS_status
 
 
@@ -325,14 +333,7 @@ def delete_generic_password(name, service, username):
         data = c_void_p()
         item = sec_keychain_item_ref()
         status = SecKeychainFindGenericPassword(
-            keychain,
-            len(service),
-            service,
-            len(username),
-            username,
-            length,
-            data,
-            item,
+            keychain, len(service), service, len(username), username, length, data, item
         )
 
     Error.raise_for_status(status)

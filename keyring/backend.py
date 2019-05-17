@@ -25,6 +25,7 @@ class KeyringBackendMeta(abc.ABCMeta):
     A metaclass that's both an ABCMeta and a type that keeps a registry of
     all (non-abstract) types.
     """
+
     def __init__(cls, name, bases, dict):
         super().__init__(name, bases, dict)
         if not hasattr(cls, '_classes'):
@@ -84,9 +85,9 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
 
     def __str__(self):
         keyring_class = type(self)
-        return ("{}.{} (priority: {:g})".format(keyring_class.__module__,
-                                                keyring_class.__name__,
-                                                keyring_class.priority))
+        return "{}.{} (priority: {:g})".format(
+            keyring_class.__module__, keyring_class.__name__, keyring_class.priority
+        )
 
     @abc.abstractmethod
     def get_password(self, service, username):
@@ -129,10 +130,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         if username is not None:
             password = self.get_password(service, username)
             if password is not None:
-                return credentials.SimpleCredential(
-                    username,
-                    password,
-                )
+                return credentials.SimpleCredential(username, password)
         return None
 
 

@@ -167,8 +167,10 @@ def load_config():
 
     except (configparser.NoOptionError, ImportError):
         logger = logging.getLogger('keyring')
-        logger.warning("Keyring config file contains incorrect values.\n"
-                       + "Config file: %s" % keyring_cfg)
+        logger.warning(
+            "Keyring config file contains incorrect values.\n"
+            + "Config file: %s" % keyring_cfg
+        )
         return
 
     return load_keyring(keyring_name)

@@ -2,19 +2,13 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
 
-extensions = [
-    'sphinx.ext.autodoc',
-    'jaraco.packaging.sphinx',
-    'rst.linker',
-]
+extensions = ['sphinx.ext.autodoc', 'jaraco.packaging.sphinx', 'rst.linker']
 
 master_doc = "index"
 
 link_files = {
     '../CHANGES.rst': dict(
-        using=dict(
-            GH='https://github.com',
-        ),
+        using=dict(GH='https://github.com'),
         replace=[
             dict(
                 pattern=r'(Issue #|\B#)(?P<issue>\d+)',
@@ -29,7 +23,7 @@ link_files = {
                 url='https://www.python.org/dev/peps/pep-{pep_number:0>4}/',
             ),
         ],
-    ),
+    )
 }
 
 # Custom sidebar templates, maps document names to template names.

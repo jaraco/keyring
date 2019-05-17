@@ -46,7 +46,8 @@ class ExceptionRaisedContext:
     def __exit__(self, *exc_info):
         self.exc_info.__init__(*exc_info)
         return self.exc_info.type and issubclass(
-            self.exc_info.type, self.ExpectedException)
+            self.exc_info.type, self.ExpectedException
+        )
 
 
 class ExceptionInfo:
