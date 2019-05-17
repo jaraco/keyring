@@ -50,7 +50,8 @@ The features/techniques employed by the skeleton include:
 - setuptools declarative configuration using setup.cfg
 - tox for running tests
 - A README.rst as reStructuredText with some popular badges, but with readthedocs and appveyor badges commented out
-- A CHANGES.rst file intended for publishing release notes about the project.
+- A CHANGES.rst file intended for publishing release notes about the project
+- Use of [black](https://black.readthedocs.io/en/stable/) for code formatting (disabled on unsupported Python 3.5 and earlier)
 
 ## Packaging Conventions
 
@@ -97,8 +98,8 @@ A pytest.ini is included to define common options around running tests. In parti
 
 Relies a .flake8 file to correct some default behaviors:
 
-- allow tabs for indentation (legacy for jaraco projects)
-- disable mutually incompatible rules W503 and W504.
+- disable mutually incompatible rules W503 and W504
+- support for black format
 
 ## Continuous Integration
 
