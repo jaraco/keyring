@@ -339,10 +339,9 @@ contributors.
 Security Contact
 ================
 
-If you wish to report a security vulnerability, the public disclosure
-of which may exacerbate the risk, please
-`Contact Tidelift security <https://tidelift.com/security>`_,
-which will coordinate the fix and disclosure privately.
+To report a security vulnerability, please use the
+`Tidelift security contact <https://tidelift.com/security>`_.
+Tidelift will coordinate the fix and disclosure.
 
 Making Releases
 ===============
