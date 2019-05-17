@@ -1,3 +1,9 @@
+19.0.2
+------
+
+* Refresh package skeleton.
+* Adopt `black <https://pypi.org/project/black>`_ code style.
+
 19.0.1
 ------
 
