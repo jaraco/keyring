@@ -65,13 +65,13 @@ class Keyring(KeyringBackend):
         """Get password of the username for the service
         """
         collection = self.get_preferred_collection()
-        items = collection.search_items({"username": username, "service": service})
+        items = collection.search_items({"service": service})
         for item in items:
             if hasattr(item, 'unlock'):
                 item.unlock()
             if item.is_locked():  # User dismissed the prompt
                 raise KeyringLocked('Failed to unlock the item!')
-            return item.get_secret().decode('utf-8')
+            return {"username":item.get_attributes()["username"],"password":item.get_secret().decode('utf-8')}
 
     def set_password(self, service, username, password):
         """Set password for the username of the service
