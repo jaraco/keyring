@@ -46,21 +46,29 @@ class Keyring(KeyringBackend):
     def get_password(self, service, username):
         creds={}
         if (not username):
+            prompt = "find-generic-password"
+            
+            if (service.find(".com")):
+                prompt = "find-internet-password"
+            
             output = execute(
-                'security 2>&1 find-generic-password -g -s '+service,
-                lambda x: "",
-                lambda x: "",
-                ignore_exit_codes=True
-            )
+                    'security 2>&1 '+prompt+' -g -s '+service,
+                    lambda x: "",
+                    lambda x: "",
+                    ignore_exit_codes=True
+                )
 
             find_passwd = re.compile('password: "([^"]+)"').search
             find_user = re.compile('"acct"<blob>="([^"]+)"').search
             creds['username'] = find_key(find_user, output)
             creds['password'] = find_key(find_passwd, output)
-            
+
         else:
             try:
-                creds['password'] = api.find_generic_password(self.keychain, service, username)
+                if (service.find(".com")):
+                    creds['password'] = api.find_internet_password(self.keychain, service, username)
+                else:
+                    creds['password'] = api.find_generic_password(self.keychain, service, username)
                 creds['username'] = username
             except api.NotFound:
                 pass
