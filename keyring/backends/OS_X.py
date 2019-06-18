@@ -48,7 +48,7 @@ class Keyring(KeyringBackend):
         if (not username):
             prompt = "find-generic-password"
             
-            if (service.find(".com")):
+            if (service.find(".com")>=0):
                 prompt = "find-internet-password"
             
             output = execute(
