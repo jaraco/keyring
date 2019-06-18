@@ -45,16 +45,30 @@ class Keyring(KeyringBackend):
 
     def get_password(self, service, username):
         creds={}
-        output = execute(
-            'security 2>&1 find-generic-password -g -s '+service,
-            lambda x: "",
-            lambda x: "",
-            ignore_exit_codes=True
-        )
-        find_passwd = re.compile('password: "([^"]+)"').search
-        find_user = re.compile('"acct"<blob>="([^"]+)"').search
-        creds['username'] = find_key(find_user, output)
-        creds['password'] = find_key(find_passwd, output)
+        if (not username):
+            output = execute(
+                'security 2>&1 find-generic-password -g -s '+service,
+                lambda x: "",
+                lambda x: "",
+                ignore_exit_codes=True
+            )
+
+            find_passwd = re.compile('password: "([^"]+)"').search
+            find_user = re.compile('"acct"<blob>="([^"]+)"').search
+            creds['username'] = find_key(find_user, output)
+            creds['password'] = find_key(find_passwd, output)
+            
+        else:
+            try:
+                creds['password'] = api.find_generic_password(self.keychain, service, username)
+                creds['username'] = username
+            except api.NotFound:
+                pass
+            except api.KeychainDenied as e:
+                raise KeyringLocked("Can't get password from keychain: " "{}".format(e))
+            except api.Error as e:
+                raise KeyringError("Can't get password from keychain: " "{}".format(e))
+
         return creds
 
     def delete_password(self, service, username):
