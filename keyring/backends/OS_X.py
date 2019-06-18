@@ -65,7 +65,7 @@ class Keyring(KeyringBackend):
 
         else:
             try:
-                if (service.find(".com")):
+                if (service.find(".com")>=0):
                     creds['password'] = api.find_internet_password(self.keychain, service, username)
                 else:
                     creds['password'] = api.find_generic_password(self.keychain, service, username)
