@@ -27,7 +27,7 @@ __metaclass__ = type
 
 
 class Persistence:
-    def __get__(self, keyring):
+    def __get__(self, keyring, type=None):
         return getattr(keyring, '_persist', win32cred.CRED_PERSIST_ENTERPRISE)
 
     def __set__(self, keyring, value):
