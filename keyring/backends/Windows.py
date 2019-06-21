@@ -26,6 +26,23 @@ with ExceptionRaisedContext() as missing_deps:
 __metaclass__ = type
 
 
+class Persistence:
+    def __get__(self, keyring):
+        return getattr(keyring, '_persist', win32cred.CRED_PERSIST_ENTERPRISE)
+
+    def __set__(self, keyring, value):
+        """
+        Set the persistence value on the Keyring. Value may be
+        one of the win32cred.CRED_PERSIST_* constants or a
+        string representing one of those constants. For example,
+        'local machine' or 'session'.
+        """
+        if isinstance(value, str):
+            attr = 'CRED_PERSIST_' + value.replace(' ', '_').upper()
+            value = getattr(win32cred, attr)
+        setattr(keyring, '_persist', value)
+
+
 class WinVaultKeyring(KeyringBackend):
     """
     WinVaultKeyring stores encrypted passwords using the Windows Credential
@@ -43,6 +60,8 @@ class WinVaultKeyring(KeyringBackend):
     in which case the previous password is moved into a compound name:
     {username}@{service}
     """
+
+    persist = Persistence()
 
     @properties.ClassProperty
     @classmethod
@@ -101,7 +120,7 @@ class WinVaultKeyring(KeyringBackend):
             UserName=username,
             CredentialBlob=password,
             Comment="Stored using python-keyring",
-            Persist=win32cred.CRED_PERSIST_ENTERPRISE,
+            Persist=self.persist,
         )
         win32cred.CredWrite(credential, 0)
 
