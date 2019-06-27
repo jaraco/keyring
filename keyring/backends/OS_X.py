@@ -45,14 +45,11 @@ class Keyring(KeyringBackend):
 
     def get_password(self, service, username):
         creds={}
+        type = get_service_type(service)
         if (not username):
-            prompt = "find-generic-password"
-            
-            if (service.find(".com")>=0):
-                prompt = "find-internet-password"
             
             output = execute(
-                    'security 2>&1 '+prompt+' -g -s '+service,
+                    'security 2>&1 '+type+' -g -s '+service,
                     lambda x: "",
                     lambda x: "",
                     ignore_exit_codes=True
@@ -65,7 +62,7 @@ class Keyring(KeyringBackend):
 
         else:
             try:
-                if (service.find(".com")>=0):
+                if (type == "find-internet-password"):
                     creds['password'] = api.find_internet_password(self.keychain, service, username)
                 else:
                     creds['password'] = api.find_generic_password(self.keychain, service, username)
@@ -159,3 +156,9 @@ def execute(cmds, stdout_cb, stderr_cb, env=None, ignore_exit_codes=False, print
 def find_key(fn, out):
     match = fn(out)
     return match and match.group(1)
+
+def get_service_type(service):
+    """Helper function to determin what type of password to look up"""
+    if ("https://" in service or "http://" in service):
+        return "find-internet-password"
+    return "find-generic-password"
