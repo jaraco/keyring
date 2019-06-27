@@ -127,9 +127,10 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         returned username.
         """
         # The default implementation requires a username here.
-        cred = self.get_password(service, username)
-        if cred['password'] is not None:
-            return credentials.SimpleCredential(cred['username'], cred['password'])
+        if username is not None:
+            password = self.get_password(service, username)
+            if password is not None:
+                return credentials.SimpleCredential(username, password)
         return None
 
 
