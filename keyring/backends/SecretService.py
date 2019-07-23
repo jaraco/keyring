@@ -2,6 +2,7 @@ import logging
 
 from ..util import properties
 from ..backend import KeyringBackend
+from ..credentials import SimpleCredential
 from ..errors import (
     InitError,
     PasswordDeleteError,
@@ -61,16 +62,19 @@ class Keyring(KeyringBackend):
                 raise KeyringLocked("Failed to unlock the collection!")
         return collection
 
+    def unlock(self, item):
+        if hasattr(item, 'unlock'):
+            item.unlock()
+        if item.is_locked(): # User dismissed the prompt
+            raise KeyringLocked('Failed to unlock the item!')
+
     def get_password(self, service, username):
         """Get password of the username for the service
         """
         collection = self.get_preferred_collection()
         items = collection.search_items({"username": username, "service": service})
         for item in items:
-            if hasattr(item, 'unlock'):
-                item.unlock()
-            if item.is_locked():  # User dismissed the prompt
-                raise KeyringLocked('Failed to unlock the item!')
+            self.unlock(item)
             return item.get_secret().decode('utf-8')
 
     def set_password(self, service, username, password):
@@ -93,3 +97,24 @@ class Keyring(KeyringBackend):
         for item in items:
             return item.delete()
         raise PasswordDeleteError("No such password!")
+
+    def get_credential(self, service, username):
+        """Gets the first username and password for a service.
+        Returns a Credential instance
+
+        The username can be omitted, but if there is one,
+        it will use get_password and return SimpleCredential with the username and password
+        Otherwise, it will return the first username and password combo that it finds and unlocks.
+        """
+
+        collection = self.get_preferred_collection()
+
+        if username:
+            return SimpleCredential(username, self.get_password(service, username))
+
+        items = collection.search_items({"service": service})
+        for item in items:
+            self.unlock(item)
+            attributes = item.get_attributes()
+            return SimpleCredential(attributes.get("username"), item.get_secret().decode('utf-8'))
+
