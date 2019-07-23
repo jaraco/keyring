@@ -102,15 +102,15 @@ class Keyring(KeyringBackend):
         """Gets the first username and password for a service.
         Returns a Credential instance
 
-        The username can be omitted, but if there is one,it will use get_password
-        and return SimpleCredential with the username and password
+        The username can be omitted, but if there is one, it will use get_password
+        and return a SimpleCredential containing  the username and password
         Otherwise, it will return the first username and password combo that it finds.
         """
 
-        collection = self.get_preferred_collection()
-
         if username:
             return SimpleCredential(username, self.get_password(service, username))
+
+        collection = self.get_preferred_collection()
 
         items = collection.search_items({"service": service})
         for item in items:
