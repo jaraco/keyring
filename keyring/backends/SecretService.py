@@ -65,7 +65,7 @@ class Keyring(KeyringBackend):
     def unlock(self, item):
         if hasattr(item, 'unlock'):
             item.unlock()
-        if item.is_locked(): # User dismissed the prompt
+        if item.is_locked():  # User dismissed the prompt
             raise KeyringLocked('Failed to unlock the item!')
 
     def get_password(self, service, username):
@@ -102,9 +102,9 @@ class Keyring(KeyringBackend):
         """Gets the first username and password for a service.
         Returns a Credential instance
 
-        The username can be omitted, but if there is one,
-        it will use get_password and return SimpleCredential with the username and password
-        Otherwise, it will return the first username and password combo that it finds and unlocks.
+        The username can be omitted, but if there is one,it will use get_password
+        and return SimpleCredential with the username and password
+        Otherwise, it will return the first username and password combo that it finds.
         """
 
         collection = self.get_preferred_collection()
@@ -115,6 +115,5 @@ class Keyring(KeyringBackend):
         items = collection.search_items({"service": service})
         for item in items:
             self.unlock(item)
-            attributes = item.get_attributes()
-            return SimpleCredential(attributes.get("username"), item.get_secret().decode('utf-8'))
-
+            username = item.get_attributes().get("username")
+            return SimpleCredential(username, item.get_secret().decode('utf-8'))
