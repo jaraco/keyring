@@ -1,3 +1,10 @@
+19.1.0
+------
+
+* #369: macOS Keyring now honors a ``KEYCHAIN_PATH``
+  environment variable. If set, Keyring will use that
+  keychain instead of the default.
+
 19.0.2
 ------
 
