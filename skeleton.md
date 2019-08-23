@@ -103,13 +103,7 @@ Relies a .flake8 file to correct some default behaviors:
 
 ## Continuous Integration
 
-The project is pre-configured to run tests in [Travis-CI](https://travis-ci.org) (.travis.yml). Any new project must be enabled either through their web site or with the `travis enable` command. In addition to running tests, an additional deploy stage is configured to automatically release tagged commits. The username and password for PyPI must be configured for each project using the `travis` command and only after the travis project is created. As releases are cut with [twine](https://pypi.org/project/twine), the two values are supplied through the `TWINE_USERNAME` and `TWINE_PASSWORD`. To configure the latter as a secret, run the following command:
-
-```
-echo "TWINE_PASSWORD={password}" | travis encrypt
-```
-
-Or disable it in the CI definition and configure it through the web UI.
+The project is pre-configured to run tests in [Travis-CI](https://travis-ci.org) (.travis.yml). Any new project must be enabled either through their web site or with the `travis enable` command.
 
 Features include:
 - test against Python 2 and 3
@@ -117,6 +111,14 @@ Features include:
 - correct for broken IPv6
 
 Also provided is a minimal template for running under Appveyor (Windows).
+
+### Continuous Deployments
+
+In addition to running tests, an additional deploy stage is configured to automatically release tagged commits to PyPI using [API tokens](https://pypi.org/help/#apitoken). The release process expects an authorized token to be configured with Travis as the TWINE_PASSWORD environment variable. After the Travis project is created, configure the token through the web UI or with a command like the following (bash syntax):
+
+```
+TWINE_PASSWORD={token} travis env copy TWINE_PASSWORD
+```
 
 ## Building Documentation
 
@@ -127,3 +129,9 @@ In addition to building the sphinx docs scaffolded in `docs/`, the docs build a 
 ## Cutting releases
 
 By default, tagged commits are released through the continuous integration deploy stage.
+
+Releases may also be cut manually by invoking the tox environment `release` with the PyPI token set as the TWINE_PASSWORD:
+
+```
+TWINE_PASSWORD={token} tox -e release
+```
