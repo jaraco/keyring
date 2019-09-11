@@ -1,3 +1,8 @@
+19.2.0
+------
+
+* Add support for get_credentials() with the SecretService backend
+
 19.1.0
 ------
 
