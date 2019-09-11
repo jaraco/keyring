@@ -1,4 +1,5 @@
 import platform
+import os
 
 from ..backend import KeyringBackend
 from ..errors import PasswordSetError
@@ -16,8 +17,8 @@ except Exception:
 class Keyring(KeyringBackend):
     """macOS Keychain"""
 
-    keychain = None
-    "Pathname to keychain filename, overriding default keychain."
+    keychain = os.environ.get('KEYCHAIN_PATH')
+    "Path to keychain file, overriding default"
 
     @properties.ClassProperty
     @classmethod

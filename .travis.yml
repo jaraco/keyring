@@ -15,13 +15,6 @@ jobs:
     if: tag IS present
     python: *latest_py3
     before_script: skip
-    env:
-    - TWINE_USERNAME=jaraco
-    # TWINE_PASSWORD
-    - secure: VXM9F3HLDPprEY3JRlX6eH+yngucMHrqpUMeo4zgnFOc5yJUs7RP3uJ87O9IHllOUc7VR+nu/ye7HJk9y8Ux8X53S5UiH/s3/7rHPWP5IyCZBuDMZ3ouSxYKCWyMd6h/tkmVjNJIkV/0ZUhTJlwaODKwqegZ0twEIoRQnVIDTcs=
-    # TIDELIFT_TOKEN
-    - secure: N1YHVPGUZl324ntMUdEUCfuMZb9eTDgEJ5lXQne3WV8bi0DLmoUgDM3z1Hz7RoZY8x8qHLtInNi+8BjqoHwLrbC06A0MZ1aSlqY8pq+nrI6WDQCwFY6BNggl302YiuGdwUtL+W1Yu3SqbFELWMNNM106u+/paZqgt0dP4nE3Qhg=
-    - TOX_TESTENV_PASSENV="TWINE_USERNAME TWINE_PASSWORD TIDELIFT_TOKEN"
     script: tox -e release
 
 cache: pip
