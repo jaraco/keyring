@@ -1,11 +1,11 @@
-import unittest
+import pytest
 
 from keyring.backends import kwallet
 from ..test_backend import BackendBasicTests
 
 
-@unittest.skipUnless(kwallet.DBusKeyring.viable, "KWallet5 unavailable")
-class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
+@pytest.mark.skipif(not kwallet.DBusKeyring.viable, reason="KWallet5 unavailable")
+class DBusKWalletTestCase(BackendBasicTests):
 
     # Remove '@' from service name as this is not supported in service names
     # '@' will cause troubles during migration of kwallet entries
@@ -14,7 +14,7 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
     def init_keyring(self):
         return kwallet.DBusKeyring()
 
-    def tearDown(self):
+    def cleanup(self):
         for item in self.credentials_created:
             # Suppress errors, as only one pre/post migration item will be
             # present
@@ -77,7 +77,9 @@ class DBusKWalletTestCase(BackendBasicTests, unittest.TestCase):
         )
 
 
-@unittest.skipUnless(kwallet.DBusKeyringKWallet4.viable, "KWallet4 unavailable")
+@pytest.mark.skipif(
+    not kwallet.DBusKeyringKWallet4.viable, reason="KWallet4 unavailable"
+)
 class DBusKWallet4TestCase(DBusKWalletTestCase):
     def init_keyring(self):
         return kwallet.DBusKeyringKWallet4()

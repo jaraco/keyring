@@ -41,7 +41,9 @@ class BackendBasicTests:
     def _init_properties(self, request):
         self.keyring = self.init_keyring()
         self.credentials_created = set()
-        yield
+        request.addfinalizer(self.cleanup)
+
+    def cleanup(self):
         for item in self.credentials_created:
             self.keyring.delete_password(*item)
 

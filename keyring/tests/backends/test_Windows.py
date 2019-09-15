@@ -1,5 +1,4 @@
 import sys
-import unittest
 
 import pytest
 
@@ -7,8 +6,10 @@ import keyring.backends.Windows
 from ..test_backend import BackendBasicTests
 
 
-@unittest.skipUnless(keyring.backends.Windows.WinVaultKeyring.viable, "Needs Windows")
-class WinVaultKeyringTestCase(BackendBasicTests, unittest.TestCase):
+@pytest.mark.skipif(
+    not keyring.backends.Windows.WinVaultKeyring.viable, reason="Needs Windows"
+)
+class WinVaultKeyringTestCase(BackendBasicTests):
     def tearDown(self):
         # clean up any credentials created
         for cred in self.credentials_created:
