@@ -1,7 +1,12 @@
+19.3.0
+------
+
+* Added new ``KeyringBackend.set_properties_from_env``.
+
 19.2.0
 ------
 
-* Add support for get_credential() with the SecretService backend
+* Add support for get_credential() with the SecretService backend.
 
 19.1.0
 ------

@@ -241,6 +241,24 @@ Here's an example demonstrating how to invoke ``set_keyring``::
     print("password", keyring.get_password("demo-service", "tarek"))
 
 
+Altering Keyring Behavior
+=========================
+
+Keyring provides a mechanism to alter the keyring's behavior through
+environment variables. Each backend implements a
+``KeyringBackend.set_properties_from_env``, which
+when invoked will find all environment variables beginning with
+``KEYRING_PROPERTY_{NAME}`` and will set a property for each
+``{NAME.lower()}`` on the keyring. This method is invoked during
+initialization for the default/configured keyring.
+
+This mechanism may be used to set some useful values on various
+keyrings, including:
+
+- keychain; macOS, path to an alternate keychain file
+- appid; Linux/SecretService, alternate ID for the application
+
+
 Using Keyring on Ubuntu 16.04
 =============================
 
