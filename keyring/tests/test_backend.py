@@ -37,11 +37,11 @@ class BackendBasicTests:
 
     DIFFICULT_CHARS = string.whitespace + string.punctuation
 
-    def setUp(self):
+    @pytest.fixture(autouse=True)
+    def _init_properties(self, request):
         self.keyring = self.init_keyring()
         self.credentials_created = set()
-
-    def tearDown(self):
+        yield
         for item in self.credentials_created:
             self.keyring.delete_password(*item)
 
