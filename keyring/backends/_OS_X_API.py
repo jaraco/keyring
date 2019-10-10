@@ -1,7 +1,10 @@
 import contextlib
 import ctypes
 import struct
-from ctypes import c_void_p, c_uint16, c_uint32, c_int32, c_char_p, POINTER
+from ctypes import (
+    c_void_p, c_uint16, c_uint32, c_int32, c_char_p, POINTER,
+    c_char,
+)
 
 __metaclass__ = type
 
@@ -32,7 +35,95 @@ SecKeychainCopyDefault.argtypes = (POINTER(sec_keychain_ref),)
 SecKeychainCopyDefault.restype = OS_status
 
 
+class CFRuntimeBase(ctypes.Structure):
+    _fields_ = [
+        ("_isa", c_void_p),  # uintptr_t
+        ("_info", c_uint32),  # uint8_t
+        ("_rc", c_uint32),  # uint32_t
+    ]
+
+
+class CFStringRefVariants(ctypes.Union):
+    class inline1(ctypes.Structure):
+        _fields_ = [
+            ("length", c_int32),
+            ("buffer", c_char_p),
+        ]
+
+    _fields_ = [
+        ("inline1", inline1)
+        # ...
+    ]
+
+
+class CFStringRef(ctypes.Structure):
+    _fields_ = [
+        ("base", CFRuntimeBase),
+        ("variants", CFStringRefVariants),
+    ]
+
+    @property
+    def inline(self):
+        contents_mask = 0x060
+        inline_contents = 0
+        return self.base._info & contents_mask == inline_contents
+
+    @property
+    def has_explicit_length(self):
+        """
+        Has explicit length if (1) mutable or (2) not mutable
+        and no length byte.
+        """
+        is_mutable_mask = 0x01
+        has_length_byte_mask = 0x04
+        has_length_byte = 0x04
+        mask = is_mutable_mask | has_length_byte_mask
+        return self.base._info & mask != has_length_byte
+
+    @property
+    def length(self):
+        if not self.inline or not self.has_explicit_length:
+            raise NotImplementedError()
+        return self.variants.inline1.length
+
+    @property
+    def mutable(self):
+        is_mutable_mask = 0x01
+        is_mutable = 0x01
+        return self.base._info & is_mutable_mask == is_mutable
+
+    @property
+    def has_length_byte(self):
+        has_length_byte_mask = 0x04
+        has_length_byte = 0x04
+        return self.base._info & has_length_byte_mask == has_length_byte
+
+    @property
+    def is_unicode(self):
+        is_unicode_mask = 0x10
+        is_unicode = 0x10
+        return self.base._info & is_unicode_mask == is_unicode
+
+    def contents(self):
+        assert self.inline, "Only inline supported"
+        assert self.has_explicit_length, "Only explicitl length supported"
+        return self.variants.inline1.buffer
+
+
+SecCopyErrorMessageString = _sec.SecCopyErrorMessageString
+SecCopyErrorMessageString.argtypes = (OS_status, c_void_p)
+SecCopyErrorMessageString.restype = CFStringRef
+
+
 class Error(Exception):
+    @classmethod
+    def get_message(cls, status):
+        ref = SecCopyErrorMessageString(status, None)
+        breakpoint()
+        msg = str()
+        _core.CFRelease(ref)
+        return msg
+
     @classmethod
     def raise_for_status(cls, status):
         if status == 0:
@@ -42,6 +133,7 @@ class Error(Exception):
         if status == error.keychain_denied:
             raise KeychainDenied(status, "Keychain Access Denied")
         if status == error.sec_auth_failed or status == error.plist_missing:
+            msg = cls.get_message(status)
             raise SecAuthFailure(
                 status,
                 "Security Auth Failure: make sure "
