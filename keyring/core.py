@@ -91,8 +91,11 @@ def init_backend(limit=None):
         load_env()
         or load_config()
         # get all keyrings passing the limit filter
-        or max(filter(limit, backend.get_all_keyring()),
-               default=fail.Keyring(), key=backend.by_priority)
+        or max(
+            filter(limit, backend.get_all_keyring()),
+            default=fail.Keyring(),
+            key=backend.by_priority,
+        )
     )
 
 
