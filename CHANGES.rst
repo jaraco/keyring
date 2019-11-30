@@ -8,6 +8,9 @@
   to enable the alternate scopes or "enterprise" to use the
   default scope.
 
+* #404: Improve import times when a backend is specifically
+  configured by lazily calling ``get_all_keyring``.
+
 19.2.0
 ------
 
