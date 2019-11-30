@@ -24,8 +24,7 @@ def test_multiprocess_get():
     reason="#281: Prior to 3.8, multiprocess invocation fails",
 )
 @pytest.mark.xfail(
-    platform.system() == 'Linux',
-    reason="#410: tests fail intermittently",
+    platform.system() == 'Linux', reason="#410: tests fail intermittently"
 )
 def test_multiprocess_get_after_native_get():
     keyring.get_password('test_app', 'test_user')
