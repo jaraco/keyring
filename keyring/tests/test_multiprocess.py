@@ -1,4 +1,8 @@
+import sys
+import platform
 import multiprocessing
+
+import pytest
 
 import keyring
 
@@ -14,6 +18,10 @@ def test_multiprocess_get():
     assert proc1.exitcode == 0
 
 
+@pytest.mark.skipif(
+    sys.version_info < (3, 8) and platform.system() == 'Darwin',
+    reason="#281: Prior to 3.8, multiprocess invocation fails",
+)
 def test_multiprocess_get_after_native_get():
     keyring.get_password('test_app', 'test_user')
     test_multiprocess_get()
