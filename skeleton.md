@@ -85,7 +85,7 @@ The skeleton assumes the developer has [tox](https://pypi.org/project/tox) insta
 
 Other environments (invoked with `tox -e {name}`) supplied include:
 
-  - a `build-docs` environment to build the documentation
+  - a `docs` environment to build the documentation
   - a `release` environment to publish the package to PyPI
 
 A pytest.ini is included to define common options around running tests. In particular:
@@ -122,7 +122,7 @@ TWINE_PASSWORD={token} travis env copy TWINE_PASSWORD
 
 ## Building Documentation
 
-Documentation is automatically built by [Read the Docs](https://readthedocs.org) when the project is registered with it, by way of the .readthedocs.yml file. To test the docs build manually, a tox env may be invoked as `tox -e build-docs`. Both techniques rely on the dependencies declared in `setup.cfg/options.extras_require.docs`.
+Documentation is automatically built by [Read the Docs](https://readthedocs.org) when the project is registered with it, by way of the .readthedocs.yml file. To test the docs build manually, a tox env may be invoked as `tox -e docs`. Both techniques rely on the dependencies declared in `setup.cfg/options.extras_require.docs`.
 
 In addition to building the sphinx docs scaffolded in `docs/`, the docs build a `history.html` file that first injects release dates and hyperlinks into the CHANGES.rst before incorporating it as history in the docs.
 
