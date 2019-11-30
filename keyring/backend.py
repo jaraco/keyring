@@ -6,7 +6,10 @@ import abc
 import logging
 import operator
 
-import entrypoints
+try:
+    from importlib import metadata
+except ImportError:
+    import importlib_metadata as metadata
 
 from . import credentials, errors, util
 from .util import properties
@@ -180,8 +183,7 @@ def _load_plugins():
 
     `initialize_func` is optional, but will be invoked if callable.
     """
-    group = 'keyring.backends'
-    entry_points = entrypoints.get_group_all(group=group)
+    entry_points = metadata.entry_points()['keyring.backends']
     for ep in entry_points:
         try:
             log.info('Loading %s', ep.name)

@@ -1,6 +1,9 @@
 # Used by pyinstaller to expose hidden imports
 
-import entrypoints
+try:
+    from importlib import metadata
+except ImportError:
+    import importlib_metadata as metadata
 
 
-hiddenimports = [ep.module_name for ep in entrypoints.get_group_all('keyring.backends')]
+hiddenimports = [ep.value for ep in metadata.entry_points()['keyring.backends']]
