@@ -1,3 +1,10 @@
+19.3.0
+------
+
+* Switch to `importlib.metadata
+  <https://docs.python.org/3/library/importlib.metadata.html>`_
+  for loading entry points. Removes one dependency on Python 3.8.
+
 19.2.0
 ------
 
