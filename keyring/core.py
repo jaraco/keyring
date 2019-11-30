@@ -88,13 +88,15 @@ def init_backend(limit=None):
     # save the limit for the chainer to honor
     backend._limit = limit
 
-    # get all keyrings passing the limit filter
-    keyrings = filter(limit, backend.get_all_keyring())
-
     set_keyring(
         load_env()
         or load_config()
-        or max(keyrings, default=fail.Keyring(), key=backend.by_priority)
+        # get all keyrings passing the limit filter
+        or max(
+            filter(limit, backend.get_all_keyring()),
+            default=fail.Keyring(),
+            key=backend.by_priority,
+        )
     )
 
 

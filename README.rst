@@ -10,13 +10,13 @@
    :target: https://ci.appveyor.com/project/jaraco/keyring/branch/master
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-   :target: https://github.com/ambv/black
+   :target: https://github.com/psf/black
    :alt: Code style: Black
 
 .. image:: https://readthedocs.org/projects/keyring/badge/?version=latest
    :target: https://keyring.readthedocs.io/en/latest/?badge=latest
 
-.. image:: https://tidelift.com/badges/github/jaraco/keyring
+.. image:: https://tidelift.com/badges/package/pypi/keyring
    :target: https://tidelift.com/subscription/pkg/pypi-keyring?utm_source=pypi-keyring&utm_medium=readme
 
 =======================================
