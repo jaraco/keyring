@@ -5,6 +5,8 @@
   <https://docs.python.org/3/library/importlib.metadata.html>`_
   for loading entry points. Removes one dependency on Python 3.8.
 
+* Added new ``KeyringBackend.set_properties_from_env``.
+
 19.2.0
 ------
 
