@@ -2,6 +2,7 @@
 Keyring implementation support
 """
 
+import os
 import abc
 import logging
 import operator
@@ -132,6 +133,18 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
             if password is not None:
                 return credentials.SimpleCredential(username, password)
         return None
+
+    def set_properties_from_env(self):
+        """For all KEYRING_PROPERTY_* env var, set that property."""
+
+        def parse(item):
+            key, value = item
+            pre, sep, name = key.partition('KEYRING_PROPERTY_')
+            return sep and (name.lower(), value)
+
+        props = filter(None, map(parse, os.environ.items()))
+        for name, value in props:
+            setattr(self, name, value)
 
 
 class Crypter:

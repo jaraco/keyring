@@ -4,6 +4,7 @@
 Common test functionality for backends.
 """
 
+import os
 import string
 
 import pytest
@@ -159,3 +160,9 @@ class BackendBasicTests:
             ('user1', 'password1'),
             ('user2', 'password2'),
         )
+
+    def test_set_properties(self, monkeypatch):
+        env = dict(KEYRING_PROPERTY_FOO_BAR='fizz buzz', OTHER_SETTING='ignore me')
+        monkeypatch.setattr(os, 'environ', env)
+        self.keyring.set_properties_from_env()
+        assert self.keyring.foo_bar == 'fizz buzz'

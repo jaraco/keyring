@@ -1,3 +1,8 @@
+19.3.0
+------
+
+* Added new ``KeyringBackend.set_properties_from_env``.
+
 19.2.0
 ------
 
