@@ -7,6 +7,11 @@
 
 * Added new ``KeyringBackend.set_properties_from_env``.
 
+* #382: Add support for alternate persistence scopes for Windows
+  backend. Set ``.persist`` to "local machine" or "session"
+  to enable the alternate scopes or "enterprise" to use the
+  default scope.
+
 19.2.0
 ------
 
