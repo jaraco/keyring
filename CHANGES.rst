@@ -1,10 +1,24 @@
-19.1.0
+19.3.0
 ------
 
-* Add support for alternate persistence scopes for Windows
+* Added new ``KeyringBackend.set_properties_from_env``.
+
+* #382: Add support for alternate persistence scopes for Windows
   backend. Set ``.persist`` to "local machine" or "session"
   to enable the alternate scopes or "enterprise" to use the
   default scope.
+
+19.2.0
+------
+
+* Add support for get_credential() with the SecretService backend.
+
+19.1.0
+------
+
+* #369: macOS Keyring now honors a ``KEYCHAIN_PATH``
+  environment variable. If set, Keyring will use that
+  keychain instead of the default.
 
 19.0.2
 ------

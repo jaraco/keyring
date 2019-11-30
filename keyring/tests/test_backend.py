@@ -4,6 +4,7 @@
 Common test functionality for backends.
 """
 
+import os
 import string
 
 import pytest
@@ -37,11 +38,13 @@ class BackendBasicTests:
 
     DIFFICULT_CHARS = string.whitespace + string.punctuation
 
-    def setUp(self):
+    @pytest.fixture(autouse=True)
+    def _init_properties(self, request):
         self.keyring = self.init_keyring()
         self.credentials_created = set()
+        request.addfinalizer(self.cleanup)
 
-    def tearDown(self):
+    def cleanup(self):
         for item in self.credentials_created:
             self.keyring.delete_password(*item)
 
@@ -157,3 +160,9 @@ class BackendBasicTests:
             ('user1', 'password1'),
             ('user2', 'password2'),
         )
+
+    def test_set_properties(self, monkeypatch):
+        env = dict(KEYRING_PROPERTY_FOO_BAR='fizz buzz', OTHER_SETTING='ignore me')
+        monkeypatch.setattr(os, 'environ', env)
+        self.keyring.set_properties_from_env()
+        assert self.keyring.foo_bar == 'fizz buzz'

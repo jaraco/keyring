@@ -10,13 +10,13 @@
    :target: https://ci.appveyor.com/project/jaraco/keyring/branch/master
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-   :target: https://github.com/ambv/black
+   :target: https://github.com/psf/black
    :alt: Code style: Black
 
 .. image:: https://readthedocs.org/projects/keyring/badge/?version=latest
    :target: https://keyring.readthedocs.io/en/latest/?badge=latest
 
-.. image:: https://tidelift.com/badges/github/jaraco/keyring
+.. image:: https://tidelift.com/badges/package/pypi/keyring
    :target: https://tidelift.com/subscription/pkg/pypi-keyring?utm_source=pypi-keyring&utm_medium=readme
 
 =======================================
@@ -239,6 +239,24 @@ Here's an example demonstrating how to invoke ``set_keyring``::
     except keyring.errors.PasswordSetError:
         print("failed to store password")
     print("password", keyring.get_password("demo-service", "tarek"))
+
+
+Altering Keyring Behavior
+=========================
+
+Keyring provides a mechanism to alter the keyring's behavior through
+environment variables. Each backend implements a
+``KeyringBackend.set_properties_from_env``, which
+when invoked will find all environment variables beginning with
+``KEYRING_PROPERTY_{NAME}`` and will set a property for each
+``{NAME.lower()}`` on the keyring. This method is invoked during
+initialization for the default/configured keyring.
+
+This mechanism may be used to set some useful values on various
+keyrings, including:
+
+- keychain; macOS, path to an alternate keychain file
+- appid; Linux/SecretService, alternate ID for the application
 
 
 Using Keyring on Ubuntu 16.04

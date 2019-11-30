@@ -1,15 +1,15 @@
-import unittest
+import pytest
 
 from ..test_backend import BackendBasicTests
 from keyring.backends import SecretService
 from .. import util
 
 
-@unittest.skipUnless(
-    SecretService.Keyring.viable,
-    "SecretStorage package is needed for SecretServiceKeyring",
+@pytest.mark.skipif(
+    not SecretService.Keyring.viable,
+    reason="SecretStorage package is needed for SecretServiceKeyring",
 )
-class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
+class SecretServiceKeyringTestCase(BackendBasicTests):
     __test__ = True
 
     def init_keyring(self):
@@ -22,7 +22,7 @@ class SecretServiceKeyringTestCase(BackendBasicTests, unittest.TestCase):
         return keyring
 
 
-class SecretServiceKeyringUnitTests(unittest.TestCase):
+class SecretServiceKeyringUnitTests:
     def test_supported_no_secretstorage(self):
         """
         SecretService Keyring is not viable if secretstorage can't be imported.
