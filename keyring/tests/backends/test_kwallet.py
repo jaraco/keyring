@@ -1,7 +1,7 @@
 import pytest
 
 from keyring.backends import kwallet
-from ..test_backend import BackendBasicTests
+from keyring.testing.backend import BackendBasicTests
 
 
 @pytest.mark.skipif(not kwallet.DBusKeyring.viable, reason="KWallet5 unavailable")

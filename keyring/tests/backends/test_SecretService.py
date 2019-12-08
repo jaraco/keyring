@@ -1,8 +1,8 @@
 import pytest
 
-from ..test_backend import BackendBasicTests
+from keyring.testing.backend import BackendBasicTests
+from keyring.testing.util import NoNoneDictMutator
 from keyring.backends import SecretService
-from .. import util
 
 
 @pytest.mark.skipif(
@@ -27,5 +27,5 @@ class SecretServiceKeyringUnitTests:
         """
         SecretService Keyring is not viable if secretstorage can't be imported.
         """
-        with util.NoNoneDictMutator(SecretService.__dict__, secretstorage=None):
+        with NoNoneDictMutator(SecretService.__dict__, secretstorage=None):
             self.assertFalse(SecretService.Keyring.viable)

@@ -3,7 +3,7 @@ import sys
 import pytest
 
 import keyring.backends.Windows
-from ..test_backend import BackendBasicTests
+from keyring.testing.backend import BackendBasicTests
 
 
 @pytest.mark.skipif(

@@ -2,7 +2,7 @@ import sys
 
 import pytest
 
-from ..test_backend import BackendBasicTests
+from keyring.testing.backend import BackendBasicTests
 from keyring.backends import OS_X
 
 
