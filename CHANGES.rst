@@ -1,3 +1,10 @@
+20.0.0
+------
+
+* Extracted ``keyring.testing`` package to contain supporting
+  functionality for plugin backends. ``keyring.tests`` is no
+  longer supported by the public interface.
+
 19.3.0
 ------
 
