@@ -2,8 +2,8 @@
 ------
 
 * Extracted ``keyring.testing`` package to contain supporting
-  functionality for plugin backends. ``keyring.tests`` is no
-  longer supported by the public interface.
+  functionality for plugin backends. ``keyring.tests`` has been
+  removed from the package.
 
 19.3.0
 ------
