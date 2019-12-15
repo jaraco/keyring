@@ -1,12 +1,12 @@
-20.0.0
-------
+v20.0.0
+-------
 
 * Extracted ``keyring.testing`` package to contain supporting
   functionality for plugin backends. ``keyring.tests`` has been
   removed from the package.
 
-19.3.0
-------
+v19.3.0
+-------
 
 * Switch to `importlib.metadata
   <https://docs.python.org/3/library/importlib.metadata.html>`_
