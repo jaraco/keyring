@@ -204,7 +204,7 @@ def _load_plugins():
             if callable(init_func):
                 init_func()
         except Exception:
-            log.exception("Error initializing plugin %s." % ep)
+            log.exception("Error initializing plugin %s." % ep.name)
 
 
 @util.once
