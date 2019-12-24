@@ -196,14 +196,36 @@ def _load_plugins():
 
     `initialize_func` is optional, but will be invoked if callable.
     """
-    try: entry_points = metadata.entry_points()['keyring.backends']
+    try:
+        entry_points = metadata.entry_points()['keyring.backends']
     except Exception:
         entry_points = (
-            metadata.EntryPoint(name='KWallet',value='keyring.backends.kwallet',group='keyring.backends'),
-            metadata.EntryPoint(name='SecretService',value='keyring.backends.SecretService',group='keyring.backends'),
-            metadata.EntryPoint(name='Windows',value='keyring.backends.Windows',group='keyring.backends'),
-            metadata.EntryPoint(name='chainer',value='keyring.backends.chainer',group='keyring.backends'),
-            metadata.EntryPoint(name='macOS',value='keyring.backends.OS_X',group='keyring.backends'))
+            metadata.EntryPoint(
+                name='KWallet',
+                value='keyring.backends.kwallet',
+                group='keyring.backends'
+            ),
+            metadata.EntryPoint(
+                name='SecretService',
+                value='keyring.backends.SecretService',
+                group='keyring.backends'
+            ),
+            metadata.EntryPoint(
+                name='Windows',
+                value='keyring.backends.Windows',
+                group='keyring.backends'
+            ),
+            metadata.EntryPoint(
+                name='chainer',
+                value='keyring.backends.chainer',
+                group='keyring.backends'
+            ),
+            metadata.EntryPoint(
+                name='macOS',
+                value='keyring.backends.OS_X',
+                group='keyring.backends'
+            )
+        )
     for ep in entry_points:
         try:
             log.info('Loading %s', ep.name)
