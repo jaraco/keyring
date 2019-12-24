@@ -203,27 +203,25 @@ def _load_plugins():
             metadata.EntryPoint(
                 name='KWallet',
                 value='keyring.backends.kwallet',
-                group='keyring.backends'
+                group='keyring.backends',
             ),
             metadata.EntryPoint(
                 name='SecretService',
                 value='keyring.backends.SecretService',
-                group='keyring.backends'
+                group='keyring.backends',
             ),
             metadata.EntryPoint(
                 name='Windows',
                 value='keyring.backends.Windows',
-                group='keyring.backends'
+                group='keyring.backends',
             ),
             metadata.EntryPoint(
                 name='chainer',
                 value='keyring.backends.chainer',
-                group='keyring.backends'
+                group='keyring.backends',
             ),
             metadata.EntryPoint(
-                name='macOS',
-                value='keyring.backends.OS_X',
-                group='keyring.backends'
+                name='macOS', value='keyring.backends.OS_X', group='keyring.backends'
             )
         )
     for ep in entry_points:
