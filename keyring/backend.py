@@ -198,7 +198,7 @@ def _load_plugins():
     """
     try:
         entry_points = metadata.entry_points()['keyring.backends']
-    except Exception:
+    except KeyError:
         entry_points = (
             metadata.EntryPoint(
                 name='KWallet',
