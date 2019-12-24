@@ -1,3 +1,8 @@
+v21.0.0
+-------
+
+* Require Python 3.6 or later.
+
 v20.0.1
 -------
 
