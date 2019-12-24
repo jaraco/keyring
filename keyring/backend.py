@@ -222,7 +222,7 @@ def _load_plugins():
             ),
             metadata.EntryPoint(
                 name='macOS', value='keyring.backends.OS_X', group='keyring.backends'
-            )
+            ),
         )
     for ep in entry_points:
         try:
