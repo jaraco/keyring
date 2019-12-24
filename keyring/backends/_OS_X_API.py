@@ -156,7 +156,7 @@ class PackedAttributes(type):
         """
         if not isinstance(word, str):
             return word
-        val, = struct.unpack('!I', word.encode('ascii'))
+        (val,) = struct.unpack('!I', word.encode('ascii'))
         return val
 
 
