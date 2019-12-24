@@ -1,3 +1,8 @@
+v20.0.1
+-------
+
+* #417: Fix TypeError when backend fails to initialize.
+
 v20.0.0
 -------
 
