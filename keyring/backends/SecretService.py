@@ -35,8 +35,8 @@ class Keyring(KeyringBackend):
             secretstorage.__name__
         if exc:
             raise RuntimeError("SecretStorage required")
-        if not hasattr(secretstorage, 'get_default_collection'):
-            raise RuntimeError("SecretStorage 1.0 or newer required")
+        if secretstorage.__version_tuple__[0] < 3:
+            raise RuntimeError("SecretStorage 3.0 or newer required")
         try:
             with closing(secretstorage.dbus_init()) as connection:
                 list(secretstorage.get_all_collections(connection))
