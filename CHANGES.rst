@@ -1,3 +1,9 @@
+v21.1.0
+-------
+
+* #380: In SecretService backend, close connections after
+  using them.
+
 v21.0.0
 -------
 
