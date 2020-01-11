@@ -6,12 +6,18 @@
 .. image:: https://img.shields.io/travis/jaraco/keyring/master.svg
    :target: https://travis-ci.org/jaraco/keyring
 
-.. image:: https://img.shields.io/appveyor/ci/jaraco/keyring/master.svg
-   :target: https://ci.appveyor.com/project/jaraco/keyring/branch/master
+.. image:: https://dev.azure.com/jaraco/skeleton/_apis/build/status/jaraco.skeleton?branchName=master
+   :target: https://dev.azure.com/jaraco/skeleton/_build/latest?definitionId=1&branchName=master
+
+.. image:: https://img.shields.io/travis/jaraco/skeleton/master.svg
+   :target: https://travis-ci.org/jaraco/skeleton
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
    :alt: Code style: Black
+
+.. image:: https://img.shields.io/appveyor/ci/jaraco/keyring/master.svg
+   :target: https://ci.appveyor.com/project/jaraco/keyring/branch/master
 
 .. image:: https://readthedocs.org/projects/keyring/badge/?version=latest
    :target: https://keyring.readthedocs.io/en/latest/?badge=latest

@@ -11,11 +11,6 @@ jobs:
   - os: osx
     language: generic
     python: *latest_py3
-  - stage: deploy
-    if: tag IS present
-    python: *latest_py3
-    before_script: skip
-    script: tox -e release
 
 cache: pip
 
