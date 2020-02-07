@@ -198,7 +198,7 @@ def _load_plugins():
     """
     metadata_entry_points = metadata.entry_points()
     if 'keyring.backends' in metadata_entry_points:
-        entry_points = metadata.entry_points()['keyring.backends']
+        entry_points = metadata_entry_points['keyring.backends']
         for ep in entry_points:
             try:
                 log.info('Loading %s', ep.name)
