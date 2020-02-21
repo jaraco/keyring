@@ -25,7 +25,7 @@ class InitError(KeyringError):
 
 
 class KeyringLocked(KeyringError):
-    """Raised when the keyring could not be initialised
+    """Raised when the keyring failed unlocking
     """
 
 
