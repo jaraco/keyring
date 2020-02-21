@@ -29,6 +29,11 @@ class KeyringLocked(KeyringError):
     """
 
 
+class NoKeyringError(KeyringError, RuntimeError):
+    """Raised when there is no keyring backend
+    """
+
+
 class ExceptionRaisedContext:
     """
     An exception-trapping context that indicates whether an exception was
