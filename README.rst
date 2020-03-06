@@ -25,23 +25,15 @@
 .. image:: https://tidelift.com/badges/package/pypi/keyring
    :target: https://tidelift.com/subscription/pkg/pypi-keyring?utm_source=pypi-keyring&utm_medium=readme
 
-=======================================
-Installing and Using Python Keyring Lib
-=======================================
+.. image:: https://badges.gitter.im/jaraco/keyring.svg
+   :alt: Join the chat at https://gitter.im/jaraco/keyring
+   :target: https://gitter.im/jaraco/keyring?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-.. contents:: **Table of Contents**
+The Python keyring library provides an easy way to access the
+system keyring service from python. It can be used in any
+application that needs safe password storage.
 
----------------------------
-What is Python keyring lib?
----------------------------
-
-The Python keyring lib provides an easy way to access the system keyring service
-from python. It can be used in any application that needs safe password storage.
-
-The keyring library is licensed under both the `MIT license
-<http://opensource.org/licenses/MIT>`_ and the PSF license.
-
-These recommended keyring backends are supported by the Python keyring lib:
+These recommended keyring backends are supported:
 
 * macOS `Keychain
   <https://en.wikipedia.org/wiki/Keychain_%28software%29>`_
@@ -55,34 +47,20 @@ These recommended keyring backends are supported by the Python keyring lib:
 
 Other keyring implementations are available through `Third-Party Backends`_.
 
--------------------------
-Installation Instructions
--------------------------
-
-Install from Index
-==================
-
-Install using your favorite installer. For example:
-
-    $ pip install keyring
-
-Linux
------
+Installation - Linux
+====================
 
 On Linux, the KWallet backend relies on dbus-python_, which does not always
-install correctly when using pip (compilation is needed). So we recommend
-that dbus-python is installed as a system package. The same also applies to
-the Secret Storage backend under Python 2 (under Python 3 a different D-Bus
-implementation is used).
+install correctly when using pip (compilation is needed). For best results,
+install dbus-python as a system package.
 
 .. _dbus-python: https://gitlab.freedesktop.org/dbus/dbus-python
 
--------------
 Using Keyring
--------------
+=============
 
-The basic usage of keyring is pretty simple: just call `keyring.set_password`
-and `keyring.get_password`:
+The basic usage of keyring is pretty simple: just call
+``keyring.set_password`` and ``keyring.get_password``:
 
     >>> import keyring
     >>> keyring.set_password("system", "username", "password")
@@ -90,7 +68,7 @@ and `keyring.get_password`:
     'password'
 
 Command-line Utility
-====================
+--------------------
 
 Keyring supplies a ``keyring`` command which is installed with the
 package. After installing keyring in most environments, the
@@ -113,35 +91,28 @@ package, suitable for invoking from Python like so::
     $ python -m keyring get system username
     password
 
---------------------------
-Configure your keyring lib
---------------------------
+Configuring
+===========
 
 The python keyring lib contains implementations for several backends. The
-library will
-automatically choose the keyring that is most suitable for your current
-environment. You can also specify the keyring you like to be used in the
+library will attempt to
+automatically choose the most suitable backend for the current
+environment. Users may also specify the preferred keyring in a
 config file or by calling the ``set_keyring()`` function.
-
-Customize your keyring by config file
-=====================================
-
-This section describes how to change your option in the config file.
 
 Config file path
 ----------------
 
-The configuration of the lib is stored in a file named "keyringrc.cfg". This
-file must be found in a platform-specific location. To determine
+The configuration is stored in a file named "keyringrc.cfg"
+found in a platform-specific location. To determine
 where the config file is stored, run the following::
 
     python -c "import keyring.util.platform_; print(keyring.util.platform_.config_root())"
 
-Some keyrings also store the keyring data in the file system. To determine
-where the data files are stored, run this command::
+Some keyrings also store the keyring data in the file system.
+To determine where the data files are stored, run::
 
     python -c "import keyring.util.platform_; print(keyring.util.platform_.data_root())"
-
 
 Config file content
 -------------------
@@ -200,23 +171,24 @@ Keyring employs entry points to allow any third-party package to implement
 backends without any modification to the keyring itself. Those interested in
 creating new backends are encouraged to create new, third-party packages
 in the ``keyrings`` namespace, in a manner modeled by the `keyrings.alt
-package <https://github.com/jaraco/keyrings.alt>`_. See the ``setup.py`` file
-in that project for a hint on how to create the requisite entry points.
+package <https://github.com/jaraco/keyrings.alt>`_. See the
+``setup.cfg`` file
+in that project for a hints on how to create the requisite entry points.
 Backends that prove essential may be considered for inclusion in the core
 library, although the ease of installing these third-party packages should
 mean that extensions may be readily available.
 
-If you've created an extension for Keyring, please submit a pull request to
+To create an extension for Keyring, please submit a pull request to
 have your extension mentioned as an available extension.
 
-Set the keyring in runtime
-==========================
+Runtime Configuration
+=====================
 
 Keyring additionally allows programmatic configuration of the
 backend calling the api ``set_keyring()``. The indicated backend
 will subsequently be used to store and retrieve passwords.
 
-Here's an example demonstrating how to invoke ``set_keyring``::
+To invoke ``set_keyring``::
 
     # define a new keyring class which extends the KeyringBackend
     import keyring.backend
@@ -269,7 +241,7 @@ Using Keyring on Ubuntu 16.04
 =============================
 
 The following is a complete transcript for installing keyring in a
-virtual environment on Ubuntu 16.04.  No config file was used.::
+virtual environment on Ubuntu 16.04.  No config file was used::
 
   $ sudo apt install python3-venv libdbus-glib-1-dev
   $ cd /tmp
@@ -291,8 +263,7 @@ Using Keyring on headless Linux systems
 =======================================
 
 It is possible to use the SecretService backend on Linux systems without
-X11 server available (only D-Bus is required). To do that, you need the
-following:
+X11 server available (only D-Bus is required). In this case:
 
 * Install the `GNOME Keyring`_ daemon.
 * Start a D-Bus session, e.g. run ``dbus-run-session -- sh`` and run
@@ -303,20 +274,19 @@ following:
       Read a password from stdin, and use it to unlock the login keyring
       or create it if the login keyring does not exist.
 
-  When that command is started, enter your password into stdin and
-  press Ctrl+D (end of data). After that the daemon will fork into
-  background (use ``--foreground`` option to prevent that).
+  When that command is started, enter a password into stdin and
+  press Ctrl+D (end of data). After that, the daemon will fork into
+  background (use ``--foreground`` option to block).
 * Now you can use the SecretService backend of Keyring. Remember to
   run your application in the same D-Bus session as the daemon.
 
 .. _GNOME Keyring: https://wiki.gnome.org/Projects/GnomeKeyring
 
------------------------------------------------
-Integrate the keyring lib with your application
------------------------------------------------
+Integration
+===========
 
-API interface
-=============
+API
+---
 
 The keyring lib has a few functions:
 
@@ -333,28 +303,24 @@ The keyring lib has a few functions:
   keyring. If the password does not exist, it will raise an exception.
 
 In all cases, the parameters (``service``, ``username``, ``password``)
-should be Unicode text. On Python 2, these parameters are accepted as
-simple ``str`` in the default encoding as they will be implicitly
-decoded to text. Some backends may accept ``bytes`` for these parameters,
-but such usage is discouraged.
+should be Unicode text.
 
 
 Exceptions
-==========
+----------
 
 The keyring lib raises following exceptions:
 
 * ``keyring.errors.KeyringError``: Base Error class for all exceptions in keyring lib.
-* ``keyring.errors.InitError``: Raised when the keyring can't be initialized.
-* ``keyring.errors.PasswordSetError``: Raise when password can't be set in the keyring.
-* ``keyring.errors.PasswordDeleteError``: Raised when the password can't be deleted in the keyring.
+* ``keyring.errors.InitError``: Raised when the keyring cannot be initialized.
+* ``keyring.errors.PasswordSetError``: Raised when password cannot be set in the keyring.
+* ``keyring.errors.PasswordDeleteError``: Raised when the password cannot be deleted in the keyring.
 
-------------
-Get involved
-------------
+Get Involved
+============
 
-Python keyring lib is an open community project and highly welcomes new
-contributors.
+Python keyring lib is an open community project and eagerly
+welcomes contributors.
 
 * Repository: https://github.com/jaraco/keyring/
 * Bug Tracker: https://github.com/jaraco/keyring/issues/
@@ -379,7 +345,8 @@ Tidelift will coordinate the fix and disclosure.
 Making Releases
 ===============
 
-This project makes use of automated releases via Travis-CI. The
+This project makes use of automated releases continuous
+integration. The
 simple workflow is to tag a commit and push it to Github. If it
 passes tests on a late Python version, it will be automatically
 deployed to PyPI.
@@ -392,23 +359,14 @@ Other things to consider when making a release:
 Running Tests
 =============
 
-Tests are `continuously run <https://travis-ci.org/#!/jaraco/keyring>`_ using
-Travis-CI.
+Tests are continuously run in various CI environments such as
+Azure Pipelines and Travis CI.
 
-To run the tests yourself, you'll want keyring installed to some environment
-in which it can be tested. Recommended technique is described below.
+To run the tests locally, install and invoke
+`tox <https://pypi.org/project/tox>`_.
 
-Using tox
----------
-
-Keyring prefers use of `tox <https://pypi.org/project/tox>`_ to run tests.
-Simply install and invoke ``tox``.
-
-This technique is the one used by the Travis-CI script.
-
-----------
 Background
-----------
+==========
 
 The project was based on Tarek Ziade's idea in `this post`_. Kang Zhang
 initially carried it out as a `Google Summer of Code`_ project, and Tarek
@@ -416,8 +374,3 @@ mentored Kang on this project.
 
 .. _this post: http://tarekziade.wordpress.com/2009/03/27/pycon-hallway-session-1-a-keyring-library-for-python/
 .. _Google Summer of Code: http://socghop.appspot.com/
-
-
-.. image:: https://badges.gitter.im/jaraco/keyring.svg
-   :alt: Join the chat at https://gitter.im/jaraco/keyring
-   :target: https://gitter.im/jaraco/keyring?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
