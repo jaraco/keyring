@@ -1,5 +1,5 @@
 # Create the project in Azure with:
-# az project create --name $name --organization https://dev.azure.com/$org/ --visibility public
+# az devops project create --name $name --organization https://dev.azure.com/$org/ --visibility public
 # then configure the pipelines (through web UI)
 
 trigger:

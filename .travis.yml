@@ -1,4 +1,4 @@
-dist: xenial
+dist: bionic
 language: python
 
 python:
@@ -21,7 +21,7 @@ install:
 - pip install tox tox-venv
 
 before_script:
-  # Disable IPv6. Ref travis-ci/travis-ci#8361
+  # Enable IPv6. Ref travis-ci/travis-ci#8361
   - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
       sudo sh -c 'echo 0 > /proc/sys/net/ipv6/conf/all/disable_ipv6';
     fi

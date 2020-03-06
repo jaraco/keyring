@@ -1,7 +1,10 @@
 .. image:: https://img.shields.io/pypi/v/keyring.svg
-   :target: https://pypi.org/project/keyring
+   :target: `PyPI link`_
 
 .. image:: https://img.shields.io/pypi/pyversions/keyring.svg
+   :target: `PyPI link`_
+
+.. _PyPI link: https://pypi.org/project/keyring
 
 .. image:: https://img.shields.io/travis/jaraco/keyring/master.svg
    :target: https://travis-ci.org/jaraco/keyring
