@@ -25,7 +25,12 @@ class InitError(KeyringError):
 
 
 class KeyringLocked(KeyringError):
-    """Raised when the keyring could not be initialised
+    """Raised when the keyring failed unlocking
+    """
+
+
+class NoKeyringError(KeyringError, RuntimeError):
+    """Raised when there is no keyring backend
     """
 
 

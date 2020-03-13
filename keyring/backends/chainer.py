@@ -21,9 +21,11 @@ class ChainerBackend(backend.KeyringBackend):
     @classmethod
     def priority(cls):
         """
-        High-priority if there are backends to chain, otherwise 0.
+        If there are backends to chain, high priority
+        Otherwise very low priority since our operation when empty
+        is the same as null.
         """
-        return 10 * (len(cls.backends) > 1)
+        return 10 if len(cls.backends) > 1 else -10
 
     @properties.ClassProperty
     @classmethod

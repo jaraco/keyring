@@ -1,4 +1,5 @@
 from ..backend import KeyringBackend
+from ..errors import NoKeyringError
 
 
 class Keyring(KeyringBackend):
@@ -9,7 +10,7 @@ class Keyring(KeyringBackend):
     >>> kr.get_password('svc', 'user')
     Traceback (most recent call last):
     ...
-    RuntimeError: ...No recommended backend...
+    keyring.errors.NoKeyringError: ...No recommended backend...
     """
 
     priority = 0
@@ -21,6 +22,6 @@ class Keyring(KeyringBackend):
             "you want to use the non-recommended backends. See "
             "https://pypi.org/project/keyring for details."
         )
-        raise RuntimeError(msg)
+        raise NoKeyringError(msg)
 
     set_password = delete_password = get_password
