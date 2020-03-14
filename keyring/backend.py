@@ -199,7 +199,7 @@ def _load_plugins():
     entry_points = metadata.entry_points()['keyring.backends']
     for ep in entry_points:
         try:
-            log.info('Loading %s', ep.name)
+            log.debug('Loading %s', ep.name)
             init_func = ep.load()
             if callable(init_func):
                 init_func()
