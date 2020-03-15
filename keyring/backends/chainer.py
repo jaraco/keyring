@@ -5,6 +5,7 @@ discover passwords in each.
 
 from .. import backend
 from ..util import properties
+from . import fail
 
 
 class ChainerBackend(backend.KeyringBackend):
@@ -25,7 +26,7 @@ class ChainerBackend(backend.KeyringBackend):
         Otherwise very low priority since our operation when empty
         is the same as null.
         """
-        return 10 if len(cls.backends) > 1 else -10
+        return 10 if len(cls.backends) > 1 else (fail.Keyring.priority - 1)
 
     @properties.ClassProperty
     @classmethod
