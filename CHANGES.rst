@@ -1,3 +1,14 @@
+v21.2.0
+-------
+
+* #372: Chainer now deterministically resolves at a lower
+  priority than the Fail keyring (when there are no backends
+  to chain).
+* #372: Fail keyring now raises a ``NoKeyringError`` for
+  easier selectability.
+* #405: Keyring now logs at DEBUG rather than INFO during
+  backend startup.
+
 v21.1.1
 -------
 
