@@ -35,3 +35,13 @@ class TestChainer:
         chainer = keyring.backends.chainer.ChainerBackend()
         pw = chainer.get_password('alpha', 'bravo')
         assert pw == 'ring2-alpha-bravo'
+
+    def test_chainer_defers_to_fail(self, monkeypatch):
+        """
+        The Chainer backend should defer to the Fail backend when there are
+        no backends to be chained.
+        """
+        monkeypatch.setattr('keyring.backend.get_all_keyring', tuple)
+        assert keyring.backend.by_priority(
+            keyring.backends.chainer.ChainerBackend
+        ) < keyring.backend.by_priority(keyring.backends.fail.Keyring)
