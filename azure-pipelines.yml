@@ -15,6 +15,8 @@ pool:
 
 variables:
 - group: Azure secrets
+- name: pool_vm_image
+  value: Ubuntu-18.04
 
 stages:
 - stage: Test
@@ -25,10 +27,8 @@ stages:
       matrix:
         Bionic Python 3.6:
           python.version: '3.6'
-          pool_vm_image: Ubuntu-18.04
         Bionic Python 3.8:
           python.version: '3.8'
-          pool_vm_image: Ubuntu-18.04
         Windows:
           python.version: '3.8'
           pool_vm_image: vs2017-win2016
