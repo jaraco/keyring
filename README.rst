@@ -219,6 +219,36 @@ To invoke ``set_keyring``::
     print("password", keyring.get_password("demo-service", "tarek"))
 
 
+Disabling Keyring
+=================
+
+In many cases, uninstalling keyring will never be necessary.
+Especially on Windows and macOS, the behavior of keyring is
+usually degenerate, meaning it will return empty values to
+the caller, allowing the caller to fall back to some other
+behavior.
+
+In some cases, the default behavior of keyring is undesirable and
+it would be preferable to disable the keyring behavior altogether.
+There are several mechanisms to disable keyring:
+
+- Uninstall keyring. Most applications are tolerant to keyring
+  not being installed. Uninstalling keyring should cause those
+  applications to fall back to the behavior without keyring.
+  This approach affects that Python environment where keyring
+  would otherwise have been installed.
+
+- Configure the Null keyring in the environment. Set
+  ``PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring``
+  in the environment, and the ``Null`` (degenerate) backend
+  will be used. This approach affects all uses of Keyring where
+  that variable is set.
+
+- Permanently configure the Null keyring for the user by running
+  ``keyring --disable`` or ``python -m keyring --disable``.
+  This approach affects all uses of keyring for that user.
+
+
 Altering Keyring Behavior
 =========================
 
