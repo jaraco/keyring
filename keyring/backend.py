@@ -196,7 +196,7 @@ def _load_plugins():
 
     `initialize_func` is optional, but will be invoked if callable.
     """
-    entry_points = metadata.entry_points()['keyring.backends']
+    entry_points = metadata.entry_points().get('keyring.backends', [])
     for ep in entry_points:
         try:
             log.debug('Loading %s', ep.name)
