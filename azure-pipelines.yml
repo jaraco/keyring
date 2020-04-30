@@ -50,6 +50,9 @@ stages:
     - script: |
         tox -- --junit-xml=test-results.xml
       displayName: 'run tests'
+      env:
+        AGENT_OS: $(Agent.OS)
+        TOX_TESTENV_PASSENV: AGENT_OS
 
     - task: PublishTestResults@2
       inputs:

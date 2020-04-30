@@ -1,3 +1,4 @@
+import os
 import sys
 import platform
 import multiprocessing
@@ -11,9 +12,16 @@ def subprocess_get():
     keyring.get_password('test_app', 'test_user')
 
 
-pytestmark = pytest.mark.xfail(
-    platform.system() == 'Linux', reason="#410: keyring discovery fails intermittently"
-)
+pytestmark = [
+    pytest.mark.xfail(
+        platform.system() == 'Linux',
+        reason="#410: keyring discovery fails intermittently",
+    ),
+    pytest.mark.xfail(
+        os.environ.get('AGENT_OS', '') == 'Windows_NT',
+        reason="#436: Multiprocessing fails on Azure Windows",
+    ),
+]
 
 
 def test_multiprocess_get():
