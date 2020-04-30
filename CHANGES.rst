@@ -3,6 +3,8 @@ v21.2.1
 
 * #426: Restored lenience on startup when entry point
   metadata is missing.
+* #423: Avoid RecursionError when initializing backends
+  when a limit is supplied.
 
 v21.2.0
 -------
