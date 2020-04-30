@@ -21,6 +21,9 @@ class TestWinVaultKeyring(BackendBasicTests):
     def init_keyring(self):
         return keyring.backends.Windows.WinVaultKeyring()
 
+    def test_long_password_nice_error(self):
+        self.keyring.set_password('system', 'user', 'x' * 512 * 2)
+
 
 @pytest.mark.skipif('sys.platform != "win32"')
 def test_winvault_always_viable():
