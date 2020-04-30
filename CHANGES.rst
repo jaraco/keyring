@@ -1,3 +1,9 @@
+v21.2.1
+-------
+
+* #426: Restored lenience on startup when entry point
+  metadata is missing.
+
 v21.2.0
 -------
 
