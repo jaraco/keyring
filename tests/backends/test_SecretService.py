@@ -9,7 +9,7 @@ from keyring.backends import SecretService
     not SecretService.Keyring.viable,
     reason="SecretStorage package is needed for SecretServiceKeyring",
 )
-class SecretServiceKeyringTestCase(BackendBasicTests):
+class TestSecretServiceKeyring(BackendBasicTests):
     __test__ = True
 
     def init_keyring(self):
@@ -22,10 +22,10 @@ class SecretServiceKeyringTestCase(BackendBasicTests):
         return keyring
 
 
-class SecretServiceKeyringUnitTests:
+class TestUnits:
     def test_supported_no_secretstorage(self):
         """
         SecretService Keyring is not viable if secretstorage can't be imported.
         """
         with NoNoneDictMutator(SecretService.__dict__, secretstorage=None):
-            self.assertFalse(SecretService.Keyring.viable)
+            assert not SecretService.Keyring.viable

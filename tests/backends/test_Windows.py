@@ -9,7 +9,7 @@ from keyring.testing.backend import BackendBasicTests
 @pytest.mark.skipif(
     not keyring.backends.Windows.WinVaultKeyring.viable, reason="Needs Windows"
 )
-class WinVaultKeyringTestCase(BackendBasicTests):
+class TestWinVaultKeyring(BackendBasicTests):
     def tearDown(self):
         # clean up any credentials created
         for cred in self.credentials_created:

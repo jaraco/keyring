@@ -5,7 +5,7 @@ from keyring.testing.backend import BackendBasicTests
 
 
 @pytest.mark.skipif(not kwallet.DBusKeyring.viable, reason="KWallet5 unavailable")
-class DBusKWalletTestCase(BackendBasicTests):
+class TestDBusKWallet(BackendBasicTests):
 
     # Remove '@' from service name as this is not supported in service names
     # '@' will cause troubles during migration of kwallet entries
@@ -80,6 +80,6 @@ class DBusKWalletTestCase(BackendBasicTests):
 @pytest.mark.skipif(
     not kwallet.DBusKeyringKWallet4.viable, reason="KWallet4 unavailable"
 )
-class DBusKWallet4TestCase(DBusKWalletTestCase):
+class TestDBusKWallet4(TestDBusKWallet):
     def init_keyring(self):
         return kwallet.DBusKeyringKWallet4()
