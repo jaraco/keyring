@@ -1,4 +1,3 @@
-import os
 import sys
 import platform
 import multiprocessing
@@ -18,8 +17,8 @@ pytestmark = [
         reason="#410: keyring discovery fails intermittently",
     ),
     pytest.mark.xfail(
-        os.environ.get('AGENT_OS', '') == 'Windows_NT',
-        reason="#436: Multiprocessing fails on Azure Windows",
+        platform.system() == 'Windows',
+        reason="#436: Multiprocessing fails on Windows intermittently",
     ),
 ]
 
