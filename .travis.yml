@@ -8,7 +8,7 @@ python:
 cache: pip
 
 install:
-- pip install tox tox-venv
+- pip install tox
 
 before_script:
   # Enable IPv6. Ref travis-ci/travis-ci#8361
