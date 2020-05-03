@@ -8,9 +8,9 @@ import logging
 import operator
 
 try:
-    from importlib import metadata
+    from importlib import metadata  # type: ignore
 except ImportError:
-    import importlib_metadata as metadata
+    import importlib_metadata as metadata  # type: ignore
 
 from . import credentials, errors, util
 from .util import properties
