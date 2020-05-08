@@ -52,7 +52,7 @@ class WinVaultKeyring(KeyringBackend):
 
     This backend does some gymnastics to simulate multi-user support,
     which WinVault doesn't support natively. See
-    https://bitbucket.org/kang/python-keyring-lib/issue/47/winvaultkeyring-only-ever-returns-last#comment-731977
+    https://github.com/jaraco/keyring/issues/47#issuecomment-75763152
     for details on the implementation, but here's the gist:
 
     Passwords are stored under the service name unless there is a collision
