@@ -8,7 +8,8 @@ python:
 cache: pip
 
 install:
-- pip install tox
+# ensure virtualenv is upgraded to avoid issues like jaraco/path#188
+- pip install -U --upgrade-strategy=eager tox
 
 before_script:
   # Enable IPv6. Ref travis-ci/travis-ci#8361
