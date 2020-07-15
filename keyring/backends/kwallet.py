@@ -21,7 +21,13 @@ class DBusKeyring(KeyringBackend):
     KDE KWallet 5 via D-Bus
     """
 
-    appid = os.path.basename(sys.argv[0]) or 'Python keyring library'
+    # See https://github.com/jaraco/keyring/issues/445
+    default_appid = 'Python keyring library'
+    appid = (
+        sys.argv[0] or default_appid
+        if hasattr(sys, 'argv') and len(sys.argv) > 0
+        else default_appid
+    )
     wallet = None
     bus_name = 'org.kde.kwalletd5'
     object_path = '/modules/kwalletd5'
