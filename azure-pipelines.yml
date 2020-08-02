@@ -29,8 +29,11 @@ stages:
           python.version: '3.6'
         Bionic Python 3.8:
           python.version: '3.8'
-        Windows:
+        Windows Python 3.8:
           python.version: '3.8'
+          pool_vm_image: vs2017-win2016
+        Windows Python Prerelease:
+          python.version: '3.9'
           pool_vm_image: vs2017-win2016
         MacOS:
           python.version: '3.8'
@@ -39,10 +42,21 @@ stages:
       maxParallel: 4
 
     steps:
+    - task: NuGetToolInstaller@1
+      displayName: 'Install NuGet'
+      condition: eq(variables['pool_vm_image'], 'vs2017-win2016')
+
+    - powershell: |
+        nuget install python -Prerelease -OutputDirectory "$(Build.BinariesDirectory)" -ExcludeVersion -NonInteractive
+        Write-Host "##vso[task.prependpath]$(Build.BinariesDirectory)\python\tools"
+        Write-Host "##vso[task.prependpath]$(Build.BinariesDirectory)\python\tools\Scripts"
+      condition: and(succeeded(), and(eq(variables['python.version'], '3.9'), eq(variables['pool_vm_image'], 'vs2017-win2016')))
+
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '$(python.version)'
         architecture: 'x64'
+      condition: and(succeeded(), ne(variables['python.version'], '3.9'))
 
     - script: python -m pip install tox
       displayName: 'Install tox'
