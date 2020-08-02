@@ -111,13 +111,14 @@ class Keyring(KeyringBackend):
         Otherwise, it will return the first username and password combo that it finds.
         """
 
+        query = {"service": service}
         if username:
-            return SimpleCredential(username, self.get_password(service, username))
+            query["username"] = username
 
         collection = self.get_preferred_collection()
 
         with closing(collection.connection):
-            items = collection.search_items({"service": service})
+            items = collection.search_items(query)
             for item in items:
                 self.unlock(item)
                 username = item.get_attributes().get("username")
