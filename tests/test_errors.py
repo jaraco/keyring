@@ -1,4 +1,7 @@
+import sys
 from unittest import mock
+
+import pytest
 
 from keyring import errors
 
@@ -13,6 +16,10 @@ class DeletionDetector:
 
 
 class TestExceptionInfo:
+    @pytest.mark.skipif(
+        '__pypy__' in sys.builtin_module_names,
+        reason="pypy garbage collection defers deletion",
+    )
     def test_traceback_not_referenced(self):
         """
         Ensure that an ExceptionInfo does not keep a reference
