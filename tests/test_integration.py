@@ -11,7 +11,6 @@ argv_manipulations = [
 ]
 
 
-@pytest.mark.xfail(reason="#445")
 @pytest.mark.parametrize('argv', argv_manipulations)
 def test_argv(argv):
     code = f'import sys; {argv}; import keyring'
