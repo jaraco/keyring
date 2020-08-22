@@ -19,7 +19,7 @@ except AttributeError:
 
 def _id_from_argv():
     """
-    Safely infer an app id from sys.argv. Ref #445.
+    Safely infer an app id from sys.argv.
     """
     allowed = AttributeError, IndexError, TypeError
     with contextlib.suppress(allowed):
