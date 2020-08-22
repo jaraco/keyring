@@ -9,6 +9,8 @@ v21.3.0
 
 * #440: Keyring now honors XDG_CONFIG_HOME as
   ``~/.config``.
+* #452: SecretService ``get_credential`` now returns
+  ``None`` for unmatched query.
 
 
 v21.2.1
