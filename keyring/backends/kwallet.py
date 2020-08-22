@@ -1,5 +1,6 @@
 import sys
 import os
+import contextlib
 
 from ..backend import KeyringBackend
 from ..errors import PasswordDeleteError
@@ -16,12 +17,21 @@ except AttributeError:
     pass
 
 
+def _id_from_argv():
+    """
+    Safely infer an app id from sys.argv.
+    """
+    allowed = AttributeError, IndexError, TypeError
+    with contextlib.suppress(allowed):
+        return sys.argv[0]
+
+
 class DBusKeyring(KeyringBackend):
     """
     KDE KWallet 5 via D-Bus
     """
 
-    appid = os.path.basename(sys.argv[0]) or 'Python keyring library'
+    appid = _id_from_argv() or 'Python keyring library'
     wallet = None
     bus_name = 'org.kde.kwalletd5'
     object_path = '/modules/kwalletd5'

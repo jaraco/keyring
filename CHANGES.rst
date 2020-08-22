@@ -1,3 +1,9 @@
+v21.3.1
+-------
+
+* #445: Suppress errors when ``sys.argv`` is not
+  a list of at least one element.
+
 v21.3.0
 -------
 
