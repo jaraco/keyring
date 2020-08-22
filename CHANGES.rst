@@ -1,3 +1,10 @@
+v21.3.0
+-------
+
+* #440: Keyring now honors XDG_CONFIG_HOME as
+  ``~/.config``.
+
+
 v21.2.1
 -------
 
