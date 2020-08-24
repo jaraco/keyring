@@ -3,6 +3,7 @@ import os
 import contextlib
 
 from ..backend import KeyringBackend
+from ..credentials import SimpleCredential
 from ..errors import PasswordDeleteError
 from ..errors import PasswordSetError, InitError, KeyringLocked
 from ..util import properties
@@ -113,6 +114,26 @@ class DBusKeyring(KeyringBackend):
             return None
         password = self.iface.readPassword(self.handle, service, username, self.appid)
         return str(password)
+
+    def get_credential(self, service, username):
+        """Gets the first username and password for a service.
+        Returns a Credential instance
+
+        The username can be omitted, but if there is one, it will forward to
+        get_password.
+        Otherwise, it will return the first username and password combo that it finds.
+        """
+        if username is not None:
+            return self.get_password(service, username)
+        if not self.connected(service):
+            # the user pressed "cancel" when prompted to unlock their keyring.
+            raise KeyringLocked("Failed to unlock the keyring!")
+
+        for username in self.iface.entryList(self.handle, service, self.appid):
+            password = self.iface.readPassword(
+                self.handle, service, username, self.appid
+            )
+            return SimpleCredential(str(username), str(password))
 
     def set_password(self, service, username, password):
         """Set password for the username of the service
