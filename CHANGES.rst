@@ -1,3 +1,8 @@
+v21.4.0
+-------
+
+* #431: KWallet backend now supports ``get_credential``.
+
 v21.3.1
 -------
 
