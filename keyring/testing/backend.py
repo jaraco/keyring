@@ -33,8 +33,7 @@ def is_ascii_printable(s):
 
 
 class BackendBasicTests:
-    """Test for the keyring's basic functions. password_set and password_get
-    """
+    """Test for the keyring's basic functions. password_set and password_get"""
 
     DIFFICULT_CHARS = string.whitespace + string.punctuation
 

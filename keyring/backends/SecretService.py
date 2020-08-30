@@ -70,8 +70,7 @@ class Keyring(KeyringBackend):
             raise KeyringLocked('Failed to unlock the item!')
 
     def get_password(self, service, username):
-        """Get password of the username for the service
-        """
+        """Get password of the username for the service"""
         collection = self.get_preferred_collection()
         with closing(collection.connection):
             items = collection.search_items({"username": username, "service": service})
@@ -80,8 +79,7 @@ class Keyring(KeyringBackend):
                 return item.get_secret().decode('utf-8')
 
     def set_password(self, service, username, password):
-        """Set password for the username of the service
-        """
+        """Set password for the username of the service"""
         collection = self.get_preferred_collection()
         attributes = {
             "application": self.appid,
@@ -93,8 +91,7 @@ class Keyring(KeyringBackend):
             collection.create_item(label, attributes, password, replace=True)
 
     def delete_password(self, service, username):
-        """Delete the stored password (only the first one)
-        """
+        """Delete the stored password (only the first one)"""
         collection = self.get_preferred_collection()
         with closing(collection.connection):
             items = collection.search_items({"username": username, "service": service})

@@ -95,8 +95,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
 
     @abc.abstractmethod
     def get_password(self, service, username):
-        """Get password of the username for the service
-        """
+        """Get password of the username for the service"""
         return None
 
     @abc.abstractmethod
@@ -151,25 +150,21 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
 
 
 class Crypter:
-    """Base class providing encryption and decryption
-    """
+    """Base class providing encryption and decryption"""
 
     @abc.abstractmethod
     def encrypt(self, value):
-        """Encrypt the value.
-        """
+        """Encrypt the value."""
         pass
 
     @abc.abstractmethod
     def decrypt(self, value):
-        """Decrypt the value.
-        """
+        """Decrypt the value."""
         pass
 
 
 class NullCrypter(Crypter):
-    """A crypter that does nothing
-    """
+    """A crypter that does nothing"""
 
     def encrypt(self, value):
         return value

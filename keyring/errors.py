@@ -5,33 +5,27 @@ __metaclass__ = type
 
 
 class KeyringError(Exception):
-    """Base class for exceptions in keyring
-    """
+    """Base class for exceptions in keyring"""
 
 
 class PasswordSetError(KeyringError):
-    """Raised when the password can't be set.
-    """
+    """Raised when the password can't be set."""
 
 
 class PasswordDeleteError(KeyringError):
-    """Raised when the password can't be deleted.
-    """
+    """Raised when the password can't be deleted."""
 
 
 class InitError(KeyringError):
-    """Raised when the keyring could not be initialised
-    """
+    """Raised when the keyring could not be initialised"""
 
 
 class KeyringLocked(KeyringError):
-    """Raised when the keyring failed unlocking
-    """
+    """Raised when the keyring failed unlocking"""
 
 
 class NoKeyringError(KeyringError, RuntimeError):
-    """Raised when there is no keyring backend
-    """
+    """Raised when there is no keyring backend"""
 
 
 class ExceptionRaisedContext:

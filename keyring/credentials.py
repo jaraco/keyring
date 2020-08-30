@@ -5,8 +5,7 @@ __metaclass__ = type
 
 
 class Credential(metaclass=abc.ABCMeta):
-    """Abstract class to manage credentials
-    """
+    """Abstract class to manage credentials"""
 
     @abc.abstractproperty
     def username(self):
@@ -18,8 +17,7 @@ class Credential(metaclass=abc.ABCMeta):
 
 
 class SimpleCredential(Credential):
-    """Simple credentials implementation
-    """
+    """Simple credentials implementation"""
 
     def __init__(self, username, password):
         self._username = username
@@ -36,7 +34,7 @@ class SimpleCredential(Credential):
 
 class EnvironCredential(Credential):
     """Source credentials from environment variables.
-       Actual sourcing is deferred until requested.
+    Actual sourcing is deferred until requested.
     """
 
     def __init__(self, user_env_var, pwd_env_var):
@@ -44,8 +42,7 @@ class EnvironCredential(Credential):
         self.pwd_env_var = pwd_env_var
 
     def _get_env(self, env_var):
-        """Helper to read an environment variable
-        """
+        """Helper to read an environment variable"""
         value = os.environ.get(env_var)
         if not value:
             raise ValueError('Missing environment variable:%s' % env_var)

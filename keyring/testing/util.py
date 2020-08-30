@@ -66,8 +66,7 @@ ALPHABET = string.ascii_letters + string.digits
 
 
 def random_string(k, source=ALPHABET):
-    """Generate a random string with length <i>k</i>
-    """
+    """Generate a random string with length <i>k</i>"""
     result = ''
     for i in range(0, k):
         result += random.choice(source)

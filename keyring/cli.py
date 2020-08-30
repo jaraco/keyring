@@ -101,14 +101,12 @@ class CommandLineTool:
             pass
 
     def input_password(self, prompt):
-        """Retrieve password from input.
-        """
+        """Retrieve password from input."""
         return self.pass_from_pipe() or getpass.getpass(prompt)
 
     @classmethod
     def pass_from_pipe(cls):
-        """Return password from pipe if not on TTY, else False.
-        """
+        """Return password from pipe if not on TTY, else False."""
         is_pipe = not sys.stdin.isatty()
         return is_pipe and cls.strip_last_newline(sys.stdin.read())
 

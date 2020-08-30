@@ -18,8 +18,7 @@ _keyring_backend = None
 
 
 def set_keyring(keyring):
-    """Set current keyring backend.
-    """
+    """Set current keyring backend."""
     global _keyring_backend
     if not isinstance(keyring, backend.KeyringBackend):
         raise TypeError("The keyring must be a subclass of KeyringBackend")
@@ -28,8 +27,7 @@ def set_keyring(keyring):
 
 
 def get_keyring():
-    """Get current keyring backend.
-    """
+    """Get current keyring backend."""
     return _keyring_backend
 
 
@@ -51,26 +49,22 @@ def disable():
 
 
 def get_password(service_name, username):
-    """Get password from the specified service.
-    """
+    """Get password from the specified service."""
     return _keyring_backend.get_password(service_name, username)
 
 
 def set_password(service_name, username, password):
-    """Set password for the user in the specified service.
-    """
+    """Set password for the user in the specified service."""
     _keyring_backend.set_password(service_name, username, password)
 
 
 def delete_password(service_name, username):
-    """Delete the password for the user in the specified service.
-    """
+    """Delete the password for the user in the specified service."""
     _keyring_backend.delete_password(service_name, username)
 
 
 def get_credential(service_name, username):
-    """Get a Credential for the specified service.
-    """
+    """Get a Credential for the specified service."""
     return _keyring_backend.get_credential(service_name, username)
 
 
