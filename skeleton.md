@@ -40,6 +40,10 @@ The `--allow-unrelated-histories` is necessary because the history from the skel
 
 Whenever a change is needed or desired for the general technique for packaging, it can be made in the skeleton project and then merged into each of the derived projects as needed, recommended before each release. As a result, features and best practices for packaging are centrally maintained and readily trickle into a whole suite of packages. This technique lowers the amount of tedious work necessary to create or maintain a project, and coupled with other techniques like continuous integration and deployment, lowers the cost of creating and maintaining refined Python projects to just a few, familiar Git operations.
 
+For example, here's a session of the [path project](https://pypi.org/project/path) pulling non-conflicting changes from the skeleton:
+
+<img src="https://raw.githubusercontent.com/jaraco/skeleton/gh-pages/docs/refresh.svg">
+
 Thereafter, the target project can make whatever customizations it deems relevant to the scaffolding. The project may even at some point decide that the divergence is too great to merit renewed merging with the original skeleton. This approach applies maximal guidance while creating minimal constraints.
 
 # Features
