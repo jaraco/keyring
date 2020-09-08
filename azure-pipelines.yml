@@ -92,6 +92,7 @@ stages:
         tox -e release
       env:
         TWINE_PASSWORD: $(PyPI-token)
+        GITHUB_TOKEN: $(Github-token)
         TIDELIFT_TOKEN: $(Tidelift-token)
       displayName: 'publish to PyPI'
 

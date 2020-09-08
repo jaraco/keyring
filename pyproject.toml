@@ -6,3 +6,11 @@ build-backend = "setuptools.build_meta"
 skip-string-normalization = true
 
 [tool.setuptools_scm]
+
+# jaraco/skeleton#22
+[tool.jaraco.pytest.opts.--black]
+action = "store_true"
+
+# jaraco/skeleton#22
+[tool.jaraco.pytest.opts.--mypy]
+action = "store_true"
