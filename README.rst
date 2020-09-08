@@ -375,6 +375,26 @@ To report a security vulnerability, please use the
 `Tidelift security contact <https://tidelift.com/security>`_.
 Tidelift will coordinate the fix and disclosure.
 
+Security Considerations
+=======================
+
+Each builtin backend may have security considerations to understand before using this library. 
+If you are a library or tool author using ``keyring``, you may wish to forward these considerations to your
+users.
+
+This list is not exhaustive - it is added to as issues are reported.
+
+- macOS Keychain
+    - Any Python script or application can access secrets set using ``keyring`` without prompting the user for a password. 
+      If there are specific secrets you would like to always prompt for your password when accessed, you can manually remove ``Python`` 
+      from their ``Access Control`` settings in the ``Keychain Access`` application.
+- Freedesktop Secret Service
+    - No analysis has been performed
+- KDE4 & KDE5 KWallet
+    - No analysis has been performed
+- Windows Credential Locker
+    - No analysis has been performed
+
 Making Releases
 ===============
 
