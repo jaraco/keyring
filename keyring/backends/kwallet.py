@@ -123,7 +123,7 @@ class DBusKeyring(KeyringBackend):
         Otherwise, it will return the first username and password combo that it finds.
         """
         if username is not None:
-            return self.get_password(service, username)
+            return SimpleCredential(str(username), self.get_password(service, username))
         if not self.connected(service):
             # the user pressed "cancel" when prompted to unlock their keyring.
             raise KeyringLocked("Failed to unlock the keyring!")
