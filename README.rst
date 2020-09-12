@@ -378,20 +378,28 @@ Tidelift will coordinate the fix and disclosure.
 Security Considerations
 =======================
 
-Each builtin backend may have security considerations to understand before using this library. 
-If you are a library or tool author using ``keyring``, you may wish to forward these considerations to your
-users.
+Each builtin backend may have security considerations to understand
+before using this library. Authors of tools or libraries utilizing
+``keyring`` are encouraged to consider these concerns.
 
-This list is not exhaustive - it is added to as issues are reported.
+As with any list of known security concerns, this list is not exhaustive.
+Additional issues can be added as needed.
 
 - macOS Keychain
-    - Any Python script or application can access secrets set using ``keyring`` without prompting the user for a password. 
-      If there are specific secrets you would like to always prompt for your password when accessed, you can manually remove ``Python`` 
-      from their ``Access Control`` settings in the ``Keychain Access`` application.
+    - Any Python script or application can access secrets created by
+      ``keyring`` from that same Python executable without the operating
+      system prompting the user for a password. To cause any specific
+      secret to prompt for a password every time it is accessed, locate
+      the credential using the ``Keychain Access`` application, and in
+      the ``Access Control`` settings, remove ``Python`` from the list
+      of allowed applications.
+
 - Freedesktop Secret Service
     - No analysis has been performed
+
 - KDE4 & KDE5 KWallet
     - No analysis has been performed
+
 - Windows Credential Locker
     - No analysis has been performed
 
