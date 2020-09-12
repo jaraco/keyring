@@ -7,6 +7,8 @@ import abc
 import logging
 import operator
 
+from typing import Optional
+
 try:
     from importlib import metadata  # type: ignore
 except ImportError:
@@ -94,7 +96,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         )
 
     @abc.abstractmethod
-    def get_password(self, service, username):
+    def get_password(self, service, username) -> Optional[str]:
         """Get password of the username for the service"""
         return None
 
@@ -121,7 +123,9 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     # for backward-compatibility, don't require a backend to implement
     #  get_credential
     # @abc.abstractmethod
-    def get_credential(self, service, username):
+    def get_credential(
+        self, service, username
+    ) -> Optional[credentials.SimpleCredential]:
         """Gets the username and password for the service.
         Returns a Credential instance.
 
