@@ -135,8 +135,6 @@ class DBusKeyring(KeyringBackend):
             )
             return SimpleCredential(str(username), str(password))
 
-        return None
-
     def set_password(self, service, username, password):
         """Set password for the username of the service"""
         if not self.connected(service):
