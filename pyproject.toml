@@ -14,3 +14,9 @@ addopts = "--black"
 # jaraco/skeleton#22
 [tool.jaraco.pytest.plugins.mypy]
 addopts = "--mypy"
+
+[tool.jaraco.pytest.plugins.flake8]
+addopts = "--flake8"
+
+[tool.jaraco.pytest.plugins.cov]
+addopts = "--cov"
