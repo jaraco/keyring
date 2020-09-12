@@ -1,3 +1,10 @@
+v21.4.1
+-------
+
+* #463: Fixed regression in KWallet ``get_credential``
+  where a simple string was returned instead of a
+  SimpleCredential.
+
 v21.4.0
 -------
 
