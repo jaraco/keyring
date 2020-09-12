@@ -8,9 +8,9 @@ skip-string-normalization = true
 [tool.setuptools_scm]
 
 # jaraco/skeleton#22
-[tool.jaraco.pytest.opts.--black]
-action = "store_true"
+[tool.jaraco.pytest.plugins.black]
+addopts = "--black"
 
 # jaraco/skeleton#22
-[tool.jaraco.pytest.opts.--mypy]
-action = "store_true"
+[tool.jaraco.pytest.plugins.mypy]
+addopts = "--mypy"
