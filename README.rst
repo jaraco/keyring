@@ -157,6 +157,8 @@ use-cases. Simply install them to make them available:
 - `sagecipher <https://pypi.org/project/sagecipher>`_ - an encryption
   backend which uses the ssh agent protocol's signature operation to
   derive the cipher key.
+- `keyrings.osx_keychain_keys <https://pypi.org/project/keyrings.osx-keychain-keys>`_
+  - OSX keychain key-management, for private, public and symmetric keys.
 
 
 Write your own keyring backend
