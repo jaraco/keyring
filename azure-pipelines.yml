@@ -70,26 +70,3 @@ stages:
         testResultsFiles: '**/test-results.xml'
         testRunTitle: 'Python $(python.version)'
       condition: succeededOrFailed()
-
-- stage: Publish
-  dependsOn: Test
-  jobs:
-  - job: 'Publish'
-
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.8'
-        architecture: 'x64'
-
-    - script: python -m pip install tox
-      displayName: 'Install tox'
-
-    - script: |
-        tox -e release
-      env:
-        TWINE_PASSWORD: $(PyPI-token)
-        GITHUB_TOKEN: $(Github-token)
-      displayName: 'publish to PyPI'
-
-  condition: contains(variables['Build.SourceBranch'], 'tags')

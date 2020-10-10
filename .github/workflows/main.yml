@@ -1,4 +1,4 @@
-name: Main
+name: Automated Tests
 
 on: [push, pull_request]
 
@@ -20,3 +20,23 @@ jobs:
           python -m pip install tox
       - name: Run tests
         run: tox
+
+  release:
+    needs: test
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install tox
+        run: |
+          python -m pip install tox
+      - name: Release
+        run: tox -e release
+        env:
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
