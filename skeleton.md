@@ -56,6 +56,7 @@ The features/techniques employed by the skeleton include:
 - A README.rst as reStructuredText with some popular badges, but with Read the Docs and AppVeyor badges commented out
 - A CHANGES.rst file intended for publishing release notes about the project
 - Use of [Black](https://black.readthedocs.io/en/stable/) for code formatting (disabled on unsupported Python 3.5 and earlier)
+- Integrated type checking through [mypy](https://github.com/python/mypy/).
 
 ## Packaging Conventions
 
@@ -109,9 +110,20 @@ Relies on a .flake8 file to correct some default behaviors:
 
 The project is pre-configured to run tests through multiple CI providers.
 
+### Github Actions
+
+[Github Actions](https://docs.github.com/en/free-pro-team@latest/actions) are the preferred provider as they provide free, fast, multi-platform services with straightforward configuration. Configured in `.github/workflows`.
+
+Features include:
+- test against multiple Python versions
+- run on late (and updated) platform versions
+- automated releases of tagged commits
+
 ### Azure Pipelines
 
-[Azure Pipelines](https://azure.microsoft.com/en-us/services/devops/pipelines/) are the preferred provider as they provide free, fast, multi-platform services. See azure-pipelines.yml for more details.
+[Azure Pipelines](https://azure.microsoft.com/en-us/services/devops/pipelines/) were adopted for free, fast, multi-platform services. See azure-pipelines.yml for more details.
+
+Azure Pipelines require many [complicated setup steps](https://github.com/Azure/azure-devops-cli-extension/issues/968) that have not been readily automated.
 
 Features include:
 
@@ -133,20 +145,13 @@ A minimal template for running under AppVeyor (Windows) is provided.
 
 ### Continuous Deployments
 
-In addition to running tests, an additional deploy stage is configured to automatically release tagged commits to PyPI using [API tokens](https://pypi.org/help/#apitoken). The release process expects an authorized token to be configured with Azure as the `Azure secrets` variable group. This variable group needs to be created only once per organization. For example:
+In addition to running tests, an additional publish stage is configured to automatically release tagged commits to PyPI using [API tokens](https://pypi.org/help/#apitoken). The release process expects an authorized token to be configured with each Github project (or org) `PYPI_TOKEN` [secret](https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets). Example:
 
 ```
-# create a resource group if none exists
-az group create --name main --location eastus2
-# create the vault (try different names until something works)
-az keyvault create --name secrets007 --resource-group main
-# create the secret
-az keyvault secret set --vault-name secrets007 --name PyPI-token --value $token
+pip-run -q setuptools jaraco.develop -- -m jaraco.develop.add-github-secret PYPI_TOKEN $TOKEN --project org/repo
 ```
 
-Then, in the web UI for the project's Pipelines Library, create the `Azure secrets` variable group referencing the key vault name.
-
-For more details, see [this blog entry](https://blog.jaraco.com/configuring-azure-pipelines-with-secets/).
+<!-- note setuptools is required due to a [bug in munch](https://github.com/Infinidat/munch/issues/67) -->
 
 ## Building Documentation
 
