@@ -124,10 +124,8 @@ Features include:
 In addition to running tests, an additional publish stage is configured to automatically release tagged commits to PyPI using [API tokens](https://pypi.org/help/#apitoken). The release process expects an authorized token to be configured with each Github project (or org) `PYPI_TOKEN` [secret](https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets). Example:
 
 ```
-pip-run -q setuptools jaraco.develop -- -m jaraco.develop.add-github-secret PYPI_TOKEN $TOKEN --project org/repo
+pip-run -q jaraco.develop -- -m jaraco.develop.add-github-secrets
 ```
-
-<!-- note setuptools is required due to a [bug in munch](https://github.com/Infinidat/munch/issues/67) -->
 
 ## Building Documentation
 
