@@ -6,18 +6,13 @@
 
 .. _PyPI link: https://pypi.org/project/keyring
 
-.. image:: https://img.shields.io/travis/jaraco/keyring/master.svg
-   :target: https://travis-ci.org/jaraco/keyring
-
-.. image:: https://dev.azure.com/jaraco/keyring/_apis/build/status/jaraco.keyring?branchName=master
-   :target: https://dev.azure.com/jaraco/keyring/_build/latest?definitionId=1&branchName=master
+.. image:: https://github.com/jaraco/keyring/workflows/Automated%20Tests/badge.svg
+   :target: https://github.com/jaraco/keyring/actions?query=workflow%3A%22Automated+Tests%22
+   :alt: Automated Tests
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
    :alt: Code style: Black
-
-.. image:: https://img.shields.io/appveyor/ci/jaraco/keyring/master.svg
-   :target: https://ci.appveyor.com/project/jaraco/keyring/branch/master
 
 .. image:: https://readthedocs.org/projects/keyring/badge/?version=latest
    :target: https://keyring.readthedocs.io/en/latest/?badge=latest
