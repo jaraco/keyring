@@ -6,9 +6,6 @@ v21.5.0
   D-Bus. Keyring should now be much more responsive
   in these environments.
 
-v21.4.1
--------
-
 * #463: Fixed regression in KWallet ``get_credential``
   where a simple string was returned instead of a
   SimpleCredential.
