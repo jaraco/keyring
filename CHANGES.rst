@@ -1,3 +1,11 @@
+v21.5.0
+-------
+
+* #474: SecretService and KWallet backends are now
+  disabled if the relevant names are not available on
+  D-Bus. Keyring should now be much more responsive
+  in these environments.
+
 v21.4.1
 -------
 
