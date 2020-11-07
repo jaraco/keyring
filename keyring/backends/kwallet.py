@@ -46,12 +46,13 @@ class DBusKeyring(KeyringBackend):
             bus = dbus.SessionBus(mainloop=DBusGMainLoop())
         except dbus.DBusException as exc:
             raise RuntimeError(exc.get_dbus_message())
-        try:
-            bus.get_object(cls.bus_name, cls.object_path)
-        except dbus.DBusException:
-            tmpl = 'cannot connect to {bus_name}'
-            msg = tmpl.format(bus_name=cls.bus_name)
-            raise RuntimeError(msg)
+        if not (
+            bus.name_has_owner(cls.bus_name)
+            or cls.bus_name in bus.list_activatable_names()
+        ):
+            raise RuntimeError(
+                "The KWallet daemon is neither running nor activatable through D-Bus"
+            )
         if "KDE" in os.getenv("XDG_CURRENT_DESKTOP", "").split(":"):
             return 5.1
         return 4.9
