@@ -55,7 +55,7 @@ Using Keyring
 =============
 
 The basic usage of keyring is pretty simple: just call
-``keyring.set_password`` and ``keyring.get_password``:
+``keyring.set_password`` and ``keyring.get_password``::
 
     >>> import keyring
     >>> keyring.set_password("system", "username", "password")
