@@ -74,15 +74,22 @@ def recommended(backend):
 
 def init_backend(limit=None):
     """
-    Load a keyring specified in the config file or infer the best available.
+    Load a detected backend.
+    """
+    set_keyring(_detect_backend(limit))
+
+
+def _detect_backend(limit=None):
+    """
+    Return a keyring specified in the config file or infer the best available.
 
     Limit, if supplied, should be a callable taking a backend and returning
     True if that backend should be included for consideration.
     """
+
     # save the limit for the chainer to honor
     backend._limit = limit
-
-    set_keyring(
+    return (
         load_env()
         or load_config()
         or max(
