@@ -406,19 +406,16 @@ Making Releases
 This project makes use of automated releases continuous
 integration. The
 simple workflow is to tag a commit and push it to Github. If it
-passes tests on a late Python version, it will be automatically
-deployed to PyPI.
+passes tests in CI, it will be automatically deployed to PyPI.
 
 Other things to consider when making a release:
 
- - first ensure that tests pass (preferably on Windows and Linux)
- - check that the changelog is current for the intended release
+- Check that the changelog is current for the intended release.
 
 Running Tests
 =============
 
-Tests are continuously run in various CI environments such as
-Azure Pipelines and Travis CI.
+Tests are continuously run in Github Actions.
 
 To run the tests locally, install and invoke
 `tox <https://pypi.org/project/tox>`_.
