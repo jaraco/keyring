@@ -1,3 +1,8 @@
+v21.7.0
+-------
+
+* #437: Package now declares typing support.
+
 v21.6.0
 -------
 
