@@ -16,10 +16,6 @@ pytestmark = [
         platform.system() == 'Linux',
         reason="#410: keyring discovery fails intermittently",
     ),
-    pytest.mark.xfail(
-        platform.system() == 'Windows',
-        reason="#436: Multiprocessing fails on Windows intermittently",
-    ),
 ]
 
 
