@@ -1,3 +1,13 @@
+v21.6.0
+-------
+
+* #403: Keyring no longer eagerly initializes the backend
+  on import, but instead defers the backend initialization
+  until a keyring is accessed. Any callers reliant on this
+  early intialization behavior may need to call
+  ``keyring.core.init_backend()`` to explicitly initialize
+  the detected backend.
+
 v21.5.0
 -------
 
