@@ -28,6 +28,8 @@ def set_keyring(keyring):
 
 def get_keyring():
     """Get current keyring backend."""
+    if _keyring_backend is None:
+        init_backend()
     return _keyring_backend
 
 
@@ -50,22 +52,22 @@ def disable():
 
 def get_password(service_name, username):
     """Get password from the specified service."""
-    return _keyring_backend.get_password(service_name, username)
+    return get_keyring().get_password(service_name, username)
 
 
 def set_password(service_name, username, password):
     """Set password for the user in the specified service."""
-    _keyring_backend.set_password(service_name, username, password)
+    get_keyring().set_password(service_name, username, password)
 
 
 def delete_password(service_name, username):
     """Delete the password for the user in the specified service."""
-    _keyring_backend.delete_password(service_name, username)
+    get_keyring().delete_password(service_name, username)
 
 
 def get_credential(service_name, username):
     """Get a Credential for the specified service."""
-    return _keyring_backend.get_credential(service_name, username)
+    return get_keyring().get_credential(service_name, username)
 
 
 def recommended(backend):
@@ -187,7 +189,3 @@ def _load_keyring_path(config):
         sys.path.insert(0, path)
     except (configparser.NoOptionError, configparser.NoSectionError):
         pass
-
-
-# init the _keyring_backend
-init_backend()
