@@ -87,9 +87,9 @@ class WinVaultKeyring(KeyringBackend):
             return None
         blob = res['CredentialBlob']
         try:
-            return blob.decode("utf-16")
+            return blob.decode('utf-16')
         except UnicodeDecodeError:
-            return blob.decode("utf-8")
+            return blob.decode('utf-8')
 
     def _get_password(self, target):
         try:
