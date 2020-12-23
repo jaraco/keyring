@@ -158,9 +158,13 @@ class WinVaultKeyring(KeyringBackend):
             if not res:
                 return None
         try:
-            return SimpleCredential(res['UserName'], res['CredentialBlob'].decode('utf-16'))
+            return SimpleCredential(
+                res['UserName'], res['CredentialBlob'].decode('utf-16')
+            )
         except UnicodeDecodeError:
-            return SimpleCredential(res['UserName'], res['CredentialBlob'].decode('utf-8'))
+            return SimpleCredential(
+                res['UserName'], res['CredentialBlob'].decode('utf-8')
+            )
 
 
 class OldPywinError:
