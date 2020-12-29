@@ -1,4 +1,5 @@
 import functools
+import logging
 
 from ..util import properties
 from ..backend import KeyringBackend
@@ -22,6 +23,7 @@ with ExceptionRaisedContext() as missing_deps:
         # force demand import to raise ImportError
         win32cred.__name__
 
+log = logging.getLogger(__name__)
 
 __metaclass__ = type
 
@@ -53,7 +55,12 @@ class DecodingCredential(dict):
         try:
             return cred.decode('utf-16')
         except UnicodeDecodeError:
-            return cred.decode('utf-8')
+            decoded_cred_utf8 = cred.decode('utf-8')
+            log.warning(
+                "Retrieved an UTF-8 encoded credential. Please be aware that "
+                "this library only writes credentials in UTF-16."
+            )
+            return decoded_cred_utf8
 
 
 class WinVaultKeyring(KeyringBackend):
