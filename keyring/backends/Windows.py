@@ -1,4 +1,5 @@
 import functools
+import logging
 
 from ..util import properties
 from ..backend import KeyringBackend
@@ -22,6 +23,7 @@ with ExceptionRaisedContext() as missing_deps:
         # force demand import to raise ImportError
         win32cred.__name__
 
+log = logging.getLogger(__name__)
 
 __metaclass__ = type
 
@@ -41,6 +43,24 @@ class Persistence:
             attr = 'CRED_PERSIST_' + value.replace(' ', '_').upper()
             value = getattr(win32cred, attr)
         setattr(keyring, '_persist', value)
+
+
+class DecodingCredential(dict):
+    @property
+    def value(self):
+        """
+        Attempt to decode the credential blob as UTF-16 then UTF-8.
+        """
+        cred = self['CredentialBlob']
+        try:
+            return cred.decode('utf-16')
+        except UnicodeDecodeError:
+            decoded_cred_utf8 = cred.decode('utf-8')
+            log.warning(
+                "Retrieved an UTF-8 encoded credential. Please be aware that "
+                "this library only writes credentials in UTF-16."
+            )
+            return decoded_cred_utf8
 
 
 class WinVaultKeyring(KeyringBackend):
@@ -85,8 +105,7 @@ class WinVaultKeyring(KeyringBackend):
             res = self._get_password(self._compound_name(username, service))
         if not res:
             return None
-        blob = res['CredentialBlob']
-        return blob.decode('utf-16')
+        return res.value
 
     def _get_password(self, target):
         try:
@@ -98,7 +117,7 @@ class WinVaultKeyring(KeyringBackend):
             if e.winerror == 1168 and e.funcname == 'CredRead':  # not found
                 return None
             raise
-        return res
+        return DecodingCredential(res)
 
     def set_password(self, service, username, password):
         existing_pw = self._get_password(service)
@@ -109,7 +128,7 @@ class WinVaultKeyring(KeyringBackend):
             self._set_password(
                 target,
                 existing_username,
-                existing_pw['CredentialBlob'].decode('utf-16'),
+                existing_pw.value,
             )
         self._set_password(service, username, str(password))
 
@@ -154,7 +173,7 @@ class WinVaultKeyring(KeyringBackend):
             res = self._get_password(service)
             if not res:
                 return None
-        return SimpleCredential(res['UserName'], res['CredentialBlob'].decode('utf-16'))
+        return SimpleCredential(res['UserName'], res.value)
 
 
 class OldPywinError:

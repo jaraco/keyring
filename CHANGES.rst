@@ -1,3 +1,11 @@
+v21.3.0
+-------
+
+* #438: For better interoperability with other
+  applications, ``Windows`` backend now attempts to
+  decode passwords using UTF-8 if UTF-16 decoding fails.
+  Passwords are still stored as UTF-16.
+
 v21.7.0
 -------
 
@@ -43,7 +51,6 @@ v21.3.0
   ``~/.config``.
 * #452: SecretService ``get_credential`` now returns
   ``None`` for unmatched query.
-
 
 v21.2.1
 -------
