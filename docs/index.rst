@@ -1,5 +1,5 @@
-Welcome to keyring documentation!
-=================================
+Welcome to |project| documentation!
+===================================
 
 .. include:: ../README.rst 
 
