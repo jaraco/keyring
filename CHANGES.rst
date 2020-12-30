@@ -1,4 +1,4 @@
-v21.3.0
+v21.8.0
 -------
 
 * #438: For better interoperability with other
