@@ -3,7 +3,7 @@ import sys
 import pytest
 
 import keyring.backends.Windows
-from keyring.testing.backend import BackendBasicTests
+from keyring.testing.backend import BackendBasicTests, UNICODE_CHARS
 
 
 @pytest.mark.skipif(
@@ -56,7 +56,7 @@ class TestWinVaultKeyring(BackendBasicTests):
         """
         service = "keyring-utf8-test"
         username = "keyring"
-        password = "utf8-test"
+        password = "utf8-test" + UNICODE_CHARS
 
         self.set_utf8_password(service, username, password)
         assert self.keyring.get_password(service, username) == password
