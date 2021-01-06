@@ -1,9 +1,6 @@
 import sys
 
 
-__metaclass__ = type
-
-
 class KeyringError(Exception):
     """Base class for exceptions in keyring"""
 

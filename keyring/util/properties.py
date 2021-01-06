@@ -1,7 +1,5 @@
 from collections import abc
 
-__metaclass__ = type
-
 
 class ClassProperty(property):
     """

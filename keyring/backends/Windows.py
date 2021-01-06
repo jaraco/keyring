@@ -25,8 +25,6 @@ with ExceptionRaisedContext() as missing_deps:
 
 log = logging.getLogger(__name__)
 
-__metaclass__ = type
-
 
 class Persistence:
     def __get__(self, keyring, type=None):

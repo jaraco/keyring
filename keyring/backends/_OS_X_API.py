@@ -3,8 +3,6 @@ import ctypes
 import struct
 from ctypes import c_void_p, c_uint16, c_uint32, c_int32, c_char_p, POINTER
 
-__metaclass__ = type
-
 
 sec_keychain_ref = sec_keychain_item_ref = c_void_p
 OS_status = c_int32

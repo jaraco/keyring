@@ -1,8 +1,6 @@
 import os
 import abc
 
-__metaclass__ = type
-
 
 class Credential(metaclass=abc.ABCMeta):
     """Abstract class to manage credentials"""

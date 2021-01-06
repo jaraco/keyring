@@ -4,8 +4,6 @@ import sys
 import random
 import string
 
-__metaclass__ = type
-
 
 class ImportKiller:
     "Context manager to make an import of a given name or names fail."

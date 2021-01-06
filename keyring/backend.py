@@ -17,8 +17,6 @@ except ImportError:
 from . import credentials, errors, util
 from .util import properties
 
-__metaclass__ = type
-
 log = logging.getLogger(__name__)
 
 

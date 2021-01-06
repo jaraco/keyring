@@ -12,8 +12,6 @@ import pytest
 from .util import random_string
 from keyring import errors
 
-__metaclass__ = type
-
 # unicode only characters
 # Sourced from The Quick Brown Fox... Pangrams
 # http://www.columbia.edu/~fdc/utf8/
