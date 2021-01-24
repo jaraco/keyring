@@ -111,7 +111,7 @@ def _load_keyring_class(keyring_name):
 
     >>> popular_names = [
     ...      'keyring.backends.Windows.WinVaultKeyring',
-    ...      'keyring.backends.OS_X.Keyring',
+    ...      'keyring.backends.macOS.Keyring',
     ...      'keyring.backends.kwallet.DBusKeyring',
     ...      'keyring.backends.SecretService.Keyring',
     ...  ]

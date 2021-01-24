@@ -1,3 +1,10 @@
+v22.0.0
+-------
+
+* Renamed macOS backend from ``OS_X`` to ``macOS``.
+  Any users specifying the backend by name will need to
+  use the new name ``keyring.backends.macOS``.
+
 v21.8.0
 -------
 

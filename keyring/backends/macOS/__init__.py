@@ -1,15 +1,15 @@
 import platform
 import os
 
-from ..backend import KeyringBackend
-from ..errors import PasswordSetError
-from ..errors import PasswordDeleteError
-from ..errors import KeyringLocked
-from ..errors import KeyringError
-from ..util import properties
+from ...backend import KeyringBackend
+from ...errors import PasswordSetError
+from ...errors import PasswordDeleteError
+from ...errors import KeyringLocked
+from ...errors import KeyringError
+from ...util import properties
 
 try:
-    from . import _OS_X_API as api
+    from . import api
 except Exception:
     pass
 
