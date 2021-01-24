@@ -48,55 +48,58 @@ class CommandLineTool:
             core.disable()
             return
 
+        self._check_args(args)
+        self._load_spec_backend(opts)
+        method = getattr(self, f'do_{self.kind}', self.invalid_op)
+        return method()
+
+    def _check_args(self, args):
         try:
-            kind, service, username = args
+            self.kind, self.service, self.username = args
         except ValueError:
             if len(args) == 0:
                 # Be nice with the user if he just tries to launch the tool
                 self.parser.print_help()
-                return 1
-            else:
-                self.parser.error("Wrong number of arguments")
+                raise SystemExit(1)
+            self.parser.error("Wrong number of arguments")
 
-        if opts.keyring_backend is not None:
-            try:
-                if opts.keyring_path:
-                    sys.path.insert(0, opts.keyring_path)
-                set_keyring(core.load_keyring(opts.keyring_backend))
-            except (Exception,):
-                # Tons of things can go wrong here:
-                #   ImportError when using "fjkljfljkl"
-                #   AttributeError when using "os.path.bar"
-                #   TypeError when using "__builtins__.str"
-                # So, we play on the safe side, and catch everything.
-                e = sys.exc_info()[1]
-                self.parser.error("Unable to load specified keyring: %s" % e)
+    def do_get(self):
+        password = get_password(self.service, self.username)
+        if password is None:
+            raise SystemExit(1)
 
-        if kind == 'get':
-            password = get_password(service, username)
-            if password is None:
-                return 1
+        self.output_password(password)
 
-            self.output_password(password)
-            return 0
+    def do_set(self):
+        password = self.input_password(
+            f"Password for '{self.username}' in '{self.service}': "
+        )
+        set_password(self.service, self.username, password)
 
-        elif kind == 'set':
-            password = self.input_password(
-                "Password for '%s' in '%s': " % (username, service)
-            )
-            set_password(service, username, password)
-            return 0
+    def do_del(self):
+        self.input_password(
+            f"Deleting password for '{self.username}' in '{self.service}': "
+        )
+        delete_password(self.service, self.username)
 
-        elif kind == 'del':
-            password = self.input_password(
-                "Deleting password for '%s' in '%s': " % (username, service)
-            )
-            delete_password(service, username)
-            return 0
+    def invalid_op(self):
+        self.parser.error("Specify operation 'get', 'del', or 'set'.")
 
-        else:
-            self.parser.error("You can only 'get', 'del' or 'set' a password.")
-            pass
+    def _load_spec_backend(self, opts):
+        if opts.keyring_backend is None:
+            return
+
+        try:
+            if opts.keyring_path:
+                sys.path.insert(0, opts.keyring_path)
+            set_keyring(core.load_keyring(opts.keyring_backend))
+        except (Exception,) as exc:
+            # Tons of things can go wrong here:
+            #   ImportError when using "fjkljfljkl"
+            #   AttributeError when using "os.path.bar"
+            #   TypeError when using "__builtins__.str"
+            # So, we play on the safe side, and catch everything.
+            self.parser.error(f"Unable to load specified keyring: {exc}")
 
     def input_password(self, prompt):
         """Retrieve password from input."""
