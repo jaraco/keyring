@@ -2,7 +2,7 @@
 """Simple command line interface to get/set password from a keyring"""
 
 import getpass
-from optparse import OptionParser
+import argparse
 import sys
 
 from . import core
@@ -12,56 +12,65 @@ from . import set_keyring, get_password, set_password, delete_password
 
 class CommandLineTool:
     def __init__(self):
-        self.parser = OptionParser(usage="%prog [get|set|del] SERVICE USERNAME")
-        self.parser.add_option(
+        self.parser = argparse.ArgumentParser()
+        self.parser.add_argument(
             "-p",
             "--keyring-path",
             dest="keyring_path",
             default=None,
             help="Path to the keyring backend",
         )
-        self.parser.add_option(
+        self.parser.add_argument(
             "-b",
             "--keyring-backend",
             dest="keyring_backend",
             default=None,
             help="Name of the keyring backend",
         )
-        self.parser.add_option(
+        self.parser.add_argument(
             "--list-backends",
             action="store_true",
             help="List keyring backends and exit",
         )
-        self.parser.add_option(
+        self.parser.add_argument(
             "--disable", action="store_true", help="Disable keyring and exit"
+        )
+        self.parser.add_argument(
+            'operation',
+            help="get|set|del",
+            nargs="?",
+        )
+        self.parser.add_argument(
+            'service',
+            nargs="?",
+        )
+        self.parser.add_argument(
+            'username',
+            nargs="?",
         )
 
     def run(self, argv):
-        opts, args = self.parser.parse_args(argv)
+        args = self.parser.parse_args(argv)
+        vars(self).update(vars(args))
 
-        if opts.list_backends:
+        if args.list_backends:
             for k in backend.get_all_keyring():
                 print(k)
             return
 
-        if opts.disable:
+        if args.disable:
             core.disable()
             return
 
-        self._check_args(args)
-        self._load_spec_backend(opts)
-        method = getattr(self, f'do_{self.kind}', self.invalid_op)
+        self._check_args()
+        self._load_spec_backend()
+        method = getattr(self, f'do_{self.operation}', self.invalid_op)
         return method()
 
-    def _check_args(self, args):
-        try:
-            self.kind, self.service, self.username = args
-        except ValueError:
-            if len(args) == 0:
-                # Be nice with the user if he just tries to launch the tool
-                self.parser.print_help()
-                raise SystemExit(1)
-            self.parser.error("Wrong number of arguments")
+    def _check_args(self):
+        if self.operation:
+            if self.service is None or self.username is None:
+                self.parser.error(f"{self.operation} requires service and username")
 
     def do_get(self):
         password = get_password(self.service, self.username)
@@ -85,14 +94,14 @@ class CommandLineTool:
     def invalid_op(self):
         self.parser.error("Specify operation 'get', 'del', or 'set'.")
 
-    def _load_spec_backend(self, opts):
-        if opts.keyring_backend is None:
+    def _load_spec_backend(self):
+        if self.keyring_backend is None:
             return
 
         try:
-            if opts.keyring_path:
-                sys.path.insert(0, opts.keyring_path)
-            set_keyring(core.load_keyring(opts.keyring_backend))
+            if self.keyring_path:
+                sys.path.insert(0, self.keyring_path)
+            set_keyring(core.load_keyring(self.keyring_backend))
         except (Exception,) as exc:
             # Tons of things can go wrong here:
             #   ImportError when using "fjkljfljkl"
