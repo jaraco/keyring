@@ -76,8 +76,7 @@ class CommandLineTool:
         password = get_password(self.service, self.username)
         if password is None:
             raise SystemExit(1)
-
-        self.output_password(password)
+        print(password)
 
     def do_set(self):
         password = self.input_password(
@@ -124,14 +123,6 @@ class CommandLineTool:
     def strip_last_newline(str):
         """Strip one last newline, if present."""
         return str[: -str.endswith('\n')]
-
-    def output_password(self, password):
-        """Output the password to the user.
-
-        This mostly exists to ease the testing process.
-        """
-
-        print(password, file=sys.stdout)
 
 
 def main(argv=None):
