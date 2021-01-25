@@ -66,7 +66,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     def viable(cls):
         with errors.ExceptionRaisedContext() as exc:
             cls.priority
-        return not bool(exc)
+        return not exc
 
     @classmethod
     def get_viable_backends(cls):
