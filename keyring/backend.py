@@ -103,7 +103,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         """Set password for the username of the service.
 
         If the backend cannot store passwords, raise
-        NotImplementedError.
+        PasswordSetError.
         """
         raise errors.PasswordSetError("reason")
 
@@ -113,8 +113,8 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     def delete_password(self, service, username):
         """Delete the password for the username of the service.
 
-        If the backend cannot store passwords, raise
-        NotImplementedError.
+        If the backend cannot delete passwords, raise
+        PasswordDeleteError.
         """
         raise errors.PasswordDeleteError("reason")
 
