@@ -117,13 +117,6 @@ def _load_keyring_class(keyring_name):
     ...  ]
     >>> list(map(_load_keyring_class, popular_names))
     [...]
-
-    These legacy names are retained for compatibility.
-
-    >>> legacy_names = [
-    ...  ]
-    >>> list(map(_load_keyring_class, legacy_names))
-    [...]
     """
     module_name, sep, class_name = keyring_name.rpartition('.')
     __import__(module_name)
