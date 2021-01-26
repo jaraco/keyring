@@ -11,7 +11,7 @@ def two_keyrings(monkeypatch):
             priority = 1
 
             def get_password(self, system, user):
-                return 'ring1-{system}-{user}'.format(**locals())
+                return f'ring1-{system}-{user}'
 
             def set_password(self, system, user, password):
                 pass
@@ -20,7 +20,7 @@ def two_keyrings(monkeypatch):
             priority = 2
 
             def get_password(self, system, user):
-                return 'ring2-{system}-{user}'.format(**locals())
+                return f'ring2-{system}-{user}'
 
             def set_password(self, system, user, password):
                 raise NotImplementedError()

@@ -44,10 +44,10 @@ def _check_old_config_root():
     if os.path.isfile(config_file_old) and not os.path.isfile(config_file_new):
         msg = (
             "Keyring config exists only in the old location "
-            "{config_file_old} and should be moved to {config_file_new} "
+            f"{config_file_old} and should be moved to {config_file_new} "
             "to work with this version of keyring."
         )
-        raise RuntimeError(msg.format(**locals()))
+        raise RuntimeError(msg)
 
 
 def _config_root_Linux():

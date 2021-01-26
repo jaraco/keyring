@@ -44,7 +44,7 @@ def disable():
         pass
     filename = os.path.join(root, 'keyringrc.cfg')
     if os.path.exists(filename):
-        msg = "Refusing to overwrite {filename}".format(**locals())
+        msg = f"Refusing to overwrite {filename}"
         raise RuntimeError(msg)
     with open(filename, 'w') as file:
         file.write('[backend]\ndefault-keyring=keyring.backends.null.Keyring')
