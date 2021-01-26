@@ -1,3 +1,11 @@
+v22.0.1
+-------
+
+* #486: Restored ``keyring.backends.OS_X`` module (with no
+  functionality) to mask errors when older keyring versions
+  are present until underlying issue is addressed and available
+  in importlib_metadata.
+
 v22.0.0
 -------
 
