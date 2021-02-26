@@ -1,4 +1,13 @@
 """
-For improved compatibility when older keyring metadata points
-to this module, supply it. See jaraco/keyring#486.
+Backward-compatibility shim for users referencing the module
+by name. Ref #487.
 """
+
+import warnings
+
+from .macOS import Keyring
+
+__all__ = ['Keyring']
+
+
+warnings.warn("OS_X module is deprecated.", DeprecationWarning)

@@ -1,3 +1,10 @@
+v22.2.0
+-------
+
+* #487: Restored ``Keyring`` in ``OS_X`` module with
+  deprecation warning for users specifying the backend by
+  name.
+
 v22.1.0
 -------
 
