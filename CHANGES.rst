@@ -1,3 +1,8 @@
+v22.1.0
+-------
+
+* Added type declaration for ``keyring.core.get_keyring()``.
+
 v22.0.1
 -------
 
