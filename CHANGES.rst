@@ -1,3 +1,9 @@
+v22.3.0
+-------
+
+* Added redundant type declarations for accessor functions
+  in ``keyring.core``.
+
 v22.2.0
 -------
 
