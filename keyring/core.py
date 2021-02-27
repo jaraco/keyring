@@ -8,7 +8,7 @@ import sys
 import logging
 import typing
 
-from . import backend
+from . import backend, credentials
 from .util import platform_ as platform
 from .backends import fail
 
@@ -51,22 +51,24 @@ def disable():
         file.write('[backend]\ndefault-keyring=keyring.backends.null.Keyring')
 
 
-def get_password(service_name, username):
+def get_password(service_name: str, username: str) -> typing.Optional[str]:
     """Get password from the specified service."""
     return get_keyring().get_password(service_name, username)
 
 
-def set_password(service_name, username, password):
+def set_password(service_name: str, username: str, password: str) -> None:
     """Set password for the user in the specified service."""
     get_keyring().set_password(service_name, username, password)
 
 
-def delete_password(service_name, username):
+def delete_password(service_name: str, username: str) -> None:
     """Delete the password for the user in the specified service."""
     get_keyring().delete_password(service_name, username)
 
 
-def get_credential(service_name, username):
+def get_credential(
+    service_name: str, username: typing.Optional[str]
+) -> typing.Optional[credentials.Credential]:
     """Get a Credential for the specified service."""
     return get_keyring().get_credential(service_name, username)
 
