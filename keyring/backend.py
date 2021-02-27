@@ -94,12 +94,12 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         )
 
     @abc.abstractmethod
-    def get_password(self, service, username) -> Optional[str]:
+    def get_password(self, service: str, username: str) -> Optional[str]:
         """Get password of the username for the service"""
         return None
 
     @abc.abstractmethod
-    def set_password(self, service, username, password):
+    def set_password(self, service: str, username: str, password: str) -> None:
         """Set password for the username of the service.
 
         If the backend cannot store passwords, raise
@@ -110,7 +110,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     # for backward-compatibility, don't require a backend to implement
     #  delete_password
     # @abc.abstractmethod
-    def delete_password(self, service, username):
+    def delete_password(self, service: str, username: str) -> None:
         """Delete the password for the username of the service.
 
         If the backend cannot delete passwords, raise
@@ -122,7 +122,9 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     #  get_credential
     # @abc.abstractmethod
     def get_credential(
-        self, service, username
+        self,
+        service: str,
+        username: Optional[str],
     ) -> Optional[credentials.SimpleCredential]:
         """Gets the username and password for the service.
         Returns a Credential instance.
