@@ -56,9 +56,9 @@ def _config_root_Linux():
     location.
     """
     _check_old_config_root()
-    fallback = os.path.join(os.path.expanduser('~'), '.config')
     key = 'XDG_CONFIG_HOME'
-    root = os.environ.get(key, None) or fallback
+    home = os.path.expanduser('~')
+    root = os.environ.get(key, None) or os.path.join(home, '.config')
     return os.path.join(root, 'python_keyring')
 
 
