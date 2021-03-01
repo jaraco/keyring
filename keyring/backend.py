@@ -9,10 +9,7 @@ import operator
 
 from typing import Optional
 
-try:
-    from importlib import metadata  # type: ignore
-except ImportError:
-    import importlib_metadata as metadata  # type: ignore
+import importlib_metadata as metadata
 
 from . import credentials, errors, util
 from .util import properties
@@ -195,8 +192,7 @@ def _load_plugins():
 
     `initialize_func` is optional, but will be invoked if callable.
     """
-    entry_points = metadata.entry_points().get('keyring.backends', [])
-    for ep in entry_points:
+    for ep in metadata.entry_points(group='keyring.backends'):
         try:
             log.debug('Loading %s', ep.name)
             init_func = ep.load()

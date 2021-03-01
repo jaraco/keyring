@@ -1,3 +1,8 @@
+v22.4.0
+-------
+
+* Use new entry points API from importlib_metadata 3.6.
+
 v22.3.0
 -------
 
