@@ -1,5 +1,6 @@
 import os
 import platform
+import pathlib
 
 
 def _settings_root_XP():
@@ -21,7 +22,7 @@ def _data_root_Linux():
     Use freedesktop.org Base Dir Specfication to determine storage
     location.
     """
-    fallback = os.path.expanduser('~/.local/share')
+    fallback = pathlib.Path.home() / '.local/share'
     root = os.environ.get('XDG_DATA_HOME', None) or fallback
     return os.path.join(root, 'python_keyring')
 
@@ -56,7 +57,7 @@ def _config_root_Linux():
     location.
     """
     _check_old_config_root()
-    fallback = os.path.expanduser('~/.config')
+    fallback = pathlib.Path.home() / '.config'
     key = 'XDG_CONFIG_HOME'
     root = os.environ.get(key, None) or fallback
     return os.path.join(root, 'python_keyring')
