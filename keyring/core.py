@@ -24,7 +24,6 @@ def set_keyring(keyring):
     if not isinstance(keyring, backend.KeyringBackend):
         raise TypeError("The keyring must be a subclass of KeyringBackend")
     _keyring_backend = keyring
-    keyring.set_properties_from_env()
 
 
 def get_keyring() -> backend.KeyringBackend:

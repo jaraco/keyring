@@ -1,3 +1,10 @@
+v23.0.0
+-------
+
+* Backends now all invoke ``set_properties_from_env`` on
+  self in the initializer. Derived backends should be sure
+  to invoke ``super().__init__()``.
+
 v22.4.0
 -------
 

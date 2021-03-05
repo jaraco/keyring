@@ -41,6 +41,9 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     this interface.
     """
 
+    def __init__(self):
+        self.set_properties_from_env()
+
     # @abc.abstractproperty
     def priority(cls):
         """
