@@ -1,3 +1,10 @@
+v23.0.1
+-------
+
+* #499: Use the standard library ``importlib.metadata`` package
+  on Python 3.8 and later, and the ``importlib_metadata`` backport
+  only on earlier versions.
+
 v23.0.0
 -------
 
