@@ -2,7 +2,7 @@ v23.0.1
 -------
 
 * #504: Better error with invalid parameter to init_keyring.
-# #505: Nicer documentation for headless Docker.
+* #505: Nicer documentation for headless Docker.
 
 v23.0.0
 -------
