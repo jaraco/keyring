@@ -312,6 +312,34 @@ X11 server available (only D-Bus is required). In this case:
 
 .. _GNOME Keyring: https://wiki.gnome.org/Projects/GnomeKeyring
 
+Using Keyring on headless Linux systems in a Docker container
+=============================================================
+
+It is possible to use keyring with the SecretService backend in Docker containers as well.
+All you need to do is install the necessary dependencies and add the `--privileged` flag
+to avoid any `Operation not permitted` errors when attempting to unlock the system's keyring.
+
+The following is a complete transcript for installing keyring on a Ubuntu 18:04 container::
+
+  docker run -it -d --privileged ubuntu:18.04
+
+  $ apt-get update
+  $ apt install -y gnome-keyring python3-venv python3-dev
+  $ python3 -m venv venv
+  $ source venv/bin/activate # source a virtual environment to avoid polluting your system
+  $ pip3 install --upgrade pip
+  $ pip3 install keyring
+  $ dbus-run-session -- sh # this will drop you into a new D-bus shell
+  $ echo 'somecredstorepass' | gnome-keyring-daemon --unlock # unlock the system's keyring
+
+  $ python
+  >>> import keyring
+  >>> keyring.get_keyring()
+  <keyring.backends.SecretService.Keyring object at 0x7f9b9c971ba8>
+  >>> keyring.set_password("system", "username", "password")
+  >>> keyring.get_password("system", "username")
+  'password'
+
 Integration
 ===========
 
