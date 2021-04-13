@@ -5,11 +5,15 @@ Keyring implementation support
 import os
 import abc
 import logging
+import sys
 import operator
 
 from typing import Optional
 
-import importlib_metadata as metadata
+if sys.version_info < (3, 8):
+    import importlib_metadata as metadata
+else:
+    import importlib.metadata as metadata
 
 from . import credentials, errors, util
 from .util import properties
@@ -195,7 +199,12 @@ def _load_plugins():
 
     `initialize_func` is optional, but will be invoked if callable.
     """
-    for ep in metadata.entry_points(group='keyring.backends'):
+    if sys.version_info < (3, 8):
+        eps = metadata.entry_points(group='keyring.backends')
+    else:
+        eps = metadata.entry_points()['keyring.backends']
+
+    for ep in eps:
         try:
             log.debug('Loading %s', ep.name)
             init_func = ep.load()
