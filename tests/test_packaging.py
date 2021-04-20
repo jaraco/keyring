@@ -1,4 +1,9 @@
-import importlib_metadata as metadata
+try:
+    # python 3.8 and later
+    import importlib.metadata as metadata
+except ImportError:
+    # python 3.7 and earlier
+    import importlib_metadata as metadata
 
 from keyring import backend
 
