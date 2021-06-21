@@ -3,6 +3,7 @@ import ctypes
 import struct
 from ctypes import c_void_p, c_uint16, c_uint32, c_int32, c_char_p, POINTER
 
+from ...errors import KeyringError
 
 sec_keychain_ref = sec_keychain_item_ref = c_void_p
 OS_status = c_int32
@@ -30,7 +31,7 @@ SecKeychainCopyDefault.argtypes = (POINTER(sec_keychain_ref),)
 SecKeychainCopyDefault.restype = OS_status
 
 
-class Error(Exception):
+class Error(KeyringError):
     @classmethod
     def raise_for_status(cls, status):
         if status == 0:
