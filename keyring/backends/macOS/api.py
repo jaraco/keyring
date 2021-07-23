@@ -13,6 +13,7 @@ class error:
     keychain_denied = -128
     sec_auth_failed = -25293
     plist_missing = -67030
+    sec_interaction_not_allowed = -25308
 
 
 fw = '/System/Library/Frameworks/{name}.framework/Versions/A/{name}'.format
