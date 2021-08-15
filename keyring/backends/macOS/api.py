@@ -1,14 +1,8 @@
-import contextlib
 import ctypes
-import struct
 from ctypes import (
     c_void_p,
-    c_uint16,
     c_uint32,
     c_int32,
-    c_char_p,
-    c_bool,
-    POINTER,
     byref,
 )
 from ctypes.util import find_library
