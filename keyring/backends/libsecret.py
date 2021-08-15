@@ -15,8 +15,10 @@ try:
     import gi
     from gi.repository import Gio
     from gi.repository import GLib
+
     gi.require_version('Secret', '1')
     from gi.repository import Secret
+
     available = True
 except (AttributeError, ImportError, ValueError):
     pass
@@ -36,7 +38,7 @@ class Keyring(KeyringBackend):
                 "application": Secret.SchemaAttributeType.STRING,
                 "service": Secret.SchemaAttributeType.STRING,
                 "username": Secret.SchemaAttributeType.STRING,
-            }
+            },
         )
 
     @properties.ClassProperty
@@ -56,21 +58,22 @@ class Keyring(KeyringBackend):
             "username": username,
         }
         try:
-            items = Secret.password_search_sync(self.schema, attributes,
-                                                Secret.SearchFlags.UNLOCK, None)
+            items = Secret.password_search_sync(
+                self.schema, attributes, Secret.SearchFlags.UNLOCK, None
+            )
         except GLib.Error as error:
             quark = GLib.quark_try_string('g-io-error-quark')
             if error.matches(quark, Gio.IOErrorEnum.FAILED):
-                raise KeyringLocked('Failed to unlock the item!')
-            raise error
+                raise KeyringLocked('Failed to unlock the item!') from error
+            raise
         for item in items:
             try:
                 return item.retrieve_secret_sync().get_text()
             except GLib.Error as error:
                 quark = GLib.quark_try_string('secret-error')
                 if error.matches(quark, Secret.Error.IS_LOCKED):
-                    raise KeyringLocked('Failed to unlock the item!')
-                raise error
+                    raise KeyringLocked('Failed to unlock the item!') from error
+                raise
 
     def set_password(self, service, username, password):
         """Set password for the username of the service"""
@@ -82,16 +85,17 @@ class Keyring(KeyringBackend):
         }
         label = "Password for '{}' on '{}'".format(username, service)
         try:
-            stored = Secret.password_store_sync(self.schema, attributes, collection,
-                                                label, password, None)
+            stored = Secret.password_store_sync(
+                self.schema, attributes, collection, label, password, None
+            )
         except GLib.Error as error:
             quark = GLib.quark_try_string('secret-error')
             if error.matches(quark, Secret.Error.IS_LOCKED):
-                raise KeyringLocked("Failed to unlock the collection!")
+                raise KeyringLocked("Failed to unlock the collection!") from error
             quark = GLib.quark_try_string('g-io-error-quark')
             if error.matches(quark, Gio.IOErrorEnum.FAILED):
-                raise KeyringLocked("Failed to unlock the collection!")
-            raise error
+                raise KeyringLocked("Failed to unlock the collection!") from error
+            raise
         if not stored:
             raise PasswordSetError("Failed to store password!")
 
@@ -103,21 +107,24 @@ class Keyring(KeyringBackend):
             "username": username,
         }
         try:
-            items = Secret.password_search_sync(self.schema, attributes,
-                                                Secret.SearchFlags.UNLOCK, None)
+            items = Secret.password_search_sync(
+                self.schema, attributes, Secret.SearchFlags.UNLOCK, None
+            )
         except GLib.Error as error:
             quark = GLib.quark_try_string('g-io-error-quark')
             if error.matches(quark, Gio.IOErrorEnum.FAILED):
-                raise KeyringLocked('Failed to unlock the item!')
+                raise KeyringLocked('Failed to unlock the item!') from error
+            raise
         for item in items:
             try:
-                removed = Secret.password_clear_sync(self.schema,
-                                                     item.get_attributes(), None)
+                removed = Secret.password_clear_sync(
+                    self.schema, item.get_attributes(), None
+                )
             except GLib.Error as error:
                 quark = GLib.quark_try_string('secret-error')
                 if error.matches(quark, Secret.Error.IS_LOCKED):
-                    raise KeyringLocked('Failed to unlock the item!')
-                raise error
+                    raise KeyringLocked('Failed to unlock the item!') from error
+                raise
             return removed
         raise PasswordDeleteError("No such password!")
 
@@ -132,8 +139,23 @@ class Keyring(KeyringBackend):
         query = {"service": service}
         if username:
             query["username"] = username
-        items = Secret.password_search_sync(self.schema, query,
-                                            Secret.SearchFlags.UNLOCK, None)
+        try:
+            items = Secret.password_search_sync(
+                self.schema, query, Secret.SearchFlags.UNLOCK, None
+            )
+        except GLib.Error as error:
+            quark = GLib.quark_try_string('g-io-error-quark')
+            if error.matches(quark, Gio.IOErrorEnum.FAILED):
+                raise KeyringLocked('Failed to unlock the item!') from error
+            raise
         for item in items:
             username = item.get_attributes().get("username")
-            return SimpleCredential(username, item.retrieve_secret_sync().get_text())
+            try:
+                return SimpleCredential(
+                    username, item.retrieve_secret_sync().get_text()
+                )
+            except GLib.Error as error:
+                quark = GLib.quark_try_string('secret-error')
+                if error.matches(quark, Secret.Error.IS_LOCKED):
+                    raise KeyringLocked('Failed to unlock the item!') from error
+                raise
