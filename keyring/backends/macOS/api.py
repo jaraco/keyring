@@ -1,7 +1,16 @@
 import contextlib
 import ctypes
 import struct
-from ctypes import c_void_p, c_uint16, c_uint32, c_int32, c_char_p, c_bool, POINTER, byref
+from ctypes import (
+    c_void_p,
+    c_uint16,
+    c_uint32,
+    c_int32,
+    c_char_p,
+    c_bool,
+    POINTER,
+    byref,
+)
 from ctypes.util import find_library
 
 
@@ -22,7 +31,14 @@ _found = ctypes.CDLL(find_library('Foundation'))
 
 CFDictionaryCreate = _found.CFDictionaryCreate
 CFDictionaryCreate.restype = c_void_p
-CFDictionaryCreate.argtypes = (c_void_p, c_void_p, c_void_p, c_int32, c_void_p, c_void_p)
+CFDictionaryCreate.argtypes = (
+    c_void_p,
+    c_void_p,
+    c_void_p,
+    c_int32,
+    c_void_p,
+    c_void_p,
+)
 
 CFStringCreateWithCString = _found.CFStringCreateWithCString
 CFStringCreateWithCString.restype = c_void_p
@@ -56,23 +72,34 @@ CFDataGetLength.argtypes = (c_void_p,)
 def k_(s):
     return c_void_p.in_dll(_sec, s)
 
+
 def create_cfbool(b):
-    return CFNumberCreate(None, 0x9, ctypes.byref(c_int32(1 if b else 0))) # int32
+    return CFNumberCreate(None, 0x9, ctypes.byref(c_int32(1 if b else 0)))  # int32
+
 
 def create_cfstr(s):
-    return CFStringCreateWithCString(None, s.encode('utf8'), 0x08000100) # kCFStringEncodingUTF8
+    return CFStringCreateWithCString(
+        None, s.encode('utf8'), 0x08000100
+    )  # kCFStringEncodingUTF8
+
 
 def create_query(**kwargs):
-    return CFDictionaryCreate(None,
-            (c_void_p * len(kwargs))(*[k_(k) for k in kwargs.keys()]),
-            (c_void_p * len(kwargs))(*[create_cfstr(v) if isinstance(v, str) \
-                    else v for v in kwargs.values()]),
-            len(kwargs),
-            _found.kCFTypeDictionaryKeyCallBacks,
-            _found.kCFTypeDictionaryValueCallBacks)
+    return CFDictionaryCreate(
+        None,
+        (c_void_p * len(kwargs))(*[k_(k) for k in kwargs.keys()]),
+        (c_void_p * len(kwargs))(
+            *[create_cfstr(v) if isinstance(v, str) else v for v in kwargs.values()]
+        ),
+        len(kwargs),
+        _found.kCFTypeDictionaryKeyCallBacks,
+        _found.kCFTypeDictionaryValueCallBacks,
+    )
+
 
 def cfstr_to_str(data):
-    return ctypes.string_at(CFDataGetBytePtr(data), CFDataGetLength(data)).decode('utf-8')
+    return ctypes.string_at(CFDataGetBytePtr(data), CFDataGetLength(data)).decode(
+        'utf-8'
+    )
 
 
 class Error(Exception):
@@ -107,12 +134,13 @@ class SecAuthFailure(Error):
 
 def find_generic_password(kc_name, service, username, not_found_ok=False):
     q = create_query(
-            kSecClass=k_('kSecClassGenericPassword'),
-            kSecMatchLimit=k_('kSecMatchLimitOne'),
-            kSecAttrService=service,
-            kSecAttrAccount=username,
-            kSecReturnData=create_cfbool(True))
-    
+        kSecClass=k_('kSecClassGenericPassword'),
+        kSecMatchLimit=k_('kSecMatchLimitOne'),
+        kSecAttrService=service,
+        kSecAttrAccount=username,
+        kSecReturnData=create_cfbool(True),
+    )
+
     data = c_void_p()
     status = SecItemCopyMatching(q, byref(data))
 
@@ -129,10 +157,11 @@ def set_generic_password(name, service, username, password):
         delete_generic_password(name, service, username)
 
     q = create_query(
-            kSecClass=k_('kSecClassGenericPassword'),
-            kSecAttrService=service,
-            kSecAttrAccount=username,
-            kSecValueData=password)
+        kSecClass=k_('kSecClassGenericPassword'),
+        kSecAttrService=service,
+        kSecAttrAccount=username,
+        kSecValueData=password,
+    )
 
     status = SecItemAdd(q, None)
     Error.raise_for_status(status)
@@ -140,9 +169,10 @@ def set_generic_password(name, service, username, password):
 
 def delete_generic_password(name, service, username):
     q = create_query(
-            kSecClass=k_('kSecClassGenericPassword'),
-            kSecAttrService=service,
-            kSecAttrAccount=username)
-    
+        kSecClass=k_('kSecClassGenericPassword'),
+        kSecAttrService=service,
+        kSecAttrAccount=username,
+    )
+
     status = SecItemDelete(q)
     Error.raise_for_status(status)
