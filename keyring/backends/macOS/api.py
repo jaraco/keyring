@@ -1,10 +1,13 @@
-import contextlib
 import ctypes
-import struct
-from ctypes import c_void_p, c_uint16, c_uint32, c_int32, c_char_p, POINTER
+from ctypes import (
+    c_void_p,
+    c_uint32,
+    c_int32,
+    byref,
+)
+from ctypes.util import find_library
 
 
-sec_keychain_ref = sec_keychain_item_ref = c_void_p
 OS_status = c_int32
 
 
@@ -16,19 +19,81 @@ class error:
     sec_interaction_not_allowed = -25308
 
 
-fw = '/System/Library/Frameworks/{name}.framework/Versions/A/{name}'.format
-_sec = ctypes.CDLL(fw(name='Security'))
-_core = ctypes.CDLL(fw(name='CoreServices'))
+_sec = ctypes.CDLL(find_library('Security'))
+_core = ctypes.CDLL(find_library('CoreServices'))
+_found = ctypes.CDLL(find_library('Foundation'))
+
+CFDictionaryCreate = _found.CFDictionaryCreate
+CFDictionaryCreate.restype = c_void_p
+CFDictionaryCreate.argtypes = (
+    c_void_p,
+    c_void_p,
+    c_void_p,
+    c_int32,
+    c_void_p,
+    c_void_p,
+)
+
+CFStringCreateWithCString = _found.CFStringCreateWithCString
+CFStringCreateWithCString.restype = c_void_p
+CFStringCreateWithCString.argtypes = [c_void_p, c_void_p, c_uint32]
+
+CFNumberCreate = _found.CFNumberCreate
+CFNumberCreate.restype = c_void_p
+CFNumberCreate.argtypes = [c_void_p, c_uint32, ctypes.c_void_p]
+
+SecItemAdd = _sec.SecItemAdd
+SecItemAdd.restype = OS_status
+SecItemAdd.argtypes = (c_void_p, c_void_p)
+
+SecItemCopyMatching = _sec.SecItemCopyMatching
+SecItemCopyMatching.restype = OS_status
+SecItemCopyMatching.argtypes = (c_void_p, c_void_p)
+
+SecItemDelete = _sec.SecItemDelete
+SecItemDelete.restype = OS_status
+SecItemDelete.argtypes = (c_void_p,)
+
+CFDataGetBytePtr = _found.CFDataGetBytePtr
+CFDataGetBytePtr.restype = c_void_p
+CFDataGetBytePtr.argtypes = (c_void_p,)
+
+CFDataGetLength = _found.CFDataGetLength
+CFDataGetLength.restype = c_int32
+CFDataGetLength.argtypes = (c_void_p,)
 
 
-SecKeychainOpen = _sec.SecKeychainOpen
-SecKeychainOpen.argtypes = (c_char_p, POINTER(sec_keychain_ref))
-SecKeychainOpen.restype = OS_status
+def k_(s):
+    return c_void_p.in_dll(_sec, s)
 
 
-SecKeychainCopyDefault = _sec.SecKeychainCopyDefault
-SecKeychainCopyDefault.argtypes = (POINTER(sec_keychain_ref),)
-SecKeychainCopyDefault.restype = OS_status
+def create_cfbool(b):
+    return CFNumberCreate(None, 0x9, ctypes.byref(c_int32(1 if b else 0)))  # int32
+
+
+def create_cfstr(s):
+    return CFStringCreateWithCString(
+        None, s.encode('utf8'), 0x08000100
+    )  # kCFStringEncodingUTF8
+
+
+def create_query(**kwargs):
+    return CFDictionaryCreate(
+        None,
+        (c_void_p * len(kwargs))(*[k_(k) for k in kwargs.keys()]),
+        (c_void_p * len(kwargs))(
+            *[create_cfstr(v) if isinstance(v, str) else v for v in kwargs.values()]
+        ),
+        len(kwargs),
+        _found.kCFTypeDictionaryKeyCallBacks,
+        _found.kCFTypeDictionaryValueCallBacks,
+    )
+
+
+def cfstr_to_str(data):
+    return ctypes.string_at(CFDataGetBytePtr(data), CFDataGetLength(data)).decode(
+        'utf-8'
+    )
 
 
 class Error(Exception):
@@ -61,281 +126,47 @@ class SecAuthFailure(Error):
     pass
 
 
-@contextlib.contextmanager
-def open(name):
-    ref = sec_keychain_ref()
-    if name is None:
-        status = SecKeychainCopyDefault(ref)
-    else:
-        status = SecKeychainOpen(name.encode('utf-8'), ref)
-    Error.raise_for_status(status)
-    try:
-        yield ref
-    finally:
-        _core.CFRelease(ref)
+def find_generic_password(kc_name, service, username, not_found_ok=False):
+    q = create_query(
+        kSecClass=k_('kSecClassGenericPassword'),
+        kSecMatchLimit=k_('kSecMatchLimitOne'),
+        kSecAttrService=service,
+        kSecAttrAccount=username,
+        kSecReturnData=create_cfbool(True),
+    )
 
+    data = c_void_p()
+    status = SecItemCopyMatching(q, byref(data))
 
-SecKeychainFindGenericPassword = _sec.SecKeychainFindGenericPassword
-SecKeychainFindGenericPassword.argtypes = (
-    sec_keychain_ref,
-    c_uint32,
-    c_char_p,
-    c_uint32,
-    c_char_p,
-    POINTER(c_uint32),  # passwordLength
-    POINTER(c_void_p),  # passwordData
-    POINTER(sec_keychain_item_ref),  # itemRef
-)
-SecKeychainFindGenericPassword.restype = OS_status
-
-
-def find_generic_password(kc_name, service, username):
-    username = username.encode('utf-8')
-    service = service.encode('utf-8')
-    with open(kc_name) as keychain:
-        length = c_uint32()
-        data = c_void_p()
-        status = SecKeychainFindGenericPassword(
-            keychain, len(service), service, len(username), username, length, data, None
-        )
+    if status == error.item_not_found and not_found_ok:
+        return
 
     Error.raise_for_status(status)
 
-    password = ctypes.create_string_buffer(length.value)
-    ctypes.memmove(password, data.value, length.value)
-    SecKeychainItemFreeContent(None, data)
-    return password.raw.decode('utf-8')
-
-
-SecKeychainFindInternetPassword = _sec.SecKeychainFindInternetPassword
-SecKeychainFindInternetPassword.argtypes = (
-    sec_keychain_ref,  # keychainOrArray
-    c_uint32,  # serverNameLength
-    c_char_p,  # serverName
-    c_uint32,  # securityDomainLength
-    c_char_p,  # securityDomain
-    c_uint32,  # accountNameLength
-    c_char_p,  # accountName
-    c_uint32,  # pathLength
-    c_char_p,  # path
-    c_uint16,  # port
-    c_uint32,  # SecProtocolType protocol,
-    c_uint32,  # SecAuthenticationType authenticationType,
-    POINTER(c_uint32),  # passwordLength
-    POINTER(c_void_p),  # passwordData
-    POINTER(sec_keychain_item_ref),  # itemRef
-)
-SecKeychainFindInternetPassword.restype = OS_status
-
-
-class PackedAttributes(type):
-    """
-    Take the attributes which use magic words
-    to represent enumerated constants and generate
-    the constants.
-    """
-
-    def __new__(cls, name, bases, dict):
-        dict.update(
-            (key, cls.unpack(val))
-            for key, val in dict.items()
-            if not key.startswith('_')
-        )
-        return super().__new__(cls, name, bases, dict)
-
-    @staticmethod
-    def unpack(word):
-        r"""
-        >>> PackedAttributes.unpack(0)
-        0
-        >>> PackedAttributes.unpack('\x00\x00\x00\x01')
-        1
-        >>> PackedAttributes.unpack('abcd')
-        1633837924
-        """
-        if not isinstance(word, str):
-            return word
-        (val,) = struct.unpack('!I', word.encode('ascii'))
-        return val
-
-
-class SecProtocolType(metaclass=PackedAttributes):
-    kSecProtocolTypeHTTP = 'http'
-    kSecProtocolTypeHTTPS = 'htps'
-    kSecProtocolTypeFTP = 'ftp '
-
-
-class SecAuthenticationType(metaclass=PackedAttributes):
-    """
-    >>> SecAuthenticationType.kSecAuthenticationTypeDefault
-    1684434036
-    """
-
-    kSecAuthenticationTypeDefault = 'dflt'
-    kSecAuthenticationTypeAny = 0
-
-
-def find_internet_password(kc_name, service, username):
-    username = username.encode('utf-8')
-    domain = None
-    service = service.encode('utf-8')
-    path = None
-    port = 0
-
-    with open(kc_name) as keychain:
-        length = c_uint32()
-        data = c_void_p()
-        status = SecKeychainFindInternetPassword(
-            keychain,
-            len(service),
-            service,
-            0,
-            domain,
-            len(username),
-            username,
-            0,
-            path,
-            port,
-            SecProtocolType.kSecProtocolTypeHTTPS,
-            SecAuthenticationType.kSecAuthenticationTypeAny,
-            length,
-            data,
-            None,
-        )
-
-    Error.raise_for_status(status)
-
-    password = ctypes.create_string_buffer(length.value)
-    ctypes.memmove(password, data.value, length.value)
-    SecKeychainItemFreeContent(None, data)
-    return password.raw.decode('utf-8')
-
-
-SecKeychainAddGenericPassword = _sec.SecKeychainAddGenericPassword
-SecKeychainAddGenericPassword.argtypes = (
-    sec_keychain_ref,
-    c_uint32,
-    c_char_p,
-    c_uint32,
-    c_char_p,
-    c_uint32,
-    c_char_p,
-    POINTER(sec_keychain_item_ref),
-)
-SecKeychainAddGenericPassword.restype = OS_status
+    return cfstr_to_str(data)
 
 
 def set_generic_password(name, service, username, password):
-    username = username.encode('utf-8')
-    service = service.encode('utf-8')
-    password = password.encode('utf-8')
-    with open(name) as keychain:
-        item = sec_keychain_item_ref()
-        status = SecKeychainFindGenericPassword(
-            keychain, len(service), service, len(username), username, None, None, item
-        )
-        if status:
-            if status == error.item_not_found:
-                status = SecKeychainAddGenericPassword(
-                    keychain,
-                    len(service),
-                    service,
-                    len(username),
-                    username,
-                    len(password),
-                    password,
-                    None,
-                )
-        else:
-            status = SecKeychainItemModifyAttributesAndData(
-                item, None, len(password), password
-            )
-            _core.CFRelease(item)
+    if find_generic_password(name, service, username, not_found_ok=True):
+        delete_generic_password(name, service, username)
 
-        Error.raise_for_status(status)
+    q = create_query(
+        kSecClass=k_('kSecClassGenericPassword'),
+        kSecAttrService=service,
+        kSecAttrAccount=username,
+        kSecValueData=password,
+    )
 
-
-SecKeychainAddInternetPassword = _sec.SecKeychainAddInternetPassword
-SecKeychainAddInternetPassword.argtypes = (
-    sec_keychain_ref,  # keychainOrArray
-    c_uint32,  # serverNameLength
-    c_char_p,  # serverName
-    c_uint32,  # securityDomainLength
-    c_char_p,  # securityDomain
-    c_uint32,  # accountNameLength
-    c_char_p,  # accountName
-    c_uint32,  # pathLength
-    c_char_p,  # path
-    c_uint16,  # port
-    c_uint32,  # SecProtocolType protocol,
-    c_uint32,  # SecAuthenticationType authenticationType,
-    c_uint32,  # passwordLength
-    c_void_p,  # passwordData
-    POINTER(sec_keychain_item_ref),  # itemRef
-)
-SecKeychainAddInternetPassword.restype = OS_status
-
-
-def set_internet_password(name, service, username, password):
-    username = username.encode('utf-8')
-    domain = None
-    service = service.encode('utf-8')
-    password = password.encode('utf-8')
-    path = None
-    port = 0
-    with open(name) as keychain:
-        # TODO: Use update or set technique as seen in set_generic_password
-        status = SecKeychainAddInternetPassword(
-            keychain,
-            len(service),
-            service,
-            0,
-            domain,
-            len(username),
-            username,
-            0,
-            path,
-            port,
-            SecProtocolType.kSecProtocolTypeHTTPS,
-            SecAuthenticationType.kSecAuthenticationTypeAny,
-            len(password),
-            password,
-            None,
-        )
-
-        Error.raise_for_status(status)
-
-
-SecKeychainItemModifyAttributesAndData = _sec.SecKeychainItemModifyAttributesAndData
-SecKeychainItemModifyAttributesAndData.argtypes = (
-    sec_keychain_item_ref,
-    c_void_p,
-    c_uint32,
-    c_void_p,
-)
-SecKeychainItemModifyAttributesAndData.restype = OS_status
-
-SecKeychainItemFreeContent = _sec.SecKeychainItemFreeContent
-SecKeychainItemFreeContent.argtypes = (c_void_p, c_void_p)
-SecKeychainItemFreeContent.restype = OS_status
-
-SecKeychainItemDelete = _sec.SecKeychainItemDelete
-SecKeychainItemDelete.argtypes = (sec_keychain_item_ref,)
-SecKeychainItemDelete.restype = OS_status
+    status = SecItemAdd(q, None)
+    Error.raise_for_status(status)
 
 
 def delete_generic_password(name, service, username):
-    username = username.encode('utf-8')
-    service = service.encode('utf-8')
-    with open(name) as keychain:
-        length = c_uint32()
-        data = c_void_p()
-        item = sec_keychain_item_ref()
-        status = SecKeychainFindGenericPassword(
-            keychain, len(service), service, len(username), username, length, data, item
-        )
+    q = create_query(
+        kSecClass=k_('kSecClassGenericPassword'),
+        kSecAttrService=service,
+        kSecAttrAccount=username,
+    )
 
+    status = SecItemDelete(q)
     Error.raise_for_status(status)
-
-    SecKeychainItemDelete(item)
-    _core.CFRelease(item)

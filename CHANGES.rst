@@ -1,3 +1,10 @@
+v23.1.0
+-------
+
+* #519: macOS backend APIs updated to newer, non-legacy
+  APIs.
+
+
 v23.0.1
 -------
 
