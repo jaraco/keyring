@@ -48,7 +48,7 @@ class Keyring(KeyringBackend):
             Secret.__name__
         if exc:
             raise RuntimeError("libsecret required")
-        return 5
+        return 4.8
 
     def get_password(self, service, username):
         """Get password of the username for the service"""
