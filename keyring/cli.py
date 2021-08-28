@@ -85,9 +85,6 @@ class CommandLineTool:
         set_password(self.service, self.username, password)
 
     def do_del(self):
-        self.input_password(
-            f"Deleting password for '{self.username}' in '{self.service}': "
-        )
         delete_password(self.service, self.username)
 
     def invalid_op(self):
