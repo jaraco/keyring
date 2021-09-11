@@ -40,6 +40,7 @@ class Keyring(KeyringBackend):
                 "username": Secret.SchemaAttributeType.STRING,
             },
         )
+        collection = Secret.COLLECTION_DEFAULT
 
     @properties.ClassProperty
     @classmethod
@@ -77,7 +78,6 @@ class Keyring(KeyringBackend):
 
     def set_password(self, service, username, password):
         """Set password for the username of the service"""
-        collection = getattr(self, 'preferred_collection', Secret.COLLECTION_DEFAULT)
         attributes = {
             "application": self.appid,
             "service": service,
@@ -86,7 +86,7 @@ class Keyring(KeyringBackend):
         label = "Password for '{}' on '{}'".format(username, service)
         try:
             stored = Secret.password_store_sync(
-                self.schema, attributes, collection, label, password, None
+                self.schema, attributes, self.collection, label, password, None
             )
         except GLib.Error as error:
             quark = GLib.quark_try_string('secret-error')
