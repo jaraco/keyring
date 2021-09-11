@@ -77,7 +77,7 @@ class Keyring(KeyringBackend):
 
     def set_password(self, service, username, password):
         """Set password for the username of the service"""
-        collection = Secret.COLLECTION_DEFAULT
+        collection = getattr(self, 'preferred_collection', Secret.COLLECTION_DEFAULT)
         attributes = {
             "application": self.appid,
             "service": service,
