@@ -18,6 +18,7 @@ class TestLibSecretKeyring(BackendBasicTests):
             "password prompts are for this keyring"
         )
         keyring = libsecret.Keyring()
+        keyring.collection = 'session'
         return keyring
 
 
