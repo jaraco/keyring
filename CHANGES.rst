@@ -1,3 +1,9 @@
+v23.2.1
+-------
+
+* #530: In libsecret tests, use a session collection to
+  allow tests to pass on Debian.
+
 v23.2.0
 -------
 
