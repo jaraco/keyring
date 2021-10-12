@@ -7,6 +7,8 @@ from .core import (
     get_credential,
 )
 
+__version__ = "23.2.1"
+
 __all__ = (
     'set_keyring',
     'get_keyring',
