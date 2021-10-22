@@ -6,6 +6,8 @@ Welcome to |project| documentation!
 .. toctree::
    :maxdepth: 1
 
+.. tidelift-referral-banner::
+
    history
 
 
