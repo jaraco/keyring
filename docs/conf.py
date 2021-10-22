@@ -29,6 +29,13 @@ link_files = {
 # Be strict about any broken references:
 nitpicky = True
 
+# Include Python intersphinx mapping to prevent failures
+# jaraco/skeleton#51
+extensions += ['sphinx.ext.intersphinx']
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+}
+
 # Custom sidebar templates, maps document names to template names.
 html_theme = 'alabaster'
 templates_path = ['_templates']
