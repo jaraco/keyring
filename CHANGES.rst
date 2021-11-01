@@ -85,7 +85,7 @@ v21.6.0
 * #403: Keyring no longer eagerly initializes the backend
   on import, but instead defers the backend initialization
   until a keyring is accessed. Any callers reliant on this
-  early intialization behavior may need to call
+  early initialization behavior may need to call
   ``keyring.core.init_backend()`` to explicitly initialize
   the detected backend.
 
@@ -450,7 +450,7 @@ with a major version bump.
 10.3.1
 ------
 
-* #266: Use private compatibity model rather than six to
+* #266: Use private compatibility model rather than six to
   avoid the dependency.
 
 10.3

@@ -19,7 +19,7 @@ def _data_root_Windows():
 
 def _data_root_Linux():
     """
-    Use freedesktop.org Base Dir Specfication to determine storage
+    Use freedesktop.org Base Dir Specification to determine storage
     location.
     """
     fallback = pathlib.Path.home() / '.local/share'
@@ -53,7 +53,7 @@ def _check_old_config_root():
 
 def _config_root_Linux():
     """
-    Use freedesktop.org Base Dir Specfication to determine config
+    Use freedesktop.org Base Dir Specification to determine config
     location.
     """
     _check_old_config_root()
