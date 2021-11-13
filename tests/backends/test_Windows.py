@@ -93,12 +93,10 @@ def test_long_password():
     for test_case, password in passwords.items():
         try:
             keyring.set_password('__system__', test_case, password)
-            pwd = keyring.get_password('__system__', test_case)
-            print(pwd)
             keyring.delete_password('__system__', test_case)
             results[test_case] = True
         except Exception as e:
-            if isinstance(e, ValueError):
+            if isinstance(e, ValueError) and test_case == 'way_too_long_password':
                 results[test_case] = True
             elif e.winerror != 1783 or e.funcname != 'CredWrite' or test_case != 'too_long_password':
                 results[test_case] = False

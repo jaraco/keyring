@@ -6,10 +6,8 @@ from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
 from ..errors import PasswordDeleteError, ExceptionRaisedContext
 
-# NOTE: this can be increased
+# NOTE: this can be increased if desired
 MAX_SHARDED_PASSWORD_LEN = 2 ** 16
-
-MAX_SHARD_COUNT = MAX_SHARDED_PASSWORD_LEN // 1280 + 1
 TARGET_SHARD = "{target}-shard-{i:04}"
 
 with ExceptionRaisedContext() as missing_deps:
@@ -112,23 +110,25 @@ class WinVaultKeyring(KeyringBackend):
                 else:
                     raise
 
-        start, end = 1, MAX_SHARDED_PASSWORD_LEN
+        # first try to confirm observed max length of 1280
+        if test_length(1280) and not test_length(1281):
+            return 1280
 
-        # initial guess assuming the max is 1280 to reduce search loops to 12 iterations
-        mid = 1281
+        # otherwise resort to binary search
+        start, end = 1, MAX_SHARDED_PASSWORD_LEN
         while start <= end:
+            mid = (start + end) // 2
             if test_length(mid):
                 start = mid + 1
             else:
                 end = mid - 1
-            mid = (start + end) // 2
-
         return end
 
     def __init__(self, *arg, **kw):
         super().__init__(*arg, **kw)
 
-        self._max_password = 2 ** 32
+        # initial "super" max to prevent sharding during self._discover_max_password process
+        self._max_password = 2**32
         self._max_password = self._discover_max_password()
 
     def get_password(self, service, username):
@@ -166,9 +166,6 @@ class WinVaultKeyring(KeyringBackend):
                 else:
                     password["CredentialBlob"] += shard["CredentialBlob"]
                     i += 1
-                    if i > MAX_SHARD_COUNT:
-                        password_length = len(password["CredentialBlob"])
-                        raise ValueError(f'_get_password: sharded {password_length=} exceeds {MAX_SHARD_COUNT=}')
 
     def set_password(self, service, username, password):
         existing_pw = self._get_password(service)
@@ -184,13 +181,14 @@ class WinVaultKeyring(KeyringBackend):
         self._set_password(service, username, str(password))
 
     def _set_password(self, target, username, password):
-        password_len = len(password)
-        if password_len > self._max_password:
-            n = self._max_password
-            max_shards = (password_len + n - 1) // n
+        pwd_len = len(password)
 
-            if max_shards > MAX_SHARD_COUNT:
-                raise ValueError(f"_set_password: {password_len=} ({max_shards} shards) exceeds {MAX_SHARD_COUNT=}")
+        if pwd_len > MAX_SHARDED_PASSWORD_LEN:
+            raise ValueError(f"_set_password: {pwd_len=} exceeds {MAX_SHARDED_PASSWORD_LEN=}")
+
+        if pwd_len > self._max_password:
+            n = self._max_password
+            max_shards = (pwd_len + n - 1) // n
 
             # write all but the first shard
             for i in range(1, max_shards):
@@ -249,8 +247,6 @@ class WinVaultKeyring(KeyringBackend):
                     return
                 else:
                     i += 1
-                    if i > MAX_SHARD_COUNT:
-                        raise ValueError(f'_delete_password: exceeded {MAX_SHARD_COUNT=}')
 
     def get_credential(self, service, username):
         res = None
