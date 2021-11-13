@@ -95,6 +95,36 @@ class WinVaultKeyring(KeyringBackend):
     def _compound_name(username, service):
         return f'{username}@{service}'
 
+    def _discover_max_password(self):
+        def test_length(length):
+            try:
+                self._set_password("__probe_target__", "username", "a" * length)
+                self._delete_password("__probe_target__")
+                return True
+            except Exception as e:
+                if e.winerror == 1783 and e.funcname == 'CredWrite':
+                    return False
+                else:
+                    raise
+
+        start, end = 1, 2 ** 16
+
+        # initial guess assuming the max is 1280 to reduce search loops to 12 iterations
+        mid = 1281
+        while start <= end:
+            if test_length(mid):
+                start = mid + 1
+            else:
+                end = mid - 1
+            mid = (start + end) // 2
+
+        return end
+
+    def __init__(self, *arg, **kw):
+        super().__init__(*arg, **kw)
+
+        self._max_password = self._discover_max_password()
+
     def get_password(self, service, username):
         # first attempt to get the password under the service name
         res = self._get_password(service)

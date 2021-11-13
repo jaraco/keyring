@@ -57,3 +57,7 @@ docs/_build/
 # PyBuilder
 target/
 
+# Windows backend
+.venv
+launch.json
+settings.json
