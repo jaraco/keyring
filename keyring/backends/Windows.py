@@ -6,6 +6,11 @@ from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
 from ..errors import PasswordDeleteError, ExceptionRaisedContext
 
+# NOTE: this can be increased
+MAX_SHARDED_PASSWORD_LEN = 2 ** 16
+
+MAX_SHARD_COUNT = MAX_SHARDED_PASSWORD_LEN // 1280 + 1
+TARGET_SHARD = "{target}-shard-{i:04}"
 
 with ExceptionRaisedContext() as missing_deps:
     try:
@@ -107,7 +112,7 @@ class WinVaultKeyring(KeyringBackend):
                 else:
                     raise
 
-        start, end = 1, 2 ** 16
+        start, end = 1, MAX_SHARDED_PASSWORD_LEN
 
         # initial guess assuming the max is 1280 to reduce search loops to 12 iterations
         mid = 1281
@@ -136,7 +141,7 @@ class WinVaultKeyring(KeyringBackend):
             return None
         return res.value
 
-    def _get_password(self, target):
+    def _get_password_inner(self, target):
         try:
             res = win32cred.CredRead(
                 Type=win32cred.CRED_TYPE_GENERIC, TargetName=target
@@ -147,16 +152,23 @@ class WinVaultKeyring(KeyringBackend):
                 return None
             raise
 
-        decoded_res = DecodingCredential(res)
+        return DecodingCredential(res)
 
-        i = 1
-        while True:
-            shard = self._get_password(f"{target}-shard-{i:04}")
-            if not shard:
-                return decoded_res
-            else:
-                decoded_res["CredentialBlob"] += shard["CredentialBlob"]
-                i += 1
+    def _get_password(self, target):
+        password = self._get_password_inner(target)
+
+        if password:
+            i = 1
+            while True:
+                shard = self._get_password_inner(TARGET_SHARD.format(target, i))
+                if not shard:
+                    return password
+                else:
+                    password["CredentialBlob"] += shard["CredentialBlob"]
+                    i += 1
+                    if i > MAX_SHARD_COUNT:
+                        password_length = len(password["CredentialBlob"])
+                        raise ValueError(f'_get_password: {password_length=} exceeded {MAX_SHARD_COUNT=}')
 
     def set_password(self, service, username, password):
         existing_pw = self._get_password(service)
@@ -175,12 +187,17 @@ class WinVaultKeyring(KeyringBackend):
         password_len = len(password)
         if password_len > self._max_password:
             n = self._max_password
+            max_shards = (password_len + n - 1) // n
+
+            if max_shards > MAX_SHARD_COUNT:
+                raise ValueError(f"_set_password: {max_shards=} exceeded {MAX_SHARD_COUNT=}")
+
             # write all but the first shard
-            for i in range(1, (password_len + n - 1) // n):
+            for i in range(1, max_shards):
                 shard = password[i * n: (i + 1) * n]
                 credential = dict(
                     Type=win32cred.CRED_TYPE_GENERIC,
-                    TargetName=f"{target}-shard-{i:04}",
+                    TargetName=TARGET_SHARD.format(target, i),
                     UserName=username,
                     CredentialBlob=shard,
                     Comment="Stored using python-keyring",
@@ -211,14 +228,29 @@ class WinVaultKeyring(KeyringBackend):
         if not deleted:
             raise PasswordDeleteError(service)
 
-    def _delete_password(self, target):
+    def _delete_password_inner(self, target):
         try:
             win32cred.CredDelete(Type=win32cred.CRED_TYPE_GENERIC, TargetName=target)
+            return True
         except pywintypes.error as e:
             e = OldPywinError.wrap(e)
             if e.winerror == 1168 and e.funcname == 'CredDelete':  # not found
                 return
             raise
+
+    def _delete_password(self, target):
+        deleted = self._delete_password_inner(target)
+
+        if deleted:
+            i = 1
+            while True:
+                deleted = self._delete_password_inner(TARGET_SHARD.format(target, i))
+                if not deleted:
+                    return
+                else:
+                    i += 1
+                    if i > MAX_SHARD_COUNT:
+                        raise ValueError(f'_delete_password: exceeded {MAX_SHARD_COUNT=}')
 
     def get_credential(self, service, username):
         res = None
