@@ -79,13 +79,15 @@ def test_long_password():
     passwords = dict(
         short_password='password',
         almost_too_long_password='a' * max_password,
-        too_long_password='a' * (max_password + 1)
+        too_long_password='a' * (max_password + 1),
+        way_too_long_password='a' * 2**20
     )
 
     results = dict(
         short_password=False,
         almost_too_long_password=False,
-        too_long_password=False
+        too_long_password=False,
+        way_too_long_password=False
     )
 
     for test_case, password in passwords.items():
@@ -96,7 +98,9 @@ def test_long_password():
             keyring.delete_password('__system__', test_case)
             results[test_case] = True
         except Exception as e:
-            if e.winerror != 1783 or e.funcname != 'CredWrite' or test_case != 'too_long_password':
+            if isinstance(e, ValueError):
+                results[test_case] = True
+            elif e.winerror != 1783 or e.funcname != 'CredWrite' or test_case != 'too_long_password':
                 results[test_case] = False
             else:
                 results[test_case] = True
