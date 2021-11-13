@@ -123,6 +123,7 @@ class WinVaultKeyring(KeyringBackend):
     def __init__(self, *arg, **kw):
         super().__init__(*arg, **kw)
 
+        self._max_password = 2 ** 32
         self._max_password = self._discover_max_password()
 
     def get_password(self, service, username):
@@ -145,7 +146,17 @@ class WinVaultKeyring(KeyringBackend):
             if e.winerror == 1168 and e.funcname == 'CredRead':  # not found
                 return None
             raise
-        return DecodingCredential(res)
+
+        decoded_res = DecodingCredential(res)
+
+        i = 1
+        while True:
+            shard = self._get_password(f"{target}-shard-{i:04}")
+            if not shard:
+                return decoded_res
+            else:
+                decoded_res["CredentialBlob"] += shard["CredentialBlob"]
+                i += 1
 
     def set_password(self, service, username, password):
         existing_pw = self._get_password(service)
@@ -161,6 +172,24 @@ class WinVaultKeyring(KeyringBackend):
         self._set_password(service, username, str(password))
 
     def _set_password(self, target, username, password):
+        password_len = len(password)
+        if password_len > self._max_password:
+            n = self._max_password
+            # write all but the first shard
+            for i in range(1, (password_len + n - 1) // n):
+                shard = password[i * n: (i + 1) * n]
+                credential = dict(
+                    Type=win32cred.CRED_TYPE_GENERIC,
+                    TargetName=f"{target}-shard-{i:04}",
+                    UserName=username,
+                    CredentialBlob=shard,
+                    Comment="Stored using python-keyring",
+                    Persist=self.persist,
+                )
+                win32cred.CredWrite(credential, 0)
+            # password set to first shard for "normal" writing
+            password = password[0: n]
+
         credential = dict(
             Type=win32cred.CRED_TYPE_GENERIC,
             TargetName=target,

@@ -91,6 +91,8 @@ def test_long_password():
     for test_case, password in passwords.items():
         try:
             keyring.set_password('__system__', test_case, password)
+            pwd = keyring.get_password('__system__', test_case)
+            print(pwd)
             keyring.delete_password('__system__', test_case)
             results[test_case] = True
         except Exception as e:
