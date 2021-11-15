@@ -21,35 +21,6 @@ class TestWinVaultKeyring(BackendBasicTests):
     def init_keyring(self):
         return keyring.backends.Windows.WinVaultKeyring()
 
-    def set_utf8_password(self, service, username, password):
-        """
-        Write a UTF-8 encoded password using win32ctypes primitives
-        """
-        from win32ctypes.core import _authentication as auth
-        from win32ctypes.core.ctypes._common import LPBYTE
-        from ctypes import cast, c_char, create_string_buffer, sizeof
-
-        credential = dict(
-            Type=1,
-            TargetName=service,
-            UserName=username,
-            CredentialBlob=password,
-            Comment="Stored using python-keyring",
-            Persist=3,
-        )
-
-        c_cred = auth.CREDENTIAL.fromdict(credential, 0)
-        blob_data = create_string_buffer(password.encode("utf-8"))
-        c_cred.CredentialBlobSize = sizeof(blob_data) - sizeof(c_char)
-        c_cred.CredentialBlob = cast(blob_data, LPBYTE)
-        c_cred_pointer = auth.PCREDENTIAL(c_cred)
-        auth._CredWrite(c_cred_pointer, 0)
-
-        self.credentials_created.add((service, username))
-
-    def test_long_password_nice_error(self):
-        self.keyring.set_password('system', 'user', 'x' * 512 * 2)
-
     def test_read_utf8_password(self):
         """
         Write a UTF-8 encoded credential and make sure it can be read back correctly.
@@ -58,8 +29,24 @@ class TestWinVaultKeyring(BackendBasicTests):
         username = "keyring"
         password = "utf8-test" + UNICODE_CHARS
 
-        self.set_utf8_password(service, username, password)
+        self.keyring.set_password(service, username, password)
         assert self.keyring.get_password(service, username) == password
+
+    def test_long_password_nice_error(self):
+        self.keyring.set_password('system', 'user', 'x' * 10000)
+        self.keyring.delete_password('system', 'user')
+
+    def test_long_password_too_long_nice_error(self):
+        try:
+            self.keyring.set_password('system', 'user', 'x' * (2**20 + 1))
+            self.keyring.delete_password('system', 'user')
+        except ValueError as e:
+            if e.args[0] == 2**20:
+                assert True
+            else:
+                assert False
+        except Exception:
+            assert False
 
 
 @pytest.mark.skipif('sys.platform != "win32"')
