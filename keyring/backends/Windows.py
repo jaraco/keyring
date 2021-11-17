@@ -19,50 +19,49 @@ with ExceptionRaisedContext() as missing_deps:
 
     if sys.platform != "win32":
         raise EnvironmentError(f"Windows backend requires sys.platform = 'win32' but {sys.platform=}")
+    else:
+        ffi = cffi.FFI()
+
+        ffi.set_unicode(True)
+
+        advapi32 = ffi.dlopen("advapi32.dll")
+
+        ffi.cdef("""
+
+        typedef struct _FILETIME {
+        DWORD dwLowDateTime;
+        DWORD dwHighDateTime;
+        } FILETIME, *PFILETIME;
+
+        typedef struct _CREDENTIAL_ATTRIBUTE {
+        LPWSTR Keyword;
+        DWORD  Flags;
+        DWORD  ValueSize;
+        LPBYTE Value;
+        } CREDENTIAL_ATTRIBUTE, *PCREDENTIAL_ATTRIBUTE;
+
+        typedef struct _CREDENTIAL {
+        DWORD                 Flags;
+        DWORD                 Type;
+        LPWSTR                TargetName;
+        LPWSTR                Comment;
+        FILETIME              LastWritten;
+        DWORD                 CredentialBlobSize;
+        LPBYTE                CredentialBlob;
+        DWORD                 Persist;
+        DWORD                 AttributeCount;
+        PCREDENTIAL_ATTRIBUTE Attributes;
+        LPWSTR                TargetAlias;
+        LPWSTR                UserName;
+        } CREDENTIAL, *PCREDENTIAL;
 
 
-ffi = cffi.FFI()
+        BOOL WINAPI CredReadW(LPCWSTR TargetName, DWORD Type, DWORD Flags, PCREDENTIAL *Credential);
+        BOOL WINAPI CredWriteW(PCREDENTIAL Credential, DWORD);
+        VOID WINAPI CredFree(PVOID Buffer);
+        BOOL WINAPI CredDeleteW(LPCWSTR TargetName, DWORD Type, DWORD Flags);
 
-ffi.set_unicode(True)
-
-advapi32 = ffi.dlopen("advapi32.dll")
-
-ffi.cdef("""
-
-typedef struct _FILETIME {
-  DWORD dwLowDateTime;
-  DWORD dwHighDateTime;
-} FILETIME, *PFILETIME;
-
-typedef struct _CREDENTIAL_ATTRIBUTE {
-  LPWSTR Keyword;
-  DWORD  Flags;
-  DWORD  ValueSize;
-  LPBYTE Value;
-} CREDENTIAL_ATTRIBUTE, *PCREDENTIAL_ATTRIBUTE;
-
-typedef struct _CREDENTIAL {
-  DWORD                 Flags;
-  DWORD                 Type;
-  LPWSTR                TargetName;
-  LPWSTR                Comment;
-  FILETIME              LastWritten;
-  DWORD                 CredentialBlobSize;
-  LPBYTE                CredentialBlob;
-  DWORD                 Persist;
-  DWORD                 AttributeCount;
-  PCREDENTIAL_ATTRIBUTE Attributes;
-  LPWSTR                TargetAlias;
-  LPWSTR                UserName;
-} CREDENTIAL, *PCREDENTIAL;
-
-
-BOOL WINAPI CredReadW(LPCWSTR TargetName, DWORD Type, DWORD Flags, PCREDENTIAL *Credential);
-BOOL WINAPI CredWriteW(PCREDENTIAL Credential, DWORD);
-VOID WINAPI CredFree(PVOID Buffer);
-BOOL WINAPI CredDeleteW(LPCWSTR TargetName, DWORD Type, DWORD Flags);
-
-""")
+        """)
 
 CRED_TYPE_GENERIC = 0x1
 CRED_PERSIST_SESSION = 0x1
