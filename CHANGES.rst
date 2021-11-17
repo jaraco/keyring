@@ -1,3 +1,8 @@
+v23.2.2
+-------
+
+* #542: Change get_credential to return generic Credential.
+
 v23.2.1
 -------
 
