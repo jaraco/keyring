@@ -18,7 +18,7 @@ with ExceptionRaisedContext() as missing_deps:
     import cffi
 
     if sys.platform != "win32":
-        raise EnvironmentError(f"Windows backend requires sys.platform = 'win32' but {sys.platform=}")
+        raise EnvironmentError(f"Windows backend requires sys.platform = 'win32' but sys.platform={sys.platform}")
     else:
         ffi = cffi.FFI()
 
@@ -316,7 +316,7 @@ class WinVaultKeyring(KeyringBackend):
                     self._set_password("__probe_target__", "username", "a" * length)
                 except Exception as e:
                     if not (isinstance(e, CredError) and e.winerror == 1783):
-                        log.exception(f"_set_password raised {e=}")
+                        log.exception(f"_set_password raised e={e}")
                     raise
                 self._delete_password("__probe_target__")
                 return True
