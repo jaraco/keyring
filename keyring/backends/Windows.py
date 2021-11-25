@@ -106,7 +106,7 @@ class WinVaultKeyring(KeyringBackend):
                     self._discovery_probe_password('__probe_target__', 'a' * length)
                 except Exception as e:
                     if not (isinstance(e, CredError) and e.winerror == 1783):
-                        log.exception(f'_set_password raised {e=}')
+                        log.exception(f"_set_password raised e={e}")
                     raise
                 self._delete_password_inner('__probe_target__')
                 return True
