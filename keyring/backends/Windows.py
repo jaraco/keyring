@@ -26,7 +26,7 @@ with ExceptionRaisedContext() as missing_deps:
 
         advapi32 = ffi.dlopen('advapi32.dll')
 
-        ffi.cdef('''
+        ffi.cdef("""
 
         typedef struct _FILETIME {
         DWORD dwLowDateTime;
@@ -61,7 +61,7 @@ with ExceptionRaisedContext() as missing_deps:
         VOID WINAPI CredFree(PVOID Buffer);
         BOOL WINAPI CredDeleteW(LPCWSTR TargetName, DWORD Type, DWORD Flags);
 
-        ''')
+        """)
 
 CRED_TYPE_GENERIC = 0x1
 CRED_PERSIST_SESSION = 0x1
@@ -239,12 +239,12 @@ class Persistence:
         return getattr(keyring, '_persist', CRED_PERSIST_ENTERPRISE)
 
     def __set__(self, keyring, value):
-        '''
+        """
         Set the persistence value on the Keyring. Value may be
         one of the CRED_PERSIST_* constants or a
         string representing one of those constants. For example,
         'local machine' or 'session'.
-        '''
+        """
         if isinstance(value, str):
             attr = 'CRED_PERSIST_' + value.replace(' ', '_').upper()
             value = globals().get(attr, CRED_PERSIST_ENTERPRISE)
@@ -254,9 +254,9 @@ class Persistence:
 class DecodingCredential(dict):
     @property
     def value(self):
-        '''
+        """
         Attempt to decode the credential blob as UTF-16 then UTF-8.
-        '''
+        """
 
         cred = self['CredentialBlob']
 
@@ -275,7 +275,7 @@ class DecodingCredential(dict):
 
 
 class WinVaultKeyring(KeyringBackend):
-    '''
+    """
     WinVaultKeyring stores encrypted passwords using the Windows Credential
     Manager.
 
@@ -290,16 +290,16 @@ class WinVaultKeyring(KeyringBackend):
     (another password with the same service name but different user name),
     in which case the previous password is moved into a compound name:
     {username}@{service}
-    '''
+    """
 
     persist = Persistence()
 
     @properties.ClassProperty
     @classmethod
     def priority(cls):
-        '''
+        """
         If available, the preferred backend on Windows.
-        '''
+        """
         if missing_deps:
             raise RuntimeError('Requires Windows and cffi')
         return 5
