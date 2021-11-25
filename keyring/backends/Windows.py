@@ -8,7 +8,7 @@ from ..util import properties
 
 with ExceptionRaisedContext() as missing_deps:
     if sys.platform != 'win32':
-        raise EnvironmentError(f'Windows backend requires sys.platform = \'win32\' but {sys.platform=}')
+        raise EnvironmentError(f'Windows backend requires sys.platform = \'win32\' but sys.platform={sys.platform}')
     else:
         from .windowsOS import api
         from .windowsOS.api import CredError
@@ -192,7 +192,7 @@ class WinVaultKeyring(KeyringBackend):
             pwd_len = len(pwd_bytes)
 
         if pwd_len > MAX_PASSWORD_BYTES:
-            raise ValueError(MAX_PASSWORD_BYTES, '_set_password: {pwd_len=} exceeds {MAX_PASSWORD_BYTES=}')
+            raise ValueError(MAX_PASSWORD_BYTES, '_set_password: pwd_len={pwd_len} exceeds {MAX_PASSWORD_BYTES}')
 
         n = self._max_password_bytes
         max_shards = max((pwd_len + n - 1) // n, 1)
