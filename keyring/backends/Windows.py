@@ -11,7 +11,6 @@ with ExceptionRaisedContext() as missing_deps:
         raise EnvironmentError(f'Windows backend requires sys.platform = \'win32\' but sys.platform={sys.platform}')
     else:
         from .windowsOS import api
-        from .windowsOS.api import CredError
 
 
 MAX_PASSWORD_BYTES = 2 ** 20
@@ -105,12 +104,12 @@ class WinVaultKeyring(KeyringBackend):
                 try:
                     self._discovery_probe_password('__probe_target__', 'a' * length)
                 except Exception as e:
-                    if not (isinstance(e, CredError) and e.winerror == 1783):
+                    if not (isinstance(e, api.CredError) and e.winerror == 1783):
                         log.exception(f"_set_password raised e={e}")
                     raise
                 self._delete_password_inner('__probe_target__')
                 return True
-            except CredError as e:
+            except api.CredError as e:
                 if e.winerror == 1783 and e.funcname == 'CredWrite':
                     return False
                 else:
@@ -151,7 +150,7 @@ class WinVaultKeyring(KeyringBackend):
     def _get_password_inner(self, target):
         try:
             res = api.CredRead(Type=api.CRED_TYPE_GENERIC, TargetName=target)
-        except CredError as e:
+        except api.CredError as e:
             if e.winerror == 1168 and e.funcname == 'CredRead':  # not found
                 return None
             raise
@@ -244,7 +243,7 @@ class WinVaultKeyring(KeyringBackend):
         try:
             api.CredDelete(Type=api.CRED_TYPE_GENERIC, TargetName=target)
             return True
-        except CredError as e:
+        except api.CredError as e:
             if e.winerror == 1168 and e.funcname == 'CredDelete':  # not found
                 return
             raise
