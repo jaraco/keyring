@@ -1,5 +1,4 @@
-import sys
-import platform
+import ctypes
 
 collect_ignore = ["hook-keyring.backend.py"]
 
@@ -12,16 +11,11 @@ def macos_api_ignore():
     Ref #525.
     """
 
-    def make_ver(string):
-        return tuple(map(int, string.split('.')))
-
-    release, _, _ = platform.mac_ver()
-
-    return (
-        platform.system() != 'Darwin'
-        or make_ver(release) > (11,)
-        and sys.version_info < (3, 8, 7)
-    )
+    try:
+        ctypes.CDLL(ctypes.util.find_library('Security')).SecItemAdd
+        return False
+    except Exception:
+        return True
 
 
 collect_ignore.extend(['keyring/backends/macOS/api.py'] * macos_api_ignore())
