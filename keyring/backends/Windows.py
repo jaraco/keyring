@@ -27,13 +27,13 @@ class Persistence:
     def __set__(self, keyring, value):
         """
         Set the persistence value on the Keyring. Value may be
-        one of the CRED_PERSIST_* constants or a
+        one of the api.CRED_PERSIST_* constants or a
         string representing one of those constants. For example,
         'local machine' or 'session'.
         """
         if isinstance(value, str):
             attr = 'CRED_PERSIST_' + value.replace(' ', '_').upper()
-            value = getattr(api, attr, api.CRED_PERSIST_ENTERPRISE)
+            value = getattr(api, attr)
         setattr(keyring, '_persist', value)
 
 
