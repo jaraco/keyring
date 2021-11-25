@@ -257,7 +257,6 @@ class DecodingCredential(dict):
         """
         Attempt to decode the credential blob as UTF-16 then UTF-8.
         """
-
         cred = self['CredentialBlob']
 
         # NOTE if we have our metadata, we know how to decode
@@ -269,7 +268,7 @@ class DecodingCredential(dict):
         except UnicodeDecodeError:
             decoded_cred_utf8 = cred.decode('utf-8')
             log.warning(
-                'Retrieved an UTF-8 encoded credential not created by keyring.'
+                "Retrieved an UTF-8 encoded credential not created by keyring."
             )
             return decoded_cred_utf8
 
@@ -301,7 +300,7 @@ class WinVaultKeyring(KeyringBackend):
         If available, the preferred backend on Windows.
         """
         if missing_deps:
-            raise RuntimeError('Requires Windows and cffi')
+            raise RuntimeError("Requires Windows and cffi")
         return 5
 
     @staticmethod
@@ -353,14 +352,13 @@ class WinVaultKeyring(KeyringBackend):
 
     def get_password(self, service, username):
         # first attempt to get the password under the service name
-        creds = self._get_password(service)
-        if not creds or creds['UserName'] != username:
+        res = self._get_password(service)
+        if not res or res['UserName'] != username:
             # It wasn't found so attempt to get it with the compound name
-            creds = self._get_password(self._compound_name(username, service))
-        if not creds:
+            res = self._get_password(self._compound_name(username, service))
+        if not res:
             return None
-        password = creds.value
-        return password
+        return res.value
 
     def _get_password_inner(self, target):
         try:
@@ -389,6 +387,7 @@ class WinVaultKeyring(KeyringBackend):
             existing_username = existing_pw['UserName']
             if existing_username != username:
                 # resave the existing password using a compound target
+                # only if for a different username
                 target = self._compound_name(existing_username, service)
                 self._set_password(target, existing_username, existing_pw.value)
         self._set_password(service, username, str(password))
