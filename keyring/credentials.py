@@ -39,6 +39,15 @@ class EnvironCredential(Credential):
         self.user_env_var = user_env_var
         self.pwd_env_var = pwd_env_var
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, EnvironCredential):
+            return NotImplemented
+
+        return (
+            self.user_env_var == other.user_env_var
+            and self.pwd_env_var == other.pwd_env_var
+        )
+
     def _get_env(self, env_var):
         """Helper to read an environment variable"""
         value = os.environ.get(env_var)
