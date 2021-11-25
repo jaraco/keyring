@@ -9,9 +9,6 @@ v23.3.0
 * #547: Tests no longer attempt to run macOS backends even
   on macOS when the backend is non-viable.
 
-v23.2.2
--------
-
 * #542: Change get_credential to return generic Credential.
 
 v23.2.1
