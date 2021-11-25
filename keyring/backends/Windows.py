@@ -135,7 +135,7 @@ def credential_from_dict(credential, flag=0):
         dict(
             max_shards=credential['_max_shards'],
             shard_num=credential['_shard_num'],
-            encoding='utf-8'
+            encoding=credential['encoding']
         )
     )
     metadata_bytes = metadata.encode('utf-8')
@@ -310,14 +310,13 @@ class WinVaultKeyring(KeyringBackend):
     def _discover_max_password_bytes(self):
         def test_length(length):
             try:
-                # NOTE relies on character 'a' mapping to a single wchar_t (i.e. 2 bytes)
                 try:
-                    self._set_password('__probe_target__', 'username', 'a' * length)
+                    self._discovery_probe_password('__probe_target__', 'a' * length)
                 except Exception as e:
                     if not (isinstance(e, CredError) and e.winerror == 1783):
                         log.exception(f'_set_password raised {e=}')
                     raise
-                self._delete_password('__probe_target__')
+                self._delete_password_inner('__probe_target__')
                 return True
             except CredError as e:
                 if e.winerror == 1783 and e.funcname == 'CredWrite':
@@ -345,10 +344,7 @@ class WinVaultKeyring(KeyringBackend):
     def __init__(self, *arg, **kw):
         super().__init__(*arg, **kw)
 
-        # prevent sharding during self._discover_max_password_bytes
-        self._is_init = True
         self._max_password_bytes = self._discover_max_password_bytes()
-        self._is_init = False
 
     def get_password(self, service, username):
         # first attempt to get the password under the service name
@@ -387,23 +383,30 @@ class WinVaultKeyring(KeyringBackend):
             existing_username = existing_pw['UserName']
             if existing_username != username:
                 # resave the existing password using a compound target
-                # only if for a different username
+                # only if this call is for a different username than the existing one
                 target = self._compound_name(existing_username, service)
                 self._set_password(target, existing_username, existing_pw.value)
         self._set_password(service, username, str(password))
 
     def _set_password(self, target, username, password):
-        pwd_utf8_bytes = password.encode('utf-8')
-        pwd_len = len(pwd_utf8_bytes)
+        encoding = 'utf-16'
+        pwd_bytes = password.encode(encoding)
+        pwd_len = len(pwd_bytes)
+        if pwd_len > self._max_password_bytes:
+            # the utf-16 encoded password won't fit in a single record,
+            # so try utf-8, sharding if necessary
+            encoding = 'utf-8'
+            pwd_bytes = password.encode(encoding)
+            pwd_len = len(pwd_bytes)
 
         if pwd_len > MAX_PASSWORD_BYTES:
             raise ValueError(MAX_PASSWORD_BYTES, '_set_password: {pwd_len=} exceeds {MAX_PASSWORD_BYTES=}')
 
-        n = MAX_PASSWORD_BYTES if self._is_init else self._max_password_bytes
+        n = self._max_password_bytes
         max_shards = max((pwd_len + n - 1) // n, 1)
 
         for i in range(0, max_shards):
-            shard = pwd_utf8_bytes[i * n: (i + 1) * n]
+            shard = pwd_bytes[i * n: (i + 1) * n]
 
             credential = dict(
                 Type=CRED_TYPE_GENERIC,
@@ -413,9 +416,26 @@ class WinVaultKeyring(KeyringBackend):
                 Comment='Stored using python-keyring',
                 Persist=self.persist,
                 _shard_num=i,
-                _max_shards=max_shards
+                _max_shards=max_shards,
+                encoding=encoding
             )
             CredWrite(credential, 0)
+
+    def _discovery_probe_password(self, target, password):
+        pwd_utf8_bytes = password.encode('utf-8')
+
+        credential = dict(
+            Type=CRED_TYPE_GENERIC,
+            TargetName=target,
+            UserName='username',
+            CredentialBlob=pwd_utf8_bytes,
+            Comment='Stored using python-keyring',
+            Persist=self.persist,
+            _shard_num=0,
+            _max_shards=1,
+            encoding='utf-8'
+        )
+        CredWrite(credential, 0)
 
     def delete_password(self, service, username):
         compound = self._compound_name(username, service)
@@ -438,9 +458,7 @@ class WinVaultKeyring(KeyringBackend):
             raise
 
     def _delete_password(self, target):
-        deleted = self._delete_password_inner(target)
-
-        if deleted and not self._is_init:
+        if self._delete_password_inner(target):
             for i in range(1, MAX_PASSWORD_BYTES // self._max_password_bytes):
                 deleted = self._delete_password_inner(TARGET_SHARD.format(target=target, n=i))
                 if not deleted:

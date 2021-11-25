@@ -31,6 +31,7 @@ class TestWinVaultKeyring(BackendBasicTests):
 
         self.keyring.set_password(service, username, password)
         assert self.keyring.get_password(service, username) == password
+        self.keyring.delete_password(service, username)
 
     def test_long_password_nice_error(self):
         self.keyring.set_password('system', 'user', 'x' * 10000)
