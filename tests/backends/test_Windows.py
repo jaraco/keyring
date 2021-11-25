@@ -41,10 +41,7 @@ class TestWinVaultKeyring(BackendBasicTests):
             self.keyring.set_password('system', 'user', 'x' * (2**20 + 1))
             self.keyring.delete_password('system', 'user')
         except ValueError as e:
-            if e.args[0] == 2**20:
-                assert True
-            else:
-                assert False
+            assert e.args[0] == 2**20
         except Exception:
             assert False
 
