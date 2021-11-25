@@ -9,6 +9,6 @@ from keyring.backends import macOS
     not keyring.backends.macOS.Keyring.viable,
     reason="macOS backend not viable",
 )
-class TestOSXKeychain(BackendBasicTests):
+class Test_macOSKeychain(BackendBasicTests):
     def init_keyring(self):
         return macOS.Keyring()
