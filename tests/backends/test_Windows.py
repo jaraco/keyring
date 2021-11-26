@@ -39,10 +39,10 @@ class TestWinVaultKeyring(BackendBasicTests):
 
     def test_long_password_too_long_nice_error(self):
         try:
-            self.keyring.set_password('system', 'user', 'x' * (2**20 + 1))
+            self.keyring.set_password('system', 'user', 'x' * (2 ** 20 + 1))
             self.keyring.delete_password('system', 'user')
         except ValueError as e:
-            assert e.args[0] == 2**20
+            assert e.args[0] == 2 ** 20
         except Exception:
             assert False
 

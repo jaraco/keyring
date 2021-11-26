@@ -118,9 +118,10 @@ def credential_from_dict(credential, flag=0):
 
     metadata = json.dumps(
         dict(
-            max_shards=credential['_max_shards'],
-            shard_num=credential['_shard_num'],
-            encoding=credential['encoding']
+            max_shards=credential['max_shards'],
+            shard_num=credential['shard_num'],
+            encoding=credential['encoding'],
+            template=credential['template']
         )
     )
     metadata_bytes = metadata.encode('utf-8')

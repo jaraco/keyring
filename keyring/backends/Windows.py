@@ -14,7 +14,7 @@ with ExceptionRaisedContext() as missing_deps:
 
 
 MAX_PASSWORD_BYTES = 2 ** 20
-TARGET_SHARD = '{target}-shard-{n:04}'
+TARGET_SHARD_TEMPLATE = '{target}-shard-{n:04}'
 
 
 log = logging.getLogger(__name__)
@@ -158,14 +158,15 @@ class WinVaultKeyring(KeyringBackend):
 
     def _get_password(self, target):
         creds = self._get_password_inner(target)
-        if creds and api.ATTRIBUTE_KEYWORD in creds and creds[api.ATTRIBUTE_KEYWORD]['max_shards'] > 1:
+        if creds and api.ATTRIBUTE_KEYWORD in creds:
+            template = creds[api.ATTRIBUTE_KEYWORD].get('template', TARGET_SHARD_TEMPLATE)
             for i in range(1, creds[api.ATTRIBUTE_KEYWORD]['max_shards']):
-                shard = self._get_password_inner(TARGET_SHARD.format(target=target, n=i))
-                if not shard:
+                shard = self._get_password_inner(template.format(target=target, n=i))
+                if shard:
+                    creds['CredentialBlob'] += shard['CredentialBlob']
+                else:
                     log.critical(f'expected shard {i} not found; {creds[api.ATTRIBUTE_KEYWORD]}')
                     return creds
-                else:
-                    creds['CredentialBlob'] += shard['CredentialBlob']
         return creds
 
     def set_password(self, service, username, password):
@@ -201,14 +202,15 @@ class WinVaultKeyring(KeyringBackend):
 
             credential = dict(
                 Type=api.CRED_TYPE_GENERIC,
-                TargetName=TARGET_SHARD.format(target=target, n=i) if i else target,
+                TargetName=TARGET_SHARD_TEMPLATE.format(target=target, n=i) if i else target,
                 UserName=username,
                 CredentialBlob=shard,
                 Comment='Stored using python-keyring',
                 Persist=self.persist,
-                _shard_num=i,
-                _max_shards=max_shards,
-                encoding=encoding
+                shard_num=i,
+                max_shards=max_shards,
+                encoding=encoding,
+                template=TARGET_SHARD_TEMPLATE
             )
             api.CredWrite(credential, 0)
 
@@ -222,9 +224,10 @@ class WinVaultKeyring(KeyringBackend):
             CredentialBlob=pwd_utf8_bytes,
             Comment='Stored using python-keyring',
             Persist=self.persist,
-            _shard_num=0,
-            _max_shards=1,
-            encoding='utf-8'
+            shard_num=0,
+            max_shards=1,
+            encoding='utf-8',
+            template=TARGET_SHARD_TEMPLATE
         )
         api.CredWrite(credential, 0)
 
@@ -232,10 +235,10 @@ class WinVaultKeyring(KeyringBackend):
         compound = self._compound_name(username, service)
         deleted = False
         for target in service, compound:
-            existing_pw = self._get_password(target)
-            if existing_pw and existing_pw['UserName'] == username:
+            creds = self._get_password(target)
+            if creds and creds['UserName'] == username:
                 deleted = True
-                self._delete_password(target)
+                self._delete_password(target, creds)
         if not deleted:
             raise PasswordDeleteError(service)
 
@@ -248,12 +251,12 @@ class WinVaultKeyring(KeyringBackend):
                 return
             raise
 
-    def _delete_password(self, target):
+    def _delete_password(self, target, creds):
         if self._delete_password_inner(target):
-            for i in range(1, MAX_PASSWORD_BYTES // self._max_password_bytes):
-                deleted = self._delete_password_inner(TARGET_SHARD.format(target=target, n=i))
-                if not deleted:
-                    break
+            template = creds[api.ATTRIBUTE_KEYWORD].get('template', TARGET_SHARD_TEMPLATE)
+            for i in range(1, creds[api.ATTRIBUTE_KEYWORD]['max_shards']):
+                if not self._delete_password_inner(template.format(target=target, n=i)):
+                    log.critical(f'expected shard {i} not found; {creds[api.ATTRIBUTE_KEYWORD]}')
 
     def get_credential(self, service, username):
         res = None
