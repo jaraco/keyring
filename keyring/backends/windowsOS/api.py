@@ -11,7 +11,8 @@ ffi.set_unicode(True)
 
 advapi32 = ffi.dlopen('advapi32.dll')
 
-ffi.cdef("""
+ffi.cdef(
+    """
 
 typedef struct _FILETIME {
 DWORD dwLowDateTime;
@@ -41,12 +42,18 @@ LPWSTR                UserName;
 } CREDENTIAL, *PCREDENTIAL;
 
 
-BOOL WINAPI CredReadW(LPCWSTR TargetName, DWORD Type, DWORD Flags, PCREDENTIAL *Credential);
+BOOL WINAPI CredReadW(
+    LPCWSTR TargetName,
+    DWORD Type,
+    DWORD Flags,
+    PCREDENTIAL *Credential
+);
 BOOL WINAPI CredWriteW(PCREDENTIAL Credential, DWORD);
 VOID WINAPI CredFree(PVOID Buffer);
 BOOL WINAPI CredDeleteW(LPCWSTR TargetName, DWORD Type, DWORD Flags);
 
-""")
+"""
+)
 
 CRED_TYPE_GENERIC = 0x1
 CRED_PERSIST_SESSION = 0x1
@@ -54,9 +61,9 @@ CRED_PERSIST_LOCAL_MACHINE = 0x2
 CRED_PERSIST_ENTERPRISE = 0x3
 CRED_PRESERVE_CREDENTIAL_BLOB = 0
 
-SUPPORTED_CREDKEYS = set((
-    'Type', 'TargetName', 'Persist',
-    'UserName', 'Comment', 'CredentialBlob'))
+SUPPORTED_CREDKEYS = set(
+    ('Type', 'TargetName', 'Persist', 'UserName', 'Comment', 'CredentialBlob')
+)
 
 
 class CredError(Exception):
@@ -98,7 +105,7 @@ def PPCREDENTIAL(value=None):
     return ffi.new('PCREDENTIAL*', ffi.NULL if value is None else value)
 
 
-_keep_alive = WeakKeyDictionary()
+_keep_alive: WeakKeyDictionary = WeakKeyDictionary()
 
 
 def credential_from_dict(credential, flag=0):
@@ -121,7 +128,7 @@ def credential_from_dict(credential, flag=0):
             max_shards=credential['max_shards'],
             shard_num=credential['shard_num'],
             encoding=credential['encoding'],
-            template=credential['template']
+            template=credential['template'],
         )
     )
     metadata_bytes = metadata.encode('utf-8')
@@ -168,7 +175,8 @@ def credential_to_dict(pc_creds):
     credentials = {}
     for key in SUPPORTED_CREDKEYS:
         if key == 'CredentialBlob':
-            data = ffi.buffer(pc_creds.CredentialBlob, pc_creds.CredentialBlobSize)[:]  # [:] causes copy
+            # [:] causes copy
+            data = ffi.buffer(pc_creds.CredentialBlob, pc_creds.CredentialBlobSize)[:]
         elif key in ('Type', 'Persist'):
             data = int(getattr(pc_creds, key))
         else:
@@ -181,8 +189,13 @@ def credential_to_dict(pc_creds):
 
     if hasattr(pc_creds, 'AttributeCount') and hasattr(pc_creds, 'Attributes'):
         credentials['AttributeCount'] = int(pc_creds.AttributeCount)
-        if pc_creds.AttributeCount == 1 and ffi.string(pc_creds.Attributes.Keyword) == ATTRIBUTE_KEYWORD:
-            metadata_bytes = ffi.buffer(pc_creds.Attributes.Value, pc_creds.Attributes.ValueSize)[:]
+        if (
+            pc_creds.AttributeCount == 1
+            and ffi.string(pc_creds.Attributes.Keyword) == ATTRIBUTE_KEYWORD
+        ):
+            metadata_bytes = ffi.buffer(
+                pc_creds.Attributes.Value, pc_creds.Attributes.ValueSize
+            )[:]
             metadata_string = metadata_bytes.decode('utf-8')
             credentials[ATTRIBUTE_KEYWORD] = json.loads(metadata_string)
 

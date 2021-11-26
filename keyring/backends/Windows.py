@@ -8,7 +8,10 @@ from ..util import properties
 
 with ExceptionRaisedContext() as missing_deps:
     if sys.platform != 'win32':
-        raise EnvironmentError(f'Windows backend requires sys.platform = \'win32\' but sys.platform={sys.platform}')
+        raise EnvironmentError(
+            f'Windows backend requires sys.platform = \'win32\' '
+            f'but sys.platform={sys.platform}'
+        )
     else:
         from .windowsOS import api
 
@@ -53,9 +56,7 @@ class DecodingCredential(dict):
             return cred.decode('utf-16')
         except UnicodeDecodeError:
             decoded_cred_utf8 = cred.decode('utf-8')
-            log.warning(
-                "Retrieved an UTF-8 encoded credential not created by keyring."
-            )
+            log.warning("Retrieved an UTF-8 encoded credential not created by keyring.")
             return decoded_cred_utf8
 
 
@@ -93,40 +94,41 @@ class WinVaultKeyring(KeyringBackend):
     def _compound_name(username, service):
         return f'{username}@{service}'
 
+    def _test_length(self, length):
+        try:
+            try:
+                self._discovery_probe_password('__probe_target__', 'a' * length)
+            except Exception as e:
+                if not (isinstance(e, api.CredError) and e.winerror == 1783):
+                    log.exception(f"_set_password raised e={e}")
+                raise
+            self._delete_password_inner('__probe_target__')
+            return True
+        except api.CredError as e:
+            if e.winerror == 1783 and e.funcname == 'CredWrite':
+                return False
+            else:
+                log.exception('unexpected CredError')
+                return False
+        except Exception:
+            log.exception('unexpected Exception')
+
     def _discover_max_password_bytes(self):
         """
         Test 2560 bytes as max. If it isn't, use binary
         search to discover actual max password on this
         instance of Windows.
         """
-        def test_length(length):
-            try:
-                try:
-                    self._discovery_probe_password('__probe_target__', 'a' * length)
-                except Exception as e:
-                    if not (isinstance(e, api.CredError) and e.winerror == 1783):
-                        log.exception(f"_set_password raised e={e}")
-                    raise
-                self._delete_password_inner('__probe_target__')
-                return True
-            except api.CredError as e:
-                if e.winerror == 1783 and e.funcname == 'CredWrite':
-                    return False
-                else:
-                    log.exception('unexpected CredError')
-                    return False
-            except Exception:
-                log.exception('unexpected Exception')
 
         # first try to confirm max bytes of 2560
-        if test_length(2560) and not test_length(2561):
+        if self._test_length(2560) and not self._test_length(2561):
             return 2560
 
         # otherwise, use binary search
         start, end = 1, MAX_PASSWORD_BYTES
         while start <= end:
             mid = (start + end) // 2
-            if test_length(mid):
+            if self._test_length(mid):
                 start = mid + 1
             else:
                 end = mid - 1
@@ -159,13 +161,17 @@ class WinVaultKeyring(KeyringBackend):
     def _get_password(self, target):
         creds = self._get_password_inner(target)
         if creds and api.ATTRIBUTE_KEYWORD in creds:
-            template = creds[api.ATTRIBUTE_KEYWORD].get('template', TARGET_SHARD_TEMPLATE)
+            template = creds[api.ATTRIBUTE_KEYWORD].get(
+                'template', TARGET_SHARD_TEMPLATE
+            )
             for i in range(1, creds[api.ATTRIBUTE_KEYWORD]['max_shards']):
                 shard = self._get_password_inner(template.format(target=target, n=i))
                 if shard:
                     creds['CredentialBlob'] += shard['CredentialBlob']
                 else:
-                    log.critical(f'expected shard {i} not found; {creds[api.ATTRIBUTE_KEYWORD]}')
+                    log.critical(
+                        f'expected shard {i} not found; {creds[api.ATTRIBUTE_KEYWORD]}'
+                    )
                     return creds
         return creds
 
@@ -192,17 +198,22 @@ class WinVaultKeyring(KeyringBackend):
             pwd_len = len(pwd_bytes)
 
         if pwd_len > MAX_PASSWORD_BYTES:
-            raise ValueError(MAX_PASSWORD_BYTES, '_set_password: pwd_len={pwd_len} exceeds {MAX_PASSWORD_BYTES}')
+            raise ValueError(
+                MAX_PASSWORD_BYTES,
+                '_set_password: pwd_len={pwd_len} exceeds {MAX_PASSWORD_BYTES}',
+            )
 
         n = self._max_password_bytes
         max_shards = max((pwd_len + n - 1) // n, 1)
 
         for i in range(0, max_shards):
-            shard = pwd_bytes[i * n: (i + 1) * n]
+            shard = pwd_bytes[i * n : (i + 1) * n]
 
             credential = dict(
                 Type=api.CRED_TYPE_GENERIC,
-                TargetName=TARGET_SHARD_TEMPLATE.format(target=target, n=i) if i else target,
+                TargetName=TARGET_SHARD_TEMPLATE.format(target=target, n=i)
+                if i
+                else target,
                 UserName=username,
                 CredentialBlob=shard,
                 Comment='Stored using python-keyring',
@@ -210,7 +221,7 @@ class WinVaultKeyring(KeyringBackend):
                 shard_num=i,
                 max_shards=max_shards,
                 encoding=encoding,
-                template=TARGET_SHARD_TEMPLATE
+                template=TARGET_SHARD_TEMPLATE,
             )
             api.CredWrite(credential, 0)
 
@@ -227,7 +238,7 @@ class WinVaultKeyring(KeyringBackend):
             shard_num=0,
             max_shards=1,
             encoding='utf-8',
-            template=TARGET_SHARD_TEMPLATE
+            template=TARGET_SHARD_TEMPLATE,
         )
         api.CredWrite(credential, 0)
 
@@ -253,10 +264,14 @@ class WinVaultKeyring(KeyringBackend):
 
     def _delete_password(self, target, creds):
         if self._delete_password_inner(target):
-            template = creds[api.ATTRIBUTE_KEYWORD].get('template', TARGET_SHARD_TEMPLATE)
+            template = creds[api.ATTRIBUTE_KEYWORD].get(
+                'template', TARGET_SHARD_TEMPLATE
+            )
             for i in range(1, creds[api.ATTRIBUTE_KEYWORD]['max_shards']):
                 if not self._delete_password_inner(template.format(target=target, n=i)):
-                    log.critical(f'expected shard {i} not found; {creds[api.ATTRIBUTE_KEYWORD]}')
+                    log.critical(
+                        f'expected shard {i} not found; {creds[api.ATTRIBUTE_KEYWORD]}'
+                    )
 
     def get_credential(self, service, username):
         res = None
