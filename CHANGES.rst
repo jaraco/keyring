@@ -1,3 +1,9 @@
+v23.4.0
+-------
+
+* #549: EnvironCredential now allows for equality
+  comparison.
+
 v23.3.0
 -------
 
