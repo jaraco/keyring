@@ -38,13 +38,11 @@ class TestWinVaultKeyring(BackendBasicTests):
         self.keyring.delete_password('system', 'user')
 
     def test_long_password_too_long_nice_error(self):
-        try:
+        with pytest.raises(ValueError) as exc_info:
             self.keyring.set_password('system', 'user', 'x' * (2 ** 20 + 1))
             self.keyring.delete_password('system', 'user')
-        except ValueError as e:
-            assert e.args[0] == 2 ** 20
-        except Exception:
-            assert False
+
+        assert exc_info.type is ValueError and exc_info.value.args[0] == 2 ** 20
 
 
 @pytest.mark.skipif('sys.platform != "win32"')

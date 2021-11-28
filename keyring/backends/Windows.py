@@ -200,7 +200,7 @@ class WinVaultKeyring(KeyringBackend):
         if pwd_len > MAX_PASSWORD_BYTES:
             raise ValueError(
                 MAX_PASSWORD_BYTES,
-                '_set_password: pwd_len={pwd_len} exceeds {MAX_PASSWORD_BYTES}',
+                f'_set_password: pwd_len={pwd_len} exceeds {MAX_PASSWORD_BYTES}',
             )
 
         n = self._max_password_bytes
@@ -263,7 +263,7 @@ class WinVaultKeyring(KeyringBackend):
             raise
 
     def _delete_password(self, target, creds):
-        if self._delete_password_inner(target):
+        if self._delete_password_inner(target) and api.ATTRIBUTE_KEYWORD in creds:
             template = creds[api.ATTRIBUTE_KEYWORD].get(
                 'template', TARGET_SHARD_TEMPLATE
             )

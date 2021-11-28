@@ -162,8 +162,9 @@ def credential_from_dict(credential, flag=0):
                 values.append(value)
                 setattr(c_creds, key, ffi.cast('LPTSTR', value))
 
-    c_creds.AttributeCount = 1
-    c_creds.Attributes = PCREDENTIAL_ATTRIBUTE(c_attrs)
+    if credential['encoding'] != "utf-16":
+        c_creds.AttributeCount = 1
+        c_creds.Attributes = PCREDENTIAL_ATTRIBUTE(c_attrs)
     values.append(c_attrs)
 
     # keep values alive until c_creds goes away.
@@ -196,8 +197,13 @@ def credential_to_dict(pc_creds):
             metadata_bytes = ffi.buffer(
                 pc_creds.Attributes.Value, pc_creds.Attributes.ValueSize
             )[:]
-            metadata_string = metadata_bytes.decode('utf-8')
-            credentials[ATTRIBUTE_KEYWORD] = json.loads(metadata_string)
+
+            if metadata_bytes:
+                metadata_string = metadata_bytes.decode('utf-8')
+                try:
+                    credentials[ATTRIBUTE_KEYWORD] = json.loads(metadata_string)
+                except:  # noqa
+                    pass
 
     return credentials
 
