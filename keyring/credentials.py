@@ -31,13 +31,28 @@ class SimpleCredential(Credential):
 
 
 class EnvironCredential(Credential):
-    """Source credentials from environment variables.
+    """
+    Source credentials from environment variables.
+
     Actual sourcing is deferred until requested.
+
+    Supports comparison by equality.
+
+    >>> e1 = EnvironCredential('a', 'b')
+    >>> e2 = EnvironCredential('a', 'b')
+    >>> e3 = EnvironCredential('a', 'c')
+    >>> e1 == e2
+    True
+    >>> e2 == e3
+    False
     """
 
     def __init__(self, user_env_var, pwd_env_var):
         self.user_env_var = user_env_var
         self.pwd_env_var = pwd_env_var
+
+    def __eq__(self, other: object) -> bool:
+        return vars(self) == vars(other)
 
     def _get_env(self, env_var):
         """Helper to read an environment variable"""
