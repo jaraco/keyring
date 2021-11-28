@@ -20,4 +20,15 @@ def macos_api_ignore():
 
 collect_ignore.extend(['keyring/backends/macOS/api.py'] * macos_api_ignore())
 
+
+def windowsos_api_ignore():
+    try:
+        ctypes.windll
+        return False
+    except Exception:
+        return True
+
+
+collect_ignore.extend(['keyring/backends/windowsOS/api.py'] * windowsos_api_ignore())
+
 collect_ignore.append('keyring/devpi_client.py')
