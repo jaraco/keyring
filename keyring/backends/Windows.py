@@ -1,4 +1,3 @@
-import functools
 import logging
 
 from ..util import properties
@@ -111,7 +110,6 @@ class WinVaultKeyring(KeyringBackend):
                 Type=win32cred.CRED_TYPE_GENERIC, TargetName=target
             )
         except pywintypes.error as e:
-            e = OldPywinError.wrap(e)
             if e.winerror == 1168 and e.funcname == 'CredRead':  # not found
                 return None
             raise
@@ -156,7 +154,6 @@ class WinVaultKeyring(KeyringBackend):
         try:
             win32cred.CredDelete(Type=win32cred.CRED_TYPE_GENERIC, TargetName=target)
         except pywintypes.error as e:
-            e = OldPywinError.wrap(e)
             if e.winerror == 1168 and e.funcname == 'CredDelete':  # not found
                 return
             raise
@@ -172,27 +169,3 @@ class WinVaultKeyring(KeyringBackend):
             if not res:
                 return None
         return SimpleCredential(res['UserName'], res.value)
-
-
-class OldPywinError:
-    """
-    A compatibility wrapper for old PyWin32 errors, such as reported in
-    https://bitbucket.org/kang/python-keyring-lib/issue/140/
-    """
-
-    def __init__(self, orig):
-        self.orig = orig
-
-    @property
-    def funcname(self):
-        return self.orig[1]
-
-    @property
-    def winerror(self):
-        return self.orig[0]
-
-    @classmethod
-    def wrap(cls, orig_err):
-        attr_check = functools.partial(hasattr, orig_err)
-        is_old = not all(map(attr_check, ['funcname', 'winerror']))
-        return cls(orig_err) if is_old else orig_err
