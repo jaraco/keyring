@@ -1,3 +1,16 @@
+v23.3.0
+-------
+
+* #529: macOS backend is no longer viable if the API module
+  cannot be loaded. Prevents "symbol not found" errors on
+  macOS 11 (Big Sur) and later when a "universal2" binary
+  is not used (available for Python 3.8.7 and later).
+
+* #547: Tests no longer attempt to run macOS backends even
+  on macOS when the backend is non-viable.
+
+* #542: Change get_credential to return generic Credential.
+
 v23.2.1
 -------
 

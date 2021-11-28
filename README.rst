@@ -54,6 +54,13 @@ install dbus-python as a system package.
 
 .. _dbus-python: https://gitlab.freedesktop.org/dbus/dbus-python
 
+Compatibility - macOS
+=====================
+
+macOS keychain support macOS 11 (Big Sur) and later requires Python 3.8.7
+or later with the "universal2" binary. See
+`#525 <https://github.com/jaraco/keyring/issues/525>`_ for details.
+
 Using Keyring
 =============
 

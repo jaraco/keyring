@@ -28,6 +28,8 @@ class Keyring(KeyringBackend):
         """
         if platform.system() != 'Darwin':
             raise RuntimeError("macOS required")
+        if 'api' not in globals():
+            raise RuntimeError("Security API unavailable")
         return 5
 
     def set_password(self, service, username, password):

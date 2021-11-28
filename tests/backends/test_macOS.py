@@ -1,16 +1,14 @@
-import sys
-
 import pytest
 
+import keyring
 from keyring.testing.backend import BackendBasicTests
 from keyring.backends import macOS
 
 
-def is_osx_keychain_supported():
-    return sys.platform in ('mac', 'darwin')
-
-
-@pytest.mark.skipif(not is_osx_keychain_supported(), reason="Needs macOS")
-class TestOSXKeychain(BackendBasicTests):
+@pytest.mark.skipif(
+    not keyring.backends.macOS.Keyring.viable,
+    reason="macOS backend not viable",
+)
+class Test_macOSKeychain(BackendBasicTests):
     def init_keyring(self):
         return macOS.Keyring()

@@ -125,7 +125,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         self,
         service: str,
         username: Optional[str],
-    ) -> Optional[credentials.SimpleCredential]:
+    ) -> Optional[credentials.Credential]:
         """Gets the username and password for the service.
         Returns a Credential instance.
 
