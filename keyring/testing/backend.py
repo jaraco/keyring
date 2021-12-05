@@ -163,3 +163,7 @@ class BackendBasicTests:
         monkeypatch.setattr(os, 'environ', env)
         self.keyring.set_properties_from_env()
         assert self.keyring.foo_bar == 'fizz buzz'
+
+    def test_delete_non_existent(self):
+        with pytest.raises(errors.PasswordDeleteError):
+            self.keyring.delete_password('not_a_thing', 'no-one')
