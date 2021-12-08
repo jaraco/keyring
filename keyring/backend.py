@@ -182,13 +182,11 @@ def _load_plugins():
     Locate all setuptools entry points by the name 'keyring backends'
     and initialize them.
     Any third-party library may register an entry point by adding the
-    following to their setup.py::
+    following to their setup.cfg::
 
-        entry_points = {
-            'keyring.backends': [
-                'plugin_name = mylib.mymodule:initialize_func',
-            ],
-        },
+        [options.entry_points]
+        keyring.backends =
+            plugin_name = mylib.mymodule:initialize_func
 
     `plugin_name` can be anything, and is only used to display the name
     of the plugin at initialization time.
