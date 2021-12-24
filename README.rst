@@ -214,7 +214,7 @@ To invoke ``set_keyring``::
         def get_password(self, servicename, username):
             return "password from TestKeyring"
 
-        def delete_password(self, servicename, username, password):
+        def delete_password(self, servicename, username):
             pass
 
     # set the keyring for keyring lib
