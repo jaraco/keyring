@@ -6,10 +6,9 @@ Welcome to |project| documentation!
 .. toctree::
    :maxdepth: 1
 
-.. tidelift-referral-banner::
-
    history
 
+.. tidelift-referral-banner::
 
 .. automodule:: keyring
     :members:
