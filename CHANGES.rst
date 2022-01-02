@@ -495,7 +495,7 @@ with a major version bump.
   for identifying each backend to users.
 
 10.0.2
------
+------
 
 * #247: Restored console script.
 
