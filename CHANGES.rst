@@ -1,3 +1,8 @@
+v23.5.0
+-------
+
+* Require Python 3.7 or later.
+
 v23.4.1
 -------
 
