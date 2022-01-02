@@ -15,6 +15,21 @@ Welcome to |project| documentation!
     :undoc-members:
     :show-inheritance:
 
+.. automodule:: keyring.backend
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: keyring.core
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: keyring.credentials
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Indices and tables
 ==================
