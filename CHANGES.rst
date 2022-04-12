@@ -1,3 +1,8 @@
+v????
+-------
+
+* The correct config root is now used on Windows.
+
 v23.5.0
 -------
 
