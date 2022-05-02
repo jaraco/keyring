@@ -1,4 +1,5 @@
 import platform
+import os
 from os.path import exists
 
 from ...backend import KeyringBackend
@@ -18,7 +19,7 @@ class Keyring(KeyringBackend):
     """macOS Keychain"""
 
     # keychain = os.environ.get('KEYCHAIN_PATH')
-    # "Path to keychain file, overriding default"
+    # "Path to keychain file, overriding default. function param "
 
     @properties.ClassProperty
     @classmethod
@@ -39,6 +40,8 @@ class Keyring(KeyringBackend):
         if keychain != "":
             if not exists(keychain):
                 raise KeyringLocked("Can't open specified keychain")
+        elif os.environ.get('KEYCHAIN_PATH') != "":
+            keychain = os.environ.get('KEYCHAIN_PATH')
 
         try:
             api.set_generic_password(keychain, service, username, password)
@@ -54,6 +57,8 @@ class Keyring(KeyringBackend):
         if keychain != "":
             if not exists(keychain):
                 raise KeyringLocked("Can't open specified keychain")
+        elif os.environ.get('KEYCHAIN_PATH') != "":
+            keychain = os.environ.get('KEYCHAIN_PATH')
 
         try:
             return api.find_generic_password(keychain, service, username)
@@ -71,6 +76,8 @@ class Keyring(KeyringBackend):
         if keychain != "":
             if not exists(keychain):
                 raise KeyringLocked("Can't open specified keychain")
+        elif os.environ.get('KEYCHAIN_PATH') != "":
+            keychain = os.environ.get('KEYCHAIN_PATH')
 
         try:
             return api.delete_generic_password(keychain, service, username)
