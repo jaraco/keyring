@@ -72,6 +72,14 @@ The basic usage of keyring is pretty simple: just call
     >>> keyring.get_password("system", "username")
     'password'
 
+When using keyring with the macOS Keychain, you can pass the full file path of
+a keychain-db to customize which keychain keyring utilizes. Note: the keychain must
+already exist::
+
+    >>> import keyring
+    >>> path = "/Users/foobar/Library/Keychains/Keys.keychain-db"
+    >>> keyring.set_password("system", "username", "password", path)
+
 Command-line Utility
 --------------------
 
