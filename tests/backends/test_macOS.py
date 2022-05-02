@@ -1,7 +1,7 @@
 import pytest
 
 import keyring
-from keyring.testing.backend import BackendBasicTests
+from keyring.testing.backend_macOS import BackendBasicTests
 from keyring.backends import macOS
 
 
