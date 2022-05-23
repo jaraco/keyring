@@ -1,4 +1,4 @@
-v????
+v23.5.1
 -------
 
 * The correct config root is now used on Windows.
