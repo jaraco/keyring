@@ -12,7 +12,7 @@ from typing import Optional
 try:
     from importlib import metadata
 except ImportError:
-    import importlib_metadata as metadata
+    import importlib_metadata as metadata # type: ignore
 
 from . import credentials, errors, util
 from .util import properties
