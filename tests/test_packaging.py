@@ -1,7 +1,7 @@
 try:
     from importlib import metadata
 except ImportError:
-    import importlib_metadata as metadataetadata
+    import importlib_metadata as metadata
 from keyring import backend
 
 
