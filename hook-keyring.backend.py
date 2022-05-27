@@ -1,6 +1,6 @@
 # Used by pyinstaller to expose hidden imports
 try:
-    import importlib_metadata as metadata
+    from importlib import metadata
 except ImportError:
     import importlib_metadata as metadata
 
