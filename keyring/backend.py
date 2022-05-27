@@ -9,7 +9,10 @@ import operator
 
 from typing import Optional
 
-import importlib_metadata as metadata
+try:
+    import importlib_metadata as metadata
+except ImportError:
+    import importlib_metadata as metadata
 
 from . import credentials, errors, util
 from .util import properties
