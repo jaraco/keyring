@@ -13,11 +13,7 @@ import sys
 if sys.version_info >= (3, 10):
     from importlib import metadata
 else:
-    import importlib_metadata as metadata #type: ignore
-# try:
-#     from importlib import metadata
-# except ImportError:
-#     import importlib_metadata as metadata # type: ignore
+    import importlib_metadata as metadata  # type: ignore
 
 from . import credentials, errors, util
 from .util import properties
