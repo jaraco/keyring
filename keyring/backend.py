@@ -2,6 +2,7 @@
 Keyring implementation support
 """
 
+import sys
 import os
 import abc
 import logging
@@ -9,7 +10,10 @@ import operator
 
 from typing import Optional
 
-import importlib_metadata as metadata
+if sys.version_info < (3, 8):
+    import importlib_metadata as metadata
+else:
+    import importlib.metadata as metadata
 
 from . import credentials, errors, util
 from .util import properties
