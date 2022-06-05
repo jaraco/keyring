@@ -13,8 +13,7 @@ class Test_macOSKeychain(BackendBasicTests):
     def init_keyring(self):
         return macOS.Keyring()
 
-    @pytest.mark.xfail
     def test_alternate_keychain(self):
         alt = self.keyring.with_keychain('abcd')
         assert alt.keychain == 'abcd'
-        assert self.keyring.keychain is None
+        assert self.keyring.keychain != 'abcd'

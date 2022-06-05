@@ -66,3 +66,8 @@ class Keyring(KeyringBackend):
             raise PasswordDeleteError(
                 "Can't delete password in keychain: " "{}".format(e)
             )
+
+    def with_keychain(self, keychain):
+        alt = Keyring()
+        alt.keychain = keychain
+        return alt
