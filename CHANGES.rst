@@ -2,6 +2,8 @@ v23.6.0
 -------
 
 * #575: Only require ``importlib_metadata`` on older Pythons.
+* #579: Add ``.with_keychain`` method on macOS for easy reference
+  to alternate keychains.
 
 v23.5.1
 -------
