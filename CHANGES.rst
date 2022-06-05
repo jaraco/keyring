@@ -1,3 +1,8 @@
+v23.6.0
+-------
+
+* #575: Only require ``importlib_metadata`` on older Pythons.
+
 v23.5.1
 -------
 
