@@ -1,3 +1,13 @@
+v23.6.0
+-------
+
+* #575: Only require ``importlib_metadata`` on older Pythons.
+
+v23.5.1
+-------
+
+* The correct config root is now used on Windows.
+
 v23.5.0
 -------
 

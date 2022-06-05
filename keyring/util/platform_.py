@@ -65,4 +65,4 @@ def _config_root_Linux():
 
 # by default, use Unix convention
 data_root = globals().get('_data_root_' + platform.system(), _data_root_Linux)
-config_root = globals().get('_config_root' + platform.system(), _config_root_Linux)
+config_root = globals().get('_config_root_' + platform.system(), _config_root_Linux)

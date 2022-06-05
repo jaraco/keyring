@@ -8,9 +8,11 @@ jobs:
       fail-fast: false
       matrix:
         python:
-        - 3.7
-        - 3.9
-        - "3.10"
+        # Build on pre-releases until stable, then stable releases.
+        # actions/setup-python#213
+        - ~3.7.0-0
+        - ~3.10.0-0
+        - ~3.11.0-0
         platform:
         - ubuntu-latest
         - macos-latest
@@ -21,10 +23,10 @@ jobs:
           toxargs: "--sitepackages"
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
         if: ${{ matrix.python != 'os' }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python }}
       - name: Install tox
@@ -33,15 +35,30 @@ jobs:
       - name: Run tests
         run: tox ${{ matrix.toxargs }}
 
+  check:  # This job does nothing and is only used for the branch protection
+    if: always()
+
+    needs:
+    - test
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Decide whether the needed jobs succeeded or failed
+      uses: re-actors/alls-green@release/v1
+      with:
+        jobs: ${{ toJSON(needs) }}
+
   release:
-    needs: test
+    needs:
+    - check
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: "3.10"
       - name: Install tox

@@ -9,8 +9,7 @@ import operator
 
 from typing import Optional
 
-import importlib_metadata as metadata
-
+from .py310compat import metadata
 from . import credentials, errors, util
 from .util import properties
 
