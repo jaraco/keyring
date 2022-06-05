@@ -1,9 +1,7 @@
-# Used by pyinstaller to expose hidden imports
-import sys
+"""
+Hook used by pyinstaller to expose hidden imports.
+"""
 
-if sys.version_info >= (3, 10):
-    from importlib import metadata
-else:
-    import importlib_metadata as metadata  # type: ignore
+from keyring.py310compat import metadata
 
 hiddenimports = [ep.value for ep in metadata.entry_points(group='keyring.backends')]

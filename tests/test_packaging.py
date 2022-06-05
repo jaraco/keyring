@@ -1,10 +1,5 @@
-import sys
-
-if sys.version_info >= (3, 10):
-    from importlib import metadata
-else:
-    import importlib_metadata as metadata  # type: ignore
 from keyring import backend
+from keyring.py310compat import metadata
 
 
 def test_entry_point():

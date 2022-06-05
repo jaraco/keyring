@@ -8,13 +8,8 @@ import logging
 import operator
 
 from typing import Optional
-import sys
 
-if sys.version_info >= (3, 10):
-    from importlib import metadata
-else:
-    import importlib_metadata as metadata  # type: ignore
-
+from .py310compat import metadata
 from . import credentials, errors, util
 from .util import properties
 
