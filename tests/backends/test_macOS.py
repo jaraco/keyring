@@ -12,3 +12,8 @@ from keyring.backends import macOS
 class Test_macOSKeychain(BackendBasicTests):
     def init_keyring(self):
         return macOS.Keyring()
+
+    def test_alternate_keychain(self):
+        alt = self.keyring.with_keychain('abcd')
+        assert alt.keychain == 'abcd'
+        assert self.keyring.keychain != 'abcd'
