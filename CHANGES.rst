@@ -1,3 +1,8 @@
+v23.7.0
+-------
+
+* #582: Suppress KeyringErrors for devpi client.
+
 v23.6.0
 -------
 
