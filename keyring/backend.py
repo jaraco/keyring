@@ -6,6 +6,7 @@ import os
 import abc
 import logging
 import operator
+import copy
 
 from typing import Optional
 
@@ -150,6 +151,11 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         props = filter(None, map(parse, os.environ.items()))
         for name, value in props:
             setattr(self, name, value)
+
+    def with_properties(self, **kwargs):
+        alt = copy.copy(self)
+        vars(alt).update(kwargs)
+        return alt
 
 
 class Crypter:
