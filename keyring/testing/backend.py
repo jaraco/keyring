@@ -163,3 +163,10 @@ class BackendBasicTests:
         monkeypatch.setattr(os, 'environ', env)
         self.keyring.set_properties_from_env()
         assert self.keyring.foo_bar == 'fizz buzz'
+
+    def test_new_with_properties(self):
+        alt = self.keyring.with_properties(foo='bar')
+        assert alt is not self.keyring
+        assert alt.foo == 'bar'
+        with pytest.raises(AttributeError):
+            self.keyring.foo
