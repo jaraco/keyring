@@ -68,6 +68,4 @@ class Keyring(KeyringBackend):
             )
 
     def with_keychain(self, keychain):
-        alt = Keyring()
-        alt.keychain = keychain
-        return alt
+        return self.with_properties(keychain=keychain)
