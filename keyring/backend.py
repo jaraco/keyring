@@ -232,9 +232,9 @@ class SchemeSelectable:
         KeypassXC=dict(username='UserName', service='Title'),
     )
 
-    def _query(self, service, username):
+    def _query(self, service, username=None, **base):
         scheme = self.schemes[self.scheme]
-        return (
+        return dict(
             {
                 scheme['username']: username,
                 scheme['service']: service,
@@ -242,5 +242,6 @@ class SchemeSelectable:
             if username
             else {
                 scheme['service']: service,
-            }
+            },
+            **base,
         )
