@@ -1,6 +1,7 @@
 from contextlib import closing
 import logging
 
+from .. import backend
 from ..util import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
@@ -23,16 +24,10 @@ except AttributeError:
 log = logging.getLogger(__name__)
 
 
-class Keyring(KeyringBackend):
+class Keyring(backend.SchemeSelectable, KeyringBackend):
     """Secret Service Keyring"""
 
     appid = 'Python keyring library'
-    scheme = 'default'
-
-    schemes = dict(
-        default=dict(username='username', service='service'),
-        KeypassXC=dict(username='UserName', service='Title'),
-    )
 
     @properties.ClassProperty
     @classmethod
@@ -78,19 +73,6 @@ class Keyring(KeyringBackend):
             item.unlock()
         if item.is_locked():  # User dismissed the prompt
             raise KeyringLocked('Failed to unlock the item!')
-
-    def _query(self, service, username):
-        scheme = self.schemes[self.scheme]
-        return (
-            {
-                scheme['username']: username,
-                scheme['service']: service,
-            }
-            if username
-            else {
-                scheme['service']: service,
-            }
-        )
 
     def get_password(self, service, username):
         """Get password of the username for the service"""

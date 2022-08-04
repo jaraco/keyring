@@ -218,3 +218,29 @@ def get_all_keyring():
     viable_classes = KeyringBackend.get_viable_backends()
     rings = util.suppress_exceptions(viable_classes, exceptions=TypeError)
     return list(rings)
+
+
+class SchemeSelectable:
+    """
+    Allow a backend to select different "schemes" for the
+    username and service.
+    """
+
+    scheme = 'default'
+    schemes = dict(
+        default=dict(username='username', service='service'),
+        KeypassXC=dict(username='UserName', service='Title'),
+    )
+
+    def _query(self, service, username):
+        scheme = self.schemes[self.scheme]
+        return (
+            {
+                scheme['username']: username,
+                scheme['service']: service,
+            }
+            if username
+            else {
+                scheme['service']: service,
+            }
+        )
