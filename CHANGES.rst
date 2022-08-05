@@ -1,3 +1,21 @@
+v23.8.0
+-------
+
+* #448: ``SecretService`` and ``libsecret`` backends now support a
+  new ``SelectableScheme``, allowing the keys for "username" and
+  "service" to be overridden for compatibility with other schemes
+  such as KeypassXC.
+
+* Introduced a new ``.with_properties`` method on backends to
+  produce a new keyring with different properties. Use for example
+  to get a keyring with a different ``keychain`` (macOS) or
+  ``scheme`` (SecretService/libsecret). e.g.::
+
+    keypass = keyring.get_keyring().with_properties(scheme='KeypassXC')
+
+* ``.with_keychain`` method on macOS is superseded by ``.with_properties``
+  and so is now deprecated.
+
 v23.7.0
 -------
 
