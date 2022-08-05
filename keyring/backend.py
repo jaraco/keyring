@@ -224,6 +224,17 @@ class SchemeSelectable:
     """
     Allow a backend to select different "schemes" for the
     username and service.
+
+    >>> backend = SchemeSelectable()
+    >>> backend._query('contoso', 'alice')
+    {'username': 'alice', 'service': 'contoso'}
+    >>> backend._query('contoso')
+    {'service': 'contoso'}
+    >>> backend.scheme = 'KeypassXC'
+    >>> backend._query('contoso', 'alice')
+    {'UserName': 'alice', 'Title': 'contoso'}
+    >>> backend._query('contoso', 'alice', foo='bar')
+    {'UserName': 'alice', 'Title': 'contoso', 'foo': 'bar'}
     """
 
     scheme = 'default'
