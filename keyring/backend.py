@@ -250,7 +250,7 @@ class SchemeSelectable:
                 scheme['username']: username,
                 scheme['service']: service,
             }
-            if username
+            if username is not None
             else {
                 scheme['service']: service,
             },
