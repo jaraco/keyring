@@ -1,6 +1,7 @@
 from contextlib import closing
 import logging
 
+from .. import backend
 from ..util import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
@@ -23,7 +24,7 @@ except AttributeError:
 log = logging.getLogger(__name__)
 
 
-class Keyring(KeyringBackend):
+class Keyring(backend.SchemeSelectable, KeyringBackend):
     """Secret Service Keyring"""
 
     appid = 'Python keyring library'
@@ -77,7 +78,7 @@ class Keyring(KeyringBackend):
         """Get password of the username for the service"""
         collection = self.get_preferred_collection()
         with closing(collection.connection):
-            items = collection.search_items({"username": username, "service": service})
+            items = collection.search_items(self._query(service, username))
             for item in items:
                 self.unlock(item)
                 return item.get_secret().decode('utf-8')
@@ -85,11 +86,7 @@ class Keyring(KeyringBackend):
     def set_password(self, service, username, password):
         """Set password for the username of the service"""
         collection = self.get_preferred_collection()
-        attributes = {
-            "application": self.appid,
-            "service": service,
-            "username": username,
-        }
+        attributes = self._query(service, username, application=self.appid)
         label = "Password for '{}' on '{}'".format(username, service)
         with closing(collection.connection):
             collection.create_item(label, attributes, password, replace=True)
@@ -98,7 +95,7 @@ class Keyring(KeyringBackend):
         """Delete the stored password (only the first one)"""
         collection = self.get_preferred_collection()
         with closing(collection.connection):
-            items = collection.search_items({"username": username, "service": service})
+            items = collection.search_items(self._query(service, username))
             for item in items:
                 return item.delete()
         raise PasswordDeleteError("No such password!")
@@ -111,16 +108,13 @@ class Keyring(KeyringBackend):
         and return a SimpleCredential containing  the username and password
         Otherwise, it will return the first username and password combo that it finds.
         """
-
-        query = {"service": service}
-        if username:
-            query["username"] = username
-
+        scheme = self.schemes[self.scheme]
+        query = self._query(service, username)
         collection = self.get_preferred_collection()
 
         with closing(collection.connection):
             items = collection.search_items(query)
             for item in items:
                 self.unlock(item)
-                username = item.get_attributes().get("username")
+                username = item.get_attributes().get(scheme['username'])
                 return SimpleCredential(username, item.get_secret().decode('utf-8'))

@@ -1,5 +1,6 @@
 import logging
 
+from .. import backend
 from ..util import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
@@ -26,21 +27,26 @@ except (AttributeError, ImportError, ValueError):
 log = logging.getLogger(__name__)
 
 
-class Keyring(KeyringBackend):
+class Keyring(backend.SchemeSelectable, KeyringBackend):
     """libsecret Keyring"""
 
     appid = 'Python keyring library'
-    if available:
-        schema = Secret.Schema.new(
+
+    @property
+    def schema(self):
+        return Secret.Schema.new(
             "org.freedesktop.Secret.Generic",
             Secret.SchemaFlags.NONE,
-            {
-                "application": Secret.SchemaAttributeType.STRING,
-                "service": Secret.SchemaAttributeType.STRING,
-                "username": Secret.SchemaAttributeType.STRING,
-            },
+            self._query(
+                Secret.SchemaAttributeType.STRING,
+                Secret.SchemaAttributeType.STRING,
+                application=Secret.SchemaAttributeType.STRING,
+            ),
         )
-        collection = Secret.COLLECTION_DEFAULT
+
+    @property
+    def collection(self):
+        return Secret.COLLECTION_DEFAULT
 
     @properties.ClassProperty
     @classmethod
@@ -53,11 +59,7 @@ class Keyring(KeyringBackend):
 
     def get_password(self, service, username):
         """Get password of the username for the service"""
-        attributes = {
-            "application": self.appid,
-            "service": service,
-            "username": username,
-        }
+        attributes = self._query(service, username, application=self.appid)
         try:
             items = Secret.password_search_sync(
                 self.schema, attributes, Secret.SearchFlags.UNLOCK, None
@@ -78,11 +80,7 @@ class Keyring(KeyringBackend):
 
     def set_password(self, service, username, password):
         """Set password for the username of the service"""
-        attributes = {
-            "application": self.appid,
-            "service": service,
-            "username": username,
-        }
+        attributes = self._query(service, username, application=self.appid)
         label = "Password for '{}' on '{}'".format(username, service)
         try:
             stored = Secret.password_store_sync(
@@ -101,11 +99,7 @@ class Keyring(KeyringBackend):
 
     def delete_password(self, service, username):
         """Delete the stored password (only the first one)"""
-        attributes = {
-            "application": self.appid,
-            "service": service,
-            "username": username,
-        }
+        attributes = self._query(service, username, application=self.appid)
         try:
             items = Secret.password_search_sync(
                 self.schema, attributes, Secret.SearchFlags.UNLOCK, None
@@ -136,9 +130,7 @@ class Keyring(KeyringBackend):
         and return a SimpleCredential containing  the username and password
         Otherwise, it will return the first username and password combo that it finds.
         """
-        query = {"service": service}
-        if username:
-            query["username"] = username
+        query = self._query(service, username)
         try:
             items = Secret.password_search_sync(
                 self.schema, query, Secret.SearchFlags.UNLOCK, None

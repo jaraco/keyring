@@ -1,5 +1,6 @@
 import platform
 import os
+import warnings
 
 from ...backend import KeyringBackend
 from ...errors import PasswordSetError
@@ -68,6 +69,9 @@ class Keyring(KeyringBackend):
             )
 
     def with_keychain(self, keychain):
-        alt = Keyring()
-        alt.keychain = keychain
-        return alt
+        warnings.warn(
+            "macOS.Keyring.with_keychain is deprecated. Use with_properties instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.with_properties(keychain=keychain)
