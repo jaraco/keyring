@@ -230,7 +230,7 @@ class SchemeSelectable:
     {'username': 'alice', 'service': 'contoso'}
     >>> backend._query('contoso')
     {'service': 'contoso'}
-    >>> backend.scheme = 'KeypassXC'
+    >>> backend.scheme = 'KeePassXC'
     >>> backend._query('contoso', 'alice')
     {'UserName': 'alice', 'Title': 'contoso'}
     >>> backend._query('contoso', 'alice', foo='bar')
@@ -240,7 +240,7 @@ class SchemeSelectable:
     scheme = 'default'
     schemes = dict(
         default=dict(username='username', service='service'),
-        KeypassXC=dict(username='UserName', service='Title'),
+        KeePassXC=dict(username='UserName', service='Title'),
     )
 
     def _query(self, service, username=None, **base):
