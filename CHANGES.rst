@@ -1,3 +1,8 @@
+v23.8.1
+-------
+
+* #587: Fix regression in ``libsecret``.
+
 v23.8.0
 -------
 
