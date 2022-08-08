@@ -12,7 +12,7 @@ from typing import Optional
 
 from .py310compat import metadata
 from . import credentials, errors, util
-from .util import properties
+from jaraco.classes import properties
 
 log = logging.getLogger(__name__)
 
@@ -61,8 +61,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         suitable, but a priority of one or greater is recommended.
         """
 
-    @properties.ClassProperty
-    @classmethod
+    @properties.classproperty
     def viable(cls):
         with errors.ExceptionRaisedContext() as exc:
             cls.priority
@@ -75,8 +74,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         """
         return filter(operator.attrgetter('viable'), cls._classes)
 
-    @properties.ClassProperty
-    @classmethod
+    @properties.classproperty
     def name(cls):
         """
         The keyring name, suitable for display.
