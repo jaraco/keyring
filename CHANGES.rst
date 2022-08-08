@@ -1,3 +1,8 @@
+v23.8.2
+-------
+
+* #581: Corrected regression in ``libsecret`` tests (``.collection`` property).
+
 v23.8.1
 -------
 
