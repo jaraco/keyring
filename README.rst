@@ -57,7 +57,7 @@ install dbus-python as a system package.
 Compatibility - macOS
 =====================
 
-macOS keychain support macOS 11 (Big Sur) and later requires Python 3.8.7
+macOS keychain supports macOS 11 (Big Sur) and later requires Python 3.8.7
 or later with the "universal2" binary. See
 `#525 <https://github.com/jaraco/keyring/issues/525>`_ for details.
 
@@ -78,7 +78,7 @@ Command-line Utility
 Keyring supplies a ``keyring`` command which is installed with the
 package. After installing keyring in most environments, the
 command should be available for setting, getting, and deleting
-passwords. For more information on usage, invoke with no arguments
+passwords. For more usage information, invoke with no arguments
 or with ``--help`` as so::
 
     $ keyring --help
@@ -143,7 +143,7 @@ Third-Party Backends
 In addition to the backends provided by the core keyring package for
 the most common and secure use cases, there
 are additional keyring backend implementations available for other
-use-cases. Simply install them to make them available:
+use cases. Simply install them to make them available:
 
 - `keyrings.cryptfile <https://pypi.org/project/keyrings.cryptfile>`_
   - Encrypted text file storage.
@@ -163,7 +163,7 @@ use-cases. Simply install them to make them available:
   backend which uses the ssh agent protocol's signature operation to
   derive the cipher key.
 - `keyrings.osx_keychain_keys <https://pypi.org/project/keyrings.osx-keychain-keys>`_
-  - OSX keychain key-management, for private, public and symmetric keys.
+  - OSX keychain key-management, for private, public, and symmetric keys.
 
 
 Write your own keyring backend
@@ -183,7 +183,7 @@ creating new backends are encouraged to create new, third-party packages
 in the ``keyrings`` namespace, in a manner modeled by the `keyrings.alt
 package <https://github.com/jaraco/keyrings.alt>`_. See the
 ``setup.cfg`` file
-in that project for a hints on how to create the requisite entry points.
+in that project for hints on how to create the requisite entry points.
 Backends that prove essential may be considered for inclusion in the core
 library, although the ease of installing these third-party packages should
 mean that extensions may be readily available.
@@ -204,7 +204,7 @@ To invoke ``set_keyring``::
     import keyring.backend
 
     class TestKeyring(keyring.backend.KeyringBackend):
-        """A test keyring which always outputs same password
+        """A test keyring which always outputs the same password
         """
         priority = 1
 
@@ -245,7 +245,7 @@ There are several mechanisms to disable keyring:
 - Uninstall keyring. Most applications are tolerant to keyring
   not being installed. Uninstalling keyring should cause those
   applications to fall back to the behavior without keyring.
-  This approach affects that Python environment where keyring
+  This approach affects the Python environment where keyring
   would otherwise have been installed.
 
 - Configure the Null keyring in the environment. Set
@@ -316,7 +316,7 @@ X11 server available (only D-Bus is required). In this case:
 
   When that command is started, enter a password into stdin and
   press Ctrl+D (end of data). After that, the daemon will fork into
-  background (use ``--foreground`` option to block).
+  the background (use ``--foreground`` option to block).
 * Now you can use the SecretService backend of Keyring. Remember to
   run your application in the same D-Bus session as the daemon.
 
@@ -377,11 +377,11 @@ should be Unicode text.
 Exceptions
 ----------
 
-The keyring lib raises following exceptions:
+The keyring lib raises the following exceptions:
 
 * ``keyring.errors.KeyringError``: Base Error class for all exceptions in keyring lib.
 * ``keyring.errors.InitError``: Raised when the keyring cannot be initialized.
-* ``keyring.errors.PasswordSetError``: Raised when password cannot be set in the keyring.
+* ``keyring.errors.PasswordSetError``: Raised when the password cannot be set in the keyring.
 * ``keyring.errors.PasswordDeleteError``: Raised when the password cannot be deleted in the keyring.
 
 Get Involved
@@ -413,7 +413,7 @@ Tidelift will coordinate the fix and disclosure.
 Security Considerations
 =======================
 
-Each builtin backend may have security considerations to understand
+Each built-in backend may have security considerations to understand
 before using this library. Authors of tools or libraries utilizing
 ``keyring`` are encouraged to consider these concerns.
 
@@ -441,7 +441,7 @@ Additional issues can be added as needed.
 Making Releases
 ===============
 
-This project makes use of automated releases continuous
+This project makes use of automated releases and continuous
 integration. The
 simple workflow is to tag a commit and push it to Github. If it
 passes tests in CI, it will be automatically deployed to PyPI.
