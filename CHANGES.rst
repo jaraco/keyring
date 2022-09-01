@@ -1,3 +1,8 @@
+v23.9.0
+-------
+
+* #588: Project now depends on ``jaraco.classes`` for class property support.
+
 v23.8.2
 -------
 
