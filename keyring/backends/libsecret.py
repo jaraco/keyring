@@ -1,7 +1,7 @@
 import logging
 
 from .. import backend
-from jaraco.classes import properties
+from .._compat import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
 from ..errors import (

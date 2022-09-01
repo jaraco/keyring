@@ -7,7 +7,7 @@ from ...errors import PasswordSetError
 from ...errors import PasswordDeleteError
 from ...errors import KeyringLocked
 from ...errors import KeyringError
-from jaraco.classes import properties
+from ..._compat import properties
 
 try:
     from . import api

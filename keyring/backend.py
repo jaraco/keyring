@@ -12,7 +12,7 @@ from typing import Optional
 
 from .py310compat import metadata
 from . import credentials, errors, util
-from jaraco.classes import properties
+from ._compat import properties
 
 log = logging.getLogger(__name__)
 

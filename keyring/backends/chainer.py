@@ -4,7 +4,7 @@ discover passwords in each.
 """
 
 from .. import backend
-from jaraco.classes import properties
+from .._compat import properties
 from . import fail
 
 

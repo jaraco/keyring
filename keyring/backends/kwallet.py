@@ -6,7 +6,7 @@ from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
 from ..errors import PasswordDeleteError
 from ..errors import PasswordSetError, InitError, KeyringLocked
-from jaraco.classes import properties
+from .._compat import properties
 
 try:
     import dbus
