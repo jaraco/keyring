@@ -1,7 +1,7 @@
 import logging
 
 from .. import backend
-from ..util import properties
+from .._compat import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
 from ..errors import (
@@ -48,8 +48,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
     def collection(self):
         return Secret.COLLECTION_DEFAULT
 
-    @properties.ClassProperty
-    @classmethod
+    @properties.classproperty
     def priority(cls):
         with ExceptionRaisedContext() as exc:
             Secret.__name__

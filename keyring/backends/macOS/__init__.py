@@ -7,7 +7,7 @@ from ...errors import PasswordSetError
 from ...errors import PasswordDeleteError
 from ...errors import KeyringLocked
 from ...errors import KeyringError
-from ...util import properties
+from ..._compat import properties
 
 try:
     from . import api
@@ -21,8 +21,7 @@ class Keyring(KeyringBackend):
     keychain = os.environ.get('KEYCHAIN_PATH')
     "Path to keychain file, overriding default"
 
-    @properties.ClassProperty
-    @classmethod
+    @properties.classproperty
     def priority(cls):
         """
         Preferred for all macOS environments.

@@ -1,6 +1,6 @@
 import logging
 
-from ..util import properties
+from .._compat import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
 from ..errors import PasswordDeleteError, ExceptionRaisedContext
@@ -80,8 +80,7 @@ class WinVaultKeyring(KeyringBackend):
 
     persist = Persistence()
 
-    @properties.ClassProperty
-    @classmethod
+    @properties.classproperty
     def priority(cls):
         """
         If available, the preferred backend on Windows.

@@ -2,7 +2,7 @@ from contextlib import closing
 import logging
 
 from .. import backend
-from ..util import properties
+from .._compat import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
 from ..errors import (
@@ -29,8 +29,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
 
     appid = 'Python keyring library'
 
-    @properties.ClassProperty
-    @classmethod
+    @properties.classproperty
     def priority(cls):
         with ExceptionRaisedContext() as exc:
             secretstorage.__name__
