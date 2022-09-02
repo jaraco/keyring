@@ -1,5 +1,19 @@
 import functools
 
+# Compatibility layer to not break imports downstream
+# TODO: deprecate/remove fully later
+from .._compat import properties
+import warnings
+
+class _Properties_shim:
+    def __getattr__(self, a):
+       warnings.warn(
+           "properties from keyring.util are no longer supported, use keyring._compat",
+           DeprecationWarning)
+       return getattr(_properties, a)
+properties = _Properties_shim()
+
+
 
 def once(func):
     """
