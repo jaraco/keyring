@@ -2,7 +2,7 @@ import functools
 
 # Compatibility layer to not break imports downstream
 # TODO: deprecate/remove fully later
-from .._compat import properties
+from .._compat import properties as _properties
 import warnings
 
 class _Properties_shim:
@@ -10,6 +10,8 @@ class _Properties_shim:
        warnings.warn(
            "properties from keyring.util are no longer supported, use keyring._compat",
            DeprecationWarning)
+       if not hasattr(_properties, a) and hasattr(_properties, a.lower()):
+           a = a.lower()
        return getattr(_properties, a)
 properties = _Properties_shim()
 
