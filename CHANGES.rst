@@ -1,3 +1,9 @@
+v23.9.1
+-------
+
+* #593: Restore ``keyring.util.properties`` with deprecation warning for
+  backward compatibility.
+
 v23.9.0
 -------
 
