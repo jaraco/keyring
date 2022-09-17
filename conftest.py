@@ -19,5 +19,3 @@ def macos_api_ignore():
 
 
 collect_ignore.extend(['keyring/backends/macOS/api.py'] * macos_api_ignore())
-
-collect_ignore.append('keyring/devpi_client.py')
