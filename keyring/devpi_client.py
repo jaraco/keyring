@@ -1,4 +1,5 @@
 import contextlib
+import functools
 
 import pluggy
 
@@ -15,6 +16,7 @@ suppress = type('suppress', (contextlib.suppress, contextlib.ContextDecorator), 
 
 def restore_signature(func):
     # workaround for pytest-dev/pluggy#358
+    @functools.wraps(func)
     def wrapper(url, username):
         return func(url, username)
 
@@ -28,5 +30,6 @@ def devpiclient_get_password(url, username):
     """
     >>> pluggy._hooks.varnames(devpiclient_get_password)
     (('url', 'username'), ())
+    >>>
     """
     return keyring.get_password(url, username)
