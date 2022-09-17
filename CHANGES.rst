@@ -1,3 +1,8 @@
+v23.9.3
+-------
+
+* #596: Add workaround for devpi_client hook with wrapped implementation.
+
 v23.9.2
 -------
 
