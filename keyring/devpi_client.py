@@ -3,8 +3,7 @@ import functools
 
 import pluggy
 
-import keyring
-from keyring.errors import KeyringError
+import keyring.errors
 
 
 hookimpl = pluggy.HookimplMarker("devpiclient")
@@ -25,7 +24,7 @@ def restore_signature(func):
 
 @hookimpl()
 @restore_signature
-@suppress(KeyringError)
+@suppress(keyring.errors.KeyringError)
 def devpiclient_get_password(url, username):
     """
     >>> pluggy._hooks.varnames(devpiclient_get_password)
