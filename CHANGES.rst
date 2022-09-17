@@ -1,3 +1,9 @@
+v23.9.2
+-------
+
+* #597: Fixed wrong name in compatibility logic for ``properties``
+  (masked by the compatibility fallback).
+
 v23.9.1
 -------
 
