@@ -7,7 +7,6 @@ from ..credentials import SimpleCredential
 from ..errors import (
     PasswordDeleteError,
     PasswordSetError,
-    ExceptionRaisedContext,
     KeyringLocked,
 )
 
@@ -50,10 +49,15 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
 
     @properties.classproperty
     def priority(cls):
-        with ExceptionRaisedContext() as exc:
-            Secret.__name__
-        if exc:
+        if not available:
             raise RuntimeError("libsecret required")
+
+        # Make sure there is actually a secret service running
+        try:
+            Secret.Service.get_sync(Secret.ServiceFlags.OPEN_SESSION, None)
+        except GLib.Error as error:
+            raise RuntimeError("Can't open a session to the secret service") from error
+
         return 4.8
 
     def get_password(self, service, username):
