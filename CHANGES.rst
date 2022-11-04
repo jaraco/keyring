@@ -1,3 +1,9 @@
+v23.11.0
+--------
+
+* #603: In ``libsecret``, check that the service is available before
+  declaring viability.
+
 v23.10.0
 --------
 
