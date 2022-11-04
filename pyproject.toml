@@ -14,7 +14,7 @@ addopts = "--black"
 addopts = "--mypy"
 
 [tool.pytest-enabler.flake8]
-addopts = "--flake8"
+# addopts = "--flake8"
 
 [tool.pytest-enabler.cov]
 addopts = "--cov"
