@@ -1,3 +1,9 @@
+v23.10.0
+--------
+
+* #526: Bump requirement on ``importlib_metadata`` to pull in fix for
+  improperly-normalized names on egg-info.
+
 v23.9.3
 -------
 

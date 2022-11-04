@@ -10,7 +10,7 @@ import copy
 
 from typing import Optional
 
-from .py310compat import metadata
+from .py312compat import metadata
 from . import credentials, errors, util
 from ._compat import properties
 
