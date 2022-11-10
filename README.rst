@@ -1,10 +1,7 @@
 .. image:: https://img.shields.io/pypi/v/keyring.svg
-   :target: `PyPI link`_
+   :target: https://pypi.org/project/keyring
 
 .. image:: https://img.shields.io/pypi/pyversions/keyring.svg
-   :target: `PyPI link`_
-
-.. _PyPI link: https://pypi.org/project/keyring
 
 .. image:: https://github.com/jaraco/keyring/workflows/tests/badge.svg
    :target: https://github.com/jaraco/keyring/actions?query=workflow%3A%22tests%22
