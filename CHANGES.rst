@@ -1,3 +1,9 @@
+v23.12.0
+--------
+
+* #607: Removed PSF license as it was unused and confusing. Project
+  remains MIT licensed as always.
+
 v23.11.0
 --------
 
