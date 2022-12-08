@@ -9,24 +9,49 @@ from . import core
 from . import backend
 from . import set_keyring, get_password, set_password, delete_password
 
+try:
+    import shtab
+except ImportError:
+    from . import _shtab as shtab
+
+# it completes keyring backends for `keyring -b` by the output of `keyring --list-backends`
+# % keyring -b <TAB>
+# keyring priority
+# keyring.backends.chainer.ChainerBackend   10
+# keyring.backends.fail.Keyring             0
+# ...                                       ...
+PREAMBLE = {
+    "zsh": r"""
+keyring_complete() {
+  local line
+  while read -r line; do
+    choices+=(${${line/ \(priority: /\\\\:}/)/})
+  done <<< "$($words[1] --list-backends)"
+  _arguments "*:keyring priority:(($choices))"
+}
+"""
+}
+KEYRING_COMPLETE = {"zsh": "keyring_complete"}
+
 
 class CommandLineTool:
     def __init__(self):
         self.parser = argparse.ArgumentParser()
+        shtab.add_argument_to(self.parser, preamble=PREAMBLE)
         self.parser.add_argument(
             "-p",
             "--keyring-path",
             dest="keyring_path",
             default=None,
             help="Path to the keyring backend",
-        )
+        ).complete = shtab.DIR
         self.parser.add_argument(
             "-b",
             "--keyring-backend",
             dest="keyring_backend",
             default=None,
             help="Name of the keyring backend",
-        )
+        ).complete = KEYRING_COMPLETE
         self.parser.add_argument(
             "--list-backends",
             action="store_true",
