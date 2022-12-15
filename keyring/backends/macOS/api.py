@@ -147,7 +147,7 @@ def find_generic_password(kc_name, service, username, not_found_ok=False):
 
 
 def set_generic_password(name, service, username, password):
-    if find_generic_password(name, service, username, not_found_ok=True):
+    if find_generic_password(name, service, username, not_found_ok=True) is not None:
         delete_generic_password(name, service, username)
 
     q = create_query(
