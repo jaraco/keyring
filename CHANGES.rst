@@ -1,3 +1,10 @@
+v23.13.1
+--------
+
+* #573: Fixed failure in macOS backend when attempting to set a
+  password after previously setting a blank password, including a
+  test applying to all backends.
+
 v23.13.0
 --------
 
