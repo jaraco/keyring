@@ -71,6 +71,13 @@ class BackendBasicTests:
         service = random_string(20)
         self.check_set_get(service, username, password)
 
+    @pytest.mark.xfail(reason="#573")
+    def test_set_after_set_blank(self):
+        service = random_string(20)
+        username = random_string(20)
+        self.keyring.set_password(service, username, "")
+        self.keyring.set_password(service, username, "non-blank")
+
     def test_difficult_chars(self):
         password = random_string(20, self.DIFFICULT_CHARS)
         username = random_string(20, self.DIFFICULT_CHARS)
