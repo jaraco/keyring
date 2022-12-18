@@ -37,7 +37,7 @@ class CommandLineTool:
         )
         self.parser.add_argument(
             'operation',
-            help="get|set|del",
+            choices=["get", "set", "del"],
             nargs="?",
         )
         self.parser.add_argument(
