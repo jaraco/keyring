@@ -93,34 +93,40 @@ package, suitable for invoking from Python like so::
     $ python -m keyring get system username
     password
 
-If you install keyring by ``pip install 'keyring[completion]'``, you can
-generate shell completions by:
+Tab Completion
+--------------
 
-    keyring --print-completion bash | sudo tee /usr/share/bash-completion/compleitons/keyring
-    keyring --print-completion zsh | sudo tee /usr/share/zsh/site-functions/_keyring
-    keyring --print-completion tcsh | sudo tee /etc/profile.d/keyring.csh
+If installed via a package manager (apt, pacman, nix, homebrew, etc),
+these shell completions may already have been distributed with the package
+(no action required).
 
-**Note**: the path of `/usr/share` is only for GNU/Linux mostly. If you use other OSs,
-try:
+Keyring provides tab completion if the ``completion`` extra is installed::
 
-- macOS, GUN/Linux (Homebrew): /usr/local/share
+    $ pip install 'keyring[completion]'
+
+Then, generate shell completions, something like::
+
+    $ keyring --print-completion bash | sudo tee /usr/share/bash-completion/completions/keyring
+    $ keyring --print-completion zsh | sudo tee /usr/share/zsh/site-functions/_keyring
+    $ keyring --print-completion tcsh | sudo tee /etc/profile.d/keyring.csh
+
+**Note**: the path of `/usr/share` is mainly for GNU/Linux. For other OSs,
+consider:
+
+- macOS (Homebrew x86): /usr/local/share
+- macOS (Homebrew ARM): /opt/homebrew/share
 - Android (Termux): /data/data/com.termux/files/usr/share
 - Windows (mingw64 of msys2): /mingw64/share
 - ...
 
-If you install keyring by your package manager (apt, pacman, nix, homebrew, etc),
-these shell completions should have been packaged and you don't need generate
-them by yourself.
+After installing the shell completions, enable them following your shell's
+recommended instructions. e.g.:
 
-After install shell completions, you can enable shell completions by:
-
-- bash: install [bash-completion](https://github.com/scop/bash-completion), and
-  ``. /usr/share/bash-completion/bash_completion`` in your bashrc.
-- zsh: ``autoload -Uz compinit && compinit`` in your zshrc, and
-  ``grep -w keyring ~/.zcompdump`` to check if it is installed correctly:
-
-    $ grep -w keyring ~/.zcompdump
-    'keyring' '_keyring'
+- bash: install [bash-completion](https://github.com/scop/bash-completion),
+  and ensure ``. /usr/share/bash-completion/bash_completion`` in ``~/.bashrc``.
+- zsh: ensure ``autoload -Uz compinit && compinit`` appears in ``~/.zshrc``,
+  then ``grep -w keyring ~/.zcompdump`` to verify keyring appears, indicating
+  it was installed correctly.
 
 Configuring
 ===========
