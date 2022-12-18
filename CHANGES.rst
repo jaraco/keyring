@@ -1,3 +1,9 @@
+v23.13.0
+--------
+
+* #608: Added support for tab completion on the ``keyring`` command
+  if the ``completion`` extra is installed (``keyring[completion]``).
+
 v23.12.1
 --------
 

@@ -7,6 +7,7 @@ import sys
 
 from . import core
 from . import backend
+from . import completion
 from . import set_keyring, get_password, set_password, delete_password
 
 
@@ -48,6 +49,7 @@ class CommandLineTool:
             'username',
             nargs="?",
         )
+        completion.install(self.parser)
 
     def run(self, argv):
         args = self.parser.parse_args(argv)
