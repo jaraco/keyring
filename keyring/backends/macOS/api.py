@@ -1,3 +1,4 @@
+import contextlib
 import ctypes
 from ctypes import (
     c_void_p,
@@ -147,7 +148,7 @@ def find_generic_password(kc_name, service, username, not_found_ok=False):
 
 
 def set_generic_password(name, service, username, password):
-    if find_generic_password(name, service, username, not_found_ok=True):
+    with contextlib.suppress(NotFound):
         delete_generic_password(name, service, username)
 
     q = create_query(
