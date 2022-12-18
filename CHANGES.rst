@@ -1,3 +1,9 @@
+v23.12.1
+--------
+
+* #612: Prevent installation of ``pywin32-ctypes 0.1.2`` with broken
+  ``use2to3`` directive.
+
 v23.12.0
 --------
 
