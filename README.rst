@@ -122,7 +122,7 @@ consider:
 After installing the shell completions, enable them following your shell's
 recommended instructions. e.g.:
 
-- bash: install [bash-completion](https://github.com/scop/bash-completion),
+- bash: install `bash-completion <https://github.com/scop/bash-completion>`_,
   and ensure ``. /usr/share/bash-completion/bash_completion`` in ``~/.bashrc``.
 - zsh: ensure ``autoload -Uz compinit && compinit`` appears in ``~/.zshrc``,
   then ``grep -w keyring ~/.zcompdump`` to verify keyring appears, indicating
