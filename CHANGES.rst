@@ -1,3 +1,10 @@
+v23.14.0
+--------
+
+* #623: On macOS, warn the user when ``keychain`` property is
+  indicated, as that value can't be honored (macOS API no longer
+  supports indicating the target keychain).
+
 v23.13.1
 --------
 

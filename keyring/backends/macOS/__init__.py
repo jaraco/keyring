@@ -1,6 +1,7 @@
 import platform
 import os
 import warnings
+import functools
 
 from ...backend import KeyringBackend
 from ...errors import PasswordSetError
@@ -13,6 +14,16 @@ try:
     from . import api
 except Exception:
     pass
+
+
+def warn_keychain(func):
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+        if self.keychain:
+            warnings.warn("Specified keychain is ignored. See #623")
+        return func(self, *args, **kwargs)
+
+    return wrapper
 
 
 class Keyring(KeyringBackend):
@@ -32,6 +43,7 @@ class Keyring(KeyringBackend):
             raise RuntimeError("Security API unavailable")
         return 5
 
+    @warn_keychain
     def set_password(self, service, username, password):
         if username is None:
             username = ''
@@ -43,6 +55,7 @@ class Keyring(KeyringBackend):
         except api.Error as e:
             raise PasswordSetError("Can't store password on keychain: " "{}".format(e))
 
+    @warn_keychain
     def get_password(self, service, username):
         if username is None:
             username = ''
@@ -56,6 +69,7 @@ class Keyring(KeyringBackend):
         except api.Error as e:
             raise KeyringError("Can't get password from keychain: " "{}".format(e))
 
+    @warn_keychain
     def delete_password(self, service, username):
         if username is None:
             username = ''
