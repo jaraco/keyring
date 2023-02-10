@@ -1,7 +1,8 @@
 v24.0.0
 -------
 
-* #487: Removed the ``keyring.backends.OS_X`` module.
+* #487: Removed ``keyring.backends.OS_X`` module.
+* #593: Removed ``keyring.util.properties`` module.
 
 v23.14.0
 --------
