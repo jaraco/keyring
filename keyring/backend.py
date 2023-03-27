@@ -45,8 +45,8 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     def __init__(self):
         self.set_properties_from_env()
 
-    # @abc.abstractproperty
-    def priority(cls):
+    @properties.classproperty
+    def priority(self) -> typing.Union[int, float]:
         """
         Each backend class must supply a priority, a number (float or integer)
         indicating the priority of the backend relative to all other backends.
@@ -61,6 +61,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         As a rule of thumb, a priority between zero but less than one is
         suitable, but a priority of one or greater is recommended.
         """
+        raise NotImplementedError
 
     @properties.classproperty
     def viable(cls):

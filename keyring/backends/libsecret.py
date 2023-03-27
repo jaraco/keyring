@@ -48,7 +48,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
         return Secret.COLLECTION_DEFAULT
 
     @properties.classproperty
-    def priority(cls):
+    def priority(cls) -> float:
         if not available:
             raise RuntimeError("libsecret required")
 

@@ -38,7 +38,7 @@ class DBusKeyring(KeyringBackend):
     object_path = '/modules/kwalletd5'
 
     @properties.classproperty
-    def priority(cls):
+    def priority(cls) -> float:
         if 'dbus' not in globals():
             raise RuntimeError('python-dbus not installed')
         try:
