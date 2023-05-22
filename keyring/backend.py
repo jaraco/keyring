@@ -150,7 +150,9 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
             pre, sep, name = key.partition('KEYRING_PROPERTY_')
             return sep and (name.lower(), value)
 
-        props: filter[typing.Tuple[str, str]] = filter(None, map(parse, os.environ.items()))
+        props: filter[typing.Tuple[str, str]] = filter(
+            None, map(parse, os.environ.items())
+        )
         for name, value in props:
             setattr(self, name, value)
 
