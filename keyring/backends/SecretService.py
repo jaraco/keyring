@@ -30,7 +30,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
     appid = 'Python keyring library'
 
     @properties.classproperty
-    def priority(cls):
+    def priority(cls) -> int:
         with ExceptionRaisedContext() as exc:
             secretstorage.__name__
         if exc:

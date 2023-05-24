@@ -1,6 +1,7 @@
 """
 Keyring implementation support
 """
+from __future__ import annotations
 
 import os
 import abc
@@ -8,7 +9,7 @@ import logging
 import operator
 import copy
 
-from typing import Optional
+import typing
 
 from .py312compat import metadata
 from . import credentials, errors, util
@@ -18,7 +19,7 @@ log = logging.getLogger(__name__)
 
 
 by_priority = operator.attrgetter('priority')
-_limit = None
+_limit: typing.Optional[typing.Callable[[KeyringBackend], bool]] = None
 
 
 class KeyringBackendMeta(abc.ABCMeta):
@@ -44,8 +45,8 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     def __init__(self):
         self.set_properties_from_env()
 
-    # @abc.abstractproperty
-    def priority(cls):
+    @properties.classproperty
+    def priority(self) -> typing.Union[int, float]:
         """
         Each backend class must supply a priority, a number (float or integer)
         indicating the priority of the backend relative to all other backends.
@@ -60,6 +61,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         As a rule of thumb, a priority between zero but less than one is
         suitable, but a priority of one or greater is recommended.
         """
+        raise NotImplementedError
 
     @properties.classproperty
     def viable(cls):
@@ -68,14 +70,16 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         return not exc
 
     @classmethod
-    def get_viable_backends(cls):
+    def get_viable_backends(
+        cls: typing.Type[KeyringBackend],
+    ) -> filter[typing.Type[KeyringBackend]]:
         """
         Return all subclasses deemed viable.
         """
         return filter(operator.attrgetter('viable'), cls._classes)
 
     @properties.classproperty
-    def name(cls):
+    def name(cls) -> str:
         """
         The keyring name, suitable for display.
 
@@ -83,16 +87,16 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         """
         parent, sep, mod_name = cls.__module__.rpartition('.')
         mod_name = mod_name.replace('_', ' ')
-        return ' '.join([mod_name, cls.__name__])
+        return ' '.join([mod_name, cls.__name__])  # type: ignore
 
-    def __str__(self):
+    def __str__(self) -> str:
         keyring_class = type(self)
         return "{}.{} (priority: {:g})".format(
             keyring_class.__module__, keyring_class.__name__, keyring_class.priority
         )
 
     @abc.abstractmethod
-    def get_password(self, service: str, username: str) -> Optional[str]:
+    def get_password(self, service: str, username: str) -> typing.Optional[str]:
         """Get password of the username for the service"""
         return None
 
@@ -122,8 +126,8 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     def get_credential(
         self,
         service: str,
-        username: Optional[str],
-    ) -> Optional[credentials.Credential]:
+        username: typing.Optional[str],
+    ) -> typing.Optional[credentials.Credential]:
         """Gets the username and password for the service.
         Returns a Credential instance.
 
@@ -138,19 +142,21 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
                 return credentials.SimpleCredential(username, password)
         return None
 
-    def set_properties_from_env(self):
+    def set_properties_from_env(self) -> None:
         """For all KEYRING_PROPERTY_* env var, set that property."""
 
-        def parse(item):
+        def parse(item: typing.Tuple[str, str]):
             key, value = item
             pre, sep, name = key.partition('KEYRING_PROPERTY_')
             return sep and (name.lower(), value)
 
-        props = filter(None, map(parse, os.environ.items()))
+        props: filter[typing.Tuple[str, str]] = filter(
+            None, map(parse, os.environ.items())
+        )
         for name, value in props:
             setattr(self, name, value)
 
-    def with_properties(self, **kwargs):
+    def with_properties(self, **kwargs: typing.Any) -> KeyringBackend:
         alt = copy.copy(self)
         vars(alt).update(kwargs)
         return alt
@@ -180,7 +186,7 @@ class NullCrypter(Crypter):
         return value
 
 
-def _load_plugins():
+def _load_plugins() -> None:
     """
     Locate all setuptools entry points by the name 'keyring backends'
     and initialize them.
@@ -207,7 +213,7 @@ def _load_plugins():
 
 
 @util.once
-def get_all_keyring():
+def get_all_keyring() -> typing.List[KeyringBackend]:
     """
     Return a list of all implemented keyrings that can be constructed without
     parameters.
@@ -241,7 +247,9 @@ class SchemeSelectable:
         KeePassXC=dict(username='UserName', service='Title'),
     )
 
-    def _query(self, service, username=None, **base):
+    def _query(
+        self, service: str, username: typing.Optional[str] = None, **base: typing.Any
+    ) -> typing.Dict[str, str]:
         scheme = self.schemes[self.scheme]
         return dict(
             {
