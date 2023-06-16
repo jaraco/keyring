@@ -9,6 +9,7 @@ from . import core
 from . import backend
 from . import completion
 from . import set_keyring, get_password, set_password, delete_password
+from .util import platform_
 
 
 class CommandLineTool:
@@ -38,7 +39,7 @@ class CommandLineTool:
         )
         self.parser.add_argument(
             'operation',
-            choices=["get", "set", "del"],
+            choices=["get", "set", "del", "diagnose"],
             nargs="?",
         )
         self.parser.add_argument(
@@ -62,6 +63,10 @@ class CommandLineTool:
 
         if args.disable:
             core.disable()
+            return
+
+        if args.operation == 'diagnose':
+            self.diagnose()
             return
 
         self._check_args()
@@ -88,6 +93,14 @@ class CommandLineTool:
 
     def do_del(self):
         delete_password(self.service, self.username)
+
+    def diagnose(self):
+        config_root = core._config_path()
+        if config_root.exists():
+            print("config path:", config_root)
+        else:
+            print("config path:", config_root, "(absent)")
+        print("data root:", platform_.data_root())
 
     def invalid_op(self):
         self.parser.error("Specify operation 'get', 'del', or 'set'.")

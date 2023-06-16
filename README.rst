@@ -146,14 +146,7 @@ Config file path
 
 The configuration is stored in a file named "keyringrc.cfg"
 found in a platform-specific location. To determine
-where the config file is stored, run the following::
-
-    python -c "import keyring.util.platform_; print(keyring.util.platform_.config_root())"
-
-Some keyrings also store the keyring data in the file system.
-To determine where the data files are stored, run::
-
-    python -c "import keyring.util.platform_; print(keyring.util.platform_.data_root())"
+where the config file is stored, run ``keyring diagnose``.
 
 Config file content
 -------------------

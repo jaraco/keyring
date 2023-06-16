@@ -1,3 +1,8 @@
+v24.1.0
+-------
+
+* #633: Added ``diagnose`` command with basic support.
+
 v24.0.0
 -------
 
