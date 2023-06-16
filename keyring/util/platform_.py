@@ -14,7 +14,7 @@ def _settings_root_Vista():
 def _data_root_Windows():
     release, version, csd, ptype = platform.win32_ver()
     root = _settings_root_XP() if release == 'XP' else _settings_root_Vista()
-    return os.path.join(root, 'Python Keyring')
+    return pathlib.Path(root, 'Python Keyring')
 
 
 def _data_root_Linux():
@@ -24,7 +24,7 @@ def _data_root_Linux():
     """
     fallback = pathlib.Path.home() / '.local/share'
     root = os.environ.get('XDG_DATA_HOME', None) or fallback
-    return os.path.join(root, 'python_keyring')
+    return pathlib.Path(root, 'python_keyring')
 
 
 _config_root_Windows = _data_root_Windows
@@ -60,7 +60,7 @@ def _config_root_Linux():
     fallback = pathlib.Path.home() / '.config'
     key = 'XDG_CONFIG_HOME'
     root = os.environ.get(key, None) or fallback
-    return os.path.join(root, 'python_keyring')
+    return pathlib.Path(root, 'python_keyring')
 
 
 # by default, use Unix convention

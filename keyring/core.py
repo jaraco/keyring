@@ -146,18 +146,18 @@ def load_env() -> typing.Optional[backend.KeyringBackend]:
         return None
 
 
+def _config_path():
+    return platform.config_root() / 'keyringrc.cfg'
+
+
 def load_config() -> typing.Optional[backend.KeyringBackend]:
     """Load a keyring using the config file in the config root."""
 
-    filename = 'keyringrc.cfg'
-
-    keyring_cfg = os.path.join(platform.config_root(), filename)
-
-    if not os.path.exists(keyring_cfg):
-        return None
-
     config = configparser.RawConfigParser()
-    config.read(keyring_cfg)
+    try:
+        config.read(_config_path())
+    except FileNotFoundError:
+        return None
     _load_keyring_path(config)
 
     # load the keyring class name, and then load this keyring
@@ -171,7 +171,7 @@ def load_config() -> typing.Optional[backend.KeyringBackend]:
         logger = logging.getLogger('keyring')
         logger.warning(
             "Keyring config file contains incorrect values.\n"
-            + "Config file: %s" % keyring_cfg
+            + f"Config file: {_config_path()}"
         )
         return None
 
