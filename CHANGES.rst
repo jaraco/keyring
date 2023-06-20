@@ -1,11 +1,7 @@
-v24.1.0
--------
-
-* #633: Added ``diagnose`` command with basic support.
-
 v24.0.0
 -------
 
+* #633: Added ``diagnose`` command with basic support.
 * #487: Removed ``keyring.backends.OS_X`` module.
 * #593: Removed ``keyring.util.properties`` module.
 
