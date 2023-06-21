@@ -155,7 +155,7 @@ def load_config() -> typing.Optional[backend.KeyringBackend]:
 
     config = configparser.RawConfigParser()
     try:
-        config.read(_config_path())
+        config.read(_config_path(), encoding='utf-8')
     except FileNotFoundError:
         return None
     _load_keyring_path(config)
