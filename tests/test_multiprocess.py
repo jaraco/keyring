@@ -21,10 +21,6 @@ pytestmark = [
         sys.version_info < (3, 8) and platform.system() == 'Darwin',
         reason="#281, #494: Prior to 3.8, multiprocess invocation fails",
     ),
-    pytest.mark.xfail(
-        platform.system() == 'Windows' and sys.version_info > (3, 12),
-        reason="#634; apparent regression in CPython",
-    ),
 ]
 
 
