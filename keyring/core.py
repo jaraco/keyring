@@ -153,6 +153,7 @@ def _config_path():
 def _ensure_path(path):
     if not path.exists():
         raise FileNotFoundError(path)
+    return path
 
 
 def load_config() -> typing.Optional[backend.KeyringBackend]:
