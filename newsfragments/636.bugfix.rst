@@ -1,1 +1,0 @@
-Include all operations in the error message if no operation was supplied.

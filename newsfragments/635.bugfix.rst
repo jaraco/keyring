@@ -1,1 +1,0 @@
-Avoid logging warning when no config file is present.

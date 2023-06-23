@@ -1,3 +1,19 @@
+v24.1.0
+=======
+
+Bugfixes
+--------
+
+- Avoid logging warning when no config file is present. (#635)
+- Include all operations in the error message if no operation was supplied. (#636)
+
+
+Improved Documentation
+----------------------
+
+- Correct name of macOS backend in README. (#637)
+
+
 v24.0.1
 =======
 
