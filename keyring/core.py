@@ -150,12 +150,17 @@ def _config_path():
     return platform.config_root() / 'keyringrc.cfg'
 
 
+def _ensure_path(path):
+    if not path.exists():
+        raise FileNotFoundError(path)
+
+
 def load_config() -> typing.Optional[backend.KeyringBackend]:
     """Load a keyring using the config file in the config root."""
 
     config = configparser.RawConfigParser()
     try:
-        config.read(_config_path(), encoding='utf-8')
+        config.read(_ensure_path(_config_path()), encoding='utf-8')
     except FileNotFoundError:
         return None
     _load_keyring_path(config)
