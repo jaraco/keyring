@@ -37,9 +37,10 @@ class CommandLineTool:
         self.parser.add_argument(
             "--disable", action="store_true", help="Disable keyring and exit"
         )
+        self.parser._operations = ["get", "set", "del", "diagnose"]
         self.parser.add_argument(
             'operation',
-            choices=["get", "set", "del", "diagnose"],
+            choices=self.parser._operations,
             nargs="?",
         )
         self.parser.add_argument(
@@ -103,7 +104,7 @@ class CommandLineTool:
         print("data root:", platform_.data_root())
 
     def invalid_op(self):
-        self.parser.error("Specify operation 'get', 'del', or 'set'.")
+        self.parser.error(f"Specify operation ({', '.join(self.parser._operations)}).")
 
     def _load_spec_backend(self):
         if self.keyring_backend is None:
