@@ -153,7 +153,7 @@ Config file content
 
 To specify a keyring backend, set the **default-keyring** option to the
 full path of the class for that backend, such as
-``keyring.backends.OS_X.Keyring``.
+``keyring.backends.macOS.Keyring``.
 
 If **keyring-path** is indicated, keyring will add that path to the Python
 module search path before loading the backend.

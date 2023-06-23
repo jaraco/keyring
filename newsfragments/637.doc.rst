@@ -1,0 +1,1 @@
+Correct name of macOS backend in README.
