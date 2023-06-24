@@ -1,7 +1,15 @@
+import textwrap
+
+import pytest
+
 import keyring.core
-from unittest.mock import patch
-import pathlib
-import tempfile
+
+
+@pytest.fixture
+def config_path(tmp_path, monkeypatch):
+    path = tmp_path / 'keyringrc.cfg'
+    monkeypatch.setattr(keyring.core, '_config_path', lambda: path)
+    return path
 
 
 def test_init_recommended(monkeypatch):
@@ -12,27 +20,20 @@ def test_init_recommended(monkeypatch):
     keyring.core.init_backend(keyring.core.recommended)
 
 
-def test_load_config_missing(caplog):
-    with tempfile.TemporaryDirectory() as tmpdirname:
-        path = pathlib.Path(tmpdirname) / "keyringrc.cfg"
-        with patch.object(
-            keyring.core, '_config_path', return_value=path
-        ) as config_path_mock:
-            assert keyring.core.load_config() is None
-            assert not caplog.records
-
-        config_path_mock.assert_called_once()
+def test_load_config_missing(caplog, config_path):
+    assert keyring.core.load_config() is None
+    assert not caplog.records
 
 
-def test_load_config_exists(caplog):
-    with tempfile.TemporaryDirectory() as tmpdirname:
-        path = pathlib.Path(tmpdirname) / "keyringrc.cfg"
-        with open(path, "w", encoding='UTF-8') as file:
-            file.write('[backend]\ndefault-keyring=keyring.backends.fail.Keyring\n')
-        with patch.object(
-            keyring.core, '_config_path', return_value=path
-        ) as config_path_mock:
-            assert keyring.core.load_config() is not None
-            assert not caplog.records
+fail_config = textwrap.dedent(
+    """
+    [backend]
+    default-keyring = keyring.backends.fail.Keyring
+    """
+).lstrip()
 
-        config_path_mock.assert_called_once()
+
+def test_load_config_extant(caplog, config_path):
+    config_path.write_text(fail_config, encoding='utf-8')
+    assert keyring.core.load_config() is not None
+    assert not caplog.records
