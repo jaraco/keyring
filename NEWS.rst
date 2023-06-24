@@ -1,3 +1,18 @@
+v24.2.0
+=======
+
+Features
+--------
+
+- Require Python 3.8 or later.
+
+
+Bugfixes
+--------
+
+- Restore support for reading from a config file (with regression test). (#638)
+
+
 v24.1.0
 =======
 

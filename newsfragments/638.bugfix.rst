@@ -1,1 +1,0 @@
-Restore support for reading from a config file (with regression test).
