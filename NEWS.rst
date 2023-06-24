@@ -1,3 +1,12 @@
+v24.1.1
+=======
+
+Bugfixes
+--------
+
+- Restore support for reading from a config file (with regression test). (#638)
+
+
 v24.1.0
 =======
 
