@@ -423,22 +423,6 @@ welcomes contributors.
 * Bug Tracker: https://github.com/jaraco/keyring/issues/
 * Mailing list: http://groups.google.com/group/python-keyring
 
-For Enterprise
-==============
-
-Available as part of the Tidelift Subscription.
-
-This project and the maintainers of thousands of other packages are working with Tidelift to deliver one enterprise subscription that covers all of the open source you use.
-
-`Learn more <https://tidelift.com/subscription/pkg/pypi-keyring?utm_source=pypi-keyring&utm_medium=referral&utm_campaign=github>`_.
-
-Security Contact
-================
-
-To report a security vulnerability, please use the
-`Tidelift security contact <https://tidelift.com/security>`_.
-Tidelift will coordinate the fix and disclosure.
-
 Security Considerations
 =======================
 
@@ -496,3 +480,12 @@ mentored Kang on this project.
 
 .. _this post: http://tarekziade.wordpress.com/2009/03/27/pycon-hallway-session-1-a-keyring-library-for-python/
 .. _Google Summer of Code: http://socghop.appspot.com/
+
+For Enterprise
+==============
+
+Available as part of the Tidelift Subscription.
+
+This project and the maintainers of thousands of other packages are working with Tidelift to deliver one enterprise subscription that covers all of the open source you use.
+
+`Learn more <https://tidelift.com/subscription/pkg/pypi-keyring?utm_source=pypi-keyring&utm_medium=referral&utm_campaign=github>`_.
