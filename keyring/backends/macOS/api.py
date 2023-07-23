@@ -110,7 +110,7 @@ class Error(Exception):
             raise SecAuthFailure(
                 status,
                 "Security Auth Failure: make sure "
-                "python is signed with codesign util",
+                "executable is signed with codesign util",
             )
         raise cls(status, "Unknown Error")
 
