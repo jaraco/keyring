@@ -39,8 +39,8 @@ def install_completion(parser):
         zsh=files(__package__).joinpath('backend_complete.zsh').read_text(),
     )
     shtab.add_argument_to(parser, preamble=preamble)
-    get_action(parser, '--keyring-path').completion = shtab.DIR
-    get_action(parser, '--keyring-backend').completion = dict(zsh='backend_complete')
+    get_action(parser, '--keyring-path').complete = shtab.DIR
+    get_action(parser, '--keyring-backend').complete = dict(zsh='backend_complete')
     return parser
 
 
