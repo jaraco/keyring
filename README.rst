@@ -188,6 +188,8 @@ use cases. Simply install them to make them available:
 - `bitwarden-keyring <https://pypi.org/project/bitwarden-keyring/0.1.0/>`_
   - a backend that stores secrets in the `BitWarden <https://bitwarden.com/>`_
   password manager.
+- `onepassword-keyring <https://pypi.org/project/onepassword-keyring/>`_
+  - a backend that stores secrets in the `1Password <https://1password.com/>`_ password manager.
 - `sagecipher <https://pypi.org/project/sagecipher>`_ - an encryption
   backend which uses the ssh agent protocol's signature operation to
   derive the cipher key.
