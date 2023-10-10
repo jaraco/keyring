@@ -128,11 +128,13 @@ class SecAuthFailure(Error):
 
 
 def find_generic_password(kc_name, service, username, not_found_ok=False):
+    username_kwarg = {'kSecAttrAccount': username} if username is not None else {}
+        
     q = create_query(
         kSecClass=k_('kSecClassGenericPassword'),
         kSecMatchLimit=k_('kSecMatchLimitOne'),
         kSecAttrService=service,
-        kSecAttrAccount=username,
+        **username_kwarg,
         kSecReturnData=create_cfbool(True),
     )
 
