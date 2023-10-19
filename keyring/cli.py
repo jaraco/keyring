@@ -37,6 +37,12 @@ class CommandLineTool:
         self.parser.add_argument(
             "--disable", action="store_true", help="Disable keyring and exit"
         )
+        self.parser.add_argument(
+            "--no-newline",
+            action="store_false",
+            default=True,
+            dest="include_newline",
+            help="Exclude newline from 'get' output")
         self.parser._operations = ["get", "set", "del", "diagnose"]
         self.parser.add_argument(
             'operation',
@@ -84,7 +90,8 @@ class CommandLineTool:
         password = get_password(self.service, self.username)
         if password is None:
             raise SystemExit(1)
-        print(password)
+        end = None if self.include_newline else ""
+        print(password, end=end)
 
     def do_set(self):
         password = self.input_password(
