@@ -42,7 +42,8 @@ class CommandLineTool:
             action="store_false",
             default=True,
             dest="include_newline",
-            help="Exclude newline from 'get' output")
+            help="Exclude newline from 'get' output",
+        )
         self.parser._operations = ["get", "set", "del", "diagnose"]
         self.parser.add_argument(
             'operation',
