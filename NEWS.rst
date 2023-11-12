@@ -1,3 +1,12 @@
+v24.3.0
+=======
+
+Features
+--------
+
+- Added bash completion support. (#643)
+
+
 v24.2.0
 =======
 
