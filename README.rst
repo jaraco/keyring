@@ -176,9 +176,6 @@ use cases. Simply install them to make them available:
 
 - `keyrings.cryptfile <https://pypi.org/project/keyrings.cryptfile>`_
   - Encrypted text file storage.
-- `keyring_jeepney <https://pypi.org/project/keyring_jeepney>`__ - a
-  pure Python backend using the secret service DBus API for desktop
-  Linux.
 - `keyrings.alt <https://pypi.org/project/keyrings.alt>`_ - "alternate",
   possibly-insecure backends, originally part of the core package, but
   available for opt-in.
@@ -197,6 +194,9 @@ use cases. Simply install them to make them available:
   - OSX keychain key-management, for private, public, and symmetric keys.
 - `keyring_pass.PasswordStoreBackend <https://github.com/nazarewk/keyring_pass>`_
    - Password Store (pass) backend for python's keyring 
+- `keyring_jeepney <https://pypi.org/project/keyring_jeepney>`__ - a
+  pure Python backend using the secret service DBus API for desktop
+  Linux (requires ``keyring<24``).
 
 
 Write your own keyring backend
