@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Simple command line interface to get/set password from a keyring"""
 
 import getpass
