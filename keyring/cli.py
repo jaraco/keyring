@@ -107,7 +107,7 @@ class CommandLineTool:
         )
 
         verified = self.input_password(
-            f"Re-enter password for '{self.username}' in '{self.service}': "
+            f"Verify password for '{self.username}' in '{self.service}': "
         )
 
         if password != verified:
