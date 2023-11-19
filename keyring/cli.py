@@ -116,7 +116,7 @@ class CommandLineTool:
             return self._try_input_password_verified()
         except ValidationMismatch:
             sys.stderr.write("Password verification failed. Aborting!\n")
-            sys.exit(1)
+            sys.exit(2)
 
     def do_set(self):
         password = self._input_password_verified()
