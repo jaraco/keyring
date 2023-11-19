@@ -3,6 +3,9 @@
 import getpass
 import argparse
 import sys
+import functools
+
+from jaraco.functools import retry
 
 from . import core
 from . import backend
@@ -89,6 +92,11 @@ class CommandLineTool:
             raise SystemExit(1)
         print(password)
 
+    @retry(
+        retries=2,
+        trap=ValidationMismatch,
+        cleanup=functools.partial(print, "Password verification failed. Try again.\n"),
+    )
     def _input_password_verified(self):
         password = self.input_password(
             f"Password for '{self.username}' in '{self.service}': "
@@ -104,19 +112,12 @@ class CommandLineTool:
         return password
 
     def do_set(self):
-        trials = 3
-        for i in range(trials):
-            try:
-                password = self._input_password_verified()
-                break
-            except ValidationMismatch:
-                print('Password verification failed. Try again.\n')
-
-        else:
-            sys.stderr.write(
-                f"Password verification failed for {trials} times. Aborting!\n"
-            )
+        try:
+            password = self._input_password_verified()
+        except ValidationMismatch:
+            sys.stderr.write("Password verification failed. Aborting!\n")
             sys.exit(1)
+
         set_password(self.service, self.username, password)
 
     def do_del(self):
