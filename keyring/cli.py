@@ -95,7 +95,11 @@ class CommandLineTool:
     @retry(
         retries=2,
         trap=ValidationMismatch,
-        cleanup=functools.partial(print, "Password verification failed. Try again.\n"),
+        cleanup=functools.partial(
+            print,
+            "Password verification failed. Try again.",
+            file=sys.stderr,
+        ),
     )
     def _try_input_password_verified(self):
         password = self.input_password(
@@ -115,7 +119,7 @@ class CommandLineTool:
         try:
             return self._try_input_password_verified()
         except ValidationMismatch:
-            sys.stderr.write("Password verification failed. Aborting!\n")
+            print("Password verification failed. Aborting!", file=sys.stderr)
             raise SystemExit(2)
 
     def do_set(self):
