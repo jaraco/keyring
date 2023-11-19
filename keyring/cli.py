@@ -89,11 +89,11 @@ class CommandLineTool:
         trials = 3
         for i in range(trials):
             password = self.input_password(
-                f"password for '{self.username}' in '{self.service}': "
+                f"Password for '{self.username}' in '{self.service}': "
             )
 
             reentered_password = self.input_password(
-                f"re-enter password for '{self.username}' in '{self.service}': "
+                f"Re-enter password for '{self.username}' in '{self.service}': "
             )
 
             if password == reentered_password:
@@ -101,11 +101,11 @@ class CommandLineTool:
                 set_password(self.service, self.username, password)
                 break
             else:
-                print('password verification failed! try again!\n')
+                print('Password verification failed. Try again.\n')
 
         else:  # this else is associated with the for-loop, not the if-statement
             sys.stderr.write(
-                f"password verification failed for {trials} times. aborting!!\n"
+                f"Password verification failed for {trials} times. Aborting!\n"
             )
             sys.exit(1)
 
