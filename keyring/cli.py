@@ -11,6 +11,10 @@ from . import set_keyring, get_password, set_password, delete_password
 from .util import platform_
 
 
+class ValidationMismatch(Exception):
+    pass
+
+
 class CommandLineTool:
     def __init__(self):
         self.parser = argparse.ArgumentParser()
@@ -85,29 +89,35 @@ class CommandLineTool:
             raise SystemExit(1)
         print(password)
 
+    def _input_password_verified(self):
+        password = self.input_password(
+            f"Password for '{self.username}' in '{self.service}': "
+        )
+
+        verified = self.input_password(
+            f"Re-enter password for '{self.username}' in '{self.service}': "
+        )
+
+        if password != verified:
+            raise ValidationMismatch()
+
+        return password
+
     def do_set(self):
         trials = 3
         for i in range(trials):
-            password = self.input_password(
-                f"Password for '{self.username}' in '{self.service}': "
-            )
-
-            reentered_password = self.input_password(
-                f"Re-enter password for '{self.username}' in '{self.service}': "
-            )
-
-            if password == reentered_password:
-                # if passwords match, set the password and break the loop
-                set_password(self.service, self.username, password)
+            try:
+                password = self._input_password_verified()
                 break
-            else:
+            except ValidationMismatch:
                 print('Password verification failed. Try again.\n')
 
-        else:  # this else is associated with the for-loop, not the if-statement
+        else:
             sys.stderr.write(
                 f"Password verification failed for {trials} times. Aborting!\n"
             )
             sys.exit(1)
+        set_password(self.service, self.username, password)
 
     def do_del(self):
         delete_password(self.service, self.username)
