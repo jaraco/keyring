@@ -97,7 +97,7 @@ class CommandLineTool:
         trap=ValidationMismatch,
         cleanup=functools.partial(print, "Password verification failed. Try again.\n"),
     )
-    def _input_password_verified(self):
+    def _try_input_password_verified(self):
         password = self.input_password(
             f"Password for '{self.username}' in '{self.service}': "
         )
@@ -111,13 +111,15 @@ class CommandLineTool:
 
         return password
 
-    def do_set(self):
+    def _input_password_verified(self):
         try:
-            password = self._input_password_verified()
+            return self._try_input_password_verified()
         except ValidationMismatch:
             sys.stderr.write("Password verification failed. Aborting!\n")
             sys.exit(1)
 
+    def do_set(self):
+        password = self._input_password_verified()
         set_password(self.service, self.username, password)
 
     def do_del(self):
