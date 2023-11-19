@@ -89,20 +89,24 @@ class CommandLineTool:
         trials = 3
         for i in range(trials):
             password = self.input_password(
-                f"Password for '{self.username}' in '{self.service}': ")
-    
+                f"password for '{self.username}' in '{self.service}': "
+            )
+
             reentered_password = self.input_password(
-                f"Re-enter password for '{self.username}' in '{self.service}': ")
-    
+                f"re-enter password for '{self.username}' in '{self.service}': "
+            )
+
             if password == reentered_password:
-                # If passwords match, set the password and break the loop
+                # if passwords match, set the password and break the loop
                 set_password(self.service, self.username, password)
                 break
             else:
-                print('Password verification failed! Try again!\n')
-    
-        else:  # This else is associated with the for-loop, not the if-statement
-            sys.stderr.write(f"Password verification failed for {trials} times. Aborting!!\n")
+                print('password verification failed! try again!\n')
+
+        else:  # this else is associated with the for-loop, not the if-statement
+            sys.stderr.write(
+                f"password verification failed for {trials} times. aborting!!\n"
+            )
             sys.exit(1)
 
     def do_del(self):
