@@ -44,7 +44,7 @@ def test_set_interactive(monkeypatch, mocked_set):
     monkeypatch.setattr(sys.stdin, 'isatty', lambda: True)
     monkeypatch.setattr(getpass, 'getpass', PasswordEmitter('foo123'))
     tool.do_set()
-    assert mocked_set.called_once_with('svc', 'usr', 'foo123')
+    mocked_set.assert_called_once_with('svc', 'usr', 'foo123')
 
 
 def test_set_pipe(monkeypatch, mocked_set):
@@ -54,7 +54,7 @@ def test_set_pipe(monkeypatch, mocked_set):
     monkeypatch.setattr(sys.stdin, 'isatty', lambda: False)
     monkeypatch.setattr(sys.stdin, 'read', lambda: 'foo123')
     tool.do_set()
-    assert mocked_set.called_once_with('svc', 'usr', 'foo123')
+    mocked_set.assert_called_once_with('svc', 'usr', 'foo123')
 
 
 def test_set_pipe_newline(monkeypatch, mocked_set):
@@ -64,4 +64,4 @@ def test_set_pipe_newline(monkeypatch, mocked_set):
     monkeypatch.setattr(sys.stdin, 'isatty', lambda: False)
     monkeypatch.setattr(sys.stdin, 'read', lambda: 'foo123\n')
     tool.do_set()
-    assert mocked_set.called_once_with('svc', 'usr', 'foo123')
+    mocked_set.assert_called_once_with('svc', 'usr', 'foo123')
