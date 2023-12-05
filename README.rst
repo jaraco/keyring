@@ -3,7 +3,7 @@
 
 .. image:: https://img.shields.io/pypi/pyversions/keyring.svg
 
-.. image:: https://github.com/jaraco/keyring/workflows/tests/badge.svg
+.. image:: https://github.com/jaraco/keyring/actions/workflows/main.yml/badge.svg
    :target: https://github.com/jaraco/keyring/actions?query=workflow%3A%22tests%22
    :alt: tests
 
