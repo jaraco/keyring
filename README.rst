@@ -87,6 +87,8 @@ or with ``--help`` as so::
     Password for 'username' in 'system':
     $ keyring get system username
     password
+    $ keyring list app_name
+    ['acct1', 'acct2', 'acct3']
 
 The command-line functionality is also exposed as an executable
 package, suitable for invoking from Python like so::
@@ -96,6 +98,8 @@ package, suitable for invoking from Python like so::
     Password for 'username' in 'system':
     $ python -m keyring get system username
     password
+    $ python -m keyring list app_name
+    ['acct1', 'acct2', 'acct3']
 
 Tab Completion
 --------------
@@ -193,7 +197,7 @@ use cases. Simply install them to make them available:
 - `keyrings.osx_keychain_keys <https://pypi.org/project/keyrings.osx-keychain-keys>`_
   - OSX keychain key-management, for private, public, and symmetric keys.
 - `keyring_pass.PasswordStoreBackend <https://github.com/nazarewk/keyring_pass>`_
-   - Password Store (pass) backend for python's keyring 
+   - Password Store (pass) backend for python's keyring
 - `keyring_jeepney <https://pypi.org/project/keyring_jeepney>`__ - a
   pure Python backend using the secret service DBus API for desktop
   Linux (requires ``keyring<24``).
@@ -330,6 +334,8 @@ virtual environment on Ubuntu 16.04.  No config file was used::
   >>> keyring.set_password("system", "username", "password")
   >>> keyring.get_password("system", "username")
   'password'
+  >>> keyring.list_password("app_name")
+  ['acct1', 'acct2', 'acct3']
 
 
 Using Keyring on headless Linux systems
@@ -382,6 +388,8 @@ The following is a complete transcript for installing keyring on a Ubuntu 18:04 
   >>> keyring.set_password("system", "username", "password")
   >>> keyring.get_password("system", "username")
   'password'
+  >>> keyring.list_password("app_name")
+  ['acct1', 'acct2', 'acct3']
 
 Integration
 ===========

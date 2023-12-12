@@ -61,6 +61,11 @@ def set_password(service_name: str, username: str, password: str) -> None:
     get_keyring().set_password(service_name, username, password)
 
 
+def list_password(service_name: str) -> list:
+    """List password for the user in the specified service."""
+    return get_keyring().list_password(service_name)
+
+
 def delete_password(service_name: str, username: str) -> None:
     """Delete the password for the user in the specified service."""
     get_keyring().delete_password(service_name, username)

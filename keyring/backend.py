@@ -101,6 +101,11 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         return None
 
     @abc.abstractmethod
+    def list_password(self, service: str) -> list[str]:
+        """List accounts available."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def set_password(self, service: str, username: str, password: str) -> None:
         """Set password for the username of the service.
 

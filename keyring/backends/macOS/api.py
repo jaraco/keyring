@@ -8,6 +8,16 @@ from ctypes import (
 )
 from ctypes.util import find_library
 
+from Foundation import NSMutableDictionary, __NSCFArray, kCFBooleanTrue
+from Security import SecItemCopyMatching as SICM
+from Security import (
+    kSecAttrService,
+    kSecClass,
+    kSecClassGenericPassword,
+    kSecMatchLimit,
+    kSecMatchLimitAll,
+    kSecReturnAttributes,
+)
 
 OS_status = c_int32
 
@@ -160,6 +170,22 @@ def set_generic_password(name, service, username, password):
 
     status = SecItemAdd(q, None)
     Error.raise_for_status(status)
+
+
+def list_generic_password(service: str) -> list | None:
+    query = NSMutableDictionary.alloc().init()
+    query[kSecClass] = kSecClassGenericPassword
+    query[kSecReturnAttributes] = kCFBooleanTrue
+    query[kSecMatchLimit] = kSecMatchLimitAll
+    query[kSecAttrService] = service
+
+    results = SICM(query, None)
+    result = []
+    for item in results:
+        if isinstance(item, __NSCFArray):  # Check if each item is a dictionary
+            for i in item:
+                result.append(i.get("acct"))
+    return result
 
 
 def delete_generic_password(name, service, username):
