@@ -14,7 +14,7 @@
 .. image:: https://readthedocs.org/projects/keyring/badge/?version=latest
    :target: https://keyring.readthedocs.io/en/latest/?badge=latest
 
-.. image:: https://img.shields.io/badge/skeleton-2023-informational
+.. image:: https://img.shields.io/badge/skeleton-2024-informational
    :target: https://blog.jaraco.com/skeleton
 
 .. image:: https://tidelift.com/badges/package/pypi/keyring
