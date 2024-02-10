@@ -11,7 +11,7 @@ class Keyring(KeyringBackend):
     """
 
     @properties.classproperty
-    def priority(cls) -> int:
+    def priority(cls) -> float:
         return -1
 
     def get_password(self, service, username, password=None):

@@ -18,7 +18,7 @@ class ChainerBackend(backend.KeyringBackend):
     viable = True
 
     @properties.classproperty
-    def priority(cls) -> int:
+    def priority(cls) -> float:
         """
         If there are backends to chain, high priority
         Otherwise very low priority since our operation when empty
