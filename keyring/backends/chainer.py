@@ -2,6 +2,7 @@
 Keyring Chainer - iterates over other viable backends to
 discover passwords in each.
 """
+
 from .. import backend
 from .._compat import properties
 from . import fail
