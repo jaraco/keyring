@@ -36,8 +36,12 @@ def get_action(parser, option):
 
 def install_completion(parser):
     preamble = dict(
-        bash=files(__package__).joinpath('backend_complete.bash').read_text(),
-        zsh=files(__package__).joinpath('backend_complete.zsh').read_text(),
+        bash=files(__package__)
+        .joinpath('backend_complete.bash')
+        .read_text(encoding='utf-8'),
+        zsh=files(__package__)
+        .joinpath('backend_complete.zsh')
+        .read_text(encoding='utf-8'),
     )
     shtab.add_argument_to(parser, preamble=preamble)
     get_action(parser, '--keyring-path').complete = shtab.DIR
