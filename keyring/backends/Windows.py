@@ -81,7 +81,7 @@ class WinVaultKeyring(KeyringBackend):
     persist = Persistence()
 
     @properties.classproperty
-    def priority(cls) -> int:
+    def priority(cls):
         """
         If available, the preferred backend on Windows.
         """
