@@ -21,6 +21,7 @@ log = logging.getLogger(__name__)
 
 by_priority = operator.attrgetter('priority')
 _limit: typing.Optional[typing.Callable[[KeyringBackend], bool]] = None
+Number = typing.Union[int, float]
 
 
 class KeyringBackendMeta(abc.ABCMeta):
@@ -47,7 +48,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         self.set_properties_from_env()
 
     @properties.classproperty
-    def priority(self) -> typing.Union[int, float]:
+    def priority(self) -> Number:
         """
         Each backend class must supply a priority, a number (float or integer)
         indicating the priority of the backend relative to all other backends.
