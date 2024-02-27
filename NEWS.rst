@@ -1,3 +1,12 @@
+v24.3.1
+=======
+
+Bugfixes
+--------
+
+- Minor fixes to account for emergent typing and linter concerns.
+
+
 v24.3.0
 =======
 
