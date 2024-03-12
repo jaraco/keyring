@@ -43,7 +43,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
             ),
         )
 
-    @properties.NonDataProperty
+    @properties.NonDataProperty  # type: ignore
     def collection(self):
         return Secret.COLLECTION_DEFAULT
 

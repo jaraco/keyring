@@ -1,3 +1,21 @@
+v24.3.1
+=======
+
+Bugfixes
+--------
+
+- Minor fixes to account for emergent typing and linter concerns.
+
+
+v24.3.0
+=======
+
+Features
+--------
+
+- Added bash completion support. (#643)
+
+
 v24.2.0
 =======
 
@@ -416,7 +434,7 @@ v19.3.0
   of ``PasswordSetError`` or ``KeyringError``. Any API users
   may need to account for this change, probably by catching
   the parent ``KeyringError``.
-  Additionally, the error message from the underying error is
+  Additionally, the error message from the underlying error is
   now included in any errors that occur.
 
 17.1.1

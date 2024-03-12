@@ -1,6 +1,7 @@
 """
 Keyring implementation support
 """
+
 from __future__ import annotations
 
 import os
@@ -46,7 +47,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         self.set_properties_from_env()
 
     @properties.classproperty
-    def priority(self) -> typing.Union[int, float]:
+    def priority(self) -> float:
         """
         Each backend class must supply a priority, a number (float or integer)
         indicating the priority of the backend relative to all other backends.

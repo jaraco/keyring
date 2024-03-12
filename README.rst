@@ -3,7 +3,7 @@
 
 .. image:: https://img.shields.io/pypi/pyversions/keyring.svg
 
-.. image:: https://github.com/jaraco/keyring/workflows/tests/badge.svg
+.. image:: https://github.com/jaraco/keyring/actions/workflows/main.yml/badge.svg
    :target: https://github.com/jaraco/keyring/actions?query=workflow%3A%22tests%22
    :alt: tests
 
@@ -11,14 +11,10 @@
     :target: https://github.com/astral-sh/ruff
     :alt: Ruff
 
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-   :target: https://github.com/psf/black
-   :alt: Code style: Black
-
 .. image:: https://readthedocs.org/projects/keyring/badge/?version=latest
    :target: https://keyring.readthedocs.io/en/latest/?badge=latest
 
-.. image:: https://img.shields.io/badge/skeleton-2023-informational
+.. image:: https://img.shields.io/badge/skeleton-2024-informational
    :target: https://blog.jaraco.com/skeleton
 
 .. image:: https://tidelift.com/badges/package/pypi/keyring
@@ -176,23 +172,27 @@ use cases. Simply install them to make them available:
 
 - `keyrings.cryptfile <https://pypi.org/project/keyrings.cryptfile>`_
   - Encrypted text file storage.
-- `keyring_jeepney <https://pypi.org/project/keyring_jeepney>`__ - a
-  pure Python backend using the secret service DBus API for desktop
-  Linux.
 - `keyrings.alt <https://pypi.org/project/keyrings.alt>`_ - "alternate",
   possibly-insecure backends, originally part of the core package, but
   available for opt-in.
 - `gsheet-keyring <https://pypi.org/project/gsheet-keyring>`_
   - a backend that stores secrets in a Google Sheet. For use with
   `ipython-secrets <https://pypi.org/project/ipython-secrets>`_.
-- `bitwarden-keyring <https://pypi.org/project/bitwarden-keyring/0.1.0/>`_
+- `bitwarden-keyring <https://pypi.org/project/bitwarden-keyring/>`_
   - a backend that stores secrets in the `BitWarden <https://bitwarden.com/>`_
   password manager.
+- `onepassword-keyring <https://pypi.org/project/onepassword-keyring/>`_
+  - a backend that stores secrets in the `1Password <https://1password.com/>`_ password manager.
 - `sagecipher <https://pypi.org/project/sagecipher>`_ - an encryption
   backend which uses the ssh agent protocol's signature operation to
   derive the cipher key.
 - `keyrings.osx_keychain_keys <https://pypi.org/project/keyrings.osx-keychain-keys>`_
   - OSX keychain key-management, for private, public, and symmetric keys.
+- `keyring_pass.PasswordStoreBackend <https://github.com/nazarewk/keyring_pass>`_
+   - Password Store (pass) backend for python's keyring 
+- `keyring_jeepney <https://pypi.org/project/keyring_jeepney>`__ - a
+  pure Python backend using the secret service DBus API for desktop
+  Linux (requires ``keyring<24``).
 
 
 Write your own keyring backend

@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import contextlib
 import ctypes
+import functools
 from ctypes import (
     c_void_p,
     c_uint32,
@@ -68,23 +71,32 @@ def k_(s):
     return c_void_p.in_dll(_sec, s)
 
 
-def create_cfbool(b):
-    return CFNumberCreate(None, 0x9, ctypes.byref(c_int32(1 if b else 0)))  # int32
+@functools.singledispatch
+def create_cf(ob):
+    return ob
 
 
-def create_cfstr(s):
-    return CFStringCreateWithCString(
-        None, s.encode('utf8'), 0x08000100
-    )  # kCFStringEncodingUTF8
+# explicit bool and int required for Python 3.10 compatibility
+@create_cf.register(bool)
+@create_cf.register(int)
+def _(val: bool | int):
+    if val.bit_length() > 31:
+        raise OverflowError(val)
+    int32 = 0x9
+    return CFNumberCreate(None, int32, ctypes.byref(c_int32(val)))
+
+
+@create_cf.register
+def _(s: str):
+    kCFStringEncodingUTF8 = 0x08000100
+    return CFStringCreateWithCString(None, s.encode('utf8'), kCFStringEncodingUTF8)
 
 
 def create_query(**kwargs):
     return CFDictionaryCreate(
         None,
-        (c_void_p * len(kwargs))(*[k_(k) for k in kwargs.keys()]),
-        (c_void_p * len(kwargs))(
-            *[create_cfstr(v) if isinstance(v, str) else v for v in kwargs.values()]
-        ),
+        (c_void_p * len(kwargs))(*map(k_, kwargs.keys())),
+        (c_void_p * len(kwargs))(*map(create_cf, kwargs.values())),
         len(kwargs),
         _found.kCFTypeDictionaryKeyCallBacks,
         _found.kCFTypeDictionaryValueCallBacks,
@@ -135,7 +147,7 @@ def find_generic_password(kc_name, service, username, not_found_ok=False):
         kSecMatchLimit=k_('kSecMatchLimitOne'),
         kSecAttrService=service,
         **username_kwarg,
-        kSecReturnData=create_cfbool(True),
+        kSecReturnData=True,
     )
 
     data = c_void_p()
