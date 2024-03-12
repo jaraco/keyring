@@ -89,7 +89,7 @@ def _(s: str):
 def create_query(**kwargs):
     return CFDictionaryCreate(
         None,
-        (c_void_p * len(kwargs))(*[k_(k) for k in kwargs.keys()]),
+        (c_void_p * len(kwargs))(*map(k_, kwargs.keys())),
         (c_void_p * len(kwargs))(*map(create_cf, kwargs.values())),
         len(kwargs),
         _found.kCFTypeDictionaryKeyCallBacks,
