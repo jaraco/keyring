@@ -76,14 +76,14 @@ def create_cf(ob):
 
 @create_cf.register
 def _(b: bool):
-    return CFNumberCreate(None, 0x9, ctypes.byref(c_int32(1 if b else 0)))  # int32
+    int32 = 0x9
+    return CFNumberCreate(None, int32, ctypes.byref(c_int32(1 if b else 0)))
 
 
 @create_cf.register
 def _(s: str):
-    return CFStringCreateWithCString(
-        None, s.encode('utf8'), 0x08000100
-    )  # kCFStringEncodingUTF8
+    kCFStringEncodingUTF8 = 0x08000100
+    return CFStringCreateWithCString(None, s.encode('utf8'), kCFStringEncodingUTF8)
 
 
 def create_query(**kwargs):
