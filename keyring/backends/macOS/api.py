@@ -1,5 +1,6 @@
 import contextlib
 import ctypes
+import functools
 from ctypes import (
     c_void_p,
     c_uint32,
@@ -68,11 +69,18 @@ def k_(s):
     return c_void_p.in_dll(_sec, s)
 
 
-def create_cfbool(b):
+@functools.singledispatch
+def create_cf(ob):
+    return ob
+
+
+@create_cf.register
+def _(b: bool):
     return CFNumberCreate(None, 0x9, ctypes.byref(c_int32(1 if b else 0)))  # int32
 
 
-def create_cfstr(s):
+@create_cf.register
+def _(s: str):
     return CFStringCreateWithCString(
         None, s.encode('utf8'), 0x08000100
     )  # kCFStringEncodingUTF8
@@ -82,9 +90,7 @@ def create_query(**kwargs):
     return CFDictionaryCreate(
         None,
         (c_void_p * len(kwargs))(*[k_(k) for k in kwargs.keys()]),
-        (c_void_p * len(kwargs))(*[
-            create_cfstr(v) if isinstance(v, str) else v for v in kwargs.values()
-        ]),
+        (c_void_p * len(kwargs))(*map(create_cf, kwargs.values())),
         len(kwargs),
         _found.kCFTypeDictionaryKeyCallBacks,
         _found.kCFTypeDictionaryValueCallBacks,
@@ -133,7 +139,7 @@ def find_generic_password(kc_name, service, username, not_found_ok=False):
         kSecMatchLimit=k_('kSecMatchLimitOne'),
         kSecAttrService=service,
         kSecAttrAccount=username,
-        kSecReturnData=create_cfbool(True),
+        kSecReturnData=True,
     )
 
     data = c_void_p()
