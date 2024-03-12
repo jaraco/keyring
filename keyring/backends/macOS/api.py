@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import contextlib
 import ctypes
 import functools
@@ -74,10 +76,14 @@ def create_cf(ob):
     return ob
 
 
-@create_cf.register
-def _(b: bool):
+# explicit bool and int required for Python 3.10 compatibility
+@create_cf.register(bool)
+@create_cf.register(int)
+def _(val: bool | int):
+    if val.bit_length() > 31:
+        raise OverflowError(val)
     int32 = 0x9
-    return CFNumberCreate(None, int32, ctypes.byref(c_int32(b)))
+    return CFNumberCreate(None, int32, ctypes.byref(c_int32(val)))
 
 
 @create_cf.register
