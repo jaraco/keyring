@@ -77,7 +77,7 @@ def create_cf(ob):
 @create_cf.register
 def _(b: bool):
     int32 = 0x9
-    return CFNumberCreate(None, int32, ctypes.byref(c_int32(1 if b else 0)))
+    return CFNumberCreate(None, int32, ctypes.byref(c_int32(b)))
 
 
 @create_cf.register
