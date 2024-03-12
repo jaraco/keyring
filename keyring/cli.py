@@ -36,7 +36,7 @@ class CommandLineTool:
         self.parser.add_argument(
             "--disable", action="store_true", help="Disable keyring and exit"
         )
-        self.parser._operations = ["get", "set", "del", "diagnose"]
+        self.parser._operations = ["get", "set", "list", "del", "diagnose"]
         self.parser.add_argument(
             'operation',
             choices=self.parser._operations,
@@ -76,7 +76,10 @@ class CommandLineTool:
 
     def _check_args(self):
         if self.operation:
-            if self.service is None or self.username is None:
+            if self.operation == "list":
+                if self.service is None:
+                    self.parser.error(f"{self.operation} requires service")
+            elif self.service is None or self.username is None:
                 self.parser.error(f"{self.operation} requires service and username")
 
     def do_get(self):
@@ -90,6 +93,9 @@ class CommandLineTool:
             f"Password for '{self.username}' in '{self.service}': "
         )
         set_password(self.service, self.username, password)
+
+    def do_list(self):
+        print(list_password(self.service))
 
     def do_del(self):
         delete_password(self.service, self.username)

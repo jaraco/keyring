@@ -27,4 +27,4 @@ class Keyring(KeyringBackend):
         )
         raise NoKeyringError(msg)
 
-    set_password = delete_password = get_password  # type: ignore
+    list_password = set_password = delete_password = get_password  # type: ignore

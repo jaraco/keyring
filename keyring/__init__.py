@@ -5,6 +5,7 @@ from .core import (
     get_password,
     delete_password,
     get_credential,
+    list_password,
 )
 
 __all__ = (
@@ -14,4 +15,5 @@ __all__ = (
     'get_password',
     'delete_password',
     'get_credential',
+    'list_password',
 )

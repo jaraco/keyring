@@ -70,6 +70,17 @@ class Keyring(KeyringBackend):
             raise KeyringError("Can't get password from keychain: " "{}".format(e))
 
     @warn_keychain
+    def list_password(self, service):
+        try:
+            return api.list_generic_password(service)
+        except api.NotFound:
+            pass
+        except api.KeychainDenied as e:
+            raise KeyringLocked("Can't list password from keychain: " "{}".format(e))
+        except api.Error as e:
+            raise KeyringError("Can't list password from keychain: " "{}".format(e))
+
+    @warn_keychain
     def delete_password(self, service, username):
         if username is None:
             username = ''
