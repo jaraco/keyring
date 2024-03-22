@@ -86,7 +86,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
         """Set password for the username of the service"""
         collection = self.get_preferred_collection()
         attributes = self._query(service, username, application=self.appid)
-        label = "Password for '{}' on '{}'".format(username, service)
+        label = f"Password for '{username}' on '{service}'"
         with closing(collection.connection):
             collection.create_item(label, attributes, password, replace=True)
 

@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 
 by_priority = operator.attrgetter('priority')
-_limit: typing.Optional[typing.Callable[[KeyringBackend], bool]] = None
+_limit: typing.Callable[[KeyringBackend], bool] | None = None
 
 
 class KeyringBackendMeta(abc.ABCMeta):
@@ -71,8 +71,8 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
 
     @classmethod
     def get_viable_backends(
-        cls: typing.Type[KeyringBackend],
-    ) -> filter[typing.Type[KeyringBackend]]:
+        cls: type[KeyringBackend],
+    ) -> filter[type[KeyringBackend]]:
         """
         Return all subclasses deemed viable.
         """
@@ -96,7 +96,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         )
 
     @abc.abstractmethod
-    def get_password(self, service: str, username: str) -> typing.Optional[str]:
+    def get_password(self, service: str, username: str) -> str | None:
         """Get password of the username for the service"""
         return None
 
@@ -126,8 +126,8 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     def get_credential(
         self,
         service: str,
-        username: typing.Optional[str],
-    ) -> typing.Optional[credentials.Credential]:
+        username: str | None,
+    ) -> credentials.Credential | None:
         """Gets the username and password for the service.
         Returns a Credential instance.
 
@@ -145,14 +145,12 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     def set_properties_from_env(self) -> None:
         """For all KEYRING_PROPERTY_* env var, set that property."""
 
-        def parse(item: typing.Tuple[str, str]):
+        def parse(item: tuple[str, str]):
             key, value = item
             pre, sep, name = key.partition('KEYRING_PROPERTY_')
             return sep and (name.lower(), value)
 
-        props: filter[typing.Tuple[str, str]] = filter(
-            None, map(parse, os.environ.items())
-        )
+        props: filter[tuple[str, str]] = filter(None, map(parse, os.environ.items()))
         for name, value in props:
             setattr(self, name, value)
 
@@ -213,7 +211,7 @@ def _load_plugins() -> None:
 
 
 @util.once
-def get_all_keyring() -> typing.List[KeyringBackend]:
+def get_all_keyring() -> list[KeyringBackend]:
     """
     Return a list of all implemented keyrings that can be constructed without
     parameters.
@@ -248,8 +246,8 @@ class SchemeSelectable:
     )
 
     def _query(
-        self, service: str, username: typing.Optional[str] = None, **base: typing.Any
-    ) -> typing.Dict[str, str]:
+        self, service: str, username: str | None = None, **base: typing.Any
+    ) -> dict[str, str]:
         scheme = self.schemes[self.scheme]
         return dict(
             {

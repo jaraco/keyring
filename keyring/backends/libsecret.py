@@ -83,7 +83,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
     def set_password(self, service, username, password):
         """Set password for the username of the service"""
         attributes = self._query(service, username, application=self.appid)
-        label = "Password for '{}' on '{}'".format(username, service)
+        label = f"Password for '{username}' on '{service}'"
         try:
             stored = Secret.password_store_sync(
                 self.schema, attributes, self.collection, label, password, None

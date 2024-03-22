@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """
 Common test functionality for backends.
 """
