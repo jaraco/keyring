@@ -1,0 +1,1 @@
+In platform config support, remove support for Windows XP, now 10 years sunset.

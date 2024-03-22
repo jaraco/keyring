@@ -3,18 +3,12 @@ import pathlib
 import platform
 
 
-def _settings_root_XP():
-    return os.path.join(os.environ['USERPROFILE'], 'Local Settings')
-
-
-def _settings_root_Vista():
-    return os.environ.get('LOCALAPPDATA', os.environ.get('ProgramData', '.'))
-
-
 def _data_root_Windows():
     release, version, csd, ptype = platform.win32_ver()
-    root = _settings_root_XP() if release == 'XP' else _settings_root_Vista()
-    return pathlib.Path(root, 'Python Keyring')
+    root = pathlib.Path(
+        os.environ.get('LOCALAPPDATA', os.environ.get('ProgramData', '.'))
+    )
+    return root / 'Python Keyring'
 
 
 def _data_root_Linux():
