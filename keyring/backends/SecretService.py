@@ -1,15 +1,15 @@
-from contextlib import closing
 import logging
+from contextlib import closing
 
 from .. import backend
 from .._compat import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
 from ..errors import (
-    InitError,
-    PasswordDeleteError,
     ExceptionRaisedContext,
+    InitError,
     KeyringLocked,
+    PasswordDeleteError,
 )
 
 try:

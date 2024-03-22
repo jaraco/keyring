@@ -5,7 +5,6 @@ import pluggy
 
 import keyring.errors
 
-
 hookimpl = pluggy.HookimplMarker("devpiclient")
 
 

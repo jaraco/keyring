@@ -1,14 +1,11 @@
-import platform
-import os
-import warnings
 import functools
+import os
+import platform
+import warnings
 
-from ...backend import KeyringBackend
-from ...errors import PasswordSetError
-from ...errors import PasswordDeleteError
-from ...errors import KeyringLocked
-from ...errors import KeyringError
 from ..._compat import properties
+from ...backend import KeyringBackend
+from ...errors import KeyringError, KeyringLocked, PasswordDeleteError, PasswordSetError
 
 try:
     from . import api

@@ -1,8 +1,8 @@
 import pytest
 
+from keyring.backends import SecretService
 from keyring.testing.backend import BackendBasicTests
 from keyring.testing.util import NoNoneDictMutator
-from keyring.backends import SecretService
 
 
 @pytest.mark.skipif(

@@ -1,8 +1,8 @@
 import pytest
 
 import keyring
-from keyring.testing.backend import BackendBasicTests
 from keyring.backends import macOS
+from keyring.testing.backend import BackendBasicTests
 
 
 @pytest.mark.skipif(

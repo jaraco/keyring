@@ -1,13 +1,18 @@
 """Simple command line interface to get/set password from a keyring"""
 
-import getpass
 import argparse
+import getpass
 import sys
 
-from . import core
-from . import backend
-from . import completion
-from . import set_keyring, get_password, set_password, delete_password
+from . import (
+    backend,
+    completion,
+    core,
+    delete_password,
+    get_password,
+    set_keyring,
+    set_password,
+)
 from .util import platform_
 
 

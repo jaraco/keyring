@@ -3,14 +3,12 @@ import logging
 from .._compat import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
-from ..errors import PasswordDeleteError, ExceptionRaisedContext
-
+from ..errors import ExceptionRaisedContext, PasswordDeleteError
 
 with ExceptionRaisedContext() as missing_deps:
     try:
         # prefer pywin32-ctypes
-        from win32ctypes.pywin32 import pywintypes
-        from win32ctypes.pywin32 import win32cred
+        from win32ctypes.pywin32 import pywintypes, win32cred
 
         # force demand import to raise ImportError
         win32cred.__name__

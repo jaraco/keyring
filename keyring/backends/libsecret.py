@@ -5,16 +5,15 @@ from .._compat import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
 from ..errors import (
+    KeyringLocked,
     PasswordDeleteError,
     PasswordSetError,
-    KeyringLocked,
 )
 
 available = False
 try:
     import gi
-    from gi.repository import Gio
-    from gi.repository import GLib
+    from gi.repository import Gio, GLib
 
     gi.require_version('Secret', '1')
     from gi.repository import Secret

@@ -1,5 +1,5 @@
-from ..backend import KeyringBackend
 from .._compat import properties
+from ..backend import KeyringBackend
 from ..errors import NoKeyringError
 
 

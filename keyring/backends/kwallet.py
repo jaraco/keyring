@@ -1,12 +1,11 @@
-import sys
-import os
 import contextlib
+import os
+import sys
 
+from .._compat import properties
 from ..backend import KeyringBackend
 from ..credentials import SimpleCredential
-from ..errors import PasswordDeleteError
-from ..errors import PasswordSetError, InitError, KeyringLocked
-from .._compat import properties
+from ..errors import InitError, KeyringLocked, PasswordDeleteError, PasswordSetError
 
 try:
     import dbus

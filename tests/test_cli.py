@@ -1,12 +1,11 @@
-import itertools
 import getpass
+import itertools
 import sys
 from unittest import mock
 
 import pytest
 
 from keyring import cli
-
 
 flatten = itertools.chain.from_iterable
 

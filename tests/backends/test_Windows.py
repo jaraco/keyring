@@ -3,7 +3,7 @@ import sys
 import pytest
 
 import keyring.backends.Windows
-from keyring.testing.backend import BackendBasicTests, UNICODE_CHARS
+from keyring.testing.backend import UNICODE_CHARS, BackendBasicTests
 
 
 @pytest.mark.skipif(
@@ -25,9 +25,10 @@ class TestWinVaultKeyring(BackendBasicTests):
         """
         Write a UTF-8 encoded password using win32ctypes primitives
         """
+        from ctypes import c_char, cast, create_string_buffer, sizeof
+
         from win32ctypes.core import _authentication as auth
         from win32ctypes.core.ctypes._common import LPBYTE
-        from ctypes import cast, c_char, create_string_buffer, sizeof
 
         credential = dict(
             Type=1,

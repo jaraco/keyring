@@ -1,8 +1,7 @@
-import sys
 import subprocess
+import sys
 
 import pytest
-
 
 argv_manipulations = [
     'del sys.argv',

@@ -1,6 +1,6 @@
 import os
-import platform
 import pathlib
+import platform
 
 
 def _settings_root_XP():

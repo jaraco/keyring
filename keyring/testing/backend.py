@@ -9,8 +9,9 @@ import string
 
 import pytest
 
-from .util import random_string
 from keyring import errors
+
+from .util import random_string
 
 # unicode only characters
 # Sourced from The Quick Brown Fox... Pangrams

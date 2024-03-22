@@ -14,7 +14,7 @@ in the keyring. Then, it adds it to the keyring for subsequent use.
 
 import getpass
 
-from . import get_password, delete_password, set_password
+from . import delete_password, get_password, set_password
 
 
 class PasswordMgr:

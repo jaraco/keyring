@@ -1,8 +1,8 @@
 import contextlib
 import os
-import sys
 import random
 import string
+import sys
 
 
 class ImportKiller:

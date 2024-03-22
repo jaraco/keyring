@@ -1,5 +1,5 @@
-import os
 import abc
+import os
 
 
 class Credential(metaclass=abc.ABCMeta):

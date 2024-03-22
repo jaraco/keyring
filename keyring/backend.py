@@ -4,17 +4,16 @@ Keyring implementation support
 
 from __future__ import annotations
 
-import os
 import abc
+import copy
 import logging
 import operator
-import copy
-
+import os
 import typing
 
-from .py312compat import metadata
 from . import credentials, errors, util
 from ._compat import properties
+from .py312compat import metadata
 
 log = logging.getLogger(__name__)
 

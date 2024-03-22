@@ -4,13 +4,12 @@ import contextlib
 import ctypes
 import functools
 from ctypes import (
-    c_void_p,
-    c_uint32,
-    c_int32,
     byref,
+    c_int32,
+    c_uint32,
+    c_void_p,
 )
 from ctypes.util import find_library
-
 
 OS_status = c_int32
 

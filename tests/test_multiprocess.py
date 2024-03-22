@@ -1,6 +1,6 @@
-import sys
-import platform
 import multiprocessing
+import platform
+import sys
 
 import pytest
 

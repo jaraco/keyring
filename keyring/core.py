@@ -3,14 +3,14 @@ Core API functions and initialization routines.
 """
 
 import configparser
+import logging
 import os
 import sys
-import logging
 import typing
 
 from . import backend, credentials
-from .util import platform_ as platform
 from .backends import fail
+from .util import platform_ as platform
 
 LimitCallable = typing.Callable[[backend.KeyringBackend], bool]
 
