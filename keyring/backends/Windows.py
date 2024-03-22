@@ -37,7 +37,7 @@ class Persistence:
         if isinstance(value, str):
             attr = 'CRED_PERSIST_' + value.replace(' ', '_').upper()
             value = getattr(win32cred, attr)
-        setattr(keyring, '_persist', value)
+        keyring._persist = value
 
 
 class DecodingCredential(dict):

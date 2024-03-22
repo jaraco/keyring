@@ -118,7 +118,7 @@ class CommandLineTool:
             if self.keyring_path:
                 sys.path.insert(0, self.keyring_path)
             set_keyring(core.load_keyring(self.keyring_backend))
-        except (Exception,) as exc:
+        except Exception as exc:
             # Tons of things can go wrong here:
             #   ImportError when using "fjkljfljkl"
             #   AttributeError when using "os.path.bar"
