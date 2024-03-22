@@ -1,0 +1,1 @@
+Removed check for config in XDG_DATA_HOME on Linux systems.
