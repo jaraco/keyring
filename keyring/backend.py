@@ -91,9 +91,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
 
     def __str__(self) -> str:
         keyring_class = type(self)
-        return "{}.{} (priority: {:g})".format(
-            keyring_class.__module__, keyring_class.__name__, keyring_class.priority
-        )
+        return f"{keyring_class.__module__}.{keyring_class.__name__} (priority: {keyring_class.priority:g})"
 
     @abc.abstractmethod
     def get_password(self, service: str, username: str) -> str | None:
