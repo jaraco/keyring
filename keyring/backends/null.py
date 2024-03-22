@@ -1,5 +1,5 @@
-from .._compat import properties
 from ..backend import KeyringBackend
+from ..compat import properties
 
 
 class Keyring(KeyringBackend):

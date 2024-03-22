@@ -2,8 +2,8 @@ import contextlib
 import os
 import sys
 
-from .._compat import properties
 from ..backend import KeyringBackend
+from ..compat import properties
 from ..credentials import SimpleCredential
 from ..errors import InitError, KeyringLocked, PasswordDeleteError, PasswordSetError
 

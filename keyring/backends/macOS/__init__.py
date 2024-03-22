@@ -3,8 +3,8 @@ import os
 import platform
 import warnings
 
-from ..._compat import properties
 from ...backend import KeyringBackend
+from ...compat import properties
 from ...errors import KeyringError, KeyringLocked, PasswordDeleteError, PasswordSetError
 
 try:

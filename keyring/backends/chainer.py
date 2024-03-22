@@ -4,7 +4,7 @@ discover passwords in each.
 """
 
 from .. import backend
-from .._compat import properties
+from ..compat import properties
 from . import fail
 
 

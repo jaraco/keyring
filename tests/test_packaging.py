@@ -1,5 +1,5 @@
 from keyring import backend
-from keyring.py312compat import metadata
+from keyring.compat.py312 import metadata
 
 
 def test_entry_point():

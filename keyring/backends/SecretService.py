@@ -2,8 +2,8 @@ import logging
 from contextlib import closing
 
 from .. import backend
-from .._compat import properties
 from ..backend import KeyringBackend
+from ..compat import properties
 from ..credentials import SimpleCredential
 from ..errors import (
     ExceptionRaisedContext,

@@ -12,8 +12,8 @@ import os
 import typing
 
 from . import credentials, errors, util
-from ._compat import properties
-from .py312compat import metadata
+from .compat import properties
+from .compat.py312 import metadata
 
 log = logging.getLogger(__name__)
 
