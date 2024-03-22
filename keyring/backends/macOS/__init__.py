@@ -48,9 +48,9 @@ class Keyring(KeyringBackend):
         try:
             api.set_generic_password(self.keychain, service, username, password)
         except api.KeychainDenied as e:
-            raise KeyringLocked("Can't store password on keychain: " f"{e}")
+            raise KeyringLocked(f"Can't store password on keychain: {e}")
         except api.Error as e:
-            raise PasswordSetError("Can't store password on keychain: " f"{e}")
+            raise PasswordSetError(f"Can't store password on keychain: {e}")
 
     @warn_keychain
     def get_password(self, service, username):
@@ -62,9 +62,9 @@ class Keyring(KeyringBackend):
         except api.NotFound:
             pass
         except api.KeychainDenied as e:
-            raise KeyringLocked("Can't get password from keychain: " f"{e}")
+            raise KeyringLocked(f"Can't get password from keychain: {e}")
         except api.Error as e:
-            raise KeyringError("Can't get password from keychain: " f"{e}")
+            raise KeyringError(f"Can't get password from keychain: {e}")
 
     @warn_keychain
     def delete_password(self, service, username):
@@ -74,9 +74,7 @@ class Keyring(KeyringBackend):
         try:
             return api.delete_generic_password(self.keychain, service, username)
         except api.Error as e:
-            raise PasswordDeleteError(
-                "Can't delete password in keychain: " f"{e}"
-            )
+            raise PasswordDeleteError(f"Can't delete password in keychain: {e}")
 
     def with_keychain(self, keychain):
         warnings.warn(
