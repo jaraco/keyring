@@ -11,6 +11,8 @@ import operator
 import os
 import typing
 
+from jaraco.functools import once
+
 from . import credentials, errors, util
 from .compat import properties
 from .compat.py312 import metadata
@@ -208,7 +210,7 @@ def _load_plugins() -> None:
             log.exception(f"Error initializing plugin {ep}.")
 
 
-@util.once
+@once
 def get_all_keyring() -> list[KeyringBackend]:
     """
     Return a list of all implemented keyrings that can be constructed without
