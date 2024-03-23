@@ -57,13 +57,13 @@ class TestDBusKWallet(BackendBasicTests):
         self.keyring = keyring = self.init_keyring()
         ret_password = keyring.get_password(service, username)
         assert ret_password == "", (
-            "Incorrect password for username: '{}' "
-            "on service: '{}'. '{}' != '{}'".format(service, username, ret_password, ""),
+            f"Incorrect password for username: {service!r} "
+            f"on service: {username!r}. {ret_password!r} != ''",
         )
         ret_password = keyring.get_password('Python', username + '@' + service)
         assert ret_password is None, (
-            f"Not 'None' password returned for username: '{service}' "
-            f"on service: '{username}'. '{ret_password}' != '{None}'. Passwords from old "
+            f"Not 'None' password returned for username: {service!r} "
+            f"on service: {username!r}. {ret_password!r} is not None. Passwords from old "
             "folder should be deleted during migration.",
         )
 

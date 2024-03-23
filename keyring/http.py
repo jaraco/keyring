@@ -29,7 +29,7 @@ class PasswordMgr:
         user = self.get_username(realm, authuri)
         password = get_password(realm, user)
         if password is None:
-            prompt = 'password for {user}@{realm} for ' '{authuri}: '.format(**vars())
+            prompt = f'password for {user}@{realm} for {authuri}: '
             password = getpass.getpass(prompt)
             set_password(realm, user, password)
         return user, password
