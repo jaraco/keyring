@@ -1,3 +1,13 @@
+v25.0.0
+=======
+
+Deprecations and Removals
+-------------------------
+
+- Removed check for config in XDG_DATA_HOME on Linux systems. (#99)
+- In platform config support, remove support for Windows XP, now 10 years sunset.
+
+
 v24.3.1
 =======
 
