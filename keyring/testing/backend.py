@@ -163,6 +163,7 @@ class BackendBasicTests:
             ('user2', 'password2'),
         )
 
+    @pytest.mark.xfail("platform.system() == 'Windows'", reason="#668")
     def test_empty_username(self):
         self.set_password('service1', '', 'password1')
         assert self.keyring.get_password('service1', '') == 'password1'
