@@ -96,7 +96,7 @@ class DBusKeyring(KeyringBackend):
             self.iface = dbus.Interface(remote_obj, 'org.kde.KWallet')
             self.handle = self.iface.open(self.iface.networkWallet(), wId, self.appid)
         except dbus.DBusException as e:
-            raise InitError('Failed to open keyring: %s.' % e) from e
+            raise InitError(f'Failed to open keyring: {e}.') from e
 
         if self.handle < 0:
             return False

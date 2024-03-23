@@ -45,7 +45,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
                         "activatable through D-Bus"
                     )
         except exceptions.SecretStorageException as e:
-            raise RuntimeError("Unable to initialize SecretService: %s" % e) from e
+            raise RuntimeError(f"Unable to initialize SecretService: {e}") from e
         return 5
 
     def get_preferred_collection(self):
@@ -60,7 +60,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
             else:
                 collection = secretstorage.get_default_collection(bus)
         except exceptions.SecretStorageException as e:
-            raise InitError("Failed to create the collection: %s." % e) from e
+            raise InitError(f"Failed to create the collection: {e}.") from e
         if collection.is_locked():
             collection.unlock()
             if collection.is_locked():  # User dismissed the prompt

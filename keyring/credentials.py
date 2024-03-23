@@ -58,7 +58,7 @@ class EnvironCredential(Credential):
         """Helper to read an environment variable"""
         value = os.environ.get(env_var)
         if not value:
-            raise ValueError('Missing environment variable:%s' % env_var)
+            raise ValueError(f'Missing environment variable:{env_var}')
         return value
 
     @property
