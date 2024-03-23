@@ -174,4 +174,4 @@ class BackendBasicTests:
         assert alt is not self.keyring
         assert alt.foo == 'bar'
         with pytest.raises(AttributeError):
-            self.keyring.foo
+            self.keyring.foo  # noqa: B018

@@ -134,7 +134,7 @@ def load_keyring(keyring_name: str) -> backend.KeyringBackend:
     """
     class_ = _load_keyring_class(keyring_name)
     # invoke the priority to ensure it is viable, or raise a RuntimeError
-    class_.priority
+    class_.priority  # noqa: B018
     return class_()
 
 

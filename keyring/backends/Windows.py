@@ -11,14 +11,14 @@ with ExceptionRaisedContext() as missing_deps:
         from win32ctypes.pywin32 import pywintypes, win32cred
 
         # force demand import to raise ImportError
-        win32cred.__name__
+        win32cred.__name__  # noqa: B018
     except ImportError:
         # fallback to pywin32
         import pywintypes
         import win32cred
 
         # force demand import to raise ImportError
-        win32cred.__name__
+        win32cred.__name__  # noqa: B018
 
 log = logging.getLogger(__name__)
 

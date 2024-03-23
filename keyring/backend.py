@@ -68,7 +68,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     @properties.classproperty
     def viable(cls):
         with errors.ExceptionRaisedContext() as exc:
-            cls.priority
+            cls.priority  # noqa: B018
         return not exc
 
     @classmethod
