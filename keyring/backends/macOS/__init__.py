@@ -17,7 +17,7 @@ def warn_keychain(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         if self.keychain:
-            warnings.warn("Specified keychain is ignored. See #623")
+            warnings.warn("Specified keychain is ignored. See #623", stacklevel=2)
         return func(self, *args, **kwargs)
 
     return wrapper
