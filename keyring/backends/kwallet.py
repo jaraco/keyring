@@ -43,7 +43,7 @@ class DBusKeyring(KeyringBackend):
         try:
             bus = dbus.SessionBus(mainloop=DBusGMainLoop())
         except dbus.DBusException as exc:
-            raise RuntimeError(exc.get_dbus_message())
+            raise RuntimeError(exc.get_dbus_message()) from exc
         if not (
             bus.name_has_owner(cls.bus_name)
             or cls.bus_name in bus.list_activatable_names()
@@ -96,7 +96,7 @@ class DBusKeyring(KeyringBackend):
             self.iface = dbus.Interface(remote_obj, 'org.kde.KWallet')
             self.handle = self.iface.open(self.iface.networkWallet(), wId, self.appid)
         except dbus.DBusException as e:
-            raise InitError('Failed to open keyring: %s.' % e)
+            raise InitError('Failed to open keyring: %s.' % e) from e
 
         if self.handle < 0:
             return False
