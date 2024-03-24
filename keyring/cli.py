@@ -91,10 +91,28 @@ class CommandLineTool:
         print(password)
 
     def do_set(self):
-        password = self.input_password(
-            f"Password for '{self.username}' in '{self.service}': "
-        )
-        set_password(self.service, self.username, password)
+        trials = 3
+        for i in range(trials):
+            password = self.input_password(
+                f"password for '{self.username}' in '{self.service}': "
+            )
+
+            reentered_password = self.input_password(
+                f"re-enter password for '{self.username}' in '{self.service}': "
+            )
+
+            if password == reentered_password:
+                # if passwords match, set the password and break the loop
+                set_password(self.service, self.username, password)
+                break
+            else:
+                print('password verification failed! try again!\n')
+
+        else:  # this else is associated with the for-loop, not the if-statement
+            sys.stderr.write(
+                f"password verification failed for {trials} times. aborting!!\n"
+            )
+            sys.exit(1)
 
     def do_del(self):
         delete_password(self.service, self.username)
