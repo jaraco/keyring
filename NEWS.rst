@@ -1,3 +1,12 @@
+v25.0.1
+=======
+
+Bugfixes
+--------
+
+- When completion is unavailable, exit with non-zero status and emit message to stderr. (#671)
+
+
 v25.0.0
 =======
 

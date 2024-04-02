@@ -1,1 +1,0 @@
-When completion is unavailable, exit with non-zero status and emit message to stderr.
