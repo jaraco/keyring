@@ -1,3 +1,12 @@
+v25.1.0
+=======
+
+Features
+--------
+
+- Replace ExceptionRaisedContext with ExceptionTrap.
+
+
 v25.0.1
 =======
 
