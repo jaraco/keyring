@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 try:
     import shtab
@@ -10,8 +11,8 @@ from .compat.py38 import files
 
 class _MissingCompletionAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string):
-        print("Install keyring[completion] for completion support.")
-        parser.exit(0)
+        print("Install keyring[completion] for completion support.", file=sys.stderr)
+        parser.exit(1)
 
 
 def add_completion_notice(parser):
