@@ -1,11 +1,13 @@
 import logging
 
+from jaraco.context import ExceptionTrap
+
 from ..backend import KeyringBackend
 from ..compat import properties
 from ..credentials import SimpleCredential
-from ..errors import ExceptionRaisedContext, PasswordDeleteError
+from ..errors import PasswordDeleteError
 
-with ExceptionRaisedContext() as missing_deps:
+with ExceptionTrap() as missing_deps:
     try:
         # prefer pywin32-ctypes
         from win32ctypes.pywin32 import pywintypes, win32cred

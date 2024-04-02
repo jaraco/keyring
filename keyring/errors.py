@@ -1,4 +1,5 @@
 import sys
+import warnings
 
 
 class KeyringError(Exception):
@@ -32,6 +33,11 @@ class ExceptionRaisedContext:
     """
 
     def __init__(self, ExpectedException=Exception):
+        warnings.warn(
+            "ExceptionRaisedContext is deprecated; use `jaraco.context.ExceptionTrap`",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.ExpectedException = ExpectedException
         self.exc_info = None
 
