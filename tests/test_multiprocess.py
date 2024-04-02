@@ -6,6 +6,16 @@ import pytest
 import keyring
 
 
+@pytest.fixture(autouse=True)
+def workaround_pytest_12178(monkeypatch):
+    """
+    Ensure the current directory is on sys.path so that `tests` is importable.
+
+    Workaround for #673.
+    """
+    monkeypatch.syspath_prepend('.')
+
+
 def subprocess_get():
     keyring.get_password('test_app', 'test_user')
 
