@@ -11,6 +11,7 @@ import operator
 import os
 import typing
 
+from jaraco.context import ExceptionTrap
 from jaraco.functools import once
 
 from . import credentials, errors, util
@@ -65,11 +66,13 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         """
         raise NotImplementedError
 
+    # Python 3.8 compatibility
+    passes = ExceptionTrap().passes
+
     @properties.classproperty
+    @passes
     def viable(cls):
-        with errors.ExceptionRaisedContext() as exc:
-            cls.priority  # noqa: B018
-        return not exc
+        cls.priority  # noqa: B018
 
     @classmethod
     def get_viable_backends(

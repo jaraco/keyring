@@ -1,12 +1,13 @@
 import logging
 from contextlib import closing
 
+from jaraco.context import ExceptionTrap
+
 from .. import backend
 from ..backend import KeyringBackend
 from ..compat import properties
 from ..credentials import SimpleCredential
 from ..errors import (
-    ExceptionRaisedContext,
     InitError,
     KeyringLocked,
     PasswordDeleteError,
@@ -31,7 +32,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
 
     @properties.classproperty
     def priority(cls) -> float:
-        with ExceptionRaisedContext() as exc:
+        with ExceptionTrap() as exc:
             secretstorage.__name__  # noqa: B018
         if exc:
             raise RuntimeError("SecretStorage required")
