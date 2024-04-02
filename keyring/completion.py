@@ -1,15 +1,11 @@
 import argparse
-import sys
 
 try:
     import shtab
 except ImportError:
     pass
 
-if sys.version_info < (3, 9):
-    from importlib_resources import files
-else:
-    from importlib.resources import files
+from .compat.py38 import files
 
 
 class _MissingCompletionAction(argparse.Action):
