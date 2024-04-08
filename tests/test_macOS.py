@@ -1,4 +1,4 @@
 import keyring
 from keyring.backends import macOS
 
-keyring.backends.macOS.Keyring.viable,
+keyring.backends.macOS
