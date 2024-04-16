@@ -42,7 +42,7 @@ class CommandLineTool:
         self.parser.add_argument(
             "--disable", action="store_true", help="Disable keyring and exit"
         )
-        self.parser._operations = ["get", "getcreds", "set", "del", "diagnose"] 
+        self.parser._operations = ["get", "set", "del", "getcreds", "diagnose"]
         self.parser.add_argument(
             'operation',
             choices=self.parser._operations,
