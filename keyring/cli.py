@@ -12,6 +12,7 @@ from . import (
     get_password,
     set_keyring,
     set_password,
+    get_credential,
 )
 from .util import platform_
 
@@ -41,7 +42,7 @@ class CommandLineTool:
         self.parser.add_argument(
             "--disable", action="store_true", help="Disable keyring and exit"
         )
-        self.parser._operations = ["get", "set", "del", "diagnose"]
+        self.parser._operations = ["get", "set", "del", "diagnose", "getcreds"]
         self.parser.add_argument(
             'operation',
             choices=self.parser._operations,
@@ -81,7 +82,7 @@ class CommandLineTool:
 
     def _check_args(self):
         if self.operation:
-            if self.service is None or self.username is None:
+            if self.service is None or (self.operation != "getcreds" && self.username is None):
                 self.parser.error(f"{self.operation} requires service and username")
 
     def do_get(self):
@@ -89,6 +90,13 @@ class CommandLineTool:
         if password is None:
             raise SystemExit(1)
         print(password)
+
+    def do_getcreds(self):
+        creds = get_credential(self.service, self.username)
+        if creds is None:
+            raise SystemExit(1)
+        print(f"username: {creds.username}")
+        print(f"password: {creds.password}")
 
     def do_set(self):
         password = self.input_password(
