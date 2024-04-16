@@ -2,6 +2,7 @@
 
 import argparse
 import getpass
+import json
 import sys
 
 from . import (
@@ -56,6 +57,18 @@ class CommandLineTool:
             Default is 'password'
             """,
         )
+        self.parser._output_formats = ["plain", "json"]
+        self.parser.add_argument(
+            "--output",
+            choices=self.parser._output_formats,
+            dest="output_format",
+            default="plain",
+            help="""
+            Outpup format for 'get' operation.
+
+            Default is 'plain'
+            """,
+        )
         self.parser._operations = ["get", "set", "del", "diagnose"]
         self.parser.add_argument(
             'operation',
@@ -103,17 +116,24 @@ class CommandLineTool:
                 self.parser.error(f"{self.operation} requires service and username")
 
     def do_get(self):
+        credential_dict = {}
         if self.get_mode == 'creds':
             creds = get_credential(self.service, self.username)
             if creds is None:
                 raise SystemExit(1)
-            print(f"{creds.username}")
-            print(f"{creds.password}")
+            credential_dict['username'] = creds.username
+            credential_dict['password'] = creds.password
         else:
             password = get_password(self.service, self.username)
             if password is None:
                 raise SystemExit(1)
-            print(password)
+            crediential_dict['password'] = password
+        if self.output_format == 'json':
+            print(json.dumps(credential_dict))
+        else:
+            if 'username' in credential_dict.keys():
+                print(credential_dict['username'])
+            print(credential_dict['password'])
 
     def do_set(self):
         password = self.input_password(
