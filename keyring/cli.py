@@ -82,7 +82,10 @@ class CommandLineTool:
 
     def _check_args(self):
         if self.operation:
-            if self.service is None or (self.operation != "getcreds" and self.username is None):
+            if self.operation == 'getcreds':
+                if self.service is None :
+                    self.parser.error(f"{self.operation} requires service")
+            elif self.service is None or self.username is None:
                 self.parser.error(f"{self.operation} requires service and username")
 
     def do_get(self):
