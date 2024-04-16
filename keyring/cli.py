@@ -64,7 +64,7 @@ class CommandLineTool:
             dest="output_format",
             default="plain",
             help="""
-            Outpup format for 'get' operation.
+            Output format for 'get' operation.
 
             Default is 'plain'
             """,
@@ -127,7 +127,7 @@ class CommandLineTool:
             password = get_password(self.service, self.username)
             if password is None:
                 raise SystemExit(1)
-            crediential_dict['password'] = password
+            credential_dict['password'] = password
         if self.output_format == 'json':
             print(json.dumps(credential_dict))
         else:
