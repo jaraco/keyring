@@ -42,7 +42,21 @@ class CommandLineTool:
         self.parser.add_argument(
             "--disable", action="store_true", help="Disable keyring and exit"
         )
-        self.parser._operations = ["get", "set", "del", "getcreds", "diagnose"]
+        self.parser._get_modes = ["password", "creds"]
+        self.parser.add_argument(
+            "--get-mode",
+            choices=self.parser._get_modes,
+            dest="get_mode",
+            default="password",
+            help="""
+            Mode for 'get' operation.
+            'password' requires a username and will return only the password.
+            'creds' does not require a username and will return both the username and password separated by a newline.
+
+            Default is 'password'
+            """,
+        )
+        self.parser._operations = ["get", "set", "del", "diagnose"]
         self.parser.add_argument(
             'operation',
             choices=self.parser._operations,
@@ -82,24 +96,24 @@ class CommandLineTool:
 
     def _check_args(self):
         if self.operation:
-            if self.operation == 'getcreds':
+            if self.operation == 'get' and self.get_mode == 'creds':
                 if self.service is None:
                     self.parser.error(f"{self.operation} requires service")
             elif self.service is None or self.username is None:
                 self.parser.error(f"{self.operation} requires service and username")
 
     def do_get(self):
-        password = get_password(self.service, self.username)
-        if password is None:
-            raise SystemExit(1)
-        print(password)
-
-    def do_getcreds(self):
-        creds = get_credential(self.service, self.username)
-        if creds is None:
-            raise SystemExit(1)
-        print(f"username: {creds.username}")
-        print(f"password: {creds.password}")
+        if self.get_mode == 'creds':
+            creds = get_credential(self.service, self.username)
+            if creds is None:
+                raise SystemExit(1)
+            print(f"{creds.username}")
+            print(f"{creds.password}")
+        else:
+            password = get_password(self.service, self.username)
+            if password is None:
+                raise SystemExit(1)
+            print(password)
 
     def do_set(self):
         password = self.input_password(
