@@ -45,7 +45,7 @@ class CommandLineTool:
         )
         self.parser._get_modes = ["password", "creds"]
         self.parser.add_argument(
-            "--get-mode",
+            "--mode",
             choices=self.parser._get_modes,
             dest="get_mode",
             default="password",
