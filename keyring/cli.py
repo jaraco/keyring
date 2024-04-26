@@ -111,12 +111,10 @@ class CommandLineTool:
         return method()
 
     def _check_args(self):
-        if self.operation:
-            if self.operation == 'get' and self.get_mode == 'creds':
-                if self.service is None:
-                    self.parser.error(f"{self.operation} requires service")
-            elif self.service is None or self.username is None:
-                self.parser.error(f"{self.operation} requires service and username")
+        needs_username = self.operation != 'get' or self.get_mode != 'creds'
+        required = (['service'] + ['username'] * needs_username) * bool(self.operation)
+        if any(getattr(self, param) is None for param in required):
+            self.parser.error(f"{self.operation} requires {' and '.join(required)}")
 
     def do_get(self):
         credential = getattr(self, f'_get_{self.get_mode}')()
