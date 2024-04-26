@@ -117,12 +117,15 @@ class CommandLineTool:
 
     def do_get(self):
         credential_dict = getattr(self, f'_get_{self.get_mode}')()
-        if self.output_format == 'json':
-            print(json.dumps(credential_dict))
-        else:
-            if 'username' in credential_dict.keys():
-                print(credential_dict['username'])
-            print(credential_dict['password'])
+        getattr(self, f'_emit_{self.output_format}')(credential_dict)
+
+    def _emit_json(self, credential_dict):
+        print(json.dumps(credential_dict))
+
+    def _emit_plain(self, credential_dict):
+        if 'username' in credential_dict.keys():
+            print(credential_dict['username'])
+        print(credential_dict['password'])
 
     def _get_cred(self):
         creds = get_credential(self.service, self.username)
