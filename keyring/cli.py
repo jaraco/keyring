@@ -9,6 +9,7 @@ from . import (
     backend,
     completion,
     core,
+    credentials,
     delete_password,
     get_password,
     set_keyring,
@@ -116,33 +117,30 @@ class CommandLineTool:
                 self.parser.error(f"{self.operation} requires service and username")
 
     def do_get(self):
-        credential_dict = getattr(self, f'_get_{self.get_mode}')()
-        getattr(self, f'_emit_{self.output_format}')(credential_dict)
+        credential = getattr(self, f'_get_{self.get_mode}')()
+        getattr(self, f'_emit_{self.output_format}')(credential)
 
-    def _emit_json(self, credential_dict):
-        print(json.dumps(credential_dict))
+    def _emit_json(self, credential: credentials.Credential):
+        print(
+            json.dumps(dict(username=credential.username, password=credential.password))
+        )
 
-    def _emit_plain(self, credential_dict):
-        if 'username' in credential_dict.keys():
-            print(credential_dict['username'])
-        print(credential_dict['password'])
+    def _emit_plain(self, credential: credentials.Credential):
+        if credential.username:
+            print(credential.username)
+        print(credential.password)
 
-    def _get_cred(self):
-        creds = get_credential(self.service, self.username)
+    def _get_cred(self) -> credentials.Credential:
+        creds = get_credential(self.service, self.username)  # type: ignore
         if creds is None:
             raise SystemExit(1)
-        credential_dict = {}
-        credential_dict['username'] = creds.username
-        credential_dict['password'] = creds.password
-        return credential_dict
+        return creds
 
-    def _get_password(self):
-        password = get_password(self.service, self.username)
+    def _get_password(self) -> credentials.Credential:
+        password = get_password(self.service, self.username)  # type: ignore
         if password is None:
             raise SystemExit(1)
-        credential_dict = {}
-        credential_dict['password'] = password
-        return credential_dict
+        return credentials.SimpleCredential(None, password)
 
     def do_set(self):
         password = self.input_password(
