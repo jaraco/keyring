@@ -116,24 +116,30 @@ class CommandLineTool:
                 self.parser.error(f"{self.operation} requires service and username")
 
     def do_get(self):
-        credential_dict = {}
-        if self.get_mode == 'creds':
-            creds = get_credential(self.service, self.username)
-            if creds is None:
-                raise SystemExit(1)
-            credential_dict['username'] = creds.username
-            credential_dict['password'] = creds.password
-        else:
-            password = get_password(self.service, self.username)
-            if password is None:
-                raise SystemExit(1)
-            credential_dict['password'] = password
+        credential_dict = getattr(self, f'_get_{self.get_mode}')()
         if self.output_format == 'json':
             print(json.dumps(credential_dict))
         else:
             if 'username' in credential_dict.keys():
                 print(credential_dict['username'])
             print(credential_dict['password'])
+
+    def _get_cred(self):
+        creds = get_credential(self.service, self.username)
+        if creds is None:
+            raise SystemExit(1)
+        credential_dict = {}
+        credential_dict['username'] = creds.username
+        credential_dict['password'] = creds.password
+        return credential_dict
+
+    def _get_password(self):
+        password = get_password(self.service, self.username)
+        if password is None:
+            raise SystemExit(1)
+        credential_dict = {}
+        credential_dict['password'] = password
+        return credential_dict
 
     def do_set(self):
         password = self.input_password(
