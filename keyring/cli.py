@@ -1,5 +1,7 @@
 """Simple command line interface to get/set password from a keyring"""
 
+from __future__ import annotations
+
 import argparse
 import getpass
 import json
@@ -118,6 +120,8 @@ class CommandLineTool:
 
     def do_get(self):
         credential = getattr(self, f'_get_{self.get_mode}')()
+        if credential is None:
+            raise SystemExit(1)
         getattr(self, f'_emit_{self.output_format}')(credential)
 
     def _emit_json(self, credential: credentials.Credential):
@@ -130,17 +134,16 @@ class CommandLineTool:
             print(credential.username)
         print(credential.password)
 
-    def _get_cred(self) -> credentials.Credential:
-        creds = get_credential(self.service, self.username)  # type: ignore
-        if creds is None:
-            raise SystemExit(1)
-        return creds
+    def _get_cred(self) -> credentials.Credential | None:
+        return get_credential(self.service, self.username)  # type: ignore
 
-    def _get_password(self) -> credentials.Credential:
+    def _get_password(self) -> credentials.Credential | None:
         password = get_password(self.service, self.username)  # type: ignore
-        if password is None:
-            raise SystemExit(1)
-        return credentials.SimpleCredential(None, password)
+        return (
+            credentials.SimpleCredential(None, password)
+            if password is not None
+            else None
+        )
 
     def do_set(self):
         password = self.input_password(
