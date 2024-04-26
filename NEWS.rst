@@ -1,3 +1,12 @@
+v25.2.0
+=======
+
+Features
+--------
+
+- Added options for 'keyring get' command to support credential retrieval and emit as JSON. (#678)
+
+
 v25.1.0
 =======
 
