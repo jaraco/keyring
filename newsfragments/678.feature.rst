@@ -1,0 +1,1 @@
+Added options for 'keyring get' command to support credential retrieval and emit as JSON.

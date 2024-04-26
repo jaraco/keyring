@@ -1,17 +1,22 @@
 """Simple command line interface to get/set password from a keyring"""
 
+from __future__ import annotations
+
 import argparse
 import getpass
+import json
 import sys
 
 from . import (
     backend,
     completion,
     core,
+    credentials,
     delete_password,
     get_password,
     set_keyring,
     set_password,
+    get_credential,
 )
 from .util import platform_
 
@@ -40,6 +45,32 @@ class CommandLineTool:
         )
         self.parser.add_argument(
             "--disable", action="store_true", help="Disable keyring and exit"
+        )
+        self.parser._get_modes = ["password", "creds"]
+        self.parser.add_argument(
+            "--mode",
+            choices=self.parser._get_modes,
+            dest="get_mode",
+            default="password",
+            help="""
+            Mode for 'get' operation.
+            'password' requires a username and will return only the password.
+            'creds' does not require a username and will return both the username and password separated by a newline.
+
+            Default is 'password'
+            """,
+        )
+        self.parser._output_formats = ["plain", "json"]
+        self.parser.add_argument(
+            "--output",
+            choices=self.parser._output_formats,
+            dest="output_format",
+            default="plain",
+            help="""
+            Output format for 'get' operation.
+
+            Default is 'plain'
+            """,
         )
         self.parser._operations = ["get", "set", "del", "diagnose"]
         self.parser.add_argument(
@@ -80,15 +111,37 @@ class CommandLineTool:
         return method()
 
     def _check_args(self):
-        if self.operation:
-            if self.service is None or self.username is None:
-                self.parser.error(f"{self.operation} requires service and username")
+        needs_username = self.operation != 'get' or self.get_mode != 'creds'
+        required = (['service'] + ['username'] * needs_username) * bool(self.operation)
+        if any(getattr(self, param) is None for param in required):
+            self.parser.error(f"{self.operation} requires {' and '.join(required)}")
 
     def do_get(self):
-        password = get_password(self.service, self.username)
-        if password is None:
+        credential = getattr(self, f'_get_{self.get_mode}')()
+        if credential is None:
             raise SystemExit(1)
-        print(password)
+        getattr(self, f'_emit_{self.output_format}')(credential)
+
+    def _emit_json(self, credential: credentials.Credential):
+        print(
+            json.dumps(dict(username=credential.username, password=credential.password))
+        )
+
+    def _emit_plain(self, credential: credentials.Credential):
+        if credential.username:
+            print(credential.username)
+        print(credential.password)
+
+    def _get_cred(self) -> credentials.Credential | None:
+        return get_credential(self.service, self.username)  # type: ignore
+
+    def _get_password(self) -> credentials.Credential | None:
+        password = get_password(self.service, self.username)  # type: ignore
+        return (
+            credentials.SimpleCredential(None, password)
+            if password is not None
+            else None
+        )
 
     def do_set(self):
         password = self.input_password(
