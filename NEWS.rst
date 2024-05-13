@@ -1,3 +1,12 @@
+v25.2.1
+=======
+
+Bugfixes
+--------
+
+- Fix typo in CLI creds mode. (#681)
+
+
 v25.2.0
 =======
 
