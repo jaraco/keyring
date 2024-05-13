@@ -132,7 +132,7 @@ class CommandLineTool:
             print(credential.username)
         print(credential.password)
 
-    def _get_cred(self) -> credentials.Credential | None:
+    def _get_creds(self) -> credentials.Credential | None:
         return get_credential(self.service, self.username)  # type: ignore
 
     def _get_password(self) -> credentials.Credential | None:
