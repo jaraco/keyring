@@ -104,6 +104,8 @@ class WinVaultKeyring(KeyringBackend):
         return res.value
 
     def _get_password(self, target):
+        if missing_deps:
+            raise RuntimeError("Requires Windows and pywin32")
         try:
             res = win32cred.CredRead(
                 Type=win32cred.CRED_TYPE_GENERIC, TargetName=target
