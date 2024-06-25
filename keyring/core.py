@@ -47,7 +47,7 @@ def disable() -> None:
     if os.path.exists(filename):
         msg = f"Refusing to overwrite {filename}"
         raise RuntimeError(msg)
-    with open(filename, 'w') as file:
+    with open(filename, 'w', encoding='utf-8') as file:
         file.write('[backend]\ndefault-keyring=keyring.backends.null.Keyring')
 
 
