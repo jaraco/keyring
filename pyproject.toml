@@ -46,6 +46,7 @@ test = [
 	"pytest-ruff >= 0.2.1",
 
 	# local
+	"pyfakefs",
 ]
 doc = [
 	# upstream

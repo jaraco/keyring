@@ -37,6 +37,13 @@ def get_keyring() -> backend.KeyringBackend:
 def disable() -> None:
     """
     Configure the null keyring as the default.
+
+    >>> fs = getfixture('fs')
+    >>> disable()
+    >>> disable()
+    Traceback (most recent call last):
+    ...
+    RuntimeError: Refusing to overwrite...
     """
     root = platform.config_root()
     try:
