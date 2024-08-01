@@ -113,7 +113,6 @@ class WinVaultKeyring(KeyringBackend):
         return DecodingCredential(res)
 
     def set_password(self, service, username, password):
-        self._validate_username(username)
         existing_pw = self._get_password(service)
         if existing_pw:
             # resave the existing password using a compound target

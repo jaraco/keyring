@@ -42,7 +42,6 @@ class Keyring(KeyringBackend):
 
     @warn_keychain
     def set_password(self, service, username, password):
-        self._validate_username(username)
         if username is None:
             username = ''
 

@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import abc
 import copy
+import functools
 import logging
 import operator
 import os
@@ -30,11 +31,14 @@ class KeyringBackendMeta(abc.ABCMeta):
     Specialized subclass behavior.
 
     Keeps a registry of all (non-abstract) types.
+
+    Wraps set_password to validate the username.
     """
 
     def __init__(cls, name, bases, dict):
         super().__init__(name, bases, dict)
         cls._register()
+        cls._validate_username_in_set_password()
 
     def _register(cls):
         if not hasattr(cls, '_classes'):
@@ -42,6 +46,19 @@ class KeyringBackendMeta(abc.ABCMeta):
         classes = cls._classes
         if not cls.__abstractmethods__:
             classes.add(cls)
+
+    def _validate_username_in_set_password(cls):
+        """
+        Wrap ``set_password`` such to validate the passed username.
+        """
+        orig = cls.set_password
+
+        @functools.wraps(orig)
+        def wrapper(self, system, username, *args, **kwargs):
+            self._validate_username(username)
+            return orig(self, system, username, *args, **kwargs)
+
+        cls.set_password = wrapper
 
 
 class KeyringBackend(metaclass=KeyringBackendMeta):
@@ -120,8 +137,6 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     @abc.abstractmethod
     def set_password(self, service: str, username: str, password: str) -> None:
         """Set password for the username of the service.
-
-        Implementations should call ``._validate_username``.
 
         If the backend cannot store passwords, raise
         PasswordSetError.

@@ -17,7 +17,4 @@ class Keyring(KeyringBackend):
     def get_password(self, service, username, password=None):
         pass
 
-    delete_password = get_password  # type: ignore
-
-    def set_password(self, service, username, password):
-        self._validate_username(username)
+    set_password = delete_password = get_password  # type: ignore
