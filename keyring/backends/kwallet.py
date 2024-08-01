@@ -139,6 +139,7 @@ class DBusKeyring(KeyringBackend):
         if not self.connected(service):
             # the user pressed "cancel" when prompted to unlock their keyring.
             raise PasswordSetError("Cancelled by user")
+        self._validate_username(username)
         self.iface.writePassword(self.handle, service, username, password, self.appid)
 
     def delete_password(self, service, username):

@@ -10,6 +10,7 @@ import logging
 import operator
 import os
 import typing
+import warnings
 
 from jaraco.functools import once
 
@@ -100,9 +101,23 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         """Get password of the username for the service"""
         return None
 
+    def _validate_username(self, username: str) -> None:
+        """
+        Ensure the username is not empty.
+        """
+        if not username:
+            warnings.warn(
+                "Empty usernames are deprecated. See #668",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            # raise ValueError("Username cannot be empty")
+
     @abc.abstractmethod
     def set_password(self, service: str, username: str, password: str) -> None:
         """Set password for the username of the service.
+
+        Implementations should call ``._validate_username``.
 
         If the backend cannot store passwords, raise
         PasswordSetError.

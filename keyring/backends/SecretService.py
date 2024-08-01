@@ -84,6 +84,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
 
     def set_password(self, service, username, password):
         """Set password for the username of the service"""
+        self._validate_username(username)
         collection = self.get_preferred_collection()
         attributes = self._query(service, username, application=self.appid)
         label = f"Password for '{username}' on '{service}'"

@@ -165,7 +165,8 @@ class BackendBasicTests:
 
     @pytest.mark.xfail("platform.system() == 'Windows'", reason="#668")
     def test_empty_username(self):
-        self.set_password('service1', '', 'password1')
+        with pytest.deprecated_call():
+            self.set_password('service1', '', 'password1')
         assert self.keyring.get_password('service1', '') == 'password1'
 
     def test_set_properties(self, monkeypatch):
