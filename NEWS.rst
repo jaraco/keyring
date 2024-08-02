@@ -1,3 +1,12 @@
+v25.3.0
+=======
+
+Features
+--------
+
+- Deprecated support for empty usernames. Now all backends will reject an empty string as input for the 'username' field when setting a password. Later this deprecation will become a more visible user warning and even later an error. If this warning is triggered in your environment, please consider using a static value (even 'username') or comment in the issue and describe the use-case that demands support for empty usernames. (#668)
+
+
 v25.2.1
 =======
 
