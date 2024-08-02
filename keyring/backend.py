@@ -6,10 +6,12 @@ from __future__ import annotations
 
 import abc
 import copy
+import functools
 import logging
 import operator
 import os
 import typing
+import warnings
 
 from jaraco.context import ExceptionTrap
 from jaraco.functools import once
@@ -27,17 +29,37 @@ _limit: typing.Callable[[KeyringBackend], bool] | None = None
 
 class KeyringBackendMeta(abc.ABCMeta):
     """
-    A metaclass that's both an ABCMeta and a type that keeps a registry of
-    all (non-abstract) types.
+    Specialized subclass behavior.
+
+    Keeps a registry of all (non-abstract) types.
+
+    Wraps set_password to validate the username.
     """
 
     def __init__(cls, name, bases, dict):
         super().__init__(name, bases, dict)
+        cls._register()
+        cls._validate_username_in_set_password()
+
+    def _register(cls):
         if not hasattr(cls, '_classes'):
             cls._classes = set()
         classes = cls._classes
         if not cls.__abstractmethods__:
             classes.add(cls)
+
+    def _validate_username_in_set_password(cls):
+        """
+        Wrap ``set_password`` such to validate the passed username.
+        """
+        orig = cls.set_password
+
+        @functools.wraps(orig)
+        def wrapper(self, system, username, *args, **kwargs):
+            self._validate_username(username)
+            return orig(self, system, username, *args, **kwargs)
+
+        cls.set_password = wrapper
 
 
 class KeyringBackend(metaclass=KeyringBackendMeta):
@@ -102,6 +124,18 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     def get_password(self, service: str, username: str) -> str | None:
         """Get password of the username for the service"""
         return None
+
+    def _validate_username(self, username: str) -> None:
+        """
+        Ensure the username is not empty.
+        """
+        if not username:
+            warnings.warn(
+                "Empty usernames are deprecated. See #668",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            # raise ValueError("Username cannot be empty")
 
     @abc.abstractmethod
     def set_password(self, service: str, username: str, password: str) -> None:

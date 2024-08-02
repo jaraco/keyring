@@ -163,6 +163,12 @@ class BackendBasicTests:
             ('user2', 'password2'),
         )
 
+    @pytest.mark.xfail("platform.system() == 'Windows'", reason="#668")
+    def test_empty_username(self):
+        with pytest.deprecated_call():
+            self.set_password('service1', '', 'password1')
+        assert self.keyring.get_password('service1', '') == 'password1'
+
     def test_set_properties(self, monkeypatch):
         env = dict(KEYRING_PROPERTY_FOO_BAR='fizz buzz', OTHER_SETTING='ignore me')
         monkeypatch.setattr(os, 'environ', env)
