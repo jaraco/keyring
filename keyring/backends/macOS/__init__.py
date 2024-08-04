@@ -54,9 +54,6 @@ class Keyring(KeyringBackend):
 
     @warn_keychain
     def get_password(self, service, username):
-        if username is None:
-            username = ''
-
         try:
             return api.find_generic_password(self.keychain, service, username)
         except api.NotFound:
