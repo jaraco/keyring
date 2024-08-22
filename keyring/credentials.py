@@ -8,8 +8,7 @@ class Credential(metaclass=abc.ABCMeta):
     """Abstract class to manage credentials"""
 
     @abc.abstractproperty
-    def username(self) -> str | None:
-        return None
+    def username(self) -> str: ...
 
     @abc.abstractproperty
     def password(self) -> str: ...
@@ -18,17 +17,26 @@ class Credential(metaclass=abc.ABCMeta):
 class SimpleCredential(Credential):
     """Simple credentials implementation"""
 
-    def __init__(self, username: str | None, password: str):
+    def __init__(self, username: str, password: str):
         self._username = username
         self._password = password
 
     @property
-    def username(self) -> str | None:
+    def username(self) -> str:
         return self._username
 
     @property
     def password(self) -> str:
         return self._password
+
+
+class AnonymousCredential(SimpleCredential):
+    def __init__(self, password: str):
+        self._password = password
+
+    @property
+    def username(self) -> str:
+        raise ValueError("Anonymous credential has no username")
 
 
 class EnvironCredential(Credential):

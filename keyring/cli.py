@@ -138,9 +138,7 @@ class CommandLineTool:
     def _get_password(self) -> credentials.Credential | None:
         password = get_password(self.service, self.username)  # type: ignore
         return (
-            credentials.SimpleCredential(None, password)
-            if password is not None
-            else None
+            credentials.AnonymousCredential(password) if password is not None else None
         )
 
     def do_set(self):
