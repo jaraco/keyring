@@ -12,14 +12,13 @@ class Credential(metaclass=abc.ABCMeta):
         return None
 
     @abc.abstractproperty
-    def password(self) -> str | None:
-        return None
+    def password(self) -> str: ...
 
 
 class SimpleCredential(Credential):
     """Simple credentials implementation"""
 
-    def __init__(self, username: str | None, password: str | None):
+    def __init__(self, username: str | None, password: str):
         self._username = username
         self._password = password
 
@@ -28,7 +27,7 @@ class SimpleCredential(Credential):
         return self._username
 
     @property
-    def password(self) -> str | None:
+    def password(self) -> str:
         return self._password
 
 
