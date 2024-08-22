@@ -114,7 +114,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         """
         parent, sep, mod_name = cls.__module__.rpartition('.')
         mod_name = mod_name.replace('_', ' ')
-        return ' '.join([mod_name, cls.__name__])  # type: ignore
+        return ' '.join([mod_name, cls.__name__])  # type: ignore[attr-defined]
 
     def __str__(self) -> str:
         keyring_class = type(self)

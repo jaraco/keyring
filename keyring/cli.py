@@ -133,10 +133,10 @@ class CommandLineTool:
         print(credential.password)
 
     def _get_creds(self) -> credentials.Credential | None:
-        return get_credential(self.service, self.username)  # type: ignore
+        return get_credential(self.service, self.username)  # type: ignore[attr-defined]
 
     def _get_password(self) -> credentials.Credential | None:
-        password = get_password(self.service, self.username)  # type: ignore
+        password = get_password(self.service, self.username)  # type: ignore[attr-defined]
         return (
             credentials.SimpleCredential(None, password)
             if password is not None
