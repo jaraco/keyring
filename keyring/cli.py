@@ -13,15 +13,24 @@ from . import (
     core,
     credentials,
     delete_password,
+    get_credential,
     get_password,
     set_keyring,
     set_password,
-    get_credential,
 )
 from .util import platform_
 
 
 class CommandLineTool:
+    # Attributes set dynamically by the ArgumentParser
+    keyring_path: str | None
+    keyring_backend: str | None
+    get_mode: str
+    output_format: str
+    operation: str
+    service: str
+    username: str
+
     def __init__(self):
         self.parser = argparse.ArgumentParser()
         self.parser.add_argument(
@@ -133,10 +142,10 @@ class CommandLineTool:
         print(credential.password)
 
     def _get_creds(self) -> credentials.Credential | None:
-        return get_credential(self.service, self.username)  # type: ignore[attr-defined]
+        return get_credential(self.service, self.username)
 
     def _get_password(self) -> credentials.Credential | None:
-        password = get_password(self.service, self.username)  # type: ignore[attr-defined]
+        password = get_password(self.service, self.username)
         return (
             credentials.AnonymousCredential(password) if password is not None else None
         )
