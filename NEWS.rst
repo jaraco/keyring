@@ -1,3 +1,12 @@
+v25.4.0
+=======
+
+Features
+--------
+
+- Refined type spec and interfaces on credential objects. Introduced AnonymousCredential to model a secret without a username. (#689)
+
+
 v25.3.0
 =======
 
