@@ -114,6 +114,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         """
         parent, sep, mod_name = cls.__module__.rpartition('.')
         mod_name = mod_name.replace('_', ' ')
+        # mypy doesn't see `cls` is `type[Self]`, might be fixable in jaraco.classes
         return ' '.join([mod_name, cls.__name__])  # type: ignore[attr-defined]
 
     def __str__(self) -> str:

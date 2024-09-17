@@ -76,6 +76,9 @@ type = [
 	"pytest-mypy",
 
 	# local
+	"pygobject-stubs",
+	"shtab", # Optional install for completion
+	"types-pywin32",
 ]
 
 completion = ["shtab >= 1.1.0"]
@@ -96,7 +99,3 @@ keyring = "keyring.cli:main"
 
 
 [tool.setuptools_scm]
-
-
-[tool.pytest-enabler.mypy]
-# Disabled due to jaraco/skeleton#143
