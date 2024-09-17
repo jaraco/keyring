@@ -137,7 +137,7 @@ class CommandLineTool:
         )
 
     def _emit_plain(self, credential: credentials.Credential):
-        if credential.username:
+        if credential.username and not isinstance(credential, credentials.AnonymousCredential):
             print(credential.username)
         print(credential.password)
 
