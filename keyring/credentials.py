@@ -13,6 +13,9 @@ class Credential(metaclass=abc.ABCMeta):
     @abc.abstractproperty
     def password(self) -> str: ...
 
+    def _vars(self) -> dict[str, str]:
+        return dict(username=self.username, password=self.password)
+
 
 class SimpleCredential(Credential):
     """Simple credentials implementation"""
@@ -37,6 +40,9 @@ class AnonymousCredential(SimpleCredential):
     @property
     def username(self) -> str:
         raise ValueError("Anonymous credential has no username")
+
+    def _vars(self) -> dict[str, str]:
+        return dict(password=self.password)
 
 
 class EnvironCredential(Credential):
