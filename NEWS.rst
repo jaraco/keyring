@@ -1,3 +1,12 @@
+v25.4.1
+=======
+
+Bugfixes
+--------
+
+- Fixed ValueError for AnonymousCredentials in CLI. (#694)
+
+
 v25.4.0
 =======
 
