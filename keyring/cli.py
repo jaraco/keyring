@@ -132,20 +132,11 @@ class CommandLineTool:
         getattr(self, f'_emit_{self.output_format}')(credential)
 
     def _emit_json(self, credential: credentials.Credential):
-        if isinstance(credential, credentials.AnonymousCredential):
-            print(json.dumps(dict(password=credential.password)))
-            return
-        print(
-            json.dumps(dict(username=credential.username, password=credential.password))
-        )
+        print(json.dumps(credential._vars()))
 
     def _emit_plain(self, credential: credentials.Credential):
-        if (
-            not isinstance(credential, credentials.AnonymousCredential)
-            and credential.username
-        ):
-            print(credential.username)
-        print(credential.password)
+        for val in credential._vars().values():
+            print(val)
 
     def _get_creds(self) -> credentials.Credential | None:
         return get_credential(self.service, self.username)
