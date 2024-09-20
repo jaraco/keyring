@@ -83,3 +83,15 @@ def test_get_anonymous(monkeypatch, mocked_get_credential, format, capsys):
     tool.output_format = format
     tool.do_get()
     assert 's3cret' in capsys.readouterr().out
+
+
+@pytest.mark.parametrize('format', ['json', 'plain'])
+def test_get(monkeypatch, mocked_get_credential, format, capsys):
+    mocked_get_credential.return_value = credentials.SimpleCredential('alice', 's3cret')
+    tool = cli.CommandLineTool()
+    tool.service = 'svc'
+    tool.username = 'alice'
+    tool.get_mode = 'creds'
+    tool.output_format = format
+    tool.do_get()
+    assert 's3cret' in capsys.readouterr().out
