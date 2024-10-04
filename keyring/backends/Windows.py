@@ -164,7 +164,8 @@ class WinVaultKeyring(KeyringBackend):
             res = self._get_password(self._compound_name(username, service))
         # get any first password under the service name
         if not res:
-            res = self._get_password(service)
-            if not res:
-                return None
+            cred = self._get_password(service)
+            res = cred if username is None or username == cred["UserName"] else None
+        if not res:
+            return None
         return SimpleCredential(res['UserName'], res.value)
