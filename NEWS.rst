@@ -1,3 +1,18 @@
+v25.5.0
+=======
+
+Features
+--------
+
+- When parsing ``keyring_path`` from the config, the home directory is now expanded from ``~``. (#696)
+
+
+Bugfixes
+--------
+
+- In get_credential, now returns None when the indicated username is not found. (#698)
+
+
 v25.4.1
 =======
 
