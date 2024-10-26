@@ -94,16 +94,20 @@ class WinVaultKeyring(KeyringBackend):
         return f'{username}@{service}'
 
     def get_password(self, service, username):
-        # first attempt to get the password under the service name
-        res = self._get_password(service)
-        if not res or res['UserName'] != username:
-            # It wasn't found so attempt to get it with the compound name
-            res = self._get_password(self._compound_name(username, service))
-        if not res:
-            return None
-        return res.value
+        res = self._resolve_credential(service, username)
+        return res and res.value
 
-    def _get_password(self, target):
+    def _resolve_credential(
+        self, service: str, username: str | None
+    ) -> DecodingCredential | None:
+        # first attempt to get the password under the service name
+        res = self._read_credential(service)
+        if not res or username and res['UserName'] != username:
+            # It wasn't found so attempt to get it with the compound name
+            res = self._read_credential(self._compound_name(username, service))
+        return res
+
+    def _read_credential(self, target):
         try:
             res = win32cred.CredRead(
                 Type=win32cred.CRED_TYPE_GENERIC, TargetName=target
@@ -115,7 +119,7 @@ class WinVaultKeyring(KeyringBackend):
         return DecodingCredential(res)
 
     def set_password(self, service, username, password):
-        existing_pw = self._get_password(service)
+        existing_pw = self._read_credential(service)
         if existing_pw:
             # resave the existing password using a compound target
             existing_username = existing_pw['UserName']
@@ -142,7 +146,7 @@ class WinVaultKeyring(KeyringBackend):
         compound = self._compound_name(username, service)
         deleted = False
         for target in service, compound:
-            existing_pw = self._get_password(target)
+            existing_pw = self._read_credential(target)
             if existing_pw and existing_pw['UserName'] == username:
                 deleted = True
                 self._delete_password(target)
@@ -158,14 +162,5 @@ class WinVaultKeyring(KeyringBackend):
             raise
 
     def get_credential(self, service, username):
-        res = None
-        # get the credentials associated with the provided username
-        if username:
-            res = self._get_password(self._compound_name(username, service))
-        # get a credential matching service and username if provided
-        if not res:
-            cred = self._get_password(service)
-            res = cred if username is None or username == cred["UserName"] else None
-            if not res:
-                return None
-        return SimpleCredential(res['UserName'], res.value)
+        res = self._resolve_credential(service, username)
+        return res and SimpleCredential(res['UserName'], res.value)
