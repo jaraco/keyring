@@ -195,6 +195,6 @@ class BackendBasicTests:
 
         assert keyring.get_credential(service, "user1").password == password_1
         assert keyring.get_credential(service, "user2").password == password_2
-        
+
         # Missing/wrong username should not return a cred
         assert keyring.get_credential(service, "nobody!") is None
