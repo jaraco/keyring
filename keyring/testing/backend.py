@@ -181,3 +181,20 @@ class BackendBasicTests:
         assert alt.foo == 'bar'
         with pytest.raises(AttributeError):
             self.keyring.foo  # noqa: B018
+
+    def test_wrong_username_returns_none(self):
+        keyring = self.keyring
+        service = 'test_wrong_username_returns_none'
+        cred = keyring.get_credential(service, None)
+        assert cred is None
+
+        password_1 = 'password1'
+        password_2 = 'password2'
+        self.set_password(service, 'user1', password_1)
+        self.set_password(service, 'user2', password_2)
+
+        assert keyring.get_credential(service, "user1").password == password_1
+        assert keyring.get_credential(service, "user2").password == password_2
+
+        # Missing/wrong username should not return a cred
+        assert keyring.get_credential(service, "nobody!") is None

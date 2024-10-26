@@ -1,0 +1,1 @@
+In get_credential, now returns None when the indicated username is not found.
