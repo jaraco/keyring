@@ -1,0 +1,1 @@
+When parsing ``keyring_path`` from the config, the home directory is now expanded from ``~``.
