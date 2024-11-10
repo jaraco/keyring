@@ -178,7 +178,7 @@ def load_config() -> typing.Optional[backend.KeyringBackend]:
         if config.has_section("backend"):
             keyring_name = config.get("backend", "default-keyring").strip()
         else:
-            raise configparser.NoOptionError('backend', 'default-keyring')
+            return None
 
     except (configparser.NoOptionError, ImportError):
         logger = logging.getLogger('keyring')
