@@ -25,6 +25,12 @@ def test_load_config_missing(caplog, config_path):
     assert not caplog.records
 
 
+def test_load_empty_config(caplog, config_path):
+    config_path.write_text("", encoding='utf-8')
+    assert keyring.core.load_config() is None
+    assert not caplog.records
+
+
 fail_config = textwrap.dedent(
     """
     [backend]
