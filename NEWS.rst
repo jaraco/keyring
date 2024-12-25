@@ -1,3 +1,12 @@
+v25.6.0
+=======
+
+Features
+--------
+
+- Avoid logging a warning when config does not specify a backend. (#682)
+
+
 v25.5.0
 =======
 

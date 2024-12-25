@@ -1,1 +1,0 @@
-Avoid logging a warning when config does not specify a backend.
