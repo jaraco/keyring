@@ -1,3 +1,11 @@
+v25.7.0
+=======
+
+Bugfixes
+--------
+
+- Removed unused dependency ``jeepney``.
+
 v25.6.0
 =======
 
