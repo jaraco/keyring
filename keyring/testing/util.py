@@ -63,6 +63,6 @@ def Environ(**changes):
 ALPHABET = string.ascii_letters + string.digits
 
 
-def random_string(k, source=ALPHABET):
+def random_string(k: int, source: str=ALPHABET) -> str:
     """Generate a random string with length <i>k</i>"""
     return ''.join(random.choice(source) for _unused in range(k))
