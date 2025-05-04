@@ -92,7 +92,7 @@ class WinVaultKeyring(KeyringBackend):
         return 5
 
     @staticmethod
-    def _compound_name(username, service):
+    def _compound_name(username: str | None, service: str) -> str:
         return f'{username}@{service}'
 
     def get_password(self, service, username):

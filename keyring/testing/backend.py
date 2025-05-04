@@ -25,7 +25,7 @@ UNICODE_CHARS = (
 assert min(ord(char) for char in UNICODE_CHARS) > 127
 
 
-def is_ascii_printable(s):
+def is_ascii_printable(s: str) -> bool:
     return all(32 <= ord(c) < 127 for c in s)
 
 
@@ -44,13 +44,13 @@ class BackendBasicTests:
         for item in self.credentials_created:
             self.keyring.delete_password(*item)
 
-    def set_password(self, service, username, password):
+    def set_password(self, service: str, username: str, password: str) -> None:
         # set the password and save the result so the test runner can clean
         #  up after if necessary.
         self.keyring.set_password(service, username, password)
         self.credentials_created.add((service, username))
 
-    def check_set_get(self, service, username, password):
+    def check_set_get(self, service: str, username: str, password: str) -> None:
         keyring = self.keyring
 
         # for the non-existent password
