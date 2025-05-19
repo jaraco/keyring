@@ -3,7 +3,7 @@ Keyring Chainer - iterates over other viable backends to
 discover passwords in each.
 """
 
-from .. import backend
+from .. import backend, credentials
 from ..compat import properties
 from . import fail
 
@@ -28,12 +28,12 @@ class ChainerBackend(backend.KeyringBackend):
         return 10 if len(cls.backends) > 1 else (fail.Keyring.priority - 1)
 
     @properties.classproperty
-    def backends(cls):
+    def backends(cls) -> list[backend.KeyringBackend]:
         """
         Discover all keyrings for chaining.
         """
 
-        def allow(keyring):
+        def allow(keyring: backend.KeyringBackend) -> bool:
             limit = backend._limit or bool
             return (
                 not isinstance(keyring, ChainerBackend)
@@ -44,28 +44,34 @@ class ChainerBackend(backend.KeyringBackend):
         allowed = filter(allow, backend.get_all_keyring())
         return sorted(allowed, key=backend.by_priority, reverse=True)
 
-    def get_password(self, service, username):
+    def get_password(self, service: str, username: str) -> str | None:
         for keyring in self.backends:
             password = keyring.get_password(service, username)
             if password is not None:
                 return password
+        return None
 
-    def set_password(self, service, username, password):
+    def set_password(self, service: str, username: str, password: str) -> None:
         for keyring in self.backends:
             try:
                 return keyring.set_password(service, username, password)
             except NotImplementedError:
                 pass
 
-    def delete_password(self, service, username):
+    def delete_password(self, service: str, username: str) -> None:
         for keyring in self.backends:
             try:
                 return keyring.delete_password(service, username)
             except NotImplementedError:
                 pass
 
-    def get_credential(self, service, username):
+    def get_credential(
+        self,
+        service: str,
+        username: str | None,
+    ) -> credentials.Credential | None:
         for keyring in self.backends:
             credential = keyring.get_credential(service, username)
             if credential is not None:
                 return credential
+        return None
