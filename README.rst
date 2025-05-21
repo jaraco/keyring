@@ -412,6 +412,7 @@ The keyring lib raises the following exceptions:
 * ``keyring.errors.InitError``: Raised when the keyring cannot be initialized.
 * ``keyring.errors.PasswordSetError``: Raised when the password cannot be set in the keyring.
 * ``keyring.errors.PasswordDeleteError``: Raised when the password cannot be deleted in the keyring.
+* ``keyring.errors.KeyringLocked``: Raised when a locked keyring cannot be successfully unlocked.
 
 Get Involved
 ============
