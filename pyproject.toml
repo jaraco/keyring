@@ -58,12 +58,12 @@ cover = [
 ]
 
 enabler = [
-	"pytest-enabler >= 2.2",
+	"pytest-enabler >= 3.4",
 ]
 
 type = [
 	# upstream
-	"pytest-mypy",
+	"pytest-mypy >= 1.0.1",
 
 	# local
 ]
