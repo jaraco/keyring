@@ -63,6 +63,15 @@ CFDictionaryCreate.argtypes = (
     c_void_p,
 )
 
+CFStringGetCStringPtr = _found.CFStringGetCStringPtr
+CFStringGetCStringPtr.restype = ctypes.c_char_p
+CFStringGetCStringPtr.argtypes = [c_void_p, c_uint32]
+kCFStringEncodingUTF8 = 0x08000100
+
+CFStringGetCString = _found.CFStringGetCString
+CFStringGetCString.restype = ctypes.c_bool
+CFStringGetCString.argtypes = [c_void_p, ctypes.c_char_p, c_int32, c_uint32]
+
 CFStringCreateWithCString = _found.CFStringCreateWithCString
 CFStringCreateWithCString.restype = c_void_p
 CFStringCreateWithCString.argtypes = [c_void_p, c_void_p, c_uint32]
@@ -142,18 +151,9 @@ def cfdata_to_str(data):
 def cfstring_to_str(cfstring):
     if not cfstring:
         return None
-    # Try fast path
-    CFStringGetCStringPtr = _found.CFStringGetCStringPtr
-    CFStringGetCStringPtr.restype = ctypes.c_char_p
-    CFStringGetCStringPtr.argtypes = [c_void_p, c_uint32]
-    kCFStringEncodingUTF8 = 0x08000100
     cstr = CFStringGetCStringPtr(cfstring, kCFStringEncodingUTF8)
     if cstr:
         return cstr.decode("utf-8")
-    # Fallback: use buffer
-    CFStringGetCString = _found.CFStringGetCString
-    CFStringGetCString.restype = ctypes.c_bool
-    CFStringGetCString.argtypes = [c_void_p, ctypes.c_char_p, c_int32, c_uint32]
     buf = ctypes.create_string_buffer(1024)
     if CFStringGetCString(cfstring, buf, 1024, kCFStringEncodingUTF8):
         return buf.value.decode("utf-8")
