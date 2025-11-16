@@ -31,7 +31,6 @@ dependencies = [
 	'jeepney>=0.4.2; sys_platform=="linux"',
 	'importlib_metadata >= 4.11.4; python_version < "3.12"',
 	"jaraco.classes",
-	'importlib_resources; python_version < "3.9"',
 	"jaraco.functools",
 	"jaraco.context",
 ]

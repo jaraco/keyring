@@ -1,12 +1,11 @@
 import argparse
 import sys
+from importlib.resources import files
 
 try:
     import shtab
 except ImportError:
     pass
-
-from .compat.py38 import files
 
 
 class _MissingCompletionAction(argparse.Action):
