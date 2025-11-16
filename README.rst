@@ -379,16 +379,17 @@ The following is a complete transcript for installing keyring on a Ubuntu 18:04 
   >>> keyring.get_password("system", "username")
   'password'
 
-Using Keyring with tox on Linux systems for pip credentials
-===========================================================
+Using Keyring with tox
+======================
 
-When using Keyring to store credentials for pip, one may encounter the following error when
-running tests under ``tox``:
+Some backends rely on environment variables to operate correctly, and ``tox`` filters most environment variables by default.
+
+For example, when using Keyring to store credentials for pip, one may encounter the following error when
+running tests under ``tox`` when using a backend reliant on D-Bus:
 
   RuntimeError: No recommended backend was available. Install the keyrings.alt package if you want to use the non-recommended backends. See README.rst for details.
 
-This error is caused by Keyring not knowing the address for D-Bus, as ``tox`` filters
-by default the required environment variables.
+This error is caused by Keyring KWallet backend not able to resolve the backing service.
 
 To work around the issue, add ``DBUS_SESSION_BUS_ADDRESS`` to ``pass_env`` in the
 ``tox`` configuration. Consider adding other necessary variables, such as ``DISPLAY`` and ``WAYLAND_DISPLAY`` (if using ``pinentry``).
