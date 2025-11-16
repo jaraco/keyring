@@ -1,3 +1,18 @@
+v25.7.0
+=======
+
+Features
+--------
+
+- Improved support for KWallet 6. (#728)
+
+
+Bugfixes
+--------
+
+- Removed cruft from Python 3.8. (#722)
+
+
 v25.6.0
 =======
 
