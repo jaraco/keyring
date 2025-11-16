@@ -22,9 +22,35 @@ class error:
     sec_interaction_not_allowed = -25308
 
 
-_sec = ctypes.CDLL(find_library('Security'))
-_core = ctypes.CDLL(find_library('CoreServices'))
-_found = ctypes.CDLL(find_library('Foundation'))
+_sec = ctypes.CDLL(find_library("Security"))
+_core = ctypes.CDLL(find_library("CoreServices"))
+_found = ctypes.CDLL(find_library("Foundation"))
+
+CFGetTypeID = _found.CFGetTypeID
+CFGetTypeID.restype = c_uint32
+CFGetTypeID.argtypes = [c_void_p]
+
+CFArrayGetTypeID = _found.CFArrayGetTypeID
+CFArrayGetTypeID.restype = c_uint32
+
+CFAttributedStringGetTypeID = _found.CFAttributedStringGetTypeID
+CFAttributedStringGetTypeID.restype = c_uint32
+
+CFCopyTypeIDDescription = _found.CFCopyTypeIDDescription
+CFCopyTypeIDDescription.restype = c_void_p
+CFCopyTypeIDDescription.argtypes = [c_uint32]
+
+CFArrayGetCount = _found.CFArrayGetCount
+CFArrayGetCount.restype = c_int32
+CFArrayGetCount.argtypes = [c_void_p]
+
+CFArrayGetValueAtIndex = _found.CFArrayGetValueAtIndex
+CFArrayGetValueAtIndex.restype = c_void_p
+CFArrayGetValueAtIndex.argtypes = [c_void_p, c_int32]
+
+CFDictionaryGetValue = _found.CFDictionaryGetValue
+CFDictionaryGetValue.restype = c_void_p
+CFDictionaryGetValue.argtypes = [c_void_p, c_void_p]
 
 CFDictionaryCreate = _found.CFDictionaryCreate
 CFDictionaryCreate.restype = c_void_p
@@ -36,6 +62,15 @@ CFDictionaryCreate.argtypes = (
     c_void_p,
     c_void_p,
 )
+
+CFStringGetCStringPtr = _found.CFStringGetCStringPtr
+CFStringGetCStringPtr.restype = ctypes.c_char_p
+CFStringGetCStringPtr.argtypes = [c_void_p, c_uint32]
+kCFStringEncodingUTF8 = 0x08000100
+
+CFStringGetCString = _found.CFStringGetCString
+CFStringGetCString.restype = ctypes.c_bool
+CFStringGetCString.argtypes = [c_void_p, ctypes.c_char_p, c_int32, c_uint32]
 
 CFStringCreateWithCString = _found.CFStringCreateWithCString
 CFStringCreateWithCString.restype = c_void_p
@@ -88,7 +123,7 @@ def _(val: bool | int):
 @create_cf.register
 def _(s: str):
     kCFStringEncodingUTF8 = 0x08000100
-    return CFStringCreateWithCString(None, s.encode('utf8'), kCFStringEncodingUTF8)
+    return CFStringCreateWithCString(None, s.encode("utf8"), kCFStringEncodingUTF8)
 
 
 def create_query(**kwargs):
@@ -102,10 +137,27 @@ def create_query(**kwargs):
     )
 
 
-def cfstr_to_str(data):
-    return ctypes.string_at(CFDataGetBytePtr(data), CFDataGetLength(data)).decode(
-        'utf-8'
-    )
+# Convert CFDataRef to Python str
+def cfdata_to_str(data):
+    b = ctypes.string_at(CFDataGetBytePtr(data), CFDataGetLength(data))
+    try:
+        return b.decode("utf-8")
+    except UnicodeDecodeError:
+        # Return hex string if not valid UTF-8
+        return b.hex()
+
+
+# Convert CFStringRef to Python str
+def cfstring_to_str(cfstring):
+    if not cfstring:
+        return None
+    cstr = CFStringGetCStringPtr(cfstring, kCFStringEncodingUTF8)
+    if cstr:
+        return cstr.decode("utf-8")
+    buf = ctypes.create_string_buffer(1024)
+    if CFStringGetCString(cfstring, buf, 1024, kCFStringEncodingUTF8):
+        return buf.value.decode("utf-8")
+    return None
 
 
 class Error(Exception):
@@ -140,8 +192,8 @@ class SecAuthFailure(Error):
 
 def find_generic_password(kc_name, service, username, not_found_ok=False):
     q = create_query(
-        kSecClass=k_('kSecClassGenericPassword'),
-        kSecMatchLimit=k_('kSecMatchLimitOne'),
+        kSecClass=k_("kSecClassGenericPassword"),
+        kSecMatchLimit=k_("kSecMatchLimitOne"),
         kSecAttrService=service,
         kSecAttrAccount=username,
         kSecReturnData=True,
@@ -155,7 +207,7 @@ def find_generic_password(kc_name, service, username, not_found_ok=False):
 
     Error.raise_for_status(status)
 
-    return cfstr_to_str(data)
+    return cfdata_to_str(data)
 
 
 def set_generic_password(name, service, username, password):
@@ -163,7 +215,7 @@ def set_generic_password(name, service, username, password):
         delete_generic_password(name, service, username)
 
     q = create_query(
-        kSecClass=k_('kSecClassGenericPassword'),
+        kSecClass=k_("kSecClassGenericPassword"),
         kSecAttrService=service,
         kSecAttrAccount=username,
         kSecValueData=password,
@@ -175,10 +227,53 @@ def set_generic_password(name, service, username, password):
 
 def delete_generic_password(name, service, username):
     q = create_query(
-        kSecClass=k_('kSecClassGenericPassword'),
+        kSecClass=k_("kSecClassGenericPassword"),
         kSecAttrService=service,
         kSecAttrAccount=username,
     )
 
     status = SecItemDelete(q)
     Error.raise_for_status(status)
+
+
+def list_generic_passwords():
+    q = create_query(
+        kSecClass=k_("kSecClassGenericPassword"),
+        kSecMatchLimit=k_("kSecMatchLimitAll"),
+        kSecReturnAttributes=True,
+    )
+
+    result = ctypes.pointer(c_void_p())
+    status = SecItemCopyMatching(q, result)
+
+    if status == error.item_not_found:
+        return []
+
+    Error.raise_for_status(status)
+
+    kSecAttrService = k_("kSecAttrService")
+    kSecAttrAccount = k_("kSecAttrAccount")
+
+    cf_result = result.contents.value
+    if not cf_result:
+        return []
+
+    if CFGetTypeID(cf_result) == CFArrayGetTypeID():
+        count = CFArrayGetCount(cf_result)
+        dicts = [CFArrayGetValueAtIndex(cf_result, i) for i in range(count)]
+    else:
+        dicts = [cf_result]
+
+    items: list[dict[str, str | None]] = []
+    for d in dicts:
+        service_cf = CFDictionaryGetValue(d, kSecAttrService)
+        account_cf = CFDictionaryGetValue(d, kSecAttrAccount)
+
+        items.append(
+            {
+                "service": cfstring_to_str(service_cf),
+                "account": cfstring_to_str(account_cf),
+            }
+        )
+
+    return items

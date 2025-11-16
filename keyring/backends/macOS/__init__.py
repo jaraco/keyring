@@ -41,6 +41,13 @@ class Keyring(KeyringBackend):
         return 5
 
     @warn_keychain
+    def list_passwords(self):
+        try:
+            return api.list_generic_passwords()
+        except api.Error as e:
+            raise KeyringError(f"Can't list passwords in keychain: {e}") from e
+
+    @warn_keychain
     def set_password(self, service, username, password):
         if username is None:
             username = ''
