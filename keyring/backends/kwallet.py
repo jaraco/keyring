@@ -46,7 +46,7 @@ class DBusKeyring(KeyringBackend):
             raise RuntimeError(exc.get_dbus_message()) from exc
         if not (
             bus.name_has_owner(cls.bus_name)
-            or cls.bus_name in bus.list_activatable_names()
+            and cls.bus_name in bus.list_activatable_names()
         ):
             raise RuntimeError(
                 "The KWallet daemon is neither running nor activatable through D-Bus"
