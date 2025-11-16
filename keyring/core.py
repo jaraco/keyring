@@ -108,7 +108,7 @@ def _detect_backend(limit: LimitCallable | None = None):
         or load_config()
         or max(
             # all keyrings passing the limit filter
-            filter(limit, backend.get_all_keyring()),  # type: ignore[arg-type] #659
+            filter(limit, backend.get_all_keyring()),
             default=fail.Keyring(),
             key=backend.by_priority,
         )
