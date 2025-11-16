@@ -5,8 +5,7 @@ from unittest import mock
 
 import pytest
 
-from keyring import cli
-from keyring import credentials
+from keyring import cli, credentials
 
 flatten = itertools.chain.from_iterable
 

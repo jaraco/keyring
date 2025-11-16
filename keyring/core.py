@@ -2,6 +2,8 @@
 Core API functions and initialization routines.
 """
 
+from __future__ import annotations
+
 import configparser
 import logging
 import os
@@ -58,7 +60,7 @@ def disable() -> None:
         file.write('[backend]\ndefault-keyring=keyring.backends.null.Keyring')
 
 
-def get_password(service_name: str, username: str) -> typing.Optional[str]:
+def get_password(service_name: str, username: str) -> str | None:
     """Get password from the specified service."""
     return get_keyring().get_password(service_name, username)
 
@@ -74,8 +76,8 @@ def delete_password(service_name: str, username: str) -> None:
 
 
 def get_credential(
-    service_name: str, username: typing.Optional[str]
-) -> typing.Optional[credentials.Credential]:
+    service_name: str, username: str | None
+) -> credentials.Credential | None:
     """Get a Credential for the specified service."""
     return get_keyring().get_credential(service_name, username)
 
@@ -84,14 +86,14 @@ def recommended(backend) -> bool:
     return backend.priority >= 1
 
 
-def init_backend(limit: typing.Optional[LimitCallable] = None):
+def init_backend(limit: LimitCallable | None = None):
     """
     Load a detected backend.
     """
     set_keyring(_detect_backend(limit))
 
 
-def _detect_backend(limit: typing.Optional[LimitCallable] = None):
+def _detect_backend(limit: LimitCallable | None = None):
     """
     Return a keyring specified in the config file or infer the best available.
 
@@ -113,7 +115,7 @@ def _detect_backend(limit: typing.Optional[LimitCallable] = None):
     )
 
 
-def _load_keyring_class(keyring_name: str) -> typing.Type[backend.KeyringBackend]:
+def _load_keyring_class(keyring_name: str) -> type[backend.KeyringBackend]:
     """
     Load the keyring class indicated by name.
 
@@ -145,7 +147,7 @@ def load_keyring(keyring_name: str) -> backend.KeyringBackend:
     return class_()
 
 
-def load_env() -> typing.Optional[backend.KeyringBackend]:
+def load_env() -> backend.KeyringBackend | None:
     """Load a keyring configured in the environment variable."""
     try:
         return load_keyring(os.environ['PYTHON_KEYRING_BACKEND'])
@@ -163,7 +165,7 @@ def _ensure_path(path):
     return path
 
 
-def load_config() -> typing.Optional[backend.KeyringBackend]:
+def load_config() -> backend.KeyringBackend | None:
     """Load a keyring using the config file in the config root."""
 
     config = configparser.RawConfigParser()

@@ -1,6 +1,5 @@
 import platform
 
-
 not_macOS = platform.system() != 'Darwin'
 
 collect_ignore = ["hook-keyring.backend.py"] + [
