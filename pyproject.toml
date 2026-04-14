@@ -2,7 +2,6 @@
 requires = [
 	"setuptools>=77",
 	"setuptools_scm[toml]>=3.4.1",
-	# jaraco/skeleton#174
 	"coherent.licensed",
 ]
 build-backend = "setuptools.build_meta"
@@ -26,13 +25,7 @@ classifiers = [
 requires-python = ">=3.10"
 license = "MIT"
 dependencies = [
-	'pywin32-ctypes>=0.2.0; sys_platform=="win32"',
-	'SecretStorage>=3.2; sys_platform=="linux"',
-	'jeepney>=0.4.2; sys_platform=="linux"',
 	'importlib_metadata >= 4.11.4; python_version < "3.12"',
-	"jaraco.classes",
-	"jaraco.functools",
-	"jaraco.context",
 ]
 dynamic = ["version"]
 
@@ -40,6 +33,11 @@ dynamic = ["version"]
 Source = "https://github.com/jaraco/keyring"
 
 [project.optional-dependencies]
+backend = [
+	'pywin32-ctypes>=0.2.0; sys_platform=="win32"',
+	'SecretStorage>=3.2; sys_platform=="linux"',
+]
+
 test = [
 	# upstream
 	"pytest >= 6, != 8.1.*",
@@ -80,6 +78,9 @@ type = [
 	
     # Exclude PyPy from type checks (python/mypy#20454 jaraco/skeleton#187)
 	"pytest-mypy >= 1.0.1; platform_python_implementation != 'PyPy'",
+
+	## workaround for python/mypy#20454
+	"mypy < 1.19; python_implementation == 'PyPy'",
 
 	# local
 	"pygobject-stubs",

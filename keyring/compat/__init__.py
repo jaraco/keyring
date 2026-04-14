@@ -1,7 +1,4 @@
-__all__ = ['properties']
+from . import properties
+from .context import ExceptionTrap, suppress
 
-
-try:
-    from jaraco.classes import properties
-except ImportError:  # pragma: no cover
-    from . import properties  # type: ignore[no-redef]
+__all__ = ['ExceptionTrap', 'suppress', 'properties']

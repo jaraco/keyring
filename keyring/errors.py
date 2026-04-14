@@ -34,7 +34,7 @@ class ExceptionRaisedContext:
 
     def __init__(self, ExpectedException=Exception):
         warnings.warn(
-            "ExceptionRaisedContext is deprecated; use `jaraco.context.ExceptionTrap`",
+            "ExceptionRaisedContext is deprecated; use `keyring.compat.ExceptionTrap`",
             DeprecationWarning,
             stacklevel=2,
         )
