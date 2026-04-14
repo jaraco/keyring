@@ -1,0 +1,14 @@
+Suppress PasswordDeleteError in ChainerBackend.delete_password
+
+When deleting a password through ChainerBackend, if the
+highest-priority backend raises PasswordDeleteError (because it
+doesn't hold that particular password), the chainer now catches
+the error and continues to the next backend instead of
+propagating immediately.
+
+This matches the existing pattern for NotImplementedError and
+fixes the case where a password exists in a lower-priority
+backend but cannot be deleted because a higher-priority backend
+fails first.
+
+Fixes #697
