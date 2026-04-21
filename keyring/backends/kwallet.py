@@ -28,13 +28,13 @@ def _id_from_argv():
 
 class DBusKeyring(KeyringBackend):
     """
-    KDE KWallet 5 via D-Bus
+    KDE KWallet 6 via D-Bus
     """
 
     appid = _id_from_argv() or 'Python keyring library'
     wallet = None
-    bus_name = 'org.kde.kwalletd5'
-    object_path = '/modules/kwalletd5'
+    bus_name = 'org.kde.kwalletd6'
+    object_path = '/modules/kwalletd6'
 
     @properties.classproperty
     def priority(cls) -> float:
@@ -151,6 +151,19 @@ class DBusKeyring(KeyringBackend):
         self.iface.removeEntry(self.handle, service, username, self.appid)
 
 
+class DBusKeyringKWallet5(DBusKeyring):
+    """
+    KDE KWallet 5 via D-Bus
+    """
+
+    bus_name = 'org.kde.kwalletd5'
+    object_path = '/modules/kwalletd5'
+
+    @properties.classproperty
+    def priority(cls):
+        return super().priority - 1
+
+
 class DBusKeyringKWallet4(DBusKeyring):
     """
     KDE KWallet 4 via D-Bus
@@ -161,4 +174,4 @@ class DBusKeyringKWallet4(DBusKeyring):
 
     @properties.classproperty
     def priority(cls):
-        return super().priority - 1
+        return super().priority - 1.5
