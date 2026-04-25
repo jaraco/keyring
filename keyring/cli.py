@@ -91,9 +91,15 @@ class CommandLineTool:
             'service',
             nargs="?",
         )
+        try:
+            default_user = getpass.getuser()
+        except (OSError, KeyError, ModuleNotFoundError):
+            # on recent Python versions (>=3.13), `OSError` should suffice
+            default_user = None
         self.parser.add_argument(
             'username',
             nargs="?",
+            default=default_user,
         )
         completion.install(self.parser)
 

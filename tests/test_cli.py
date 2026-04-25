@@ -1,5 +1,6 @@
 import getpass
 import itertools
+import os
 import sys
 from unittest import mock
 
@@ -40,6 +41,19 @@ def mocked_set():
 def mocked_get_credential():
     with mock.patch('keyring.cli.get_credential') as get_credential:
         yield get_credential
+
+
+def test_set_no_user(monkeypatch, mocked_set):
+    for name in ('LOGNAME', 'USER', 'LNAME', 'USERNAME'):
+        monkeypatch.delitem(os.environ, name, raising=False)
+    monkeypatch.setattr(os, 'getuid', lambda: -1, raising=False)
+    tool = cli.CommandLineTool()
+    tool.service = 'svc'
+    tool.username = 'usr'
+    monkeypatch.setattr(sys.stdin, 'isatty', lambda: True)
+    monkeypatch.setattr(getpass, 'getpass', PasswordEmitter('foo123'))
+    tool.do_set()
+    mocked_set.assert_called_once_with('svc', 'usr', 'foo123')
 
 
 def test_set_interactive(monkeypatch, mocked_set):

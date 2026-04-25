@@ -81,6 +81,9 @@ type = [
     # Exclude PyPy from type checks (python/mypy#20454 jaraco/skeleton#187)
 	"pytest-mypy >= 1.0.1; platform_python_implementation != 'PyPy'",
 
+	## workaround for python/mypy#20454
+	"mypy < 1.19; python_implementation == 'PyPy'",
+
 	# local
 	"pygobject-stubs",
 	"shtab", # Optional install for completion
