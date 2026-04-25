@@ -33,7 +33,7 @@ These recommended keyring backends are supported:
 * macOS `Keychain
   <https://en.wikipedia.org/wiki/Keychain_%28software%29>`_
 * Freedesktop `Secret Service
-  <http://standards.freedesktop.org/secret-service/>`_ supports many DE including
+  <https://specifications.freedesktop.org/secret-service-spec/>`_ supports many DE including
   GNOME (requires `secretstorage <https://pypi.python.org/pypi/secretstorage>`_)
 * KDE4 & KDE5 `KWallet <https://en.wikipedia.org/wiki/KWallet>`_
   (requires `dbus <https://pypi.python.org/pypi/dbus-python>`_)
