@@ -1,0 +1,1 @@
+Clarified that the configuration file is not created automatically and must be created by the user if it does not already exist.
