@@ -12,6 +12,7 @@ import operator
 import os
 import typing
 import warnings
+from collections.abc import Callable
 
 from jaraco.context import ExceptionTrap
 from jaraco.functools import once
@@ -23,8 +24,8 @@ from .compat.py312 import metadata
 log = logging.getLogger(__name__)
 
 
-by_priority = operator.attrgetter('priority')
-_limit: typing.Callable[[KeyringBackend], bool] | None = None
+by_priority: Callable[[KeyringBackend | type[KeyringBackend]], float] = operator.attrgetter('priority')
+_limit: Callable[[KeyringBackend], bool] | None = None
 
 
 class KeyringBackendMeta(abc.ABCMeta):

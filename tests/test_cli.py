@@ -94,3 +94,27 @@ def test_get(monkeypatch, mocked_get_credential, format, capsys):
     tool.output_format = format
     tool.do_get()
     assert 's3cret' in capsys.readouterr().out
+
+
+def test_set_missing_service():
+    tool = cli.CommandLineTool()
+    with pytest.raises(SystemExit):
+        tool.run(['set'])
+
+
+def test_set_missing_username():
+    tool = cli.CommandLineTool()
+    with pytest.raises(SystemExit):
+        tool.run(['set', 'svc'])
+
+
+def test_get_password_missing_username():
+    tool = cli.CommandLineTool()
+    with pytest.raises(SystemExit):
+        tool.run(['get', 'svc'])
+
+
+def test_invalid_backend():
+    tool = cli.CommandLineTool()
+    with pytest.raises(SystemExit):
+        tool.run(['-b', 'nonexistent.backend', 'get', 'svc', 'usr'])
