@@ -193,6 +193,7 @@ use cases. Simply install them to make them available:
 - `keyring_jeepney <https://pypi.org/project/keyring_jeepney>`__ - a
   pure Python backend using the secret service DBus API for desktop
   Linux (requires ``keyring<24``).
+- `keyrings.envvars <https://pypi.org/project/keyrings.envvars>`__ - a backend that retrieves credentials from environment variables.
 
 
 Write your own keyring backend
