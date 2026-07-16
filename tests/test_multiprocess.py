@@ -4,6 +4,7 @@ import platform
 import pytest
 
 import keyring
+from keyring.backends import fail
 
 
 @pytest.fixture(autouse=True)
@@ -20,7 +21,22 @@ def subprocess_get():
     keyring.get_password('test_app', 'test_user')
 
 
+def _has_usable_keyring():
+    """True when a non-fail backend is selected (see #737)."""
+    try:
+        return not isinstance(keyring.get_keyring(), fail.Keyring)
+    except Exception:
+        return False
+
+
 pytestmark = [
+    pytest.mark.skipif(
+        not _has_usable_keyring(),
+        reason=(
+            "no usable keyring backend available; install a recommended "
+            "backend or keyrings.alt (#737)"
+        ),
+    ),
     pytest.mark.xfail(
         platform.system() == 'Linux',
         reason="#410: keyring discovery fails intermittently",
