@@ -84,7 +84,7 @@ class DBusKeyring(KeyringBackend):
             if not entry_list:
                 self.iface.removeFolder(self.handle, old_folder, self.appid)
 
-    def connected(self, service):
+    def connected(self, service, create=True):
         if self.handle >= 0:
             if self.iface.isOpen(self.handle):
                 return True
@@ -94,7 +94,17 @@ class DBusKeyring(KeyringBackend):
         try:
             remote_obj = bus.get_object(self.bus_name, self.object_path)
             self.iface = dbus.Interface(remote_obj, 'org.kde.KWallet')
-            self.handle = self.iface.open(self.iface.networkWallet(), wId, self.appid)
+
+            # Fix for #496: Prevent KWallet from triggering creation UI on read queries
+            wallet_name = self.iface.networkWallet()
+            if not create:
+                try:
+                    if wallet_name not in self.iface.wallets():
+                        return False
+                except dbus.DBusException:
+                    pass  # Fallback to open() if wallets() fails
+
+            self.handle = self.iface.open(wallet_name, wId, self.appid)
         except dbus.DBusException as e:
             raise InitError(f'Failed to open keyring: {e}.') from e
 
@@ -105,7 +115,9 @@ class DBusKeyring(KeyringBackend):
 
     def get_password(self, service, username):
         """Get password of the username for the service"""
-        if not self.connected(service):
+        if not self.connected(service, create=False):
+            if self.handle < 0:
+                return None
             # the user pressed "cancel" when prompted to unlock their keyring.
             raise KeyringLocked("Failed to unlock the keyring!")
         if not self.iface.hasEntry(self.handle, service, username, self.appid):
@@ -124,7 +136,9 @@ class DBusKeyring(KeyringBackend):
         if username is not None:
             return super().get_credential(service, username)
 
-        if not self.connected(service):
+        if not self.connected(service, create=False):
+            if self.handle < 0:
+                return None
             # the user pressed "cancel" when prompted to unlock their keyring.
             raise KeyringLocked("Failed to unlock the keyring!")
 
