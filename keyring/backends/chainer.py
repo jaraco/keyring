@@ -58,9 +58,14 @@ class ChainerBackend(backend.KeyringBackend):
                 pass
 
     def delete_password(self, service, username):
+        # The credential may exist in more than one backend (e.g. a stale copy
+        # in a lower-priority backend from before a higher-priority one was
+        # available). Delete it from every backend that holds it so a
+        # subsequent get_password no longer returns the stale value.
+        # Ref: https://github.com/jaraco/keyring/issues/697
         for keyring in self.backends:
             try:
-                return keyring.delete_password(service, username)
+                keyring.delete_password(service, username)
             except NotImplementedError:
                 pass
 
