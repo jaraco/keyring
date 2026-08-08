@@ -64,6 +64,13 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
 
         return 4.8
 
+    def _get_text_from_item(self, item: Secret.Retrievable) -> str:
+        value = item.retrieve_secret_sync()
+        assert value is not None
+        text = value.get_text()
+        assert text is not None
+        return text
+
     def get_password(self, service: str, username: str) -> str | None:
         """Get password of the username for the service"""
         attributes = self._query(service, username, application=self.appid)
@@ -78,7 +85,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
             raise
         for item in items:
             try:
-                return item.retrieve_secret_sync().get_text()
+                return self._get_text_from_item(item)
             except GLib.Error as error:
                 quark = GLib.quark_try_string('secret-error')
                 if error.matches(quark, Secret.Error.IS_LOCKED):
@@ -150,11 +157,9 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
                 raise KeyringLocked('Failed to unlock the item!') from error
             raise
         for item in items:
-            username = item.get_attributes().get("username")
+            username = item.get_attributes()["username"]
             try:
-                return SimpleCredential(
-                    username, item.retrieve_secret_sync().get_text()
-                )
+                return SimpleCredential(username, self._get_text_from_item(item))
             except GLib.Error as error:
                 quark = GLib.quark_try_string('secret-error')
                 if error.matches(quark, Secret.Error.IS_LOCKED):
