@@ -1,9 +1,11 @@
 import logging
+import typing
 
 from .. import backend
 from ..backend import KeyringBackend
 from ..compat import properties
 from ..credentials import SimpleCredential
+from ..credentials import Credential
 from ..errors import (
     KeyringLocked,
     PasswordDeleteError,
@@ -20,7 +22,10 @@ try:
 
     available = True
 except (AttributeError, ImportError, ValueError):
-    pass
+    if typing.TYPE_CHECKING:
+        from gi.repository import GLib
+        from gi.repository import Gio
+        from gi.repository import Secret
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +36,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
     appid = 'Python keyring library'
 
     @property
-    def schema(self):
+    def schema(self) -> Secret.Schema:
         return Secret.Schema.new(
             "org.freedesktop.Secret.Generic",
             Secret.SchemaFlags.NONE,
@@ -43,7 +48,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
         )
 
     @properties.NonDataProperty
-    def collection(self):
+    def collection(self) -> str:
         return Secret.COLLECTION_DEFAULT
 
     @properties.classproperty
@@ -59,7 +64,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
 
         return 4.8
 
-    def get_password(self, service, username):
+    def get_password(self, service: str, username: str) -> str | None:
         """Get password of the username for the service"""
         attributes = self._query(service, username, application=self.appid)
         try:
@@ -80,7 +85,9 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
                     raise KeyringLocked('Failed to unlock the item!') from error
                 raise
 
-    def set_password(self, service, username, password):
+        return None
+
+    def set_password(self, service: str, username: str, password: str) -> None:
         """Set password for the username of the service"""
         attributes = self._query(service, username, application=self.appid)
         label = f"Password for '{username}' on '{service}'"
@@ -99,7 +106,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
         if not stored:
             raise PasswordSetError("Failed to store password!")
 
-    def delete_password(self, service, username):
+    def delete_password(self, service: str, username: str) -> None:
         """Delete the stored password (only the first one)"""
         attributes = self._query(service, username, application=self.appid)
         try:
@@ -124,7 +131,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
             return removed
         raise PasswordDeleteError("No such password!")
 
-    def get_credential(self, service, username):
+    def get_credential(self, service: str, username: str | None) -> Credential | None:
         """Get the first username and password for a service.
         Return a Credential instance
 
@@ -153,3 +160,5 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
                 if error.matches(quark, Secret.Error.IS_LOCKED):
                     raise KeyringLocked('Failed to unlock the item!') from error
                 raise
+
+        return None
