@@ -120,7 +120,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
             raise
         for item in items:
             try:
-                removed = Secret.password_clear_sync(
+                Secret.password_clear_sync(
                     self.schema, item.get_attributes(), None
                 )
             except GLib.Error as error:
@@ -128,7 +128,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
                 if error.matches(quark, Secret.Error.IS_LOCKED):
                     raise KeyringLocked('Failed to unlock the item!') from error
                 raise
-            return removed
+
         raise PasswordDeleteError("No such password!")
 
     def get_credential(self, service: str, username: str | None) -> Credential | None:
