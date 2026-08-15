@@ -72,6 +72,19 @@ def test_set_pipe_newline(monkeypatch, mocked_set):
     mocked_set.assert_called_once_with('svc', 'usr', 'foo123')
 
 
+@pytest.mark.parametrize('piped', ['', '\n'])
+def test_set_pipe_empty(monkeypatch, mocked_set, piped):
+    """An empty pipe is still a pipe; it must not fall back to getpass."""
+    tool = cli.CommandLineTool()
+    tool.service = 'svc'
+    tool.username = 'usr'
+    monkeypatch.setattr(sys.stdin, 'isatty', lambda: False)
+    monkeypatch.setattr(sys.stdin, 'read', lambda: piped)
+    monkeypatch.setattr(getpass, 'getpass', PasswordEmitter('prompted'))
+    tool.do_set()
+    mocked_set.assert_called_once_with('svc', 'usr', '')
+
+
 @pytest.mark.parametrize('format', ['json', 'plain'])
 def test_get_anonymous(monkeypatch, mocked_get_credential, format, capsys):
     mocked_get_credential.return_value = credentials.AnonymousCredential('s3cret')
