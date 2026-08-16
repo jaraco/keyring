@@ -1,9 +1,10 @@
 import logging
+import typing
 
 from .. import backend
 from ..backend import KeyringBackend
 from ..compat import properties
-from ..credentials import SimpleCredential
+from ..credentials import Credential, SimpleCredential
 from ..errors import (
     KeyringLocked,
     PasswordDeleteError,
@@ -20,7 +21,12 @@ try:
 
     available = True
 except (AttributeError, ImportError, ValueError):
-    pass
+    if typing.TYPE_CHECKING:
+        from gi.repository import (
+            Gio,  # noqa: TC004
+            GLib,  # noqa: TC004
+            Secret,  # noqa: TC004
+        )
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +37,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
     appid = 'Python keyring library'
 
     @property
-    def schema(self):
+    def schema(self) -> Secret.Schema:
         return Secret.Schema.new(
             "org.freedesktop.Secret.Generic",
             Secret.SchemaFlags.NONE,
@@ -43,7 +49,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
         )
 
     @properties.NonDataProperty
-    def collection(self):
+    def collection(self) -> str:
         return Secret.COLLECTION_DEFAULT
 
     @properties.classproperty
@@ -59,7 +65,14 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
 
         return 4.8
 
-    def get_password(self, service, username):
+    def _get_text_from_item(self, item: Secret.Retrievable) -> str:
+        value = item.retrieve_secret_sync()
+        assert value is not None
+        text = value.get_text()
+        assert text is not None
+        return text
+
+    def get_password(self, service: str, username: str) -> str | None:
         """Get password of the username for the service"""
         attributes = self._query(service, username, application=self.appid)
         try:
@@ -73,14 +86,16 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
             raise
         for item in items:
             try:
-                return item.retrieve_secret_sync().get_text()
+                return self._get_text_from_item(item)
             except GLib.Error as error:
                 quark = GLib.quark_try_string('secret-error')
                 if error.matches(quark, Secret.Error.IS_LOCKED):
                     raise KeyringLocked('Failed to unlock the item!') from error
                 raise
 
-    def set_password(self, service, username, password):
+        return None
+
+    def set_password(self, service: str, username: str, password: str) -> None:
         """Set password for the username of the service"""
         attributes = self._query(service, username, application=self.appid)
         label = f"Password for '{username}' on '{service}'"
@@ -99,7 +114,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
         if not stored:
             raise PasswordSetError("Failed to store password!")
 
-    def delete_password(self, service, username):
+    def delete_password(self, service: str, username: str) -> None:
         """Delete the stored password (only the first one)"""
         attributes = self._query(service, username, application=self.appid)
         try:
@@ -113,18 +128,16 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
             raise
         for item in items:
             try:
-                removed = Secret.password_clear_sync(
-                    self.schema, item.get_attributes(), None
-                )
+                Secret.password_clear_sync(self.schema, item.get_attributes(), None)
             except GLib.Error as error:
                 quark = GLib.quark_try_string('secret-error')
                 if error.matches(quark, Secret.Error.IS_LOCKED):
                     raise KeyringLocked('Failed to unlock the item!') from error
                 raise
-            return removed
+
         raise PasswordDeleteError("No such password!")
 
-    def get_credential(self, service, username):
+    def get_credential(self, service: str, username: str | None) -> Credential | None:
         """Get the first username and password for a service.
         Return a Credential instance
 
@@ -133,6 +146,8 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
         Otherwise, it will return the first username and password combo that it finds.
         """
         query = self._query(service, username)
+        scheme = self.schemes[self.scheme]
+
         try:
             items = Secret.password_search_sync(
                 self.schema, query, Secret.SearchFlags.UNLOCK, None
@@ -143,13 +158,13 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
                 raise KeyringLocked('Failed to unlock the item!') from error
             raise
         for item in items:
-            username = item.get_attributes().get("username")
+            username = item.get_attributes()[scheme["username"]]
             try:
-                return SimpleCredential(
-                    username, item.retrieve_secret_sync().get_text()
-                )
+                return SimpleCredential(username, self._get_text_from_item(item))
             except GLib.Error as error:
                 quark = GLib.quark_try_string('secret-error')
                 if error.matches(quark, Secret.Error.IS_LOCKED):
                     raise KeyringLocked('Failed to unlock the item!') from error
                 raise
+
+        return None

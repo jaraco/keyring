@@ -25,6 +25,7 @@ log = logging.getLogger(__name__)
 
 by_priority = operator.attrgetter('priority')
 _limit: typing.Callable[[KeyringBackend], bool] | None = None
+_QT = typing.TypeVar("_QT")
 
 
 class KeyringBackendMeta(abc.ABCMeta):
@@ -284,8 +285,8 @@ class SchemeSelectable:
     )
 
     def _query(
-        self, service: str, username: str | None = None, **base: typing.Any
-    ) -> dict[str, str]:
+        self, service: _QT, username: _QT | None = None, **base: typing.Any
+    ) -> dict[str, _QT]:
         scheme = self.schemes[self.scheme]
         return dict(
             {
