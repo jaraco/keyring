@@ -4,8 +4,7 @@ import typing
 from .. import backend
 from ..backend import KeyringBackend
 from ..compat import properties
-from ..credentials import SimpleCredential
-from ..credentials import Credential
+from ..credentials import Credential, SimpleCredential
 from ..errors import (
     KeyringLocked,
     PasswordDeleteError,
@@ -23,9 +22,11 @@ try:
     available = True
 except (AttributeError, ImportError, ValueError):
     if typing.TYPE_CHECKING:
-        from gi.repository import GLib
-        from gi.repository import Gio
-        from gi.repository import Secret
+        from gi.repository import (
+            Gio,  # noqa: TC004
+            GLib,  # noqa: TC004
+            Secret,  # noqa: TC004
+        )
 
 log = logging.getLogger(__name__)
 
@@ -127,9 +128,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
             raise
         for item in items:
             try:
-                Secret.password_clear_sync(
-                    self.schema, item.get_attributes(), None
-                )
+                Secret.password_clear_sync(self.schema, item.get_attributes(), None)
             except GLib.Error as error:
                 quark = GLib.quark_try_string('secret-error')
                 if error.matches(quark, Secret.Error.IS_LOCKED):
