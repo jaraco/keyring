@@ -147,6 +147,8 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
         Otherwise, it will return the first username and password combo that it finds.
         """
         query = self._query(service, username)
+        scheme = self.schemes[self.scheme]
+
         try:
             items = Secret.password_search_sync(
                 self.schema, query, Secret.SearchFlags.UNLOCK, None
@@ -157,7 +159,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
                 raise KeyringLocked('Failed to unlock the item!') from error
             raise
         for item in items:
-            username = item.get_attributes()["username"]
+            username = item.get_attributes()[scheme["username"]]
             try:
                 return SimpleCredential(username, self._get_text_from_item(item))
             except GLib.Error as error:
