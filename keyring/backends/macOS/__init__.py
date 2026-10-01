@@ -73,6 +73,8 @@ class Keyring(KeyringBackend):
 
         try:
             return api.delete_generic_password(self.keychain, service, username)
+        except api.KeychainDenied as e:
+            raise KeyringLocked(f"Can't delete password in keychain: {e}") from e
         except api.Error as e:
             raise PasswordDeleteError(f"Can't delete password in keychain: {e}") from e
 
