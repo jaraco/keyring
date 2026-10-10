@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import getpass
 import json
+import os
 import sys
 
 from . import (
@@ -173,7 +174,7 @@ class CommandLineTool:
 
         try:
             if self.keyring_path:
-                sys.path.insert(0, self.keyring_path)
+                sys.path.insert(0, os.path.expanduser(self.keyring_path))
             set_keyring(core.load_keyring(self.keyring_backend))
         except Exception as exc:
             # Tons of things can go wrong here:
