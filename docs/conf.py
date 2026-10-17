@@ -56,3 +56,11 @@ extensions += ['sphinx.ext.extlinks']
 # local
 
 extensions += ['jaraco.tidelift']
+
+# KeyringBackend.passes comes from jaraco.context, whose annotations reference
+# private typing names that Sphinx can't resolve.
+nitpick_ignore += [
+    ('py:class', '_P'),
+    ('py:class', '_R'),
+    ('py:class', 'functools._Wrapped'),
+]
