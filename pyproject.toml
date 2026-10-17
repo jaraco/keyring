@@ -82,7 +82,6 @@ type = [
 	"pytest-mypy >= 1.0.1; platform_python_implementation != 'PyPy'",
 
 	# local
-	"pygobject-stubs",
 	"shtab", # Optional install for completion
 	"types-pywin32",
 ]
