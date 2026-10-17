@@ -1,3 +1,5 @@
+import contextlib
+
 import pytest
 
 from keyring.backends import kwallet
@@ -17,10 +19,8 @@ class TestDBusKWallet(BackendBasicTests):
         for item in self.credentials_created:
             # Suppress errors, as only one pre/post migration item will be
             # present
-            try:
+            with contextlib.suppress(Exception):
                 self.keyring.delete_password(*item)
-            except BaseException:
-                pass
 
         # TODO Remove empty folders created during tests
 
@@ -48,7 +48,7 @@ class TestDBusKWallet(BackendBasicTests):
         ret_password = keyring.get_password(service, username)
         assert ret_password == password, (
             f"Incorrect password for username: '{service}' "
-            f"on service: '{username}'. '{ret_password}' != '{password}'",
+            f"on service: '{username}'. '{ret_password}' != '{password}'"
         )
 
         # for the empty password

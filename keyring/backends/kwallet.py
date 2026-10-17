@@ -85,9 +85,8 @@ class DBusKeyring(KeyringBackend):
                 self.iface.removeFolder(self.handle, old_folder, self.appid)
 
     def connected(self, service):
-        if self.handle >= 0:
-            if self.iface.isOpen(self.handle):
-                return True
+        if self.handle >= 0 and self.iface.isOpen(self.handle):
+            return True
 
         bus = dbus.SessionBus(mainloop=DBusGMainLoop())
         wId = 0
@@ -128,11 +127,9 @@ class DBusKeyring(KeyringBackend):
             # the user pressed "cancel" when prompted to unlock their keyring.
             raise KeyringLocked("Failed to unlock the keyring!")
 
-        for username in self.iface.entryList(self.handle, service, self.appid):
-            password = self.iface.readPassword(
-                self.handle, service, username, self.appid
-            )
-            return SimpleCredential(str(username), str(password))
+        for found in self.iface.entryList(self.handle, service, self.appid):
+            password = self.iface.readPassword(self.handle, service, found, self.appid)
+            return SimpleCredential(str(found), str(password))
 
     def set_password(self, service, username, password):
         """Set password for the username of the service"""

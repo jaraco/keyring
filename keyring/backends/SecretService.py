@@ -15,7 +15,7 @@ from ..errors import (
 
 try:
     import secretstorage
-    import secretstorage.exceptions as exceptions
+    from secretstorage import exceptions
 except ImportError:
     pass
 except AttributeError:

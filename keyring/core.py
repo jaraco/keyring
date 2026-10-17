@@ -130,7 +130,7 @@ def _load_keyring_class(keyring_name: str) -> type[backend.KeyringBackend]:
     >>> list(map(_load_keyring_class, popular_names))
     [...]
     """
-    module_name, sep, class_name = keyring_name.rpartition('.')
+    module_name, _, class_name = keyring_name.rpartition('.')
     __import__(module_name)
     module = sys.modules[module_name]
     return getattr(module, class_name)

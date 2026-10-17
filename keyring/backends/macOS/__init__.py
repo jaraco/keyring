@@ -1,3 +1,4 @@
+import contextlib
 import functools
 import os
 import platform
@@ -7,10 +8,8 @@ from ...backend import KeyringBackend
 from ...compat import properties
 from ...errors import KeyringError, KeyringLocked, PasswordDeleteError, PasswordSetError
 
-try:
+with contextlib.suppress(Exception):
     from . import api
-except Exception:
-    pass
 
 
 def warn_keychain(func):

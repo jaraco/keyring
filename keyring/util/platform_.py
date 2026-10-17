@@ -4,7 +4,6 @@ import platform
 
 
 def _data_root_Windows():
-    release, version, csd, ptype = platform.win32_ver()
     root = pathlib.Path(
         os.environ.get('LOCALAPPDATA', os.environ.get('ProgramData', '.'))
     )

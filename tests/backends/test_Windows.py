@@ -15,7 +15,7 @@ class TestWinVaultKeyring(BackendBasicTests):
         for cred in self.credentials_created:
             try:
                 self.keyring.delete_password(*cred)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 print(e, file=sys.stderr)
 
     def init_keyring(self):
