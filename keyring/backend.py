@@ -88,11 +88,8 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         """
         raise NotImplementedError
 
-    # Python 3.8 compatibility
-    passes = ExceptionTrap().passes
-
     @properties.classproperty
-    @passes
+    @ExceptionTrap().passes
     def viable(cls):
         cls.priority  # noqa: B018
 
