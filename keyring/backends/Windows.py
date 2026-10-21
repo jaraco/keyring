@@ -15,14 +15,14 @@ with ExceptionTrap() as missing_deps:
         from win32ctypes.pywin32 import pywintypes, win32cred
 
         # force demand import to raise ImportError
-        win32cred.__name__  # noqa: B018
+        win32cred.__name__
     except ImportError:
         # fallback to pywin32
         import pywintypes
         import win32cred
 
         # force demand import to raise ImportError
-        win32cred.__name__  # noqa: B018
+        win32cred.__name__
 
 log = logging.getLogger(__name__)
 
