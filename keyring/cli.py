@@ -185,7 +185,9 @@ class CommandLineTool:
 
     def input_password(self, prompt):
         """Retrieve password from input."""
-        return self.pass_from_pipe() or getpass.getpass(prompt)
+        # an empty pipe is still a pipe; only prompt when there is no pipe
+        piped = self.pass_from_pipe()
+        return getpass.getpass(prompt) if piped is False else piped
 
     @classmethod
     def pass_from_pipe(cls):
