@@ -1,4 +1,5 @@
 import logging
+import typing
 from contextlib import closing
 
 from jaraco.context import ExceptionTrap
@@ -12,6 +13,9 @@ from ..errors import (
     KeyringLocked,
     PasswordDeleteError,
 )
+
+if typing.TYPE_CHECKING:
+    from secretstorage.collection import Collection
 
 try:
     import secretstorage
@@ -49,7 +53,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
             raise RuntimeError(f"Unable to initialize SecretService: {e}") from e
         return 5
 
-    def get_preferred_collection(self):
+    def get_preferred_collection(self) -> 'Collection':
         """If self.preferred_collection contains a D-Bus path,
         the collection at that address is returned. Otherwise,
         the default collection is returned.
