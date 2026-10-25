@@ -69,6 +69,13 @@ The basic usage of keyring is pretty simple: just call
     >>> keyring.get_password("system", "username")
     'password'
 
+The ``system`` argument is any string that identifies the context for the
+credential. It might be a hostname (``"example.com"``), a URL
+(``"https://the.web.site/"``), the name of a service (``"PyPI"``,
+``"GitHub"``), or any other label that makes the credential easy to look
+up later. The ``username`` argument is the account name within that
+context.
+
 Command-line Utility
 --------------------
 
