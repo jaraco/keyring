@@ -1,0 +1,1 @@
+Fixed ``KeyringBackendMeta`` re-wrapping ``set_password`` once per class in the MRO, which made the empty-username deprecation warning fire more than once per call and misattribute its source location.

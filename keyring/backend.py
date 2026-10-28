@@ -53,12 +53,17 @@ class KeyringBackendMeta(abc.ABCMeta):
         Wrap ``set_password`` such to validate the passed username.
         """
         orig = cls.set_password
+        if getattr(orig, '_validates_username', False):
+            # inherited from a base class that was already wrapped; wrapping
+            # again would validate (and warn) once per class in the MRO.
+            return
 
         @functools.wraps(orig)
         def wrapper(self, system, username, *args, **kwargs):
             self._validate_username(username)
             return orig(self, system, username, *args, **kwargs)
 
+        wrapper._validates_username = True
         cls.set_password = wrapper
 
 
