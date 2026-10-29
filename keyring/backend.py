@@ -91,7 +91,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
     @properties.classproperty
     @ExceptionTrap().passes
     def viable(cls):
-        cls.priority  # noqa: B018
+        cls.priority
 
     @classmethod
     def get_viable_backends(

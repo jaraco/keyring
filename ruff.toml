@@ -42,7 +42,12 @@ ignore = [
 	# PLC0414 flags `import X as X`, the idiom type checkers recognize as an
 	# explicit re-export, and its fix (with F401) silently drops public names.
 	# See jaraco/skeleton#210.
-	"PLC0414", # useless-import-alias
+		# B018 flags bare attribute access, which is useful for its side effect
+	# (forcing a lazy import, probing a property) and more elegant in tests
+	# than assigning to an ignored name. See jaraco/skeleton#112.
+	"B018", # useless-expression
+
+"PLC0414", # useless-import-alias
 
 	# local
 ]

@@ -33,7 +33,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
     @properties.classproperty
     def priority(cls) -> float:
         with ExceptionTrap() as exc:
-            secretstorage.__name__  # noqa: B018
+            secretstorage.__name__
         if exc:
             raise RuntimeError("SecretStorage required")
         if secretstorage.__version_tuple__ < (3, 2):
