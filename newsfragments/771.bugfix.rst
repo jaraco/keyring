@@ -1,0 +1,1 @@
+Raise ``NoKeyringError`` from ``keyring.backends.fail.Keyring.get_credential()`` when the username is omitted, instead of returning ``None`` as if no such credential existed.
