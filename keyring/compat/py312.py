@@ -4,6 +4,6 @@ __all__ = ['metadata']
 
 
 if sys.version_info >= (3, 12):
-    import importlib.metadata as metadata
+    from importlib import metadata
 else:
     import importlib_metadata as metadata

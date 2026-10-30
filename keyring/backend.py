@@ -88,11 +88,8 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         """
         raise NotImplementedError
 
-    # Python 3.8 compatibility
-    passes = ExceptionTrap().passes
-
     @properties.classproperty
-    @passes
+    @ExceptionTrap().passes
     def viable(cls):
         cls.priority  # noqa: B018
 
@@ -112,10 +109,10 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
 
         The name is derived from module and class name.
         """
-        parent, sep, mod_name = cls.__module__.rpartition('.')
+        *_, mod_name = cls.__module__.rpartition('.')
         mod_name = mod_name.replace('_', ' ')
         # mypy doesn't see `cls` is `type[Self]`, might be fixable in jaraco.classes
-        return ' '.join([mod_name, cls.__name__])  # type: ignore[attr-defined]
+        return f'{mod_name} {cls.__name__}'  # type: ignore[attr-defined]
 
     def __str__(self) -> str:
         keyring_class = type(self)
@@ -185,7 +182,7 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
 
         def parse(item: tuple[str, str]):
             key, value = item
-            pre, sep, name = key.partition('KEYRING_PROPERTY_')
+            _, sep, name = key.partition('KEYRING_PROPERTY_')
             return sep and (name.lower(), value)
 
         props: filter[tuple[str, str]] = filter(None, map(parse, os.environ.items()))
@@ -204,12 +201,10 @@ class Crypter:
     @abc.abstractmethod
     def encrypt(self, value):
         """Encrypt the value."""
-        pass
 
     @abc.abstractmethod
     def decrypt(self, value):
         """Decrypt the value."""
-        pass
 
 
 class NullCrypter(Crypter):
@@ -278,7 +273,7 @@ class SchemeSelectable:
     """
 
     scheme = 'default'
-    schemes = dict(
+    schemes: typing.ClassVar = dict(
         default=dict(username='username', service='service'),
         KeePassXC=dict(username='UserName', service='Title'),
     )

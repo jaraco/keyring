@@ -1,0 +1,1 @@
+Removed ``KeyringBackend.passes``, a helper left over from Python 3.8 compatibility. Backends that used it can decorate with ``jaraco.context.ExceptionTrap().passes`` directly.
