@@ -125,12 +125,14 @@ class WinVaultKeyring(KeyringBackend):
         if existing_pw:
             # resave the existing password using a compound target
             existing_username = existing_pw['UserName']
-            target = self._compound_name(existing_username, service)
-            self._set_password(
-                target,
-                existing_username,
-                existing_pw.value,
-            )
+            if existing_username != username:
+                # only store the existing password under the compound target if the username differs
+                target = self._compound_name(existing_username, service)
+                self._set_password(
+                    target,
+                    existing_username,
+                    existing_pw.value,
+                )
         self._set_password(service, username, str(password))
 
     def _set_password(self, target, username, password):
