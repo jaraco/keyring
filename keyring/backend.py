@@ -55,9 +55,9 @@ class KeyringBackendMeta(abc.ABCMeta):
         orig = cls.set_password
 
         @functools.wraps(orig)
-        def wrapper(self, system, username, *args, **kwargs):
+        def wrapper(self, service, username, *args, **kwargs):
             self._validate_username(username)
-            return orig(self, system, username, *args, **kwargs)
+            return orig(self, service, username, *args, **kwargs)
 
         cls.set_password = wrapper
 
