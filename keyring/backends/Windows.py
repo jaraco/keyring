@@ -97,6 +97,10 @@ class WinVaultKeyring(KeyringBackend):
 
     def get_password(self, service, username):
         res = self._resolve_credential(service, username)
+        if res and res.value.startswith("::SHARDED::"):
+            return self._get_sharded_password(
+                service, username, int(res.value.split("::")[2])
+            )
         return res and res.value
 
     def _resolve_credential(
@@ -120,7 +124,16 @@ class WinVaultKeyring(KeyringBackend):
             raise
         return DecodingCredential(res)
 
+    # Maximum safe byte size for Windows CredentialBlob (UTF-16 encoded)
+    MAX_BLOB_SIZE = 2000
+
     def set_password(self, service, username, password):
+        password_str = str(password)
+        # Shard if password exceeds safe byte limit (Issue #540)
+        if len(password_str.encode('utf-16-le')) > self.MAX_BLOB_SIZE:
+            self._set_sharded_password(service, username, password_str)
+            return
+
         existing_pw = self._read_credential(service)
         if existing_pw:
             # resave the existing password using a compound target
@@ -131,7 +144,25 @@ class WinVaultKeyring(KeyringBackend):
                 existing_username,
                 existing_pw.value,
             )
-        self._set_password(service, username, str(password))
+        self._set_password(service, username, password_str)
+
+    def _set_sharded_password(self, service, username, password):
+        chunk_size = self.MAX_BLOB_SIZE // 2  # Safe character chunk size
+        chunks = [password[i:i + chunk_size] for i in range(0, len(password), chunk_size)]
+        for i, chunk in enumerate(chunks):
+            shard_target = f"{service}::shard::{i}"
+            self._set_password(shard_target, username, chunk)
+        # Store metadata about sharding
+        self._set_password(service, username, f"::SHARDED::{len(chunks)}")
+
+    def _get_sharded_password(self, service, username, shard_count):
+        password = ""
+        for i in range(shard_count):
+            shard_target = f"{service}::shard::{i}"
+            res = self._read_credential(shard_target)
+            if res:
+                password += res.value
+        return password
 
     def _set_password(self, target, username, password):
         credential = dict(
@@ -150,6 +181,12 @@ class WinVaultKeyring(KeyringBackend):
         for target in service, compound:
             existing_pw = self._read_credential(target)
             if existing_pw and existing_pw['UserName'] == username:
+                # If this was a sharded password, clean up all shards
+                if existing_pw.value.startswith("::SHARDED::"):
+                    shard_count = int(existing_pw.value.split("::")[2])
+                    for i in range(shard_count):
+                        shard_target = f"{target}::shard::{i}"
+                        self._delete_password(shard_target)
                 deleted = True
                 self._delete_password(target)
         if not deleted:
