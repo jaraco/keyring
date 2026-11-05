@@ -3,7 +3,7 @@ Keyring Chainer - iterates over other viable backends to
 discover passwords in each.
 """
 
-from .. import backend
+from .. import backend, errors
 from ..compat import properties
 from . import fail
 
@@ -61,7 +61,16 @@ class ChainerBackend(backend.KeyringBackend):
         for keyring in self.backends:
             try:
                 return keyring.delete_password(service, username)
-            except NotImplementedError:
+            except (NotImplementedError, errors.PasswordDeleteError):
+                # NotImplementedError: this backend doesn't support
+                # deletion at all.
+                # PasswordDeleteError: this backend supports deletion,
+                # but doesn't have this particular password (e.g. it
+                # was only ever stored in a lower-priority backend).
+                # Either way, keep trying the remaining backends,
+                # matching get_password()'s own behavior of trying
+                # every backend rather than stopping at the first one
+                # that doesn't have it. See GH #697.
                 pass
 
     def get_credential(self, service, username):
