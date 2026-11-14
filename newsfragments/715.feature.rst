@@ -1,0 +1,1 @@
+Document a pytest recipe for isolated, in-memory keyring backends.
