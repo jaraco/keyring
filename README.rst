@@ -258,6 +258,77 @@ To invoke ``set_keyring``::
     print("password", keyring.get_password("demo-service", "tarek"))
 
 
+Testing applications
+====================
+
+For tests that need to store and retrieve credentials without accessing an
+operating system keyring, use an in-memory backend. The following pytest
+fixture installs an empty backend for each test and provides a factory for
+additional, independent backends. Put it in ``conftest.py``::
+
+    import keyring
+    import keyring.backend
+    import keyring.core
+    import pytest
+
+    class MemoryKeyring(keyring.backend.KeyringBackend):
+        # Keep this test backend below the built-in backends during discovery.
+        priority = -1
+
+        def __init__(self):
+            self.passwords = {}
+
+        def get_password(self, service, username):
+            return self.passwords.get((service, username))
+
+        def set_password(self, service, username, password):
+            self.passwords[service, username] = password
+
+        def delete_password(self, service, username):
+            try:
+                del self.passwords[service, username]
+            except KeyError as error:
+                raise keyring.errors.PasswordDeleteError("No such password") from error
+
+    @pytest.fixture
+    def memory_keyring_factory(monkeypatch):
+        monkeypatch.setattr(keyring.core, "_keyring_backend", MemoryKeyring())
+        return MemoryKeyring
+
+The fixture patches the cached backend so pytest restores its previous value
+after the test, including an uninitialized backend. It avoids calling
+``get_keyring()`` to save that value, which could initialize a real backend.
+Calls through ``keyring`` and previously imported API function aliases use
+the installed backend. Import application modules that access keyring at
+import time inside the test, after the fixture has installed the backend.
+
+Each backend keeps separate passwords for each service and username. Use
+``set_keyring()`` to switch between instances while testing your application::
+
+    import keyring
+    import pytest
+
+    def test_credentials(memory_keyring_factory):
+        first = memory_keyring_factory()
+        keyring.set_keyring(first)
+        keyring.set_password("service-a", "alice", "first password")
+        keyring.set_password("service-b", "alice", "second password")
+        keyring.set_password("service-a", "bob", "third password")
+        assert keyring.get_password("service-a", "alice") == "first password"
+        assert keyring.get_password("service-b", "alice") == "second password"
+        assert keyring.get_password("service-a", "bob") == "third password"
+
+        second = memory_keyring_factory()
+        keyring.set_keyring(second)
+        assert keyring.get_password("service-a", "alice") is None
+
+        keyring.set_keyring(first)
+        keyring.delete_password("service-a", "alice")
+        assert keyring.get_password("service-a", "alice") is None
+        with pytest.raises(keyring.errors.PasswordDeleteError):
+            keyring.delete_password("service-a", "alice")
+
+
 Disabling Keyring
 =================
 
