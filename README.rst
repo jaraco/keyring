@@ -144,6 +144,10 @@ The configuration is stored in a file named "keyringrc.cfg"
 found in a platform-specific location. To determine
 where the config file is stored, run ``keyring diagnose``.
 
+This file is not created automatically. If it does not exist at the
+reported location, create it (and any missing parent directories)
+to configure keyring.
+
 Config file content
 -------------------
 
