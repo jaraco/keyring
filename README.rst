@@ -183,6 +183,9 @@ use cases. Simply install them to make them available:
   password manager.
 - `onepassword-keyring <https://pypi.org/project/onepassword-keyring/>`_
   - a backend that stores secrets in the `1Password <https://1password.com/>`_ password manager.
+- `ssh-agent-keyring <https://pypi.org/project/ssh-agent-keyring/>`_
+  - a backend that keeps secrets encrypted at rest and unlocks them transparently
+  through ``ssh-agent``.
 - `sagecipher <https://pypi.org/project/sagecipher>`_ - an encryption
   backend which uses the ssh agent protocol's signature operation to
   derive the cipher key.
