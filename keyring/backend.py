@@ -10,6 +10,7 @@ import functools
 import logging
 import operator
 import os
+import sys
 import typing
 import warnings
 
@@ -17,6 +18,18 @@ from jaraco.functools import once
 
 from . import credentials, errors, util
 from .compat import properties
+
+if sys.version_info < (3, 11) or sys.version_info >= (3, 15):
+    from contextlib import nullcontext as lazy_importer
+else:
+    from lazy_importer import lazy_importer
+
+__lazy_modules__ = {"jaraco.context", "keyring.compat.py312"}
+
+with lazy_importer():
+    from jaraco.context import ExceptionTrap
+
+    from .compat.py312 import metadata
 
 log = logging.getLogger(__name__)
 
@@ -88,8 +101,6 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
 
     @properties.classproperty
     def viable(cls):
-        from jaraco.context import ExceptionTrap
-
         with ExceptionTrap() as trap:
             cls.priority  # noqa: B018
         return not trap
@@ -234,8 +245,6 @@ def _load_plugins() -> None:
 
     `initialize_func` is optional, but will be invoked if callable.
     """
-    from .compat.py312 import metadata
-
     for ep in metadata.entry_points(group='keyring.backends'):
         try:
             log.debug('Loading %s', ep.name)
