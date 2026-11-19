@@ -13,12 +13,18 @@ import os
 import typing
 import warnings
 
-from jaraco.context import ExceptionTrap
 from jaraco.functools import once
 
 from . import credentials, errors, util
 from .compat import properties
-from .compat.py312 import metadata
+from .compat.py315 import lazy_importer
+
+__lazy_modules__ = {"jaraco.context", "keyring.compat.py312"}
+
+with lazy_importer():
+    from jaraco.context import ExceptionTrap
+
+    from .compat.py312 import metadata
 
 log = logging.getLogger(__name__)
 
@@ -89,9 +95,10 @@ class KeyringBackend(metaclass=KeyringBackendMeta):
         raise NotImplementedError
 
     @properties.classproperty
-    @ExceptionTrap().passes
     def viable(cls):
-        cls.priority  # noqa: B018
+        with ExceptionTrap() as trap:
+            cls.priority  # noqa: B018
+        return not trap
 
     @classmethod
     def get_viable_backends(
