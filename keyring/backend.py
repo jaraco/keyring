@@ -10,7 +10,6 @@ import functools
 import logging
 import operator
 import os
-import sys
 import typing
 import warnings
 
@@ -18,11 +17,7 @@ from jaraco.functools import once
 
 from . import credentials, errors, util
 from .compat import properties
-
-if sys.version_info < (3, 11) or sys.version_info >= (3, 15):
-    from contextlib import nullcontext as lazy_importer
-else:
-    from lazy_importer import lazy_importer
+from .compat.py315 import lazy_importer
 
 __lazy_modules__ = {"jaraco.context", "keyring.compat.py312"}
 
