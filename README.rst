@@ -403,6 +403,7 @@ API
 The keyring lib has a few functions:
 
 * ``get_keyring()``: Return the currently-loaded keyring implementation.
+* ``set_keyring(keyring)``: Set the keyring implementation to use.
 * ``get_password(service, username)``: Returns the password stored in the
   active keyring. If the password does not exist, it will return None.
 * ``get_credential(service, username)``: Return a credential object stored
