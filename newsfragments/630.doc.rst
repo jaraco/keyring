@@ -1,0 +1,1 @@
+Documented options for using keyring under Windows Subsystem for Linux (WSL), including a wrapper script to automate the per-session GNOME Keyring setup.
