@@ -62,6 +62,13 @@ class DecodingCredential(dict):
             return decoded_cred_utf8
 
 
+def _username_match(a: str | None, b: str | None) -> bool:
+    """Compare usernames case-insensitively to match Windows behavior."""
+    if a is None or b is None:
+        return a is b
+    return a.lower() == b.lower()
+
+
 class WinVaultKeyring(KeyringBackend):
     """
     WinVaultKeyring stores encrypted passwords using the Windows Credential
@@ -104,7 +111,7 @@ class WinVaultKeyring(KeyringBackend):
     ) -> DecodingCredential | None:
         # first attempt to get the password under the service name
         res = self._read_credential(service)
-        if not res or username and res['UserName'] != username:
+        if not res or username and not _username_match(res['UserName'], username):
             # It wasn't found so attempt to get it with the compound name
             res = self._read_credential(self._compound_name(username, service))
         return res
@@ -123,14 +130,15 @@ class WinVaultKeyring(KeyringBackend):
     def set_password(self, service, username, password):
         existing_pw = self._read_credential(service)
         if existing_pw:
-            # resave the existing password using a compound target
             existing_username = existing_pw['UserName']
-            target = self._compound_name(existing_username, service)
-            self._set_password(
-                target,
-                existing_username,
-                existing_pw.value,
-            )
+            if not _username_match(existing_username, username):
+                # resave the existing password using a compound target
+                target = self._compound_name(existing_username, service)
+                self._set_password(
+                    target,
+                    existing_username,
+                    existing_pw.value,
+                )
         self._set_password(service, username, str(password))
 
     def _set_password(self, target, username, password):
@@ -149,7 +157,7 @@ class WinVaultKeyring(KeyringBackend):
         deleted = False
         for target in service, compound:
             existing_pw = self._read_credential(target)
-            if existing_pw and existing_pw['UserName'] == username:
+            if existing_pw and _username_match(existing_pw['UserName'], username):
                 deleted = True
                 self._delete_password(target)
         if not deleted:
