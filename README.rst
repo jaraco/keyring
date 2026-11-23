@@ -193,6 +193,10 @@ use cases. Simply install them to make them available:
 - `keyring_jeepney <https://pypi.org/project/keyring_jeepney>`__ - a
   pure Python backend using the secret service DBus API for desktop
   Linux (requires ``keyring<24``).
+- `keyring-pybridge <https://github.com/ClinicalGraphics/keyring-pybridge>`_
+  - a backend for use under WSL that stores secrets in the Windows
+  Credential Manager by invoking keyring through a Python executable
+  on the Windows host.
 
 
 Write your own keyring backend
