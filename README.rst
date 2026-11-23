@@ -193,6 +193,9 @@ use cases. Simply install them to make them available:
 - `keyring_jeepney <https://pypi.org/project/keyring_jeepney>`__ - a
   pure Python backend using the secret service DBus API for desktop
   Linux (requires ``keyring<24``).
+- `keyring_wincred <https://github.com/ilpianista/keyring_wincred>`__ - a
+  backend for use under WSL that stores secrets in the Windows
+  Credential Manager.
 
 
 Write your own keyring backend
@@ -378,6 +381,54 @@ The following is a complete transcript for installing keyring on a Ubuntu 18:04 
   >>> keyring.set_password("system", "username", "password")
   >>> keyring.get_password("system", "username")
   'password'
+
+Using Keyring on Windows Subsystem for Linux (WSL)
+==================================================
+
+Python running under WSL is a Linux process, so keyring selects the
+Linux backends and cannot reach the Windows Credential Manager directly.
+WSL typically provides neither a D-Bus session nor an unlocked
+Secret Service, so the default configuration usually reports that no
+recommended backend is available. There are a few options.
+
+Store secrets in the Windows Credential Manager
+-----------------------------------------------
+
+The third-party
+`keyring_wincred <https://github.com/ilpianista/keyring_wincred>`_
+backend lets keyring running inside WSL store its secrets in the Windows
+Credential Manager, so no Linux keyring daemon is needed.
+
+Use GNOME Keyring inside WSL
+----------------------------
+
+Follow the steps in `Using Keyring on headless Linux systems`_
+(install ``gnome-keyring``, start a D-Bus session and unlock the
+keyring). Because the D-Bus session and the daemon only live as long
+as the shell that started them, those steps must be repeated for each
+new session. To avoid doing this by hand, wrap them in a small script,
+for example ``keyring-run``::
+
+  #!/usr/bin/env bash
+  # Run a command in a D-Bus session with an unlocked GNOME Keyring.
+  read -rsp "Keyring password: " KEYRING_PW; echo
+  KEYRING_PW="$KEYRING_PW" exec dbus-run-session -- bash -c '
+    printf %s "$KEYRING_PW" | gnome-keyring-daemon --unlock > /dev/null
+    unset KEYRING_PW
+    exec "$@"
+  ' bash "$@"
+
+and launch keyring-based programs through it::
+
+  $ keyring-run python my_script.py
+  $ keyring-run bash  # or start a shell for several commands
+
+Use an alternative backend
+--------------------------
+
+If neither of the above is suitable, a file-based backend such as
+`keyrings.cryptfile <https://pypi.org/project/keyrings.cryptfile>`_
+can be installed and configured as described in `Configuring`_.
 
 Using Keyring with tox
 ======================
