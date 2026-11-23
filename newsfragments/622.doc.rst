@@ -1,0 +1,1 @@
+Added ``keyring-pybridge`` to the list of third-party backends, for using the Windows Credential Manager from WSL.
