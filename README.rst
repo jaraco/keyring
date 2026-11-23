@@ -186,13 +186,15 @@ use cases. Simply install them to make them available:
 - `sagecipher <https://pypi.org/project/sagecipher>`_ - an encryption
   backend which uses the ssh agent protocol's signature operation to
   derive the cipher key.
-- `keyrings.osx_keychain_keys <https://pypi.org/project/keyrings.osx-keychain-keys>`_
+- `keyrings.osx_keychain_keys <https://pypi.org/project/keyrings.osx-keychain-keys/>`_
   - OSX keychain key-management, for private, public, and symmetric keys.
 - `keyring_pass.PasswordStoreBackend <https://github.com/nazarewk/keyring_pass>`_
    - Password Store (pass) backend for python's keyring 
-- `keyring_jeepney <https://pypi.org/project/keyring_jeepney>`__ - a
+- `keyring_jeepney <https://pypi.org/project/keyring_jeepney/>`_ - a
   pure Python backend using the secret service DBus API for desktop
   Linux (requires ``keyring<24``).
+- `keyring-wincred <https://pypi.org/project/keyring-wincred/>`_ - a
+  backend using the Windows Credential Manager (wincred) from WSL.
 
 
 Write your own keyring backend
