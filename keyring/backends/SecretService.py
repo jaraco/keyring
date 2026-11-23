@@ -36,8 +36,8 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
             secretstorage.__name__  # noqa: B018
         if exc:
             raise RuntimeError("SecretStorage required")
-        if secretstorage.__version_tuple__ < (3, 2):
-            raise RuntimeError("SecretStorage 3.2 or newer required")
+        if secretstorage.__version_tuple__ < (3, 5):
+            raise RuntimeError("SecretStorage 3.5 or newer required")
         try:
             with closing(secretstorage.dbus_init()) as connection:
                 if not secretstorage.check_service_availability(connection):
@@ -49,7 +49,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
             raise RuntimeError(f"Unable to initialize SecretService: {e}") from e
         return 5
 
-    def get_preferred_collection(self):
+    def get_preferred_collection(self, timeout: float | None = None):
         """If self.preferred_collection contains a D-Bus path,
         the collection at that address is returned. Otherwise,
         the default collection is returned.
@@ -63,7 +63,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
         except exceptions.SecretStorageException as e:
             raise InitError(f"Failed to create the collection: {e}.") from e
         if collection.is_locked():
-            collection.unlock()
+            collection.unlock(timeout=timeout)
             if collection.is_locked():  # User dismissed the prompt
                 raise KeyringLocked("Failed to unlock the collection!")
         return collection
@@ -74,33 +74,33 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
         if item.is_locked():  # User dismissed the prompt
             raise KeyringLocked('Failed to unlock the item!')
 
-    def get_password(self, service, username):
+    def get_password(self, service, username, *, timeout: float | None = None):
         """Get password of the username for the service"""
-        collection = self.get_preferred_collection()
+        collection = self.get_preferred_collection(timeout=timeout)
         with closing(collection.connection):
             items = collection.search_items(self._query(service, username))
             for item in items:
                 self.unlock(item)
                 return item.get_secret().decode('utf-8')
 
-    def set_password(self, service, username, password):
+    def set_password(self, service, username, password, *, timeout: float | None = None):
         """Set password for the username of the service"""
-        collection = self.get_preferred_collection()
+        collection = self.get_preferred_collection(timeout=timeout)
         attributes = self._query(service, username, application=self.appid)
         label = f"Password for '{username}' on '{service}'"
         with closing(collection.connection):
             collection.create_item(label, attributes, password, replace=True)
 
-    def delete_password(self, service, username):
+    def delete_password(self, service, username, *, timeout: float | None = None):
         """Delete the stored password (only the first one)"""
-        collection = self.get_preferred_collection()
+        collection = self.get_preferred_collection(timeout=timeout)
         with closing(collection.connection):
             items = collection.search_items(self._query(service, username))
             for item in items:
                 return item.delete()
         raise PasswordDeleteError("No such password!")
 
-    def get_credential(self, service, username):
+    def get_credential(self, service, username, *, timeout: float | None = None):
         """Gets the first username and password for a service.
         Returns a Credential instance
 
@@ -110,7 +110,7 @@ class Keyring(backend.SchemeSelectable, KeyringBackend):
         """
         scheme = self.schemes[self.scheme]
         query = self._query(service, username)
-        collection = self.get_preferred_collection()
+        collection = self.get_preferred_collection(timeout=timeout)
 
         with closing(collection.connection):
             items = collection.search_items(query)
