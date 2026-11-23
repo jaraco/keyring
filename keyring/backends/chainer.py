@@ -5,6 +5,7 @@ discover passwords in each.
 
 from .. import backend
 from ..compat import properties
+from ..errors import PasswordDeleteError
 from . import fail
 
 
@@ -63,6 +64,9 @@ class ChainerBackend(backend.KeyringBackend):
                 return keyring.delete_password(service, username)
             except NotImplementedError:
                 pass
+            except PasswordDeleteError:
+                if keyring == self.backends[-1]:
+                    raise
 
     def get_credential(self, service, username):
         for keyring in self.backends:
