@@ -1,9 +1,10 @@
 import functools
 
 import pluggy
-from jaraco.context import suppress
 
 import keyring.errors
+
+from .compat import suppress
 
 hookimpl = pluggy.HookimplMarker("devpiclient")
 

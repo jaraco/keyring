@@ -1,11 +1,9 @@
 import logging
 from contextlib import closing
 
-from jaraco.context import ExceptionTrap
-
 from .. import backend
 from ..backend import KeyringBackend
-from ..compat import properties
+from ..compat import ExceptionTrap, properties
 from ..credentials import SimpleCredential
 from ..errors import (
     InitError,

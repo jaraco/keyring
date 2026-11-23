@@ -12,12 +12,10 @@ import operator
 import os
 import typing
 import warnings
-
-from jaraco.context import ExceptionTrap
-from jaraco.functools import once
+from functools import lru_cache as once
 
 from . import credentials, errors, util
-from .compat import properties
+from .compat import ExceptionTrap, properties
 from .compat.py312 import metadata
 
 log = logging.getLogger(__name__)
