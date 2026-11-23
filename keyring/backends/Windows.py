@@ -149,7 +149,7 @@ class WinVaultKeyring(KeyringBackend):
         deleted = False
         for target in service, compound:
             existing_pw = self._read_credential(target)
-            if existing_pw and existing_pw['UserName'] == username:
+            if existing_pw and (username == None or existing_pw['UserName'] == username):
                 deleted = True
                 self._delete_password(target)
         if not deleted:
