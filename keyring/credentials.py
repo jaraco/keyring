@@ -67,6 +67,8 @@ class EnvironCredential(Credential):
         self.pwd_env_var = pwd_env_var
 
     def __eq__(self, other: object) -> bool:
+        if not isinstance(other, EnvironCredential):
+            return NotImplemented
         return vars(self) == vars(other)
 
     def _get_env(self, env_var: str) -> str:
